@@ -8,7 +8,7 @@ import {
   InteractionType,
 } from "discord-api-types/v10";
 
-async function verifySignature(req: Request): Promise<boolean> {
+export async function verifySignature(req: Request): Promise<boolean> {
   const signature = req.headers.get("X-Signature-Ed25519");
   const timestamp = req.headers.get("X-Signature-Timestamp");
 
