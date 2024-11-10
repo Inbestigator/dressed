@@ -1,0 +1,12 @@
+{
+  "tasks": {
+    "dev": "deno run --watch -A lib/core/server.ts",
+    "tunnel": "cloudflared tunnel --url localhost:8000"
+  },
+  "imports": {
+    "@std/fmt": "jsr:@std/fmt@^1.0.3",
+    "cloudflared": "npm:cloudflared@^0.5.3",
+    "discord-api-types": "npm:discord-api-types@^0.37.104",
+    "tweetnacl": "npm:tweetnacl@^1.0.3"
+  }
+}
