@@ -5,7 +5,8 @@ import loader from "../../internal/loader.ts";
 import type { CommandConfig } from "../../exports/mod.ts";
 import { InstallGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
-import { walk, type WalkEntry } from "@std/fs/walk";
+import type { WalkEntry } from "@std/fs/walk";
+import { fetchCommands } from "../build.ts";
 
 /**
  * Fetches the commands from the commands directory
@@ -33,21 +34,7 @@ export default async function setupCommands(
     ]);
   }
 
-  if (!commandFiles) {
-    try {
-      commandFiles = await Array.fromAsync(
-        walk("./src/commands", {
-          exts: [".ts"],
-          includeDirs: false,
-        }),
-      );
-    } catch (err) {
-      if (err instanceof Deno.errors.NotFound) {
-        console.warn(` ${yellow("!")} src/commands directory not found`);
-      }
-      return () => Promise.resolve();
-    }
-  }
+  if (!commandFiles) commandFiles = await fetchCommands();
 
   try {
     const commands = await parseCommands(commandFiles);

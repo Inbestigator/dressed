@@ -30,4 +30,4 @@ jobs:
         run: deno lint
 
       - name: Run tests
-        run: deno test -A
+        run: cd tests && deno test -A

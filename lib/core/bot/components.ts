@@ -7,7 +7,8 @@ import type {
   ModalSubmitInteraction,
 } from "../../internal/types/interaction.ts";
 import { ComponentType } from "discord-api-types/v10";
-import { walk, type WalkEntry } from "@std/fs/walk";
+import type { WalkEntry } from "@std/fs/walk";
+import { fetchComponents } from "../build.ts";
 
 /**
  * Fetches the components from the components directory
@@ -43,21 +44,7 @@ export default async function setupComponents(
     ]);
   }
 
-  if (!componentFiles) {
-    try {
-      componentFiles = await Array.fromAsync(
-        walk("./src/commands", {
-          exts: [".ts"],
-          includeDirs: false,
-        }),
-      );
-    } catch (err) {
-      if (err instanceof Deno.errors.NotFound) {
-        console.warn(` ${yellow("!")} src/components directory not found`);
-      }
-      return () => Promise.resolve();
-    }
-  }
+  if (!componentFiles) componentFiles = await fetchComponents();
 
   try {
     const components = await parseComponents(componentFiles);

@@ -25,7 +25,9 @@ program
   .description("Builds the bot imports.")
   .option("-i, --instance", "Include an instance create in the generated file")
   .action(async ({ instance }) => {
-    await build(instance);
+    const outputContent = await build(instance);
+    Deno.writeFileSync("./bot.gen.ts", new TextEncoder().encode(outputContent));
+    loader("Wrote to bot.gen.ts").resolve();
   });
 
 program
