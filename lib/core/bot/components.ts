@@ -96,8 +96,7 @@ export default async function setupComponents(): Promise<
     };
   } catch (e) {
     await generatingLoader.error();
-    console.error(e);
-    Deno.exit(1);
+    throw e;
   }
 }
 

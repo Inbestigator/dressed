@@ -39,9 +39,7 @@ export default function createServer(
     }
 
     await reqLoader.resolve();
-    const res = await runInteraction(runCommand, runComponent, req);
-
-    return res;
+    return await runInteraction(runCommand, runComponent, req);
   });
 }
 

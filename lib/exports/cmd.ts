@@ -31,7 +31,7 @@ program
     }
     if (!name) {
       console.log("Project name cannot be empty.");
-      Deno.exit(1);
+      return;
     }
     if (!token) {
       token = prompt("Bot token (optional):");
@@ -81,7 +81,7 @@ program
       createFiles(path, join(Deno.cwd(), name));
     } catch {
       mkdirLoader.error();
-      Deno.exit(1);
+      throw new Error("Failed to create files");
     }
     mkdirLoader.resolve();
 

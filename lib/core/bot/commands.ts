@@ -85,8 +85,7 @@ export default async function setupCommands(): Promise<
     };
   } catch (e) {
     await generatingLoader.error();
-    console.error(e);
-    Deno.exit(1);
+    throw e;
   }
 }
 
