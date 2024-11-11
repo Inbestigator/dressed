@@ -91,6 +91,14 @@ export default async function setupCommands(): Promise<
 }
 
 async function fetchCommands() {
+  try {
+    Deno.readDirSync("./src/commands");
+  } catch (err) {
+    if (err instanceof Deno.errors.NotFound) {
+      console.warn(` ${yellow("!")} src/commands directory not found`);
+    }
+    return [];
+  }
   const files = await Array.fromAsync(
     walk("./src/commands", {
       exts: [".ts"],

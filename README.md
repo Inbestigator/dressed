@@ -7,12 +7,9 @@ system for Discord.
 Discord will send POST requests to your bot, instead of the websocket system
 that Discord.js utilizes
 
-> [!NOTE]\
-> To automagically create a bot, run the command
->
-> ```bash
-> deno run -A jsr:@inbestigator/discord-http/cmd create-new
-> ```
+You can find an example of a bot ready to deploy on
+[Deno deploy](https://deno.com/deploy) in
+[this repo](https://github.com/Inbestigator/discord-http-example).
 
 In order to register the commands for your bot, run the start script with `-r`
 

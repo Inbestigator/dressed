@@ -1,19 +1,10 @@
 import { walk } from "@std/fs/walk";
+import { yellow } from "@std/fmt/colors";
 
 export async function build(addInstance?: boolean) {
-  const commandFiles = await Array.fromAsync(
-    walk("./src/commands", {
-      exts: [".ts"],
-      includeDirs: false,
-    }),
-  );
+  const commandFiles = await fetchCommands();
 
-  const componentFiles = await Array.fromAsync(
-    walk("./src/components", {
-      exts: [".ts"],
-      includeDirs: false,
-    }),
-  );
+  const componentFiles = await fetchComponents();
 
   const files = commandFiles.concat(componentFiles);
   files.push({
@@ -37,5 +28,41 @@ export async function build(addInstance?: boolean) {
           : ""
       }`,
     ),
+  );
+}
+
+async function fetchCommands() {
+  try {
+    Deno.readDirSync("./src/commands");
+  } catch (err) {
+    if (err instanceof Deno.errors.NotFound) {
+      console.warn(` ${yellow("!")} src/commands directory not found`);
+    }
+    return [];
+  }
+
+  return await Array.fromAsync(
+    walk("./src/commands", {
+      exts: [".ts"],
+      includeDirs: false,
+    }),
+  );
+}
+
+async function fetchComponents() {
+  try {
+    Deno.readDirSync("./src/components");
+  } catch (err) {
+    if (err instanceof Deno.errors.NotFound) {
+      console.warn(` ${yellow("!")} src/components directory not found`);
+    }
+    return [];
+  }
+
+  return await Array.fromAsync(
+    walk("./src/components", {
+      exts: [".ts"],
+      includeDirs: false,
+    }),
   );
 }
