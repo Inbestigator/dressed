@@ -1,5 +1,5 @@
 import nacl from "tweetnacl";
-import { verifySignature } from "./lib/core/server.ts";
+import { verifySignature } from "./lib/internal/utils.ts";
 import { Buffer } from "node:buffer";
 import { assertEquals } from "@std/assert";
 

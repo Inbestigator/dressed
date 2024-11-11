@@ -6,7 +6,7 @@ export default function loader(text: string) {
   const animationInterval = setInterval(async () => {
     const dot = dots[dotsIndex % dots.length];
     await Deno.stdout.write(
-      new TextEncoder().encode(`\r   ${text}  ${cyan(dot)}`),
+      new TextEncoder().encode(`\r\x1b[K ${text}  ${cyan(dot)}`),
     );
     dotsIndex++;
   }, 300);
@@ -16,13 +16,13 @@ export default function loader(text: string) {
     resolve: async () => {
       clearInterval(animationInterval);
       await Deno.stdout.write(
-        new TextEncoder().encode(`\r ${green("✔")} ${text}     \n`),
+        new TextEncoder().encode(`\r\x1b[K ${green("✔")} ${text}\n`),
       );
     },
     error: async () => {
       clearInterval(animationInterval);
       await Deno.stdout.write(
-        new TextEncoder().encode(`\r ${red("✖")} ${text}     \n`),
+        new TextEncoder().encode(`\r\x1b[K ${red("✖")} ${text}\n`),
       );
     },
   };

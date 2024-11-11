@@ -1,12 +1,16 @@
 {
-  "tasks": {
-    "dev": "deno run --watch -A lib/core/server.ts",
-    "tunnel": "cloudflared tunnel --url localhost:8000"
+  "name": "@inbestigator/discord-http",
+  "version": "0.1.0",
+  "description": "An HTTP Discord bot framework",
+  "exports": {
+    ".": "./lib/exports/mod.ts",
+    "./cmd": "./lib/exports/cmd.ts"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.7",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.2",
     "@std/fmt": "jsr:@std/fmt@^1.0.3",
-    "cloudflared": "npm:cloudflared@^0.5.3",
+    "commander": "npm:commander@^12.1.0",
     "discord-api-types": "npm:discord-api-types@^0.37.104",
     "tweetnacl": "npm:tweetnacl@^1.0.3"
   }

@@ -1,4 +1,23 @@
-import "jsr:@std/dotenv/load";
+import "@std/dotenv/load";
+import nacl from "tweetnacl";
+import { Buffer } from "node:buffer";
+
+export async function verifySignature(req: Request): Promise<boolean> {
+  const signature = req.headers.get("X-Signature-Ed25519");
+  const timestamp = req.headers.get("X-Signature-Timestamp");
+
+  if (!signature || !timestamp) {
+    return false;
+  }
+
+  const body = await req.text();
+
+  return nacl.sign.detached.verify(
+    Buffer.from(timestamp + body),
+    Buffer.from(signature, "hex"),
+    Buffer.from(Deno.env.get("DISCORD_PUBLIC_KEY") as string, "hex"),
+  );
+}
 
 export async function DiscordRequest(
   endpoint: string,
@@ -10,8 +29,6 @@ export async function DiscordRequest(
     headers: {
       Authorization: `Bot ${Deno.env.get("DISCORD_TOKEN")}`,
       "Content-Type": "application/json; charset=UTF-8",
-      "User-Agent":
-        "DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)",
     },
     ...options,
   });

@@ -1,11 +1,11 @@
-import {
+import type {
   DeferredReplyOptions,
   Interaction,
   InteractionReplyOptions,
-} from "../internal/types/interaction.ts";
-import { DiscordRequest } from "../internal/utils.ts";
+} from "./types/interaction.ts";
+import { DiscordRequest } from "./utils.ts";
 import {
-  APIInteraction,
+  type APIInteraction,
   InteractionResponseType,
   InteractionType,
 } from "discord-api-types/v10";
@@ -31,9 +31,7 @@ async function reply(
 
 async function deferReply(
   interaction: APIInteraction,
-  data: {
-    ephemeral?: boolean;
-  },
+  data?: DeferredReplyOptions,
 ) {
   await DiscordRequest(
     `interactions/${interaction.id}/${interaction.token}/callback`,
@@ -55,14 +53,14 @@ export default function createInteraction<T extends APIInteraction>(
       return {
         ...json,
         reply: (data: InteractionReplyOptions) => reply(json, data),
-        deferReply: (data: DeferredReplyOptions) => deferReply(json, data),
+        deferReply: (data?: DeferredReplyOptions) => deferReply(json, data),
       } as unknown as Interaction<T>;
     }
     case InteractionType.MessageComponent: {
       return {
         ...json,
         reply: (data: InteractionReplyOptions) => reply(json, data),
-        deferReply: (data: DeferredReplyOptions) => deferReply(json, data),
+        deferReply: (data?: DeferredReplyOptions) => deferReply(json, data),
       } as unknown as Interaction<T>;
     }
     default: {
