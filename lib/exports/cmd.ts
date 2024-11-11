@@ -23,8 +23,9 @@ program
 program
   .command("build")
   .description("Builds the bot imports.")
-  .action(async () => {
-    await build();
+  .option("-i, --instance", "Include an instance create in the generated file")
+  .action(async ({ instance }) => {
+    await build(instance);
   });
 
 program

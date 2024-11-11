@@ -1,6 +1,6 @@
 import { walk } from "@std/fs/walk";
 
-export async function build() {
+export async function build(addInstance?: boolean) {
   const commandFiles = await Array.fromAsync(
     walk("./src/commands", {
       exts: [".ts"],
@@ -27,9 +27,15 @@ export async function build() {
   Deno.writeFileSync(
     "./bot.gen.ts",
     new TextEncoder().encode(
-      files.map((f) => `import "./${f.path.replaceAll("\\", "/")}";`).join(
-        "\n",
-      ),
+      `${
+        files
+          .map((f) => `import "./${f.path.replaceAll("\\", "/")}";`)
+          .join("\n")
+      }${
+        addInstance
+          ? '\nimport { createInstance } from "@inbestigator/discord-http";\n\nDeno.env.set("REGISTER_COMMANDS", "true");\n\nawait createInstance();\n'
+          : ""
+      }`,
     ),
   );
 }
