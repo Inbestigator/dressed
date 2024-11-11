@@ -2,6 +2,9 @@ import "@std/dotenv/load";
 import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";
 
+/**
+ * Verifies the signature of the POST request
+ */
 export async function verifySignature(req: Request): Promise<boolean> {
   const signature = req.headers.get("X-Signature-Ed25519");
   const timestamp = req.headers.get("X-Signature-Timestamp");

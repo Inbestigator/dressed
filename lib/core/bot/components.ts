@@ -8,7 +8,17 @@ import type {
 } from "../../internal/types/interaction.ts";
 import { ComponentType } from "discord-api-types/v10";
 
-export default async function setupComponents() {
+/**
+ * Fetches the components from the components directory
+ *
+ * @returns A function that runs a component
+ */
+export default async function setupComponents(): Promise<
+  | void
+  | ((
+    interaction: MessageComponentInteraction | ModalSubmitInteraction,
+  ) => Promise<void>)
+> {
   const generatingLoader = loader("Generating components");
   let generatedN = 0;
   const generatedStr: string[][] = [[underline("\nComponent")]];

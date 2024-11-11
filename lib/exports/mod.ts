@@ -1,4 +1,6 @@
 export { createInstance } from "../core/instance.ts";
+import setupCommands from "../core/bot/commands.ts";
+import setupComponents from "../core/bot/components.ts";
 import type { Command as CommandType } from "../internal/types/config.ts";
 
 /**
@@ -17,3 +19,9 @@ export type {
 } from "../internal/types/interaction.ts";
 
 export * from "../core/server.ts";
+
+export { verifySignature } from "../internal/utils.ts";
+
+export { setupCommands };
+
+export { setupComponents };

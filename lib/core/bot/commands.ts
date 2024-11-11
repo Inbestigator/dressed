@@ -6,7 +6,14 @@ import type { CommandConfig } from "../../exports/mod.ts";
 import { InstallGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
 
-export default async function setupCommands() {
+/**
+ * Fetches the commands from the commands directory
+ *
+ * @returns A function that runs a command
+ */
+export default async function setupCommands(): Promise<
+  void | ((interaction: CommandInteraction) => Promise<void>)
+> {
   const generatingLoader = loader("Generating commands");
   let generatedN = 0;
   const generatedStr: string[][] = [[underline("\nCommand")]];
