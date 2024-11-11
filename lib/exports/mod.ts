@@ -10,6 +10,10 @@ export interface CommandConfig extends Omit<CommandType, "name" | "default"> {}
 
 export type { BotConfig } from "../internal/types/config.ts";
 
-export * from "../internal/types/interaction.ts";
+export type {
+  CommandInteraction,
+  MessageComponentInteraction,
+  ModalSubmitInteraction,
+} from "../internal/types/interaction.ts";
 
 export * from "../core/server.ts";

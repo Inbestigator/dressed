@@ -14,6 +14,9 @@ import type {
 } from "../internal/types/interaction.ts";
 import type { BotConfig } from "../internal/types/config.ts";
 
+/**
+ * Start serving a server
+ */
 export default function createServer(
   runCommand: (interaction: CommandInteraction) => Promise<void>,
   runComponent: (
@@ -42,6 +45,9 @@ export default function createServer(
   });
 }
 
+/**
+ * Runs an interaction, takes a function to run commands/components and the entry request
+ */
 export async function runInteraction(
   runCommand: (interaction: CommandInteraction) => Promise<void>,
   runComponent: (

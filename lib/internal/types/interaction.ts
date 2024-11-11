@@ -5,6 +5,9 @@ import type {
   APIModalSubmitInteraction,
 } from "discord-api-types/v10";
 
+/**
+ * A command interaction, includes methods for responding to the interaction.
+ */
 export type CommandInteraction = APIApplicationCommandInteraction & {
   reply: (data: InteractionReplyOptions) => Promise<void>;
   deferReply: (data?: DeferredReplyOptions) => Promise<void>;
@@ -12,6 +15,9 @@ export type CommandInteraction = APIApplicationCommandInteraction & {
   followUp: (data: InteractionReplyOptions) => Promise<void>;
 };
 
+/**
+ * A message component interaction, includes methods for responding to the interaction.
+ */
 export type MessageComponentInteraction = APIMessageComponentInteraction & {
   reply: (data: InteractionReplyOptions) => Promise<void>;
   deferReply: (data: DeferredReplyOptions) => Promise<void>;
@@ -19,6 +25,9 @@ export type MessageComponentInteraction = APIMessageComponentInteraction & {
   followUp: (data: InteractionReplyOptions) => Promise<void>;
 };
 
+/**
+ * A modal submit interaction, includes methods for responding to the interaction.
+ */
 export type ModalSubmitInteraction = APIModalSubmitInteraction & {
   reply: (data: InteractionReplyOptions) => Promise<void>;
   deferReply: (data: DeferredReplyOptions) => Promise<void>;
