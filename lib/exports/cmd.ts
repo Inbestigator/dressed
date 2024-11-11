@@ -6,6 +6,8 @@ import { green, italic } from "@std/fmt/colors";
 
 const program = new Command();
 
+program.name("discord-http").description("An HTTP Discord bot framework.");
+
 program
   .command("start")
   .description("Starts the bot.")
