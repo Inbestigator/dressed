@@ -14,10 +14,9 @@ import { ComponentType } from "discord-api-types/v10";
  * @returns A function that runs a component
  */
 export default async function setupComponents(): Promise<
-  | void
-  | ((
+  (
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
-  ) => Promise<void>)
+  ) => Promise<void>
 > {
   const generatingLoader = loader("Generating components");
   let generatedN = 0;

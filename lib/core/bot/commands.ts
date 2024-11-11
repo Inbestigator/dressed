@@ -12,7 +12,7 @@ import type { CommandInteraction } from "../../internal/types/interaction.ts";
  * @returns A function that runs a command
  */
 export default async function setupCommands(): Promise<
-  void | ((interaction: CommandInteraction) => Promise<void>)
+  (interaction: CommandInteraction) => Promise<void>
 > {
   const generatingLoader = loader("Generating commands");
   let generatedN = 0;
