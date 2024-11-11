@@ -7,6 +7,7 @@ import type {
   ModalSubmitInteraction,
 } from "../../internal/types/interaction.ts";
 import { ComponentType } from "discord-api-types/v10";
+import { walk } from "@std/fs/walk";
 
 /**
  * Fetches the components from the components directory
@@ -123,37 +124,37 @@ async function fetchComponents() {
     }
   }
 
-  const componentNames = readdir("./src/components");
+  const files = await Array.fromAsync(
+    walk("./src/components", {
+      exts: [".ts"],
+      includeDirs: false,
+    }),
+  );
   const componentData: Component[] = [];
 
-  for (const componentName of componentNames) {
-    const componentModule = (await import(componentName)) as {
+  for (const file of files) {
+    const componentModule = (await import(
+      join("file://", Deno.cwd(), file.path)
+    )) as {
       config?: Component;
       default: (
         interaction: MessageComponentInteraction | ModalSubmitInteraction,
       ) => unknown;
     };
 
-    const category = componentName
-      .split(join(Deno.cwd(), "src/components/"))[1]
-      .split(/[\\\/]/)[0];
+    const category = file.path.split(/[\\\/]/)[2];
 
     if (!validComponentCategories.includes(category)) {
       console.warn(
-        ` ${
-          yellow(
-            "!",
-          )
-        } Category for "${componentName}" could not be determined, skipping`,
+        ` ${yellow("!")} Category for "${
+          file.name.split(".")[0]
+        }" could not be determined, skipping`,
       );
       continue;
     }
 
     const component: Component = {
-      name: componentName
-        .split(/[\\\/]/)
-        .pop()!
-        .split(".")[0],
+      name: file.name.split(".")[0],
       category: category as "buttons" | "modals" | "selects",
       default: componentModule.default,
     };
@@ -176,18 +177,4 @@ async function fetchComponents() {
   }
 
   return componentData;
-}
-
-function readdir(path: string) {
-  const files = Deno.readDirSync(path);
-  const components: string[] = [];
-  for (const file of files) {
-    if (file.isDirectory) {
-      components.push(...readdir(join(path, file.name)));
-    }
-    if (file.name.endsWith(".ts") && file.isFile) {
-      components.push(join("file://", Deno.cwd(), path, file.name));
-    }
-  }
-  return components;
 }

@@ -25,3 +25,5 @@ export { verifySignature } from "../internal/utils.ts";
 export { setupCommands };
 
 export { setupComponents };
+
+export * from "../core/build.ts";

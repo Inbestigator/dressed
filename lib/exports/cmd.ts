@@ -3,6 +3,7 @@ import { dirname, join } from "node:path";
 import { Command } from "commander";
 import { createInstance } from "../core/instance.ts";
 import { green, italic } from "@std/fmt/colors";
+import { build } from "./mod.ts";
 
 const program = new Command();
 
@@ -17,6 +18,13 @@ program
       Deno.env.set("REGISTER_COMMANDS", "true");
     }
     await createInstance();
+  });
+
+program
+  .command("build")
+  .description("Builds the bot imports.")
+  .action(async () => {
+    await build();
   });
 
 program

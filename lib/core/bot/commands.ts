@@ -5,6 +5,7 @@ import loader from "../../internal/loader.ts";
 import type { CommandConfig } from "../../exports/mod.ts";
 import { InstallGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
+import { walk } from "@std/fs/walk";
 
 /**
  * Fetches the commands from the commands directory
@@ -90,19 +91,23 @@ export default async function setupCommands(): Promise<
 }
 
 async function fetchCommands() {
-  const commandNames = readdir("./src/commands");
+  const files = await Array.fromAsync(
+    walk("./src/commands", {
+      exts: [".ts"],
+      includeDirs: false,
+    }),
+  );
   const commandData: Command[] = [];
 
-  for (const commandName of commandNames) {
-    const commandModule = (await import(commandName)) as {
+  for (const file of files) {
+    const commandModule = (await import(
+      join("file://", Deno.cwd(), file.path)
+    )) as {
       config?: CommandConfig;
       default: (interaction: CommandInteraction) => unknown;
     };
     const command: Command = {
-      name: commandName
-        .split(/[\\\/]/)
-        .pop()!
-        .split(".")[0],
+      name: file.name.split(".")[0],
       description: commandModule.config?.description ??
         "No description provided",
       options: commandModule.config?.options ?? [],
@@ -122,27 +127,4 @@ async function fetchCommands() {
   }
 
   return commandData;
-}
-
-function readdir(path: string) {
-  let files;
-
-  try {
-    files = Deno.readDirSync(path);
-  } catch (err) {
-    if (err instanceof Deno.errors.NotFound) {
-      console.warn(` ${yellow("!")} src/commands directory not found`);
-    }
-    return [];
-  }
-  const commands: string[] = [];
-  for (const file of files) {
-    if (file.isDirectory) {
-      commands.push(...readdir(join(path, file.name)));
-    }
-    if (file.name.endsWith(".ts") && file.isFile) {
-      commands.push(join("file://", Deno.cwd(), path, file.name));
-    }
-  }
-  return commands;
 }
