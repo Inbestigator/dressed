@@ -3,6 +3,7 @@ import type {
   APIInteraction,
   APIMessageComponentInteraction,
   APIModalSubmitInteraction,
+  MessageFlags,
 } from "discord-api-types/v10";
 
 /**
@@ -36,12 +37,14 @@ export type ModalSubmitInteraction = APIModalSubmitInteraction & {
 
 export interface DeferredReplyOptions {
   ephemeral?: boolean;
+  flags?: MessageFlags[] | number;
 }
 
 export type InteractionReplyOptions =
   | {
     content?: string;
     ephemeral?: boolean;
+    flags?: MessageFlags[] | number;
   }
   | string;
 
