@@ -1,9 +1,9 @@
 import { walk } from "@std/fs/walk";
 import { yellow } from "@std/fmt/colors";
+import { fetchConfig } from "./instance.ts";
 
 export async function build(addInstance?: boolean) {
   const commandFiles = await fetchCommands();
-
   const componentFiles = await fetchComponents();
 
   const files = commandFiles.concat(componentFiles);
@@ -15,6 +15,8 @@ export async function build(addInstance?: boolean) {
     isSymlink: false,
   });
 
+  const config = await fetchConfig();
+
   Deno.writeFileSync(
     "./bot.gen.ts",
     new TextEncoder().encode(
@@ -22,9 +24,17 @@ export async function build(addInstance?: boolean) {
         files
           .map((f) => `import "./${f.path.replaceAll("\\", "/")}";`)
           .join("\n")
-      }${
+      }\nconst commandFiles = ${
+        JSON.stringify(
+          commandFiles,
+        )
+      }\nconst componentFiles = ${
+        JSON.stringify(
+          componentFiles,
+        )
+      }\nconst config = ${JSON.stringify(config)}${
         addInstance
-          ? '\nimport { createInstance } from "@inbestigator/discord-http";\n\nDeno.env.set("REGISTER_COMMANDS", "true");\n\nawait createInstance();\n'
+          ? '\nimport { createInstance } from "@inbestigator/discord-http";\n\nDeno.env.set("REGISTER_COMMANDS", "true");\n\nawait createInstance(config, commandFiles, componentFiles);\n'
           : ""
       }`,
     ),

@@ -7,14 +7,16 @@ import type {
   ModalSubmitInteraction,
 } from "../../internal/types/interaction.ts";
 import { ComponentType } from "discord-api-types/v10";
-import { walk } from "@std/fs/walk";
+import { walk, type WalkEntry } from "@std/fs/walk";
 
 /**
  * Fetches the components from the components directory
  *
  * @returns A function that runs a component
  */
-export default async function setupComponents(): Promise<
+export default async function setupComponents(
+  componentFiles?: WalkEntry[],
+): Promise<
   (
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
   ) => Promise<void>
@@ -41,8 +43,24 @@ export default async function setupComponents(): Promise<
     ]);
   }
 
+  if (!componentFiles) {
+    try {
+      componentFiles = await Array.fromAsync(
+        walk("./src/commands", {
+          exts: [".ts"],
+          includeDirs: false,
+        }),
+      );
+    } catch (err) {
+      if (err instanceof Deno.errors.NotFound) {
+        console.warn(` ${yellow("!")} src/components directory not found`);
+      }
+      return () => Promise.resolve();
+    }
+  }
+
   try {
-    const components = await fetchComponents();
+    const components = await parseComponents(componentFiles);
 
     components.forEach((component) => {
       addComponent(component.name, component.category, components.length);
@@ -103,36 +121,10 @@ export default async function setupComponents(): Promise<
 
 const validComponentCategories = ["buttons", "modals", "selects"];
 
-async function fetchComponents() {
-  try {
-    Deno.readDirSync("./src/components");
-  } catch (err) {
-    if (err instanceof Deno.errors.NotFound) {
-      console.warn(` ${yellow("!")} src/components directory not found`);
-    }
-    return [];
-  }
-
-  const presentCategories = [];
-
-  for (const category of validComponentCategories) {
-    try {
-      Deno.readDirSync("./src/components/" + category);
-      presentCategories.push(category);
-    } catch {
-      // pass
-    }
-  }
-
-  const files = await Array.fromAsync(
-    walk("./src/components", {
-      exts: [".ts"],
-      includeDirs: false,
-    }),
-  );
+async function parseComponents(componentFiles: WalkEntry[]) {
   const componentData: Component[] = [];
 
-  for (const file of files) {
+  for (const file of componentFiles) {
     const componentModule = (await import(
       join("file://", Deno.cwd(), file.path)
     )) as {

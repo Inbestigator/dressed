@@ -5,16 +5,16 @@ import loader from "../../internal/loader.ts";
 import type { CommandConfig } from "../../exports/mod.ts";
 import { InstallGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
-import { walk } from "@std/fs/walk";
+import { walk, type WalkEntry } from "@std/fs/walk";
 
 /**
  * Fetches the commands from the commands directory
  *
  * @returns A function that runs a command
  */
-export default async function setupCommands(): Promise<
-  (interaction: CommandInteraction) => Promise<void>
-> {
+export default async function setupCommands(
+  commandFiles?: WalkEntry[],
+): Promise<(interaction: CommandInteraction) => Promise<void>> {
   const generatingLoader = loader("Generating commands");
   let generatedN = 0;
   const generatedStr: string[][] = [[underline("\nCommand")]];
@@ -33,8 +33,24 @@ export default async function setupCommands(): Promise<
     ]);
   }
 
+  if (!commandFiles) {
+    try {
+      commandFiles = await Array.fromAsync(
+        walk("./src/commands", {
+          exts: [".ts"],
+          includeDirs: false,
+        }),
+      );
+    } catch (err) {
+      if (err instanceof Deno.errors.NotFound) {
+        console.warn(` ${yellow("!")} src/commands directory not found`);
+      }
+      return () => Promise.resolve();
+    }
+  }
+
   try {
-    const commands = await fetchCommands();
+    const commands = await parseCommands(commandFiles);
 
     if (Deno.env.get("REGISTER_COMMANDS") === "true") {
       const appId = Deno.env.get("DISCORD_APP_ID");
@@ -90,24 +106,10 @@ export default async function setupCommands(): Promise<
   }
 }
 
-async function fetchCommands() {
-  try {
-    Deno.readDirSync("./src/commands");
-  } catch (err) {
-    if (err instanceof Deno.errors.NotFound) {
-      console.warn(` ${yellow("!")} src/commands directory not found`);
-    }
-    return [];
-  }
-  const files = await Array.fromAsync(
-    walk("./src/commands", {
-      exts: [".ts"],
-      includeDirs: false,
-    }),
-  );
+export async function parseCommands(commandFiles: WalkEntry[]) {
   const commandData: Command[] = [];
 
-  for (const file of files) {
+  for (const file of commandFiles) {
     const commandModule = (await import(
       join("file://", Deno.cwd(), file.path)
     )) as {
