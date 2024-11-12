@@ -106,11 +106,14 @@ export async function fetchCommands(): Promise<WalkEntry[]> {
     return [];
   }
 
-  const filesArray = await Array.fromAsync(
-    walkFiles("./src/commands", {
+  const filesArray = [];
+  for await (
+    const file of walkFiles("./src/commands", {
       filterFile: (f) => f.name.endsWith(".ts"),
-    }),
-  );
+    })
+  ) {
+    filesArray.push(file);
+  }
 
   return filesArray.map((f) => ({
     name: f.file.name,
@@ -131,11 +134,14 @@ export async function fetchComponents(): Promise<WalkEntry[]> {
     return [];
   }
 
-  const filesArray = await Array.fromAsync(
-    walkFiles("./src/component", {
+  const filesArray = [];
+  for await (
+    const file of walkFiles("./src/components", {
       filterFile: (f) => f.name.endsWith(".ts"),
-    }),
-  );
+    })
+  ) {
+    filesArray.push(file);
+  }
 
   return filesArray.map((f) => ({
     name: f.file.name,
