@@ -1,6 +1,7 @@
 import "@std/dotenv/load";
 import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";
+import { env } from "node:process";
 
 /**
  * Verifies the signature of the POST request
@@ -18,7 +19,7 @@ export async function verifySignature(req: Request): Promise<boolean> {
   return nacl.sign.detached.verify(
     Buffer.from(timestamp + body),
     Buffer.from(signature, "hex"),
-    Buffer.from(Deno.env.get("DISCORD_PUBLIC_KEY") as string, "hex"),
+    Buffer.from(env.DISCORD_PUBLIC_KEY as string, "hex"),
   );
 }
 
@@ -30,7 +31,7 @@ export async function DiscordRequest(
   if (options.body) options.body = JSON.stringify(options.body);
   const res = await fetch(url, {
     headers: {
-      Authorization: `Bot ${Deno.env.get("DISCORD_TOKEN")}`,
+      Authorization: `Bot ${env.DISCORD_TOKEN}`,
       "Content-Type": "application/json; charset=UTF-8",
     },
     ...options,

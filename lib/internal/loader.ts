@@ -3,27 +3,21 @@ import { cyan, green, red } from "@std/fmt/colors";
 export default function loader(text: string) {
   let dotsIndex = 0;
   const dots = [".  ", ".. ", "...", "   "];
-  const animationInterval = setInterval(async () => {
+  const animationInterval = setInterval(() => {
     const dot = dots[dotsIndex % dots.length];
-    await Deno.stdout.write(
-      new TextEncoder().encode(`\r\x1b[K ${text}  ${cyan(dot)}`),
-    );
+    console.log(`\r\x1b[K ${text}  ${cyan(dot)}`);
     dotsIndex++;
   }, 300);
 
   return {
     stop: () => clearInterval(animationInterval),
-    resolve: async () => {
+    resolve: () => {
       clearInterval(animationInterval);
-      await Deno.stdout.write(
-        new TextEncoder().encode(`\r\x1b[K ${green("✔")} ${text}\n`),
-      );
+      console.log(`\r\x1b[K ${green("✔")} ${text}`);
     },
-    error: async () => {
+    error: () => {
       clearInterval(animationInterval);
-      await Deno.stdout.write(
-        new TextEncoder().encode(`\r\x1b[K ${red("✖")} ${text}\n`),
-      );
+      console.log(`\r\x1b[K ${red("✖")} ${text}`);
     },
   };
 }

@@ -3,6 +3,8 @@ import { yellow } from "@std/fmt/colors";
 import loader from "../internal/loader.ts";
 import { join } from "node:path";
 import type { BotConfig } from "../exports/mod.ts";
+import { readdirSync } from "node:fs";
+import { cwd } from "node:process";
 
 /**
  * Builds the bot imports and other variables.
@@ -26,7 +28,7 @@ export async function build(addInstance?: boolean): Promise<string> {
   const config = await fetchConfig();
 
   if (!config) {
-    await buildLoader.error();
+    buildLoader.error();
     throw new Error("No bot config found");
   }
 
@@ -45,11 +47,11 @@ export async function build(addInstance?: boolean): Promise<string> {
   const defineConfig = `const config = ${JSON.stringify(config)};`;
 
   const instanceImport = addInstance
-    ? `import { createInstance } from "@inbestigator/discord-http";`
+    ? `import { createInstance } from "@inbestigator/discord-http";\nimport { env } from "node:process";`
     : "";
 
   const instanceCreation = addInstance
-    ? `\nDeno.env.set("REGISTER_COMMANDS", "true");\n\nawait createInstance(config, ${
+    ? `\nenv.REGISTER_COMMANDS = "true";\n\nawait createInstance(config, ${
       commandFiles.length > 0 ? "commandFiles" : "[]"
     }, ${componentFiles.length > 0 ? "componentFiles" : "[]"});`
     : "";
@@ -64,7 +66,7 @@ ${defineConfig}
 ${instanceCreation}
   `.trim();
 
-  await buildLoader.resolve();
+  buildLoader.resolve();
   return outputContent;
 }
 
@@ -74,7 +76,7 @@ ${instanceCreation}
  * @returns The bot config
  */
 export async function fetchConfig(): Promise<BotConfig | undefined> {
-  const configPath = join("file://", Deno.cwd(), "bot.config.ts");
+  const configPath = join("file://", cwd(), "bot.config.ts");
 
   try {
     const configModule = await import(configPath);
@@ -96,11 +98,9 @@ export async function fetchConfig(): Promise<BotConfig | undefined> {
  */
 export async function fetchCommands(): Promise<WalkEntry[]> {
   try {
-    Deno.readDirSync("./src/commands");
-  } catch (err) {
-    if (err instanceof Deno.errors.NotFound) {
-      console.warn(` ${yellow("!")} src/commands directory not found`);
-    }
+    readdirSync("./src/commands");
+  } catch {
+    console.warn(` ${yellow("!")} src/commands directory not found`);
     return [];
   }
 
@@ -119,11 +119,9 @@ export async function fetchCommands(): Promise<WalkEntry[]> {
  */
 export async function fetchComponents(): Promise<WalkEntry[]> {
   try {
-    Deno.readDirSync("./src/components");
-  } catch (err) {
-    if (err instanceof Deno.errors.NotFound) {
-      console.warn(` ${yellow("!")} src/components directory not found`);
-    }
+    readdirSync("./src/components");
+  } catch {
+    console.warn(` ${yellow("!")} src/components directory not found`);
     return [];
   }
 

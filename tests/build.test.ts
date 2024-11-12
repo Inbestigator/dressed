@@ -12,12 +12,13 @@ const withInstance =
   `import { createInstance } from "@inbestigator/discord-http";
 import "./src/commands/ping.ts";
 import "./bot.config.ts";
+import { env } from "node:process";
 
 const commandFiles = [{"path":"src\\\\commands\\\\ping.ts","name":"ping.ts","isFile":true,"isDirectory":false,"isSymlink":false}];
 
 const config = {"clientId":""};
 
-Deno.env.set("REGISTER_COMMANDS", "true");
+env.REGISTER_COMMANDS = "true";
 
 await createInstance(config, commandFiles, []);`;
 

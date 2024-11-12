@@ -27,7 +27,8 @@ export default function createServer(
   Deno.serve(async (req) => {
     const reqLoader = loader(`New request`);
     if (!(await verifySignature(req.clone()))) {
-      await reqLoader.error().then(() => console.error(" └ Invalid signature"));
+      reqLoader.error();
+      console.error(" └ Invalid signature");
       return new Response("Unauthorized", { status: 401 });
     }
 
@@ -38,7 +39,7 @@ export default function createServer(
       return new Response("Not Found", { status: 404 });
     }
 
-    await reqLoader.resolve();
+    reqLoader.resolve();
     return await runInteraction(runCommand, runComponent, req);
   });
 }

@@ -7,6 +7,7 @@ import getDetails from "../internal/details.ts";
 import createServer from "./server.ts";
 import type { WalkEntry } from "@std/fs/walk";
 import { fetchConfig } from "./build.ts";
+import { env } from "node:process";
 
 /**
  * Creates a new instance of your bot.
@@ -23,18 +24,18 @@ export async function createInstance(
   }
 
   if (!config) {
-    await initLoader.error();
+    initLoader.error();
     throw new Error("No bot config found");
   }
 
-  if (!Deno.env.get("DISCORD_TOKEN")) {
-    await initLoader.error();
+  if (!env.DISCORD_TOKEN) {
+    initLoader.error();
     throw new Error(
       "No bot token provided, make sure to provide a TOKEN environment variable",
     );
   }
 
-  await initLoader.resolve();
+  initLoader.resolve();
 
   const details = await getDetails();
 

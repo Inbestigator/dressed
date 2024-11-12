@@ -2,6 +2,8 @@ import loader from "../internal/loader.ts";
 import { Command } from "commander";
 import { createInstance } from "../core/instance.ts";
 import { build } from "./mod.ts";
+import { writeFileSync } from "node:fs";
+import { env } from "node:process";
 
 const program = new Command();
 
@@ -13,7 +15,7 @@ program
   .option("-r, --register", "Register slash commands")
   .action(async ({ register }) => {
     if (register) {
-      Deno.env.set("REGISTER_COMMANDS", "true");
+      env.REGISTER_COMMANDS = "true";
     }
     await createInstance();
   });
@@ -24,7 +26,7 @@ program
   .option("-i, --instance", "Include an instance create in the generated file")
   .action(async ({ instance }) => {
     const outputContent = await build(instance);
-    Deno.writeFileSync("./bot.gen.ts", new TextEncoder().encode(outputContent));
+    writeFileSync("./bot.gen.ts", new TextEncoder().encode(outputContent));
     loader("Wrote to bot.gen.ts").resolve();
   });
 

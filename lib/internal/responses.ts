@@ -10,8 +10,9 @@ import type {
 } from "./types/interaction.ts";
 import { DiscordRequest } from "./utils.ts";
 import type { EditMessageOptions } from "./types/messages.ts";
+import { env } from "node:process";
 
-const userId = Deno.env.get("DISCORD_APP_ID");
+const userId = env.DISCORD_APP_ID;
 
 function createMessageFlags(flags: MessageFlags[]) {
   let bitfield = 0;

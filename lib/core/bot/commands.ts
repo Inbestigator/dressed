@@ -7,6 +7,7 @@ import { InstallGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
 import type { WalkEntry } from "@std/fs/walk";
 import { fetchCommands } from "../build.ts";
+import { cwd, env } from "node:process";
 
 /**
  * Fetches the commands from the commands directory
@@ -39,8 +40,8 @@ export default async function setupCommands(
   try {
     const commands = await parseCommands(commandFiles);
 
-    if (Deno.env.get("REGISTER_COMMANDS") === "true") {
-      const appId = Deno.env.get("DISCORD_APP_ID");
+    if (env.REGISTER_COMMANDS === "true") {
+      const appId = env.DISCORD_APP_ID;
 
       if (!appId) {
         throw new Error("No app id provided");
@@ -63,7 +64,7 @@ export default async function setupCommands(
       addCommand(command.name, commands.length);
     });
 
-    await generatingLoader.resolve();
+    generatingLoader.resolve();
 
     console.log(generatedStr.map((row) => row.join(" ")).join("\n"));
 
@@ -81,14 +82,14 @@ export default async function setupCommands(
 
       try {
         await Promise.resolve(command.default(interaction));
-        await commandLoader.resolve();
+        commandLoader.resolve();
       } catch (error) {
-        await commandLoader.error();
+        commandLoader.error();
         console.error(" └", error);
       }
     };
   } catch (e) {
-    await generatingLoader.error();
+    generatingLoader.error();
     throw e;
   }
 }
@@ -97,9 +98,7 @@ export async function parseCommands(commandFiles: WalkEntry[]) {
   const commandData: Command[] = [];
 
   for (const file of commandFiles) {
-    const commandModule = (await import(
-      join("file://", Deno.cwd(), file.path)
-    )) as {
+    const commandModule = (await import(join("file://", cwd(), file.path))) as {
       config?: CommandConfig;
       default: (interaction: CommandInteraction) => unknown;
     };

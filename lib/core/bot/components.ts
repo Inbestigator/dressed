@@ -9,6 +9,7 @@ import type {
 import { ComponentType } from "discord-api-types/v10";
 import type { WalkEntry } from "@std/fs/walk";
 import { fetchComponents } from "../build.ts";
+import { cwd } from "node:process";
 
 /**
  * Fetches the components from the components directory
@@ -53,7 +54,7 @@ export default async function setupComponents(
       addComponent(component.name, component.category, components.length);
     });
 
-    await generatingLoader.resolve();
+    generatingLoader.resolve();
 
     console.log(generatedStr.map((row) => row.join(" ")).join("\n"));
 
@@ -94,14 +95,14 @@ export default async function setupComponents(
 
       try {
         await Promise.resolve(component.default(interaction));
-        await componentLoader.resolve();
+        componentLoader.resolve();
       } catch (error) {
-        await componentLoader.error();
+        componentLoader.error();
         console.error(" └", error);
       }
     };
   } catch (e) {
-    await generatingLoader.error();
+    generatingLoader.error();
     throw e;
   }
 }
@@ -113,7 +114,7 @@ async function parseComponents(componentFiles: WalkEntry[]) {
 
   for (const file of componentFiles) {
     const componentModule = (await import(
-      join("file://", Deno.cwd(), file.path)
+      join("file://", cwd(), file.path)
     )) as {
       config?: Component;
       default: (
