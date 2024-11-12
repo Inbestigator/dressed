@@ -27,3 +27,6 @@ export { setupCommands };
 export { setupComponents };
 
 export * from "../core/build.ts";
+
+export * from "../core/components/actionrow.ts";
+export * from "../core/components/button.ts";

@@ -1,10 +1,12 @@
 import type {
   APIApplicationCommandInteraction,
+  APIEmbed,
   APIInteraction,
   APIMessageComponentInteraction,
   APIModalSubmitInteraction,
   MessageFlags,
 } from "discord-api-types/v10";
+import type { MessageComponents } from "./messages.ts";
 
 /**
  * A command interaction, includes methods for responding to the interaction.
@@ -45,6 +47,8 @@ export type InteractionReplyOptions =
     content?: string;
     ephemeral?: boolean;
     flags?: MessageFlags[] | number;
+    embeds?: APIEmbed[];
+    components?: MessageComponents;
   }
   | string;
 
