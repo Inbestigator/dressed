@@ -79,9 +79,12 @@ export default async function setupComponents(
         }
       }
 
-      const component = components.find(
-        (c) => c.name === interaction.data.custom_id && c.category === category,
-      );
+      const component = components.find((c) => {
+        const pattern = c.name.replace(/\[.+?\]/g, '([a-zA-Z0-9_-]+)');
+        const regex = new RegExp(`^${pattern}$`);
+      
+        return regex.test(interaction.data.custom_id) && c.category === category;
+      });
 
       if (!component) {
         console.warn(
