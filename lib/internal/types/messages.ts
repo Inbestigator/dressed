@@ -9,9 +9,11 @@ export type MessageComponents = [
   ReturnType<typeof ActionRow>?,
 ];
 
-export interface EditMessageOptions {
-  content?: string;
-  embeds?: APIEmbed[];
-  components?: MessageComponents;
-  flags?: MessageFlags[] | number;
-}
+export type EditMessageOptions =
+  | {
+    content?: string;
+    embeds?: APIEmbed[];
+    components?: MessageComponents;
+    flags?: MessageFlags[] | number;
+  }
+  | string;
