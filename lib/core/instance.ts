@@ -1,12 +1,12 @@
-import "@std/dotenv/load";
+import { configDotenv } from "@dotenvx/dotenvx";
+configDotenv();
 import setupCommands from "./bot/commands.ts";
 import loader from "../internal/loader.ts";
 import type { BotConfig } from "../internal/types/config.ts";
 import setupComponents from "./bot/components.ts";
 import getDetails from "../internal/details.ts";
 import createServer from "./server.ts";
-import type { WalkEntry } from "@std/fs/walk";
-import { fetchConfig } from "./build.ts";
+import { fetchConfig, type WalkEntry } from "./build.ts";
 import { env } from "node:process";
 
 /**

@@ -7,8 +7,7 @@ import type {
   ModalSubmitInteraction,
 } from "../../internal/types/interaction.ts";
 import { ComponentType } from "discord-api-types/v10";
-import type { WalkEntry } from "@std/fs/walk";
-import { fetchComponents } from "../build.ts";
+import { fetchComponents, type WalkEntry } from "../build.ts";
 import { cwd } from "node:process";
 
 /**

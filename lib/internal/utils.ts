@@ -1,4 +1,5 @@
-import "@std/dotenv/load";
+import { configDotenv } from "@dotenvx/dotenvx";
+configDotenv();
 import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";
 import { env } from "node:process";

@@ -1,10 +1,15 @@
-import { walk, type WalkEntry } from "@std/fs/walk";
+import { walkFiles } from "@svarta/walk-it";
 import { yellow } from "@std/fmt/colors";
 import loader from "../internal/loader.ts";
 import { join } from "node:path";
 import type { BotConfig } from "../exports/mod.ts";
 import { readdirSync } from "node:fs";
 import { cwd } from "node:process";
+
+export type WalkEntry = {
+  name: string;
+  path: string;
+};
 
 /**
  * Builds the bot imports and other variables.
@@ -20,9 +25,6 @@ export async function build(addInstance?: boolean): Promise<string> {
   files.push({
     name: "bot.config.ts",
     path: "bot.config.ts",
-    isDirectory: false,
-    isFile: true,
-    isSymlink: false,
   });
 
   const config = await fetchConfig();
@@ -104,12 +106,16 @@ export async function fetchCommands(): Promise<WalkEntry[]> {
     return [];
   }
 
-  return await Array.fromAsync(
-    walk("./src/commands", {
-      exts: [".ts"],
-      includeDirs: false,
+  const filesArray = await Array.fromAsync(
+    walkFiles("./src/commands", {
+      filterFile: (f) => f.name.endsWith(".ts"),
     }),
   );
+
+  return filesArray.map((f) => ({
+    name: f.file.name,
+    path: f.path,
+  }));
 }
 
 /**
@@ -125,10 +131,14 @@ export async function fetchComponents(): Promise<WalkEntry[]> {
     return [];
   }
 
-  return await Array.fromAsync(
-    walk("./src/components", {
-      exts: [".ts"],
-      includeDirs: false,
+  const filesArray = await Array.fromAsync(
+    walkFiles("./src/component", {
+      filterFile: (f) => f.name.endsWith(".ts"),
     }),
   );
+
+  return filesArray.map((f) => ({
+    name: f.file.name,
+    path: f.path,
+  }));
 }

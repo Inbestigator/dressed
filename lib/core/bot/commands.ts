@@ -5,8 +5,7 @@ import loader from "../../internal/loader.ts";
 import type { CommandConfig } from "../../exports/mod.ts";
 import { InstallGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
-import type { WalkEntry } from "@std/fs/walk";
-import { fetchCommands } from "../build.ts";
+import { fetchCommands, type WalkEntry } from "../build.ts";
 import { cwd, env } from "node:process";
 
 /**
