@@ -15,6 +15,7 @@ export type WalkEntry = {
  * Builds the bot imports and other variables.
  *
  * @param addInstance - Whether to add the instance creation code.
+ * @param registerCommands - Whether to register slash commands.
  */
 export async function build(
   addInstance?: boolean,

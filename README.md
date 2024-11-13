@@ -53,3 +53,5 @@ genBot();
 
 Discord-http comes with a serve system for Deno projects, but otherwise you'll
 have to BYO (all the Discord-http resources needed to do so are available)
+[The Node-compatible example](https://github.com/Inbestigator/discord-http-example/tree/node)
+uses a server made with Express
