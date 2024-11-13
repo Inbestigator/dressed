@@ -11,8 +11,6 @@ You can find an example of a bot ready to deploy on
 [Deno deploy](https://deno.com/deploy) in
 [this repo](https://github.com/Inbestigator/discord-http-example).
 
-In order to register the commands for your bot, run the start script with `-r`
-
 ```ts
 import type {
   CommandConfig,
@@ -30,3 +28,28 @@ export default async function ping(interaction: CommandInteraction) {
   });
 }
 ```
+
+By default the builder outputs only the boilerplate data, if you want it to
+include an instance creator, add `-i` when running the build script.
+
+In order to register the commands for your bot, run the build script with `-r`.
+
+Here's the build script I use for testing non-Deno environments (where afaik I
+can't use the cli):
+
+```ts
+import { build } from "@inbestigator/discord-http";
+import { writeFileSync } from "fs";
+
+async function genBot() {
+  //                                 -i    -r
+  const outputContent = await build(true, false);
+  writeFileSync("./bot.gen.ts", new TextEncoder().encode(outputContent));
+  console.log("Wrote to bot.gen.ts");
+}
+
+genBot();
+```
+
+Discord-http comes with a serve system for Deno projects, but otherwise you'll
+have to BYO (all the Discord-http resources needed to do so are available)
