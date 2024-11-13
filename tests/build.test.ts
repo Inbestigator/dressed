@@ -4,17 +4,17 @@ import { build } from "../lib/exports/mod.ts";
 const withoutInstance = `import "./src/commands/ping.ts";
 import "./bot.config.ts";
 
-const commandFiles = [{"path":"src\\\\commands\\\\ping.ts","name":"ping.ts","isFile":true,"isDirectory":false,"isSymlink":false}];
+const commandFiles = [{"name":"ping","path":"src/commands/ping.ts"}];
 
 const config = {"clientId":""};`;
 
 const withInstance =
   `import { createInstance } from "@inbestigator/discord-http";
+import { env } from "node:process";
 import "./src/commands/ping.ts";
 import "./bot.config.ts";
-import { env } from "node:process";
 
-const commandFiles = [{"path":"src\\\\commands\\\\ping.ts","name":"ping.ts","isFile":true,"isDirectory":false,"isSymlink":false}];
+const commandFiles = [{"name":"ping","path":"src/commands/ping.ts"}];
 
 const config = {"clientId":""};
 
@@ -30,10 +30,10 @@ Deno.test("Build bot without instance", async () => {
   assertEquals(result, withoutInstance);
 });
 
-Deno.test("Build bot with instance", async () => {
+Deno.test("Build bot with instance and register", async () => {
   if (!Deno.cwd().endsWith("tests")) {
     throw new Error("Must be in tests directory");
   }
-  const result = await build(true);
+  const result = await build(true, true);
   assertEquals(result, withInstance);
 });

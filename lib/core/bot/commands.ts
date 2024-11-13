@@ -102,7 +102,7 @@ export async function parseCommands(commandFiles: WalkEntry[]) {
       default: (interaction: CommandInteraction) => unknown;
     };
     const command: Command = {
-      name: file.name.split(".")[0],
+      name: file.name,
       description: commandModule.config?.description ??
         "No description provided",
       options: commandModule.config?.options ?? [],

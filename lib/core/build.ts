@@ -16,7 +16,10 @@ export type WalkEntry = {
  *
  * @param addInstance - Whether to add the instance creation code.
  */
-export async function build(addInstance?: boolean): Promise<string> {
+export async function build(
+  addInstance?: boolean,
+  registerCommands?: boolean,
+): Promise<string> {
   const buildLoader = loader("Building");
   const commandFiles = await fetchCommands();
   const componentFiles = await fetchComponents();
@@ -34,9 +37,7 @@ export async function build(addInstance?: boolean): Promise<string> {
     throw new Error("No bot config found");
   }
 
-  const fileImports = files
-    .map((f) => `import "./${f.path.replaceAll("\\", "/")}";`)
-    .join("\n");
+  const fileImports = files.map((f) => `import "./${f.path}";`).join("\n");
 
   const defineCommandFiles = commandFiles.length > 0
     ? `const commandFiles = ${JSON.stringify(commandFiles)};`
@@ -49,11 +50,15 @@ export async function build(addInstance?: boolean): Promise<string> {
   const defineConfig = `const config = ${JSON.stringify(config)};`;
 
   const instanceImport = addInstance
-    ? `import { createInstance } from "@inbestigator/discord-http";\nimport { env } from "node:process";`
+    ? `import { createInstance } from "@inbestigator/discord-http";${
+      registerCommands ? '\nimport { env } from "node:process"' : ""
+    };`
     : "";
 
   const instanceCreation = addInstance
-    ? `\nenv.REGISTER_COMMANDS = "true";\n\nawait createInstance(config, ${
+    ? `${
+      registerCommands ? '\nenv.REGISTER_COMMANDS = "true";' : ""
+    }\n\nawait createInstance(config, ${
       commandFiles.length > 0 ? "commandFiles" : "[]"
     }, ${componentFiles.length > 0 ? "componentFiles" : "[]"});`
     : "";
@@ -116,8 +121,13 @@ export async function fetchCommands(): Promise<WalkEntry[]> {
   }
 
   return filesArray.map((f) => ({
-    name: f.file.name,
-    path: f.path,
+    name: f.file.name.split(".")[0],
+    path: f.path
+      .replace(cwd(), "")
+      .replaceAll("\\", "/")
+      .split("/")
+      .slice(1)
+      .join("/"),
   }));
 }
 
@@ -144,7 +154,12 @@ export async function fetchComponents(): Promise<WalkEntry[]> {
   }
 
   return filesArray.map((f) => ({
-    name: f.file.name,
-    path: f.path,
+    name: f.file.name.split(".")[0],
+    path: f.path
+      .replace(cwd(), "")
+      .replaceAll("\\", "/")
+      .split("/")
+      .slice(1)
+      .join("/"),
   }));
 }
