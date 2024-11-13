@@ -2,17 +2,15 @@ import { assertEquals } from "@std/assert";
 import { build } from "../lib/exports/mod.ts";
 
 const withoutInstance = `import "./src/commands/ping.ts";
-import "./bot.config.ts";
 
 const commandFiles = [{"name":"ping","path":"src/commands/ping.ts"}];
 
 const config = {"clientId":""};`;
 
 const withInstance =
-  `import { createInstance } from "@inbestigator/discord-http";
+  `import { createInstance, createServer } from "@inbestigator/discord-http";
 import { env } from "node:process";
 import "./src/commands/ping.ts";
-import "./bot.config.ts";
 
 const commandFiles = [{"name":"ping","path":"src/commands/ping.ts"}];
 
@@ -20,7 +18,16 @@ const config = {"clientId":""};
 
 env.REGISTER_COMMANDS = "true";
 
-createInstance(config, commandFiles, []);`;
+async function startServer() {
+  const { runCommand, runComponent } = await createInstance(commandFiles, []);
+  if (config.deno === false) {
+    console.log("You will need to set up your own server if not on Deno.");
+  } else {
+    createServer(runCommand, runComponent, config);
+  }
+}
+  
+startServer();`;
 
 Deno.test("Build bot without instance", async () => {
   if (!Deno.cwd().endsWith("tests")) {

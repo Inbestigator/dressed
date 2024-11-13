@@ -2,31 +2,29 @@ import { configDotenv } from "@dotenvx/dotenvx";
 configDotenv();
 import setupCommands from "./bot/commands.ts";
 import loader from "../internal/loader.ts";
-import type { BotConfig } from "../internal/types/config.ts";
 import setupComponents from "./bot/components.ts";
 import getDetails from "../internal/details.ts";
-import createServer from "./server.ts";
-import { fetchConfig, type WalkEntry } from "./build.ts";
 import { env } from "node:process";
+import type { WalkEntry } from "./build.ts";
+import type {
+  CommandInteraction,
+  MessageComponentInteraction,
+  ModalSubmitInteraction,
+} from "../internal/types/interaction.ts";
 
 /**
  * Creates a new instance of your bot.
  */
 export async function createInstance(
-  config?: BotConfig,
   commandFiles?: WalkEntry[],
   componentFiles?: WalkEntry[],
-) {
+): Promise<{
+  runCommand: (interaction: CommandInteraction) => Promise<void>;
+  runComponent: (
+    interaction: MessageComponentInteraction | ModalSubmitInteraction,
+  ) => Promise<void>;
+}> {
   const initLoader = loader("Initializing");
-
-  if (!config) {
-    config = await fetchConfig();
-  }
-
-  if (!config) {
-    initLoader.error();
-    throw new Error("No bot config found");
-  }
 
   if (!env.DISCORD_TOKEN) {
     initLoader.error();
@@ -45,5 +43,8 @@ export async function createInstance(
 
   const runComponent = await setupComponents(componentFiles);
 
-  createServer(runCommand, runComponent, config);
+  return {
+    runCommand,
+    runComponent,
+  };
 }

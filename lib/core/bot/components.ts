@@ -7,7 +7,7 @@ import type {
   ModalSubmitInteraction,
 } from "../../internal/types/interaction.ts";
 import { ComponentType } from "discord-api-types/v10";
-import { fetchComponents, type WalkEntry } from "../build.ts";
+import { fetchFiles, type WalkEntry } from "../build.ts";
 import { cwd } from "node:process";
 
 /**
@@ -44,7 +44,7 @@ export default async function setupComponents(
     ]);
   }
 
-  if (!componentFiles) componentFiles = await fetchComponents();
+  if (!componentFiles) componentFiles = await fetchFiles("src/components");
 
   try {
     const components = await parseComponents(componentFiles);

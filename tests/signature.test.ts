@@ -3,7 +3,6 @@ import { verifySignature } from "../lib/internal/utils.ts";
 import { Buffer } from "node:buffer";
 import { assertEquals } from "@std/assert";
 import { env } from "node:process";
-import type { HonoRequest } from "hono";
 
 function generateXSignature(timestamp: string) {
   const keyPair = nacl.sign.keyPair();
@@ -16,32 +15,32 @@ function generateXSignature(timestamp: string) {
 
 Deno.test("Don't verify invalid signature", async () => {
   const stamp = Date.now().toString();
-  const result = await verifySignature({
-    text: () => Promise.resolve("different content"),
-    header: (name: string) => {
-      if (name === "X-Signature-Ed25519") {
-        return generateXSignature(stamp);
-      } else if (name === "X-Signature-Timestamp") {
-        return stamp;
-      }
-    },
-  } as HonoRequest);
+  const result = await verifySignature(
+    new Request("http://localhost:8000", {
+      method: "POST",
+      headers: {
+        "X-Signature-Ed25519": generateXSignature(stamp),
+        "X-Signature-Timestamp": stamp,
+      },
+      body: "different content",
+    }),
+  );
 
   assertEquals(result, false);
 });
 
 Deno.test("Verify valid signature", async () => {
   const stamp = Date.now().toString();
-  const result = await verifySignature({
-    text: () => Promise.resolve("content"),
-    header: (name: string) => {
-      if (name === "X-Signature-Ed25519") {
-        return generateXSignature(stamp);
-      } else if (name === "X-Signature-Timestamp") {
-        return stamp;
-      }
-    },
-  } as HonoRequest);
+  const result = await verifySignature(
+    new Request("http://localhost:8000", {
+      method: "POST",
+      headers: {
+        "X-Signature-Ed25519": generateXSignature(stamp),
+        "X-Signature-Timestamp": stamp,
+      },
+      body: "content",
+    }),
+  );
 
   assertEquals(result, true);
 });

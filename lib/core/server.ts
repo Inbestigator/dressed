@@ -13,41 +13,35 @@ import type {
   ModalSubmitInteraction,
 } from "../internal/types/interaction.ts";
 import type { BotConfig } from "../internal/types/config.ts";
-import { Hono, type HonoRequest } from "hono";
-import { serve } from "@hono/node-server";
 
 /**
  * Start serving a server
  */
-export default function createServer(
+export function createServer(
   runCommand: (interaction: CommandInteraction) => Promise<void>,
   runComponent: (
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
   ) => Promise<void>,
   config: BotConfig,
 ) {
-  const app = new Hono();
-
-  app.post(config.endpoint ?? "/", async (c) => {
-    const req = c.req;
+  Deno.serve(async (req) => {
     const reqLoader = loader(`New request`);
-    if (!(await verifySignature(req))) {
+    if (!(await verifySignature(req.clone()))) {
       reqLoader.error();
       console.error(" └ Invalid signature");
       return new Response("Unauthorized", { status: 401 });
     }
 
+    if (
+      req.method !== "POST" ||
+      new URL(req.url).pathname !== (config.endpoint ?? "/")
+    ) {
+      return new Response("Not Found", { status: 404 });
+    }
+
     reqLoader.resolve();
     return await runInteraction(runCommand, runComponent, req);
   });
-
-  if (config.deno === false) {
-    serve(app, (info) => {
-      console.log(`Listening on http://localhost:${info.port}`);
-    });
-  } else {
-    Deno.serve({ port: 3000 }, app.fetch);
-  }
 }
 
 /**
@@ -58,7 +52,7 @@ export async function runInteraction(
   runComponent: (
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
   ) => Promise<void>,
-  req: HonoRequest,
+  req: Request,
 ): Promise<Response> {
   const json = await req.json();
   switch (json.type) {

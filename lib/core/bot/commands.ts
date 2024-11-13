@@ -5,7 +5,7 @@ import loader from "../../internal/loader.ts";
 import type { CommandConfig } from "../../exports/mod.ts";
 import { InstallGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
-import { fetchCommands, type WalkEntry } from "../build.ts";
+import { fetchFiles, type WalkEntry } from "../build.ts";
 import { cwd, env } from "node:process";
 
 /**
@@ -34,7 +34,7 @@ export default async function setupCommands(
     ]);
   }
 
-  if (!commandFiles) commandFiles = await fetchCommands();
+  if (!commandFiles) commandFiles = await fetchFiles("src/commands");
 
   try {
     const commands = await parseCommands(commandFiles);
