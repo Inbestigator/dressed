@@ -15,6 +15,8 @@ export interface BotConfig {
   clientSecret?: string;
   /** The endpoint that Discord will use */
   endpoint?: string;
+  /** Are you using Deno? Defaults to `true` */
+  deno?: boolean;
 }
 
 export interface Command {

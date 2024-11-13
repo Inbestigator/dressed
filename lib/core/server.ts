@@ -14,6 +14,7 @@ import type {
 } from "../internal/types/interaction.ts";
 import type { BotConfig } from "../internal/types/config.ts";
 import { Hono, type HonoRequest } from "hono";
+import { serve } from "@hono/node-server";
 
 /**
  * Start serving a server
@@ -39,6 +40,14 @@ export default function createServer(
     reqLoader.resolve();
     return await runInteraction(runCommand, runComponent, req);
   });
+
+  if (config.deno !== false) {
+    Deno.serve(app.fetch);
+  } else {
+    serve({ fetch: app.fetch, port: 3000 });
+  }
+
+  return app;
 }
 
 /**
