@@ -7,7 +7,7 @@ import type {
  * Creates an action row component
  */
 export function ActionRow<T extends APIActionRowComponentTypes>(
-  ...components: [T, T?, T?, T?, T?]
+  ...components: T[]
 ): APIActionRowComponent<T> {
   return {
     components: components as T[],

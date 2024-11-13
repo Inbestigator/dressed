@@ -80,10 +80,12 @@ export default async function setupComponents(
       }
 
       const component = components.find((c) => {
-        const pattern = c.name.replace(/\[.+?\]/g, '([a-zA-Z0-9_-]+)');
+        const pattern = c.name.replace(/\[.+?\]/g, "([a-zA-Z0-9_-]+)");
         const regex = new RegExp(`^${pattern}$`);
-      
-        return regex.test(interaction.data.custom_id) && c.category === category;
+
+        return (
+          regex.test(interaction.data.custom_id) && c.category === category
+        );
       });
 
       if (!component) {
@@ -93,10 +95,30 @@ export default async function setupComponents(
         return;
       }
 
-      const componentLoader = loader(`Running component "${component.name}"`);
+      const argNames = [...component.name.matchAll(/\[(.+?)\]/g)].map(
+        (match) => match[1],
+      );
+      const pattern = component.name.replace(/\[.+?\]/g, "([a-zA-Z0-9_-]+)");
+      const regex = new RegExp(`^${pattern}$`);
+      const matches = regex.exec(interaction.data.custom_id);
+
+      const args = matches
+        ? argNames.reduce((acc: { [key: string]: string }, argName, index) => {
+          acc[argName] = matches[index + 1];
+          return acc;
+        }, {})
+        : {};
+
+      const componentLoader = loader(
+        `Running component "${component.name}"${
+          Object.keys(args).length > 0
+            ? " with args: " + JSON.stringify(args)
+            : ""
+        }`,
+      );
 
       try {
-        await Promise.resolve(component.default(interaction));
+        await Promise.resolve(component.default(interaction, args));
         componentLoader.resolve();
       } catch (error) {
         componentLoader.error();
@@ -128,15 +150,15 @@ async function parseComponents(componentFiles: WalkEntry[]) {
 
     if (!validComponentCategories.includes(category)) {
       console.warn(
-        ` ${yellow("!")} Category for "${
-          file.name.split(".")[0]
-        }" could not be determined, skipping`,
+        ` ${
+          yellow("!")
+        } Category for "${file.name}" could not be determined, skipping`,
       );
       continue;
     }
 
     const component: Component = {
-      name: file.name.split(".")[0],
+      name: file.name,
       category: category as "buttons" | "modals" | "selects",
       default: componentModule.default,
     };

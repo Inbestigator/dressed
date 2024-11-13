@@ -24,8 +24,9 @@ program
   .command("build")
   .description("Builds the bot imports.")
   .option("-i, --instance", "Include an instance create in the generated file")
-  .action(async ({ instance }) => {
-    const outputContent = await build(instance);
+  .option("-r, --register", "Register slash commands")
+  .action(async ({ instance, register }) => {
+    const outputContent = await build(instance, register);
     writeFileSync("./bot.gen.ts", new TextEncoder().encode(outputContent));
     loader("Wrote to bot.gen.ts").resolve();
   });

@@ -29,5 +29,6 @@ export interface Component {
   category: "buttons" | "modals" | "selects";
   default: (
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
+    args?: Record<string, string>,
   ) => unknown;
 }
