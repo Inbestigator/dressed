@@ -41,13 +41,13 @@ export default function createServer(
     return await runInteraction(runCommand, runComponent, req);
   });
 
-  if (config.deno !== false) {
-    Deno.serve(app.fetch);
+  if (config.deno === false) {
+    serve(app, (info) => {
+      console.log(`Listening on http://localhost:${info.port}`);
+    });
   } else {
-    serve({ fetch: app.fetch, port: 3000 });
+    Deno.serve({ port: 3000 }, app.fetch);
   }
-
-  return app;
 }
 
 /**
