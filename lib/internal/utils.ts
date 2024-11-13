@@ -3,13 +3,14 @@ configDotenv();
 import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";
 import { env } from "node:process";
+import type { HonoRequest } from "hono";
 
 /**
  * Verifies the signature of the POST request
  */
-export async function verifySignature(req: Request): Promise<boolean> {
-  const signature = req.headers.get("X-Signature-Ed25519");
-  const timestamp = req.headers.get("X-Signature-Timestamp");
+export async function verifySignature(req: HonoRequest): Promise<boolean> {
+  const signature = req.header("X-Signature-Ed25519");
+  const timestamp = req.header("X-Signature-Timestamp");
 
   if (!signature || !timestamp) {
     return false;

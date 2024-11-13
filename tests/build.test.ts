@@ -20,7 +20,7 @@ const config = {"clientId":""};
 
 env.REGISTER_COMMANDS = "true";
 
-await createInstance(config, commandFiles, []);`;
+createInstance(config, commandFiles, []);`;
 
 Deno.test("Build bot without instance", async () => {
   if (!Deno.cwd().endsWith("tests")) {

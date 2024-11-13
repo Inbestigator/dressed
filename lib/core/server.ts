@@ -13,6 +13,7 @@ import type {
   ModalSubmitInteraction,
 } from "../internal/types/interaction.ts";
 import type { BotConfig } from "../internal/types/config.ts";
+import { Hono, type HonoRequest } from "hono";
 
 /**
  * Start serving a server
@@ -24,19 +25,15 @@ export default function createServer(
   ) => Promise<void>,
   config: BotConfig,
 ) {
-  Deno.serve(async (req) => {
+  const app = new Hono();
+
+  app.post(config.endpoint ?? "/", async (c) => {
+    const req = c.req;
     const reqLoader = loader(`New request`);
-    if (!(await verifySignature(req.clone()))) {
+    if (!(await verifySignature(req))) {
       reqLoader.error();
       console.error(" └ Invalid signature");
       return new Response("Unauthorized", { status: 401 });
-    }
-
-    if (
-      req.method !== "POST" ||
-      new URL(req.url).pathname !== (config.endpoint ?? "/")
-    ) {
-      return new Response("Not Found", { status: 404 });
     }
 
     reqLoader.resolve();
@@ -52,7 +49,7 @@ export async function runInteraction(
   runComponent: (
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
   ) => Promise<void>,
-  req: Request,
+  req: HonoRequest,
 ): Promise<Response> {
   const json = await req.json();
   switch (json.type) {

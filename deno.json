@@ -1,6 +1,6 @@
 {
   "name": "@inbestigator/discord-http",
-  "version": "0.3.0-rc-4",
+  "version": "0.3.0-rc-5",
   "publish": {
     "include": [
       "lib",
@@ -19,6 +19,7 @@
     "@svarta/walk-it": "jsr:@svarta/walk-it@^5.0.1",
     "commander": "npm:commander@^12.1.0",
     "discord-api-types": "npm:discord-api-types@^0.37.104",
+    "hono": "npm:hono@^4.6.9",
     "tweetnacl": "npm:tweetnacl@^1.0.3"
   }
 }

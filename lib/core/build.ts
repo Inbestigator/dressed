@@ -58,7 +58,7 @@ export async function build(
   const instanceCreation = addInstance
     ? `${
       registerCommands ? '\nenv.REGISTER_COMMANDS = "true";' : ""
-    }\n\nawait createInstance(config, ${
+    }\n\ncreateInstance(config, ${
       commandFiles.length > 0 ? "commandFiles" : "[]"
     }, ${componentFiles.length > 0 ? "componentFiles" : "[]"});`
     : "";
