@@ -29,10 +29,12 @@ jobs:
           node-version: lts/*
 
       - name: Install step
-        run: "cd www && npm install"
+        run: npm install
+        working-directory: www
 
       - name: Build step
-        run: "npm run build"
+        run: npm run build
+        working-directory: www
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
