@@ -29,10 +29,10 @@ jobs:
           node-version: lts/*
 
       - name: Install step
-        run: "cd www && npm install"
+        run: "cd www && pnpm install"
 
       - name: Build step
-        run: "npm run build"
+        run: "pnpm run build"
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
@@ -40,5 +40,5 @@ jobs:
           project: "discord-http"
           entrypoint: "jsr:@deno/nextjs-start"
           root: "www"
-          include: .next, public
+          
           
