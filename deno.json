@@ -20,5 +20,8 @@
     "commander": "npm:commander@^12.1.0",
     "discord-api-types": "npm:discord-api-types@^0.37.104",
     "tweetnacl": "npm:tweetnacl@^1.0.3"
-  }
+  },
+  "exclude": [
+    "www"
+  ]
 }
