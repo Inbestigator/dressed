@@ -20,7 +20,7 @@ export default function Home() {
       <p className="hidden sm:block">
         Discord-http is a Discord.js alternative that uses the Discord HTTP API,
         which makes it easy to deploy to serverless environments (like Deno
-        Deploy).
+        Deploy)
       </p>
       <p className="sm:hidden">
         Discord-http is a Discord.js alternative that uses the Discord HTTP API.
@@ -36,6 +36,15 @@ export default function Home() {
             rel="noreferrer"
           >
             GitHub <ExternalLink className="sm:!size-5" />
+          </Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link
+            href="https://github.com/Inbestigator/discord-http-example"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Example <ExternalLink className="sm:!size-5" />
           </Link>
         </Button>
       </div>

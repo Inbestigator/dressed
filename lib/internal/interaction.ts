@@ -10,6 +10,10 @@ import type { EditMessageOptions } from "./types/messages.ts";
 export default function createInteraction<T extends APIInteraction>(
   interaction: T,
 ): Interaction<T> {
+  if (!interaction.user && interaction.member) {
+    interaction.user = interaction.member.user;
+  }
+
   switch (interaction.type) {
     case InteractionType.ApplicationCommand: {
       return {

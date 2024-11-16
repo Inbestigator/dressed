@@ -9,7 +9,7 @@ that Discord.js utilizes.
 
 Discord-http also allows for a dynamic component ID system, so that you only
 need to write one component handler for many different scenarios.
-[See more](discord-http.vercel.app/docs/components#dynamic-component-ids)
+[See more](https://discord-http.vercel.app/docs/components#dynamic-component-ids)
 
 You can find an example of a bot ready to deploy on
 [Deno deploy](https://deno.com/deploy) in

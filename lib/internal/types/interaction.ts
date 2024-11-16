@@ -4,6 +4,7 @@ import type {
   APIInteraction,
   APIMessageComponentInteraction,
   APIModalSubmitInteraction,
+  APIUser,
   MessageFlags,
 } from "discord-api-types/v10";
 import type { EditMessageOptions, MessageComponents } from "./messages.ts";
@@ -56,8 +57,11 @@ export type InteractionReplyOptions =
   }
   | string;
 
-export type Interaction<T extends APIInteraction> = T extends
-  APIApplicationCommandInteraction ? CommandInteraction
-  : T extends APIMessageComponentInteraction ? MessageComponentInteraction
-  : T extends APIModalSubmitInteraction ? ModalSubmitInteraction
-  : null;
+export type Interaction<T extends APIInteraction> =
+  & (T extends APIApplicationCommandInteraction ? CommandInteraction
+    : T extends APIMessageComponentInteraction ? MessageComponentInteraction
+    : T extends APIModalSubmitInteraction ? ModalSubmitInteraction
+    : null)
+  & {
+    user: APIUser;
+  };

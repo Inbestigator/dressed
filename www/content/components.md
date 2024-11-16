@@ -47,7 +47,8 @@ value (always string) that matches the argument.
 Example:
 
 ```
-print_[value].ts -> Will match print_[.+]
+print_[value].ts -> Will match print_(.+)
+action_[action]_execute.ts -> Will match action_(.+)_execute
 ```
 
 ```ts
