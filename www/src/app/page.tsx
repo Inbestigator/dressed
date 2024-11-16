@@ -15,7 +15,7 @@ export default function Home() {
         >
           Deno
         </Link>{" "}
-        framework for Discord.js.
+        framework for Discord HTTP bots.
       </h1>
       <p className="hidden sm:block">
         Discord-http is a Discord.js alternative that uses the Discord HTTP API,
