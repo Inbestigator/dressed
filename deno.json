@@ -1,6 +1,6 @@
 {
   "name": "@inbestigator/discord-http",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "publish": {
     "include": [
       "lib",

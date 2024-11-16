@@ -1,23 +1,27 @@
 import { cyan, green, red } from "@std/fmt/colors";
+import process from "node:process";
 
 export default function loader(text: string) {
-  let dotsIndex = 0;
-  const dots = [".  ", ".. ", "...", "   "];
-  const animationInterval = setInterval(() => {
-    const dot = dots[dotsIndex % dots.length];
-    console.log(`\r\x1b[K ${text}  ${cyan(dot)}`);
-    dotsIndex++;
+  const dots = [".", "..", "..."];
+  let index = 0;
+
+  process.stdout.write("\x1b7");
+
+  const interval = setInterval(function () {
+    const logMessage = `   ${text} ${cyan(dots[index])}`;
+    process.stdout.write(`\r\x1b[2K${logMessage}`);
+    index = (index + 1) % dots.length;
   }, 300);
 
   return {
-    stop: () => clearInterval(animationInterval),
-    resolve: () => {
-      clearInterval(animationInterval);
-      console.log(`\r\x1b[K ${green("✔")} ${text}`);
-    },
     error: () => {
-      clearInterval(animationInterval);
-      console.log(`\r\x1b[K ${red("✖")} ${text}`);
+      clearInterval(interval);
+      process.stdout.write(`\r\x1b[2K ${red("✖")} ${text}\n`);
     },
+    resolve() {
+      clearInterval(interval);
+      process.stdout.write(`\r\x1b[2K ${green("✔")} ${text}\n`);
+    },
+    stop: () => clearInterval(interval),
   };
 }
