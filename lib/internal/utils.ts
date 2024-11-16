@@ -1,5 +1,5 @@
-import { configDotenv } from "@dotenvx/dotenvx";
-configDotenv();
+import { config } from "@dotenvx/dotenvx";
+config();
 import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";
 import { env } from "node:process";

@@ -25,7 +25,7 @@ import type { ComponentInteraction } from "discord-http";
 
 export default async function triviaGuess(
   interaction: ComponentInteraction,
-  args: { answer: string },
+  args: { answer: string }
 ) {
   if (args.answer === correctAnswer) {
     await interaction.reply("Good job!");
@@ -35,12 +35,12 @@ export default async function triviaGuess(
 }
 ```
 
-## Dynamic components
+## Dynamic component IDs
 
 As you may have noticed in the previous example, a component can be passed
 certain arguments.
 
-If your component has `[<argname>]` in its id, components matching that regex
+If your component has `[<argname>]` in its ID, components matching that regex
 are executed with this handler, the handler will be passed an object with the
 value (always string) that matches the argument.
 

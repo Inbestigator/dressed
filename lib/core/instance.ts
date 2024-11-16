@@ -1,5 +1,5 @@
-import { configDotenv } from "@dotenvx/dotenvx";
-configDotenv();
+import { config } from "@dotenvx/dotenvx";
+config();
 import setupCommands from "./bot/commands.ts";
 import loader from "../internal/loader.ts";
 import setupComponents from "./bot/components.ts";

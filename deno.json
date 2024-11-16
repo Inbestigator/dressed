@@ -1,6 +1,6 @@
 {
   "name": "@inbestigator/discord-http",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "publish": {
     "include": [
       "lib",
@@ -13,7 +13,7 @@
     "./cmd": "./lib/exports/cmd.ts"
   },
   "imports": {
-    "@dotenvx/dotenvx": "npm:@dotenvx/dotenvx@^1.22.1",
+    "@dotenvx/dotenvx": "npm:@dotenvx/dotenvx@^1.24.0",
     "@std/assert": "jsr:@std/assert@^1.0.7",
     "@std/fmt": "jsr:@std/fmt@^1.0.3",
     "@svarta/walk-it": "jsr:@svarta/walk-it@^5.0.1",

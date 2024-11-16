@@ -5,7 +5,11 @@ Discord-http allows you to host a bot using the
 system for Discord.
 
 Discord will send POST requests to your bot, instead of the websocket system
-that Discord.js utilizes
+that Discord.js utilizes.
+
+Discord-http also allows for a dynamic component ID system, so that you only
+need to write one component handler for many different scenarios.
+[See more](discord-http.vercel.app/docs/components#dynamic-component-ids)
 
 You can find an example of a bot ready to deploy on
 [Deno deploy](https://deno.com/deploy) in
@@ -24,7 +28,6 @@ export const config: CommandConfig = {
 export default async function ping(interaction: CommandInteraction) {
   await interaction.reply({
     content: "Pong!",
-    ephemeral: true,
   });
 }
 ```
@@ -52,6 +55,6 @@ genBot();
 ```
 
 Discord-http comes with a serve system for Deno projects, but otherwise you'll
-have to BYO (all the Discord-http resources needed to do so are available)
+have to BYO (all the Discord-http resources needed to do so are available).
 [The Node-compatible example](https://github.com/Inbestigator/discord-http-example/tree/node)
-uses a server made with Express
+uses a server made with Express.
