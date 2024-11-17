@@ -21,7 +21,12 @@ export interface BotConfig {
 
 export interface Command {
   name: string;
+  /** The description for the command */
   description?: string;
+  /** The options for the command
+   *
+   * @see https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-structure
+   */
   options?: APIApplicationCommandOption[];
   default: (interaction: CommandInteraction) => unknown;
 }

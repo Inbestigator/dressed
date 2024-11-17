@@ -35,7 +35,7 @@ export async function build(
   }
 
   const outputContent = `
-${generateImports(addInstance, registerCommands)}
+${generateImports(config, addInstance, registerCommands)}
 ${generateFileImports([...commandFiles, ...componentFiles])}
 
 ${defineFiles("commandFiles", commandFiles)}
@@ -44,7 +44,12 @@ const config = ${JSON.stringify(config)};
 
 ${
     addInstance
-      ? generateInstanceCreation(commandFiles, componentFiles, registerCommands)
+      ? generateInstanceCreation(
+        commandFiles,
+        componentFiles,
+        config,
+        registerCommands,
+      )
       : ""
   }
 `.trim();
@@ -53,9 +58,6 @@ ${
   return outputContent;
 }
 
-/**
- * Fetches the bot config from the bot.config.ts file.
- */
 async function fetchConfig(): Promise<BotConfig | undefined> {
   const configPath = join("file://", cwd(), "bot.config.ts");
   try {
@@ -100,31 +102,25 @@ export async function fetchFiles(directory: string): Promise<WalkEntry[]> {
   return filesArray;
 }
 
-/**
- * Generates import statements for all files.
- */
 function generateFileImports(files: WalkEntry[]): string {
   return files.map((f) => `import "./${f.path}";`).join("\n");
 }
 
-/**
- * Defines variables for command and component files.
- */
 function defineFiles(variableName: string, files: WalkEntry[]): string {
   return files.length > 0
     ? `const ${variableName} = ${JSON.stringify(files)};`
     : "";
 }
 
-/**
- * Generates necessary imports based on flags.
- */
 function generateImports(
+  config: BotConfig,
   addInstance?: boolean,
   registerCommands?: boolean,
 ): string {
   const baseImport = addInstance
-    ? `import { createInstance, createServer } from "@inbestigator/discord-http";`
+    ? `import { createInstance${
+      config.deno === false ? "" : ", createServer"
+    } } from "@inbestigator/discord-http";`
     : "";
   const processEnvImport = registerCommands
     ? `import { env } from "node:process";`
@@ -132,12 +128,10 @@ function generateImports(
   return [baseImport, processEnvImport].filter(Boolean).join("\n");
 }
 
-/**
- * Generates the instance creation and server start code.
- */
 function generateInstanceCreation(
   commandFiles: WalkEntry[],
   componentFiles: WalkEntry[],
+  config: BotConfig,
   registerCommands?: boolean,
 ): string {
   const registerEnv = registerCommands
@@ -149,10 +143,10 @@ function generateInstanceCreation(
 ${registerEnv}
 async function startServer() {
   const { runCommand, runComponent } = await createInstance(${commandArray}, ${componentArray});
-  if (config.deno === false) {
-    console.log("You will need to set up your own server if not on Deno.");
-  } else {
-    createServer(runCommand, runComponent, config);
+  ${
+    config.deno === false
+      ? 'console.warn("You will need to set up your own server if not on Deno.");'
+      : "createServer(runCommand, runComponent, config);"
   }
 }
   

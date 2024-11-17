@@ -33,9 +33,9 @@ export default async function ping(interaction: CommandInteraction) {
 ```
 
 By default the builder outputs only the boilerplate data, if you want it to
-include an instance creator, add `-i` when running the build script.
+include an instance creator, add `-i` when running the build command.
 
-In order to register the commands for your bot, run the build script with `-r`.
+In order to register the commands for your bot, run the build command with `-r`.
 
 Here's the build script I use for testing non-Deno environments (where afaik I
 can't use the cli):

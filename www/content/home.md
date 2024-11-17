@@ -36,9 +36,9 @@ export default async function ping(interaction: CommandInteraction) {
 ```
 
 By default the builder outputs only the boilerplate data, if you want it to
-include an instance creator, add `-i` when running the build script.
+include an instance creator, add `-i` when running the build command.
 
-In order to register the commands for your bot, run the build script with `-r`.
+In order to register the commands for your bot, run the build command with `-r`.
 
 In addition to Discord-http, I'd recommend installing
 [Discord API Types](https://www.npmjs.com/package/discord-api-types) (The type
