@@ -28,7 +28,7 @@ export function createServer(
     const reqLoader = ora(`New request`).start();
     if (!(await verifySignature(req.clone()))) {
       reqLoader.fail();
-      console.error(" └ Invalid signature");
+      console.error("└ Invalid signature");
       return new Response("Unauthorized", { status: 401 });
     }
 
@@ -57,13 +57,13 @@ export async function runInteraction(
   const json = await req.json();
   switch (json.type) {
     case InteractionType.Ping: {
-      console.log(" └ Received ping test");
+      console.log("└ Received ping test");
       return new Response(JSON.stringify({ type: 1 }), { status: 200 });
     }
     case InteractionType.ApplicationCommand: {
       const command = json as APIApplicationCommandInteraction;
-      console.log(" ├ Received application command interaction");
-      console.log(" └ Command:", command.data.name);
+      console.log("├ Received application command interaction");
+      console.log("└ Command:", command.data.name);
       const interaction = createInteraction(command);
 
       await runCommand(interaction);
@@ -71,8 +71,8 @@ export async function runInteraction(
     }
     case InteractionType.MessageComponent: {
       const component = json as APIMessageComponentInteraction;
-      console.log(" ├ Received message component interaction");
-      console.log(" └ Component:", component.data.custom_id);
+      console.log("├ Received message component interaction");
+      console.log("└ Component:", component.data.custom_id);
       const interaction = createInteraction(component);
 
       await runComponent(interaction);
@@ -80,8 +80,8 @@ export async function runInteraction(
     }
     case InteractionType.ModalSubmit: {
       const component = json as APIModalSubmitInteraction;
-      console.log(" ├ Received modal submit interaction");
-      console.log(" └ Modal:", component.data.custom_id);
+      console.log("├ Received modal submit interaction");
+      console.log("└ Modal:", component.data.custom_id);
       const interaction = createInteraction(component);
 
       await runComponent(interaction);

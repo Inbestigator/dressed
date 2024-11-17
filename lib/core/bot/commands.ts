@@ -1,6 +1,6 @@
 import type { Command } from "../../internal/types/config.ts";
 import { join } from "node:path";
-import { underline, yellow } from "@std/fmt/colors";
+import { underline } from "@std/fmt/colors";
 import ora from "ora";
 import type { CommandConfig } from "../../exports/mod.ts";
 import { InstallGlobalCommands } from "../../internal/utils.ts";
@@ -71,9 +71,7 @@ export default async function setupCommands(
       const command = commands.find((c) => c.name === interaction.data.name);
 
       if (!command) {
-        console.warn(
-          ` ${yellow("!")} Command "${interaction.data.name}" not found`,
-        );
+        ora(`Command "${interaction.data.name}" not found`).warn();
         return;
       }
 
@@ -84,7 +82,7 @@ export default async function setupCommands(
         commandLoader.succeed();
       } catch (error) {
         commandLoader.fail();
-        console.error(" └", error);
+        console.error("└", error);
       }
     };
   } catch (e) {
@@ -110,11 +108,9 @@ export async function parseCommands(commandFiles: WalkEntry[]) {
     };
 
     if (commandData.find((c) => c.name === command.name)) {
-      console.warn(
-        ` ${
-          yellow("!")
-        } Command "${command.name}" already exists, skipping the duplicate`,
-      );
+      ora(
+        `Command "${command.name}" already exists, skipping the duplicate`,
+      ).warn();
       continue;
     }
 

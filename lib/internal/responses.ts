@@ -3,7 +3,6 @@ import {
   InteractionResponseType,
   MessageFlags,
 } from "discord-api-types/v10";
-import { yellow } from "@std/fmt/colors";
 import type {
   DeferredReplyOptions,
   InteractionReplyOptions,
@@ -11,6 +10,7 @@ import type {
 import { DiscordRequest } from "./utils.ts";
 import type { EditMessageOptions } from "./types/messages.ts";
 import { env } from "node:process";
+import ora from "ora";
 
 const userId = env.DISCORD_APP_ID;
 
@@ -21,7 +21,7 @@ function createMessageFlags(flags: MessageFlags[]) {
     if (flag in MessageFlags) {
       bitfield |= flag;
     } else {
-      console.warn(` ${yellow("!")} Unknown message flag: ${flag}`);
+      ora(`Unknown message flag: ${flag}`).warn();
     }
   });
 

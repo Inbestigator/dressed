@@ -1,6 +1,6 @@
 import type { Component } from "../../internal/types/config.ts";
 import { join } from "node:path";
-import { underline, yellow } from "@std/fmt/colors";
+import { underline } from "@std/fmt/colors";
 import ora from "ora";
 import type {
   MessageComponentInteraction,
@@ -89,9 +89,7 @@ export default async function setupComponents(
       });
 
       if (!component) {
-        console.warn(
-          ` ${yellow("!")} Component "${interaction.data.custom_id}" not found`,
-        );
+        ora(`Component "${interaction.data.custom_id}" not found`).warn();
         return;
       }
 
@@ -122,7 +120,7 @@ export default async function setupComponents(
         componentLoader.succeed();
       } catch (error) {
         componentLoader.fail();
-        console.error(" └", error);
+        console.error("└", error);
       }
     };
   } catch (e) {
@@ -149,11 +147,9 @@ async function parseComponents(componentFiles: WalkEntry[]) {
     const category = file.path.split(/[\\\/]/)[2];
 
     if (!validComponentCategories.includes(category)) {
-      console.warn(
-        ` ${
-          yellow("!")
-        } Category for "${file.name}" could not be determined, skipping`,
-      );
+      ora(
+        `Category for "${file.name}" could not be determined, skipping`,
+      ).warn();
       continue;
     }
 
@@ -168,12 +164,12 @@ async function parseComponents(componentFiles: WalkEntry[]) {
         (c) => c.name === component.name && c.category === category,
       )
     ) {
-      console.warn(
-        ` ${yellow("!")} ${
+      ora(
+        `${
           component.category.slice(0, 1).toUpperCase() +
           component.category.split("s")[0].slice(1)
         } component "${component.name}" already exists, skipping the duplicate`,
-      );
+      ).warn();
       continue;
     }
 
