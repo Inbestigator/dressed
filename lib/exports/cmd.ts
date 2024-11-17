@@ -1,4 +1,4 @@
-import loader from "../internal/loader.ts";
+import ora from "ora";
 import { Command } from "commander";
 import { build } from "./mod.ts";
 import { writeFileSync } from "node:fs";
@@ -15,7 +15,7 @@ program
   .action(async ({ instance, register }) => {
     const outputContent = await build(instance, register);
     writeFileSync("./bot.gen.ts", new TextEncoder().encode(outputContent));
-    loader("Wrote to bot.gen.ts").resolve();
+    ora("Wrote to bot.gen.ts").succeed();
   });
 
 program.parse();

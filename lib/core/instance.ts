@@ -1,7 +1,7 @@
 import { config } from "@dotenvx/dotenvx";
 config();
 import setupCommands from "./bot/commands.ts";
-import loader from "../internal/loader.ts";
+import ora from "ora";
 import setupComponents from "./bot/components.ts";
 import getDetails from "../internal/details.ts";
 import { env } from "node:process";
@@ -24,20 +24,20 @@ export async function createInstance(
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
   ) => Promise<void>;
 }> {
-  const initLoader = loader("Initializing");
+  const initLoader = ora("Initializing").start();
 
   if (!env.DISCORD_TOKEN) {
-    initLoader.error();
+    initLoader.fail();
     throw new Error(
       "No bot token provided, make sure to provide a TOKEN environment variable",
     );
   }
 
-  initLoader.resolve();
+  initLoader.succeed();
 
   const details = await getDetails();
 
-  loader(`Logged in as ${details.username}`).resolve();
+  ora(`Logged in as ${details.username}`).succeed();
 
   const runCommand = await setupCommands(commandFiles);
 

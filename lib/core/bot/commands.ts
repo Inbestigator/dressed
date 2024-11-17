@@ -1,7 +1,7 @@
 import type { Command } from "../../internal/types/config.ts";
 import { join } from "node:path";
 import { underline, yellow } from "@std/fmt/colors";
-import loader from "../../internal/loader.ts";
+import ora from "ora";
 import type { CommandConfig } from "../../exports/mod.ts";
 import { InstallGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
@@ -16,7 +16,7 @@ import { cwd, env } from "node:process";
 export default async function setupCommands(
   commandFiles?: WalkEntry[],
 ): Promise<(interaction: CommandInteraction) => Promise<void>> {
-  const generatingLoader = loader("Generating commands");
+  const generatingLoader = ora("Generating commands").start();
   let generatedN = 0;
   const generatedStr: string[][] = [[underline("\nCommand")]];
 
@@ -63,7 +63,7 @@ export default async function setupCommands(
       addCommand(command.name, commands.length);
     });
 
-    generatingLoader.resolve();
+    generatingLoader.succeed();
 
     console.log(generatedStr.map((row) => row.join(" ")).join("\n"));
 
@@ -77,18 +77,18 @@ export default async function setupCommands(
         return;
       }
 
-      const commandLoader = loader(`Running command "${command?.name}"`);
+      const commandLoader = ora(`Running command "${command?.name}"`).start();
 
       try {
         await Promise.resolve(command.default(interaction));
-        commandLoader.resolve();
+        commandLoader.succeed();
       } catch (error) {
-        commandLoader.error();
+        commandLoader.fail();
         console.error(" └", error);
       }
     };
   } catch (e) {
-    generatingLoader.error();
+    generatingLoader.fail();
     throw e;
   }
 }

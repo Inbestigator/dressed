@@ -1,4 +1,4 @@
-import loader from "../internal/loader.ts";
+import ora from "ora";
 import { verifySignature } from "../internal/utils.ts";
 import {
   type APIApplicationCommandInteraction,
@@ -25,9 +25,9 @@ export function createServer(
   config: BotConfig,
 ) {
   Deno.serve(async (req) => {
-    const reqLoader = loader(`New request`);
+    const reqLoader = ora(`New request`).start();
     if (!(await verifySignature(req.clone()))) {
-      reqLoader.error();
+      reqLoader.fail();
       console.error(" └ Invalid signature");
       return new Response("Unauthorized", { status: 401 });
     }
@@ -39,7 +39,7 @@ export function createServer(
       return new Response("Not Found", { status: 404 });
     }
 
-    reqLoader.resolve();
+    reqLoader.succeed();
     return await runInteraction(runCommand, runComponent, req);
   });
 }

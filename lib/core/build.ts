@@ -1,6 +1,6 @@
 import { walkFiles } from "@svarta/walk-it";
 import { yellow } from "@std/fmt/colors";
-import loader from "../internal/loader.ts";
+import ora from "ora";
 import { join } from "node:path";
 import type { BotConfig } from "../exports/mod.ts";
 import { readdirSync } from "node:fs";
@@ -21,7 +21,7 @@ export async function build(
   addInstance?: boolean,
   registerCommands?: boolean,
 ): Promise<string> {
-  const buildLoader = loader("Building");
+  const buildLoader = ora("Building").start();
 
   const [commandFiles, componentFiles, config] = await Promise.all([
     fetchFiles("src/commands"),
@@ -30,7 +30,7 @@ export async function build(
   ]);
 
   if (!config) {
-    buildLoader.error();
+    buildLoader.fail();
     throw new Error("No bot config found");
   }
 
@@ -49,7 +49,7 @@ ${
   }
 `.trim();
 
-  buildLoader.resolve();
+  buildLoader.succeed();
   return outputContent;
 }
 

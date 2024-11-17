@@ -1,7 +1,7 @@
 import type { Component } from "../../internal/types/config.ts";
 import { join } from "node:path";
 import { underline, yellow } from "@std/fmt/colors";
-import loader from "../../internal/loader.ts";
+import ora from "ora";
 import type {
   MessageComponentInteraction,
   ModalSubmitInteraction,
@@ -22,7 +22,7 @@ export default async function setupComponents(
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
   ) => Promise<void>
 > {
-  const generatingLoader = loader("Generating components");
+  const generatingLoader = ora("Generating components").start();
   let generatedN = 0;
   const generatedStr: string[][] = [[underline("\nComponent")]];
 
@@ -53,7 +53,7 @@ export default async function setupComponents(
       addComponent(component.name, component.category, components.length);
     });
 
-    generatingLoader.resolve();
+    generatingLoader.succeed();
 
     console.log(generatedStr.map((row) => row.join(" ")).join("\n"));
 
@@ -109,24 +109,24 @@ export default async function setupComponents(
         }, {})
         : {};
 
-      const componentLoader = loader(
+      const componentLoader = ora(
         `Running component "${component.name}"${
           Object.keys(args).length > 0
             ? " with args: " + JSON.stringify(args)
             : ""
         }`,
-      );
+      ).start();
 
       try {
         await Promise.resolve(component.default(interaction, args));
-        componentLoader.resolve();
+        componentLoader.succeed();
       } catch (error) {
-        componentLoader.error();
+        componentLoader.fail();
         console.error(" └", error);
       }
     };
   } catch (e) {
-    generatingLoader.error();
+    generatingLoader.fail();
     throw e;
   }
 }
