@@ -1,52 +1,160 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { Zap, Cloud, Code, Hexagon, Book } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import DenoLogo from "@/components/deno-logo";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import JSRLogo from "@/components/jsr-logo";
 
 export default function Home() {
   return (
-    <div className="py-10 min-h-dvh flex flex-col items-center justify-center text-center gap-10 max-w-5xl mx-auto">
-      <h1 className="z-10 text-[max(36px,min(5vw,72px))] font-black leading-tight sm:leading-tight">
-        The best{"  "}
-        <Link
-          href="https://deno.com/"
-          target="_blank"
-          rel="noreferrer"
-          className="relative rounded bg-primary px-3 py-1 text-white hover:underline underline-offset-8 hidden sm:inline"
-        >
-          Deno
-        </Link>{" "}
-        framework for Discord HTTP bots.
+    <div className="min-h-dvh flex flex-col gap-8 items-center justify-center bg-background text-foreground py-10 px-4 max-w-5xl mx-auto text-center">
+      <h1 className="animate-fade-in-up">
+        <span className="block text-[max(28px,min(4vw,56px))] font-black leading-tight sm:leading-tight text-primary">
+          Build Faster
+        </span>
+        <span className="block text-[max(36px,min(5vw,72px))] font-black leading-tight sm:leading-tight text-white">
+          Deploy Anywhere
+        </span>
       </h1>
-      <p className="hidden sm:block">
-        Discord-http is a Discord.js alternative that uses the Discord HTTP API,
-        which makes it easy to deploy to serverless environments (like Deno
-        Deploy)
+      <p className="text-lg sm:text-xl max-w-2xl mx-auto animate-fade-in-up animation-delay-200 text-foreground">
+        Discord-http is a powerful Discord.js alternative that leverages the
+        Discord HTTP API, making it perfect for serverless deployments.
       </p>
-      <p className="sm:hidden">
-        Discord-http is a Discord.js alternative that uses the Discord HTTP API.
-      </p>
-      <div className="flex flex-wrap justify-center gap-4 *:font-semibold *:text-base *:sm:text-lg *:sm:h-11 *:sm:rounded-md *:sm:px-8">
-        <Button asChild>
+      <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up animation-delay-400">
+        <Button className="text-base" asChild size="lg">
           <Link href="/docs">Docs</Link>
         </Button>
-        <Button variant="outline" asChild>
+        <Button
+          title="JS Registry Entry"
+          className="h-11"
+          variant="outline"
+          asChild
+        >
           <Link
-            href="https://github.com/inbestigator/discord-http"
+            href="https://jsr.io/@inbestigator/discord-http"
             target="_blank"
             rel="noreferrer"
           >
-            GitHub <ExternalLink className="sm:!size-5" />
+            <JSRLogo className="!size-8" />
           </Link>
         </Button>
-        <Button variant="outline" asChild>
-          <Link
-            href="https://github.com/Inbestigator/discord-http-example"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Example <ExternalLink className="sm:!size-5" />
-          </Link>
-        </Button>
+        <div className="flex items-center">
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Button
+                title="Deno Example"
+                className="rounded-r-none border-r-0 size-11"
+                variant="outline"
+                asChild
+                size="icon"
+              >
+                <Link
+                  href="https://github.com/inbestigator/discord-http-example"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <DenoLogo className="!size-5 bg-white rounded-full" />
+                </Link>
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="prose-sm prose prose-invert text-start">
+              <h3>Deno Example</h3>
+              <strong>Server tech:</strong> Deno Serve
+              <br />
+              <strong>Commands:</strong>
+              <ul>
+                <li>Counter</li>
+                <li>Greet</li>
+                <li>Trivia</li>
+              </ul>
+              <strong>Components:</strong>
+              <ul>
+                <li>Add Counter</li>
+                <li>Reset Counter</li>
+                <li>Guess</li>
+              </ul>
+            </HoverCardContent>
+          </HoverCard>
+          <Separator orientation="vertical" className="h-11" />
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Button
+                title="Non Deno Example"
+                className="rounded-l-none border-l-0 size-11"
+                variant="outline"
+                asChild
+                size="icon"
+              >
+                <Link
+                  href="https://github.com/inbestigator/discord-http-example/tree/node"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Hexagon className="!size-5 text-[#689f63] fill-current" />
+                </Link>
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="prose-sm prose prose-invert text-start">
+              <h3>Non Deno Example</h3>
+              <strong>Server tech:</strong> Express
+              <br />
+              <strong>Commands:</strong>
+              <ul>
+                <li>Counter</li>
+                <li>Greet</li>
+                <li>Trivia</li>
+              </ul>
+              <strong>Components:</strong>
+              <ul>
+                <li>Add Counter</li>
+                <li>Reset Counter</li>
+                <li>Guess</li>
+              </ul>
+            </HoverCardContent>
+          </HoverCard>
+        </div>
+      </div>
+      <div className="grid md:grid-cols-3 gap-8 text-left animate-fade-in-up animation-delay-600">
+        <div className="bg-card p-6 rounded-lg shadow-lg">
+          <Zap className="h-10 w-10 mb-4 text-primary" />
+          <h2 className="text-xl font-semibold mb-2 text-card-foreground">
+            Lightning Fast
+          </h2>
+          <p className="text-muted-foreground">
+            Optimized for speed and efficiency using Discord's HTTP API.
+          </p>
+        </div>
+        <div className="bg-card p-6 rounded-lg shadow-lg">
+          <Cloud className="h-10 w-10 mb-4 text-primary" />
+          <h2 className="text-xl font-semibold mb-2 text-card-foreground">
+            Serverless Ready
+          </h2>
+          <p className="text-muted-foreground">
+            Deploy effortlessly to serverless environments like{" "}
+            <Link
+              className="hover:underline underline-offset-2"
+              href="https://deno.com/deploy"
+              target="_blank"
+            >
+              Deno Deploy
+            </Link>
+            .
+          </p>
+        </div>
+        <div className="bg-card p-6 rounded-lg shadow-lg">
+          <Code className="h-10 w-10 mb-4 text-primary" />
+          <h2 className="text-xl font-semibold mb-2 text-card-foreground">
+            Developer Friendly
+          </h2>
+          <p className="text-muted-foreground">
+            Simple API design, making bot development a breeze.
+          </p>
+        </div>
       </div>
     </div>
   );

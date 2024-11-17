@@ -5,7 +5,7 @@ Discord-http allows you to host a bot using the
 system for Discord.
 
 Discord will send POST requests to your bot, instead of the websocket system
-that Discord.js utilizes
+that Discord.js utilizes.
 
 You can find an example of a bot ready to deploy on
 [Deno deploy](https://deno.com/deploy) in
