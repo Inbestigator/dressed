@@ -20,11 +20,7 @@ env.REGISTER_COMMANDS = "true";
 
 async function startServer() {
   const { runCommand, runComponent } = await createInstance(commandFiles, []);
-  if (config.deno === false) {
-    console.log("You will need to set up your own server if not on Deno.");
-  } else {
-    createServer(runCommand, runComponent, config);
-  }
+  createServer(runCommand, runComponent, config);
 }
   
 startServer();`;
