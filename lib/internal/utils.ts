@@ -3,6 +3,7 @@ config();
 import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";
 import { env } from "node:process";
+import ora from "ora";
 
 /**
  * Verifies the signature of the POST request
@@ -40,7 +41,8 @@ export async function DiscordRequest(
   if (!res.ok) {
     const data = await res.json();
     console.log(res.status);
-    throw new Error(JSON.stringify(data));
+    ora(`Failed to ${options.method} ${endpoint}`).fail();
+    console.error(`└ ${data.message}`);
   }
   return res;
 }

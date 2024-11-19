@@ -7,12 +7,28 @@ import type {
   APIUser,
   MessageFlags,
 } from "discord-api-types/v10";
-import type { EditMessageOptions, MessageComponents } from "./messages.ts";
+import type { MessageComponents, MessageOptions } from "./messages.ts";
 
 interface BaseInteractionMethods {
+  /**
+   * Respond to an interaction with a message
+   * @param data The response message
+   */
   reply: (data: InteractionReplyOptions) => Promise<void>;
+  /**
+   * ACK an interaction and edit a response later, the user sees a loading state
+   * @param data Optional data for the deferred response
+   */
   deferReply: (data?: DeferredReplyOptions) => Promise<void>;
-  editReply: (data: EditMessageOptions) => Promise<void>;
+  /**
+   * Edit the initial interaction response
+   * @param data The new data for the response message
+   */
+  editReply: (data: MessageOptions) => Promise<void>;
+  /**
+   * Create another response to the interaction
+   * @param data The data for the message
+   */
   followUp: (data: InteractionReplyOptions) => Promise<void>;
   user: APIUser;
 }
@@ -24,7 +40,11 @@ export type CommandInteraction =
   & APIApplicationCommandInteraction
   & BaseInteractionMethods
   & {
-    showModal: (data: unknown) => Promise<void>;
+    /**
+     * Respond to an interaction with a popup modal
+     * @param data TODO
+     */
+    showModal: (data: unknown) => Promise<void>; // TODO
   };
 
 /**
@@ -34,8 +54,16 @@ export type MessageComponentInteraction =
   & APIMessageComponentInteraction
   & BaseInteractionMethods
   & {
-    showModal: (data: unknown) => Promise<void>;
-    update: (data: EditMessageOptions) => Promise<void>;
+    /**
+     * Respond to an interaction with a popup modal
+     * @param data TODO
+     */
+    showModal: (data: unknown) => Promise<void>; // TODO
+    /**
+     * For components, edit the message the component was attached to
+     * @param data The new data for the component message
+     */
+    update: (data: MessageOptions) => Promise<void>;
   };
 
 /**

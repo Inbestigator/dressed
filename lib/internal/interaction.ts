@@ -5,7 +5,7 @@ import type {
   InteractionReplyOptions,
 } from "./types/interaction.ts";
 import { type APIInteraction, InteractionType } from "discord-api-types/v10";
-import type { EditMessageOptions } from "./types/messages.ts";
+import type { MessageOptions } from "./types/messages.ts";
 
 export default function createInteraction<T extends APIInteraction>(
   interaction: T,
@@ -23,7 +23,7 @@ export default function createInteraction<T extends APIInteraction>(
           deferReply(interaction, data),
         followUp: (data: InteractionReplyOptions) =>
           followUp(interaction, data),
-        editReply: (data: EditMessageOptions) => editReply(interaction, data),
+        editReply: (data: MessageOptions) => editReply(interaction, data),
       } as unknown as Interaction<T>;
     }
     case InteractionType.MessageComponent: {
@@ -34,8 +34,8 @@ export default function createInteraction<T extends APIInteraction>(
           deferReply(interaction, data),
         followUp: (data: InteractionReplyOptions) =>
           followUp(interaction, data),
-        update: (data: EditMessageOptions) => update(interaction, data),
-        editReply: (data: EditMessageOptions) => editReply(interaction, data),
+        update: (data: MessageOptions) => update(interaction, data),
+        editReply: (data: MessageOptions) => editReply(interaction, data),
       } as unknown as Interaction<T>;
     }
     default: {

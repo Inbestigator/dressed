@@ -8,25 +8,11 @@ import type {
   InteractionReplyOptions,
 } from "./types/interaction.ts";
 import { DiscordRequest } from "./utils.ts";
-import type { EditMessageOptions } from "./types/messages.ts";
+import type { MessageOptions } from "./types/messages.ts";
 import { env } from "node:process";
-import ora from "ora";
+import { createMessageFlags } from "../core/bot/messages.ts";
 
 const userId = env.DISCORD_APP_ID;
-
-function createMessageFlags(flags: MessageFlags[]) {
-  let bitfield = 0;
-
-  flags.forEach((flag) => {
-    if (flag in MessageFlags) {
-      bitfield |= flag;
-    } else {
-      ora(`Unknown message flag: ${flag}`).warn();
-    }
-  });
-
-  return bitfield;
-}
 
 export async function reply(
   interaction: APIInteraction,
@@ -80,7 +66,7 @@ export async function deferReply(
 
 export async function update(
   interaction: APIInteraction,
-  data: EditMessageOptions,
+  data: MessageOptions,
 ) {
   if (typeof data === "string") {
     data = { content: data };
@@ -100,7 +86,7 @@ export async function update(
 
 export async function editReply(
   interaction: APIInteraction,
-  data: EditMessageOptions,
+  data: MessageOptions,
 ) {
   if (typeof data === "string") {
     data = { content: data };

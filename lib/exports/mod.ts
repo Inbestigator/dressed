@@ -30,3 +30,12 @@ export * from "../core/build.ts";
 
 export * from "../core/components/actionrow.ts";
 export * from "../core/components/button.ts";
+
+export {
+  bulkDelete,
+  createMessage,
+  deleteMessage,
+  editMessage,
+} from "../core/bot/messages.ts";
+
+export { deleteChannel, getChannel } from "../core/bot/channels.ts";

@@ -3,7 +3,7 @@ import type { ActionRow } from "../../core/components/actionrow.ts";
 
 export type MessageComponents = ReturnType<typeof ActionRow>[];
 
-export type EditMessageOptions =
+export type MessageOptions =
   | {
     content?: string;
     embeds?: APIEmbed[];
