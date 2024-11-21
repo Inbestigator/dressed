@@ -3,11 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Zap, Cloud, Code, Hexagon, Book } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import DenoLogo from "@/components/deno-logo";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import JSRLogo from "@/components/jsr-logo";
 
 export default function Home() {
@@ -44,79 +39,37 @@ export default function Home() {
           </Link>
         </Button>
         <div className="flex items-center">
-          <HoverCard>
-            <HoverCardTrigger asChild>
-              <Button
-                title="Deno Example"
-                className="rounded-r-none border-r-0 size-11"
-                variant="outline"
-                asChild
-                size="icon"
-              >
-                <Link
-                  href="https://github.com/inbestigator/discord-http-example"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <DenoLogo className="!size-5 bg-white rounded-full" />
-                </Link>
-              </Button>
-            </HoverCardTrigger>
-            <HoverCardContent className="prose-sm prose prose-invert text-start">
-              <h3>Deno Example</h3>
-              <strong>Server tech:</strong> Deno Serve
-              <br />
-              <strong>Commands:</strong>
-              <ul>
-                <li>Counter</li>
-                <li>Greet</li>
-                <li>Trivia</li>
-              </ul>
-              <strong>Components:</strong>
-              <ul>
-                <li>Add Counter</li>
-                <li>Reset Counter</li>
-                <li>Guess</li>
-              </ul>
-            </HoverCardContent>
-          </HoverCard>
+          <Button
+            title="Deno Example"
+            className="rounded-r-none border-r-0 size-11"
+            variant="outline"
+            asChild
+            size="icon"
+          >
+            <Link
+              href="https://github.com/inbestigator/discord-http-example"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <DenoLogo className="!size-5 bg-white rounded-full" />
+            </Link>
+          </Button>
           <Separator orientation="vertical" className="h-11" />
-          <HoverCard>
-            <HoverCardTrigger asChild>
-              <Button
-                title="Non Deno Example"
-                className="rounded-l-none border-l-0 size-11"
-                variant="outline"
-                asChild
-                size="icon"
-              >
-                <Link
-                  href="https://github.com/inbestigator/discord-http-example/tree/node"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Hexagon className="!size-5 text-[#689f63] fill-current" />
-                </Link>
-              </Button>
-            </HoverCardTrigger>
-            <HoverCardContent className="prose-sm prose prose-invert text-start">
-              <h3>Non Deno Example</h3>
-              <strong>Server tech:</strong> Express
-              <br />
-              <strong>Commands:</strong>
-              <ul>
-                <li>Counter</li>
-                <li>Greet</li>
-                <li>Trivia</li>
-              </ul>
-              <strong>Components:</strong>
-              <ul>
-                <li>Add Counter</li>
-                <li>Reset Counter</li>
-                <li>Guess</li>
-              </ul>
-            </HoverCardContent>
-          </HoverCard>
+          <Button
+            title="Non Deno Example"
+            className="rounded-l-none border-l-0 size-11"
+            variant="outline"
+            asChild
+            size="icon"
+          >
+            <Link
+              href="https://github.com/inbestigator/discord-http-example/tree/node"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Hexagon className="!size-5 text-[#689f63] fill-current" />
+            </Link>
+          </Button>
         </div>
       </div>
       <div className="grid md:grid-cols-3 gap-8 text-left animate-fade-in-up animation-delay-600">
