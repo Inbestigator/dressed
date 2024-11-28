@@ -1,5 +1,5 @@
 import type { Command } from "../../internal/types/config.ts";
-import { join } from "node:path";
+import { join, normalize } from "node:path";
 import { underline } from "@std/fmt/colors";
 import ora from "ora";
 import type { CommandConfig } from "../../exports/mod.ts";
@@ -96,7 +96,8 @@ export async function parseCommands(commandFiles: WalkEntry[]) {
 
   for (const file of commandFiles) {
     const commandModule = (await import(
-      "file://" + join(cwd(), file.path)
+      (typeof Deno !== "undefined" ? "file:" : "") +
+        normalize(join(cwd(), file.path))
     )) as {
       config?: CommandConfig;
       default: (interaction: CommandInteraction) => unknown;

@@ -1,5 +1,5 @@
 import type { Component } from "../../internal/types/config.ts";
-import { join } from "node:path";
+import { join, normalize } from "node:path";
 import { underline } from "@std/fmt/colors";
 import ora from "ora";
 import type {
@@ -136,7 +136,8 @@ async function parseComponents(componentFiles: WalkEntry[]) {
 
   for (const file of componentFiles) {
     const componentModule = (await import(
-      "file://" + join(cwd(), file.path)
+      (typeof Deno !== "undefined" ? "file:" : "") +
+        normalize(join(cwd(), file.path))
     )) as {
       config?: Component;
       default: (

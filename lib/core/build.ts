@@ -1,7 +1,7 @@
 import { walkFiles } from "@svarta/walk-it";
 import { yellow } from "@std/fmt/colors";
 import ora from "ora";
-import { join } from "node:path";
+import { join, normalize } from "node:path";
 import type { BotConfig } from "../exports/mod.ts";
 import { readdirSync } from "node:fs";
 import { cwd } from "node:process";
@@ -60,10 +60,10 @@ ${
 
 async function fetchConfig(): Promise<BotConfig | undefined> {
   try {
-    const configModule = await import("file://" + join(cwd(), "bot.config.ts"));
-    if (!configModule.default) {
-      throw new Error("Config not found in bot.config.ts");
-    }
+    const configModule = await import(
+      (typeof Deno !== "undefined" ? "file:" : "") +
+        normalize(join(cwd(), "bot.config.ts"))
+    );
     return configModule.default;
   } catch (error) {
     console.error("Error loading bot.config.ts:", error);
