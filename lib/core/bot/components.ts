@@ -136,7 +136,7 @@ async function parseComponents(componentFiles: WalkEntry[]) {
 
   for (const file of componentFiles) {
     const componentModule = (await import(
-      (typeof Deno !== "undefined" ? "file:" : "") +
+      (!navigator.userAgent.includes("Bun") ? "file:" : "") +
         normalize(join(cwd(), file.path))
     )) as {
       config?: Component;

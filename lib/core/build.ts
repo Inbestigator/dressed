@@ -61,7 +61,7 @@ ${
 async function fetchConfig(): Promise<BotConfig | undefined> {
   try {
     const configModule = await import(
-      (typeof Deno !== "undefined" ? "file:" : "") +
+      (!navigator.userAgent.includes("Bun") ? "file:" : "") +
         normalize(join(cwd(), "bot.config.ts"))
     );
     return configModule.default;

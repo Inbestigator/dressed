@@ -96,7 +96,7 @@ export async function parseCommands(commandFiles: WalkEntry[]) {
 
   for (const file of commandFiles) {
     const commandModule = (await import(
-      (typeof Deno !== "undefined" ? "file:" : "") +
+      (!navigator.userAgent.includes("Bun") ? "file:" : "") +
         normalize(join(cwd(), file.path))
     )) as {
       config?: CommandConfig;
