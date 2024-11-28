@@ -136,7 +136,7 @@ async function parseComponents(componentFiles: WalkEntry[]) {
 
   for (const file of componentFiles) {
     const componentModule = (await import(
-      join("file://", cwd(), file.path)
+      "file://" + join(cwd(), file.path)
     )) as {
       config?: Component;
       default: (

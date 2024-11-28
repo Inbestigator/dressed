@@ -59,9 +59,8 @@ ${
 }
 
 async function fetchConfig(): Promise<BotConfig | undefined> {
-  const configPath = join("file://", cwd(), "bot.config.ts");
   try {
-    const configModule = await import(configPath);
+    const configModule = await import("file://" + join(cwd(), "bot.config.ts"));
     if (!configModule.default) {
       throw new Error("Config not found in bot.config.ts");
     }

@@ -95,7 +95,9 @@ export async function parseCommands(commandFiles: WalkEntry[]) {
   const commandData: Command[] = [];
 
   for (const file of commandFiles) {
-    const commandModule = (await import(join("file://", cwd(), file.path))) as {
+    const commandModule = (await import(
+      "file://" + join(cwd(), file.path)
+    )) as {
       config?: CommandConfig;
       default: (interaction: CommandInteraction) => unknown;
     };
