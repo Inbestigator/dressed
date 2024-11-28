@@ -7,6 +7,7 @@ import { InstallGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
 import { fetchFiles, type WalkEntry } from "../build.ts";
 import { cwd, env } from "node:process";
+import { runtime } from "std-env";
 
 /**
  * Fetches the commands from the commands directory
@@ -96,8 +97,7 @@ export async function parseCommands(commandFiles: WalkEntry[]) {
 
   for (const file of commandFiles) {
     const commandModule = (await import(
-      (!navigator.userAgent.includes("Bun") ? "file:" : "") +
-        normalize(join(cwd(), file.path))
+      (runtime !== "bun" ? "file:" : "") + normalize(join(cwd(), file.path))
     )) as {
       config?: CommandConfig;
       default: (interaction: CommandInteraction) => unknown;

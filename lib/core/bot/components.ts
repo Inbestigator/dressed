@@ -9,6 +9,7 @@ import type {
 import { ComponentType } from "discord-api-types/v10";
 import { fetchFiles, type WalkEntry } from "../build.ts";
 import { cwd } from "node:process";
+import { runtime } from "std-env";
 
 /**
  * Fetches the components from the components directory
@@ -136,8 +137,7 @@ async function parseComponents(componentFiles: WalkEntry[]) {
 
   for (const file of componentFiles) {
     const componentModule = (await import(
-      (!navigator.userAgent.includes("Bun") ? "file:" : "") +
-        normalize(join(cwd(), file.path))
+      (runtime !== "bun" ? "file:" : "") + normalize(join(cwd(), file.path))
     )) as {
       config?: Component;
       default: (

@@ -1,6 +1,6 @@
 {
   "name": "@inbestigator/discord-http",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "publish": {
     "include": [
       "lib",
@@ -20,6 +20,7 @@
     "commander": "npm:commander@^12.1.0",
     "discord-api-types": "npm:discord-api-types@^0.37.104",
     "ora": "npm:ora@^8.1.1",
+    "std-env": "npm:std-env@^3.8.0",
     "tweetnacl": "npm:tweetnacl@^1.0.3"
   },
   "exclude": [

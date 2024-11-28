@@ -5,6 +5,7 @@ import { join, normalize } from "node:path";
 import type { BotConfig } from "../exports/mod.ts";
 import { readdirSync } from "node:fs";
 import { cwd } from "node:process";
+import { runtime } from "std-env";
 
 export type WalkEntry = {
   name: string;
@@ -61,7 +62,7 @@ ${
 async function fetchConfig(): Promise<BotConfig | undefined> {
   try {
     const configModule = await import(
-      (!navigator.userAgent.includes("Bun") ? "file:" : "") +
+      (runtime !== "bun" ? "file:" : "") +
         normalize(join(cwd(), "bot.config.ts"))
     );
     return configModule.default;
