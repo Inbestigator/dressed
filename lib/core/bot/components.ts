@@ -80,33 +80,27 @@ export default async function setupComponents(
         }
       }
 
-      const component = components.find((c) => {
-        const pattern = c.name.replace(/\[.+?\]/g, "([a-zA-Z0-9_-]+)");
-        const regex = new RegExp(`^${pattern}$`);
-
-        return (
-          regex.test(interaction.data.custom_id) && c.category === category
-        );
-      });
+      const component = components.find(
+        (c) =>
+          c.category === category &&
+          handleArgs(c.name).regex.test(interaction.data.custom_id),
+      );
 
       if (!component) {
         ora(`Component "${interaction.data.custom_id}" not found`).warn();
         return;
       }
 
-      const argNames = [...component.name.matchAll(/\[(.+?)\]/g)].map(
-        (match) => match[1],
-      );
-      const pattern = component.name.replace(/\[.+?\]/g, "([a-zA-Z0-9_-]+)");
-      const regex = new RegExp(`^${pattern}$`);
+      const { regex, argNames } = handleArgs(component.name);
       const matches = regex.exec(interaction.data.custom_id);
 
-      const args = matches
-        ? argNames.reduce((acc: { [key: string]: string }, argName, index) => {
-          acc[argName] = matches[index + 1];
-          return acc;
-        }, {})
-        : {};
+      const args: Record<string, string> = {};
+
+      if (matches) {
+        argNames.forEach((argName, i) => {
+          args[argName] = matches[i + 1];
+        });
+      }
 
       const componentLoader = ora(
         `Running component "${component.name}"${
@@ -128,6 +122,14 @@ export default async function setupComponents(
     generatingLoader.fail();
     throw e;
   }
+}
+
+export function handleArgs(str: string) {
+  const argNames = [...str.matchAll(/\[(.+?)\]/g)].map((m) => m[1]);
+  argNames.forEach((arg) => {
+    str = str.replace(`[${arg}]`, "([a-zA-Z0-9_-]+?)");
+  });
+  return { regex: new RegExp(`^${str}$`), argNames };
 }
 
 const validComponentCategories = ["buttons", "modals", "selects"];
