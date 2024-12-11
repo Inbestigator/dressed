@@ -39,3 +39,5 @@ export {
 } from "../core/bot/messages.ts";
 
 export { deleteChannel, getChannel } from "../core/bot/channels.ts";
+
+export { getUser } from "../core/bot/users.ts";
