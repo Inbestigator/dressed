@@ -5,12 +5,15 @@ import type {
   Interaction,
   InteractionReplyOptions,
 } from "./types/interaction.ts";
-import {
-  type APIApplicationCommandInteractionDataOption,
-  type APIInteraction,
-  type APIInteractionDataResolved,
-  InteractionType,
+import type {
+  APIApplicationCommandInteractionDataOption,
+  APIInteraction,
+  APIInteractionDataResolved,
+  APIInteractionDataResolvedChannel,
+  APIRole,
+  APIUser,
 } from "discord-api-types/v10";
+import { InteractionType } from "discord-api-types/v10";
 import type { MessageOptions } from "./types/messages.ts";
 
 function baseMethods(interaction: APIInteraction): BaseInteractionMethods {
@@ -23,27 +26,43 @@ function baseMethods(interaction: APIInteraction): BaseInteractionMethods {
   };
 }
 
-function getOption(
+export function getOption(
   name: string,
   options?: APIApplicationCommandInteractionDataOption[],
   resolved?: APIInteractionDataResolved,
-) {
-  if (!options || options.length === 0) return;
+): {
+  subcommand: () => {
+    getOption: (name: string) => ReturnType<typeof getOption>;
+  };
+  groupSubcommand: () => {
+    getSubcommand: (name: string) => {
+      getOption: (name: string) => ReturnType<typeof getOption>;
+    };
+  };
+  string: () => string;
+  integer: () => number;
+  boolean: () => boolean;
+  user: () => APIUser;
+  channel: () => APIInteractionDataResolvedChannel;
+  role: () => APIRole;
+} {
+  if (!options || options.length === 0) throw new Error("No options found");
   const option = options.find((o) => o.name === name);
-  if (!option) return;
-  if (!resolved) return option;
-  switch (option.type) {
-    case 1:
+  if (!option) throw new Error(`Option ${name} not found`);
+
+  return {
+    subcommand: () => {
+      if (option.type !== 1) throw new Error("Not a subcommand");
       return {
-        ...option,
         getOption: (name: string) => getOption(name, option.options, resolved),
       };
-    case 2:
+    },
+    groupSubcommand: () => {
+      if (option.type !== 2) throw new Error("Not a group subcommand");
       return {
-        ...option,
         getSubcommand: (name: string) => {
           const subcommand = option.options.find((o) => o.name === name);
-          if (!subcommand) return;
+          if (!subcommand) throw new Error(`Subcommand ${name} not found`);
           return {
             ...subcommand,
             getOption: (name: string) =>
@@ -51,36 +70,39 @@ function getOption(
           };
         },
       };
-    case 3:
-      return option;
-    case 4:
-      return option;
-    case 5:
-      return option;
-    case 6:
-      if (!resolved.users) return option;
-      return {
-        ...option,
-        user: resolved.users[option.value],
-      };
-    case 7:
-      if (!resolved.channels) return option;
-      return {
-        ...option,
-        channel: resolved.channels[option.value],
-      };
-    case 8:
-      if (!resolved.roles) return option;
-      return {
-        ...option,
-        role: resolved.roles[option.value],
-      };
-
-      // TODO: Add other types
-      // Mentionable = 9,
-      // Number = 10,
-      // Attachment = 11
-  }
+    },
+    string: () => {
+      if (option.type !== 3) throw new Error("Not a string");
+      return option.value;
+    },
+    integer: () => {
+      if (option.type !== 4) throw new Error("Not an integer");
+      return option.value;
+    },
+    boolean: () => {
+      if (option.type !== 5) throw new Error("Not a boolean");
+      return option.value;
+    },
+    user: () => {
+      if (option.type !== 6) throw new Error("Not a user");
+      if (!resolved?.users) throw new Error("No users found");
+      return resolved.users[option.value];
+    },
+    channel: () => {
+      if (option.type !== 7) throw new Error("Not a channel");
+      if (!resolved?.channels) throw new Error("No channels found");
+      return resolved.channels[option.value];
+    },
+    role: () => {
+      if (option.type !== 8) throw new Error("Not a role");
+      if (!resolved?.roles) throw new Error("No roles found");
+      return resolved.roles[option.value];
+    },
+  };
+  // TODO: Add other types
+  // Mentionable = 9,
+  // Number = 10,
+  // Attachment = 11
 }
 
 export default function createInteraction<T extends APIInteraction>(
