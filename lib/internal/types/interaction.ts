@@ -1,5 +1,6 @@
 import type {
   APIApplicationCommandInteraction,
+  APIApplicationCommandInteractionDataOption,
   APIEmbed,
   APIInteraction,
   APIMessageComponentInteraction,
@@ -9,7 +10,7 @@ import type {
 } from "discord-api-types/v10";
 import type { MessageComponents, MessageOptions } from "./messages.ts";
 
-interface BaseInteractionMethods {
+export interface BaseInteractionMethods {
   /**
    * Respond to an interaction with a message
    * @param data The response message
@@ -45,6 +46,7 @@ export type CommandInteraction =
      * @param data TODO
      */
     showModal: (data: unknown) => Promise<void>; // TODO
+    getOption: (name: string) => APIApplicationCommandInteractionDataOption;
   };
 
 /**
