@@ -35,7 +35,10 @@ export default function createInteraction<T extends APIInteraction>(
       return {
         ...interaction,
         ...baseMethods(interaction),
-        getOption: (name: string, required = false) =>
+        getOption: <Required extends boolean>(
+          name: string,
+          required: Required,
+        ) =>
           getOption(
             name,
             required,
