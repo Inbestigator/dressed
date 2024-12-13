@@ -7,7 +7,6 @@ import type {
   APIModalSubmitInteraction,
   APIUser,
   MessageFlags,
-  RESTAPIAttachment,
 } from "discord-api-types/v10";
 import type { MessageOptions } from "./messages.ts";
 import type { OptionReaders } from "../options.ts";
@@ -91,14 +90,11 @@ export interface DeferredReplyOptions {
   flags?: MessageFlags;
 }
 
-interface ExtendedResponseData extends APIInteractionResponseCallbackData {
-  ephemeral?: boolean;
-  attachments?: (RESTAPIAttachment & {
-    data?: Blob;
-  })[];
-}
-
-export type InteractionReplyOptions = ExtendedResponseData | string;
+export type InteractionReplyOptions =
+  | (APIInteractionResponseCallbackData & {
+    ephemeral?: boolean;
+  })
+  | string;
 
 export type Interaction<T extends APIInteraction> = T extends
   APIApplicationCommandInteraction ? CommandInteraction
