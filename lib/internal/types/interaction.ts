@@ -1,14 +1,15 @@
 import type {
   APIApplicationCommandInteraction,
-  APIEmbed,
   APIInteraction,
+  APIInteractionResponseCallbackData,
   APIMessageComponentInteraction,
+  APIModalInteractionResponseCallbackData,
   APIModalSubmitInteraction,
   APIUser,
   MessageFlags,
 } from "discord-api-types/v10";
-import type { MessageComponents, MessageOptions } from "./messages.ts";
-import type { getOption } from "../interaction.ts";
+import type { MessageOptions } from "./messages.ts";
+import type { getOption } from "../options.ts";
 
 export interface BaseInteractionMethods {
   /**
@@ -45,8 +46,16 @@ export type CommandInteraction =
      * Respond to an interaction with a popup modal
      * @param data TODO
      */
-    showModal: (data: unknown) => Promise<void>; // TODO
-    getOption: (name: string) => ReturnType<typeof getOption>;
+    showModal: (data: APIModalInteractionResponseCallbackData) => Promise<void>; // TODO
+    /**
+     * Get an option from the interaction
+     * @param name The name of the option
+     * @param required Whether the option is required
+     */
+    getOption: (
+      name: string,
+      required?: boolean,
+    ) => ReturnType<typeof getOption>;
   };
 
 /**
@@ -60,7 +69,7 @@ export type MessageComponentInteraction =
      * Respond to an interaction with a popup modal
      * @param data TODO
      */
-    showModal: (data: unknown) => Promise<void>; // TODO
+    showModal: (data: APIModalInteractionResponseCallbackData) => Promise<void>; // TODO
     /**
      * For components, edit the message the component was attached to
      * @param data The new data for the component message
@@ -77,17 +86,13 @@ export type ModalSubmitInteraction =
 
 export interface DeferredReplyOptions {
   ephemeral?: boolean;
-  flags?: MessageFlags[] | number;
+  flags?: MessageFlags;
 }
 
 export type InteractionReplyOptions =
-  | {
-    content?: string;
+  | (APIInteractionResponseCallbackData & {
     ephemeral?: boolean;
-    flags?: MessageFlags[] | number;
-    embeds?: APIEmbed[];
-    components?: MessageComponents;
-  }
+  })
   | string;
 
 export type Interaction<T extends APIInteraction> = T extends

@@ -1,21 +1,6 @@
-import { type APIMessage, MessageFlags } from "discord-api-types/v10";
+import type { APIMessage } from "discord-api-types/v10";
 import type { MessageOptions } from "../../internal/types/messages.ts";
-import ora from "ora";
-import { DiscordRequest } from "../../internal/utils.ts";
-
-export function createMessageFlags(flags: MessageFlags[]) {
-  let bitfield = 0;
-
-  flags.forEach((flag) => {
-    if (flag in MessageFlags) {
-      bitfield |= flag;
-    } else {
-      ora(`Unknown message flag: ${flag}`).warn();
-    }
-  });
-
-  return bitfield;
-}
+import { callDiscord } from "../../internal/utils.ts";
 
 /**
  * Post a message to a guild text or DM channel.
@@ -30,11 +15,7 @@ export async function createMessage(
     data = { content: data };
   }
 
-  if (typeof data.flags !== "number") {
-    data.flags = createMessageFlags(data.flags ?? []);
-  }
-
-  const res = await DiscordRequest(`channels/${channel}/messages`, {
+  const res = await callDiscord(`channels/${channel}/messages`, {
     method: "POST",
     body: data,
   });
@@ -57,11 +38,7 @@ export async function editMessage(
     data = { content: data };
   }
 
-  if (typeof data.flags !== "number") {
-    data.flags = createMessageFlags(data.flags ?? []);
-  }
-
-  const res = await DiscordRequest(`channels/${channel}/messages/${message}`, {
+  const res = await callDiscord(`channels/${channel}/messages/${message}`, {
     method: "PATCH",
     body: data,
   });
@@ -79,7 +56,7 @@ export async function deleteMessage(
   channel: string,
   message: string,
 ): Promise<APIMessage> {
-  const res = await DiscordRequest(`channels/${channel}/messages/${message}`, {
+  const res = await callDiscord(`channels/${channel}/messages/${message}`, {
     method: "DELETE",
   });
 
@@ -96,7 +73,7 @@ export async function bulkDelete(
   channel: string,
   messages: string[],
 ): Promise<APIMessage> {
-  const res = await DiscordRequest(`channels/${channel}/messages/bulk-delete`, {
+  const res = await callDiscord(`channels/${channel}/messages/bulk-delete`, {
     method: "DELETE",
     body: { messages },
   });

@@ -7,10 +7,9 @@ import type {
   DeferredReplyOptions,
   InteractionReplyOptions,
 } from "./types/interaction.ts";
-import { DiscordRequest } from "./utils.ts";
+import { callDiscord } from "./utils.ts";
 import type { MessageOptions } from "./types/messages.ts";
 import { env } from "node:process";
-import { createMessageFlags } from "../core/bot/messages.ts";
 
 const userId = env.DISCORD_APP_ID;
 
@@ -22,14 +21,12 @@ export async function reply(
     data = { content: data };
   }
 
-  if (typeof data.flags !== "number") {
-    if (data.ephemeral) {
-      data.flags = [...(data.flags ?? []), MessageFlags.Ephemeral];
-    }
-    data.flags = createMessageFlags(data.flags ?? []);
+  if (data.ephemeral) {
+    const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
+    data.flags = flags;
   }
 
-  await DiscordRequest(
+  await callDiscord(
     `interactions/${interaction.id}/${interaction.token}/callback`,
     {
       method: "POST",
@@ -45,14 +42,12 @@ export async function deferReply(
   interaction: APIInteraction,
   data?: DeferredReplyOptions,
 ) {
-  if (data && typeof data.flags !== "number") {
-    if (data.ephemeral) {
-      data.flags = [...(data.flags ?? []), MessageFlags.Ephemeral];
-    }
-    data.flags = createMessageFlags(data.flags ?? []);
+  if (data?.ephemeral) {
+    const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
+    data.flags = flags;
   }
 
-  await DiscordRequest(
+  await callDiscord(
     `interactions/${interaction.id}/${interaction.token}/callback`,
     {
       method: "POST",
@@ -72,7 +67,7 @@ export async function update(
     data = { content: data };
   }
 
-  await DiscordRequest(
+  await callDiscord(
     `interactions/${interaction.id}/${interaction.token}/callback`,
     {
       method: "POST",
@@ -92,7 +87,7 @@ export async function editReply(
     data = { content: data };
   }
 
-  await DiscordRequest(
+  await callDiscord(
     `webhooks/${userId}/${interaction.token}/messages/@original`,
     {
       method: "PATCH",
@@ -109,14 +104,12 @@ export async function followUp(
     data = { content: data };
   }
 
-  if (typeof data.flags !== "number") {
-    if (data.ephemeral) {
-      data.flags = [...(data.flags ?? []), MessageFlags.Ephemeral];
-    }
-    data.flags = createMessageFlags(data.flags ?? []);
+  if (data.ephemeral) {
+    const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
+    data.flags = flags;
   }
 
-  await DiscordRequest(`webhooks/${userId}/${interaction.token}`, {
+  await callDiscord(`webhooks/${userId}/${interaction.token}`, {
     method: "POST",
     body: data,
   });

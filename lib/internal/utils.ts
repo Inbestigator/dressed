@@ -25,7 +25,7 @@ export async function verifySignature(req: Request): Promise<boolean> {
   );
 }
 
-export async function DiscordRequest(
+export async function callDiscord(
   endpoint: string,
   options: Record<string, unknown>,
 ) {
@@ -61,7 +61,7 @@ export async function InstallGlobalCommands(
   const endpoint = `applications/${appId}/commands`;
 
   try {
-    await DiscordRequest(endpoint, { method: "PUT", body: commands });
+    await callDiscord(endpoint, { method: "PUT", body: commands });
   } catch (err) {
     console.error(err);
   }

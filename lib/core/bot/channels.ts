@@ -1,12 +1,12 @@
 import type { APIChannel } from "discord-api-types/v10";
-import { DiscordRequest } from "../../internal/utils.ts";
+import { callDiscord } from "../../internal/utils.ts";
 
 /**
  * Get a channel by ID.
  * @param channel The channel to fetch
  */
 export async function getChannel(channel: string): Promise<APIChannel> {
-  const res = await DiscordRequest(`channels/${channel}`, {
+  const res = await callDiscord(`channels/${channel}`, {
     method: "GET",
   });
 
@@ -18,7 +18,7 @@ export async function getChannel(channel: string): Promise<APIChannel> {
  * @param channel The channel to delete
  */
 export async function deleteChannel(channel: string): Promise<APIChannel> {
-  const res = await DiscordRequest(`channels/${channel}`, {
+  const res = await callDiscord(`channels/${channel}`, {
     method: "DELETE",
   });
 
