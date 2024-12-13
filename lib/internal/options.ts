@@ -6,7 +6,7 @@ import type {
   APIUser,
 } from "discord-api-types/v10";
 
-interface OptionReaders {
+export interface OptionReaders {
   /**
    * Get the option as a subcommand
    */

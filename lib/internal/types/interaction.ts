@@ -9,7 +9,7 @@ import type {
   MessageFlags,
 } from "discord-api-types/v10";
 import type { MessageOptions } from "./messages.ts";
-import type { getOption } from "../options.ts";
+import type { OptionReaders } from "../options.ts";
 
 export interface BaseInteractionMethods {
   /**
@@ -52,10 +52,11 @@ export type CommandInteraction =
      * @param name The name of the option
      * @param required Whether the option is required
      */
-    getOption: (
+    getOption: <Required extends boolean>(
       name: string,
-      required?: boolean,
-    ) => ReturnType<typeof getOption>;
+      required?: Required,
+    ) => Required extends true ? NonNullable<OptionReaders>
+      : OptionReaders | null;
   };
 
 /**
