@@ -10,6 +10,7 @@ import type {
 import { callDiscord } from "./utils.ts";
 import type { MessageOptions } from "./types/messages.ts";
 import { env } from "node:process";
+import { handleAttachments } from "../core/bot/messages.ts";
 
 const userId = env.DISCORD_APP_ID;
 
@@ -21,10 +22,16 @@ export async function reply(
     data = { content: data };
   }
 
+  const formData = new FormData();
+
+  data = handleAttachments(data, formData);
+
   if (data.ephemeral) {
     const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     data.flags = flags;
   }
+
+  formData.append("payload_json", JSON.stringify(data));
 
   await callDiscord(
     `interactions/${interaction.id}/${interaction.token}/callback`,
@@ -32,7 +39,7 @@ export async function reply(
       method: "POST",
       body: {
         type: InteractionResponseType.ChannelMessageWithSource,
-        data,
+        data: formData,
       },
     },
   );
@@ -67,13 +74,19 @@ export async function update(
     data = { content: data };
   }
 
+  const formData = new FormData();
+
+  data = handleAttachments(data, formData);
+
+  formData.append("payload_json", JSON.stringify(data));
+
   await callDiscord(
     `interactions/${interaction.id}/${interaction.token}/callback`,
     {
       method: "POST",
       body: {
         type: InteractionResponseType.UpdateMessage,
-        data,
+        data: formData,
       },
     },
   );
@@ -87,11 +100,17 @@ export async function editReply(
     data = { content: data };
   }
 
+  const formData = new FormData();
+
+  data = handleAttachments(data, formData);
+
+  formData.append("payload_json", JSON.stringify(data));
+
   await callDiscord(
     `webhooks/${userId}/${interaction.token}/messages/@original`,
     {
       method: "PATCH",
-      body: data,
+      body: formData,
     },
   );
 }

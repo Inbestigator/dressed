@@ -1,6 +1,24 @@
 import type { APIMessage } from "discord-api-types/v10";
 import type { MessageOptions } from "../../internal/types/messages.ts";
 import { callDiscord } from "../../internal/utils.ts";
+import type { InteractionReplyOptions } from "../../internal/types/interaction.ts";
+
+export function handleAttachments<
+  T extends MessageOptions | InteractionReplyOptions,
+>(data: T, formData: FormData) {
+  if (typeof data !== "string" && data.attachments) {
+    data.attachments.forEach((attachment, index) => {
+      if (attachment.data) {
+        const filename = attachment.filename || `attachment-${index + 1}.txt`;
+        formData.append(`files[${index}]`, attachment.data, filename);
+      }
+    });
+
+    data.attachments = data.attachments.map(({ data: _, ...rest }) => rest);
+  }
+
+  return data as T;
+}
 
 /**
  * Post a message to a guild text or DM channel.
@@ -9,15 +27,21 @@ import { callDiscord } from "../../internal/utils.ts";
  */
 export async function createMessage(
   channel: string,
-  data: string | MessageOptions,
+  data: MessageOptions,
 ): Promise<APIMessage> {
   if (typeof data === "string") {
     data = { content: data };
   }
 
+  const formData = new FormData();
+
+  data = handleAttachments(data, formData);
+
+  formData.append("payload_json", JSON.stringify(data));
+
   const res = await callDiscord(`channels/${channel}/messages`, {
     method: "POST",
-    body: data,
+    body: formData,
   });
 
   return res.json();
@@ -32,15 +56,21 @@ export async function createMessage(
 export async function editMessage(
   channel: string,
   message: string,
-  data: string | MessageOptions,
+  data: MessageOptions,
 ): Promise<APIMessage> {
   if (typeof data === "string") {
     data = { content: data };
   }
 
+  const formData = new FormData();
+
+  data = handleAttachments(data, formData);
+
+  formData.append("payload_json", JSON.stringify(data));
+
   const res = await callDiscord(`channels/${channel}/messages/${message}`, {
     method: "PATCH",
-    body: data,
+    body: formData,
   });
 
   return res.json();
