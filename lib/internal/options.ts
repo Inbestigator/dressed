@@ -6,12 +6,7 @@ import type {
   APIUser,
 } from "discord-api-types/v10";
 
-export function getOption(
-  name: string,
-  required: boolean,
-  options?: APIApplicationCommandInteractionDataOption[],
-  resolved?: APIInteractionDataResolved,
-): {
+interface OptionReaders {
   /**
    * Get the option as a subcommand
    */
@@ -62,20 +57,27 @@ export function getOption(
    * Get the option as an attachment
    */
   attachment: () => string;
-} | null {
+}
+
+export function getOption<Required extends boolean>(
+  name: string,
+  isRequired: Required,
+  options?: APIApplicationCommandInteractionDataOption[],
+  resolved?: APIInteractionDataResolved,
+): Required extends true ? NonNullable<OptionReaders> : OptionReaders | null {
   if (!options || options.length === 0) throw new Error("No options found");
   const option = options.find((o) => o.name === name);
   if (!option) {
-    if (required) throw new Error(`Required option ${name} not found`);
-    return null;
+    if (isRequired) throw new Error(`Required option ${name} not found`);
+    return null as Required extends true ? never : null;
   }
 
   return {
     subcommand: () => {
       if (option.type !== 1) throw new Error("Not a subcommand");
       return {
-        getOption: (name: string, required = false) =>
-          getOption(name, required, option.options, resolved),
+        getOption: (name: string, isRequired = false) =>
+          getOption(name, isRequired, option.options, resolved),
       };
     },
     groupSubcommand: () => {
@@ -86,8 +88,8 @@ export function getOption(
           if (!subcommand) throw new Error(`Subcommand ${name} not found`);
           return {
             ...subcommand,
-            getOption: (name: string, required = false) =>
-              getOption(name, required, subcommand.options, resolved),
+            getOption: (name: string, isRequired = false) =>
+              getOption(name, isRequired, subcommand.options, resolved),
           };
         },
       };
