@@ -32,6 +32,11 @@ export interface BaseInteractionMethods {
    * @param data The data for the message
    */
   followUp: (data: InteractionReplyOptions) => Promise<void>;
+  /**
+   * Respond to an interaction with a popup modal
+   * @param data The data for the modal response
+   */
+  showModal: (data: APIModalInteractionResponseCallbackData) => Promise<void>;
   user: APIUser;
 }
 
@@ -42,11 +47,6 @@ export type CommandInteraction =
   & APIApplicationCommandInteraction
   & BaseInteractionMethods
   & {
-    /**
-     * Respond to an interaction with a popup modal
-     * @param data TODO
-     */
-    showModal: (data: APIModalInteractionResponseCallbackData) => Promise<void>; // TODO
     /**
      * Get an option from the interaction
      * @param name The name of the option
@@ -67,11 +67,6 @@ export type MessageComponentInteraction =
   & BaseInteractionMethods
   & {
     /**
-     * Respond to an interaction with a popup modal
-     * @param data TODO
-     */
-    showModal: (data: APIModalInteractionResponseCallbackData) => Promise<void>; // TODO
-    /**
      * For components, edit the message the component was attached to
      * @param data The new data for the component message
      */
@@ -83,7 +78,7 @@ export type MessageComponentInteraction =
  */
 export type ModalSubmitInteraction =
   & APIModalSubmitInteraction
-  & BaseInteractionMethods;
+  & Omit<BaseInteractionMethods, "showModal">;
 
 export interface DeferredReplyOptions {
   ephemeral?: boolean;

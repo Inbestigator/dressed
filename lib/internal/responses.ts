@@ -1,5 +1,6 @@
 import {
   type APIInteraction,
+  type APIModalInteractionResponseCallbackData,
   InteractionResponseType,
   MessageFlags,
 } from "discord-api-types/v10";
@@ -73,6 +74,22 @@ export async function update(
       method: "POST",
       body: {
         type: InteractionResponseType.UpdateMessage,
+        data,
+      },
+    },
+  );
+}
+
+export async function showModal(
+  interaction: APIInteraction,
+  data: APIModalInteractionResponseCallbackData,
+) {
+  await callDiscord(
+    `interactions/${interaction.id}/${interaction.token}/callback`,
+    {
+      method: "POST",
+      body: {
+        type: InteractionResponseType.Modal,
         data,
       },
     },

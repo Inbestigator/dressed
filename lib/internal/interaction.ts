@@ -1,4 +1,11 @@
-import { deferReply, editReply, followUp, reply, update } from "./responses.ts";
+import {
+  deferReply,
+  editReply,
+  followUp,
+  reply,
+  showModal,
+  update,
+} from "./responses.ts";
 import type {
   BaseInteractionMethods,
   DeferredReplyOptions,
@@ -8,6 +15,7 @@ import type {
 import type {
   APIInteraction,
   APIInteractionDataResolved,
+  APIModalInteractionResponseCallbackData,
 } from "discord-api-types/v10";
 import { InteractionType } from "discord-api-types/v10";
 import type { MessageOptions } from "./types/messages.ts";
@@ -19,6 +27,8 @@ function baseMethods(interaction: APIInteraction): BaseInteractionMethods {
     deferReply: (data?: DeferredReplyOptions) => deferReply(interaction, data),
     followUp: (data: InteractionReplyOptions) => followUp(interaction, data),
     editReply: (data: MessageOptions) => editReply(interaction, data),
+    showModal: (data: APIModalInteractionResponseCallbackData) =>
+      showModal(interaction, data),
     user: interaction.user!,
   };
 }

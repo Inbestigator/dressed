@@ -4,6 +4,7 @@ import {
   type APIButtonComponentWithSKUId,
   type APIButtonComponentWithURL,
   ButtonStyle,
+  ComponentType,
 } from "discord-api-types/v10";
 
 type StringButtonStyle =
@@ -31,7 +32,7 @@ interface ButtonWithURL
 
 interface Button {
   style?: ButtonStyle;
-  type?: 2;
+  type?: ComponentType.Button;
 }
 
 /**
@@ -41,7 +42,7 @@ export function Button(
   data: ButtonWithCustomId | ButtonWithSKUId | ButtonWithURL,
 ): APIButtonComponent {
   const button = data as Button;
-  button.type = 2;
+  button.type = ComponentType.Button;
   if (!data.style) data.style = "Primary";
   button.style = ButtonStyle[data.style];
   return button as APIButtonComponent;

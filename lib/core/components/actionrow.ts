@@ -1,6 +1,7 @@
-import type {
-  APIActionRowComponent,
-  APIActionRowComponentTypes,
+import {
+  type APIActionRowComponent,
+  type APIActionRowComponentTypes,
+  ComponentType,
 } from "discord-api-types/v10";
 
 /**
@@ -11,6 +12,6 @@ export function ActionRow<T extends APIActionRowComponentTypes>(
 ): APIActionRowComponent<T> {
   return {
     components: components as T[],
-    type: 1,
+    type: ComponentType.ActionRow,
   };
 }
