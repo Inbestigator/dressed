@@ -30,6 +30,8 @@ export * from "../core/build.ts";
 
 export * from "../core/components/actionrow.ts";
 export * from "../core/components/button.ts";
+export * from "../core/components/selectmenu.ts";
+export * from "../core/components/textinput.ts";
 
 export {
   bulkDelete,
