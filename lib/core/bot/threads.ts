@@ -77,7 +77,7 @@ export async function modifyThread(
     /**
      * The IDs of the set of tags that have been applied to a thread in a thread-only channel
      */
-    applied_tags: Snowflake[];
+    applied_tags?: Snowflake[];
   },
 ): Promise<APIThreadChannel> {
   const res = await callDiscord(`channels/${thread}`, {
