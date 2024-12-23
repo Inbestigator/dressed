@@ -1,4 +1,8 @@
-import type { APIChannel } from "discord-api-types/v10";
+import type {
+  APIThreadChannel,
+  ChannelFlags,
+  Snowflake,
+} from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
@@ -17,7 +21,7 @@ export async function createThread(
     rate_limit_per_user?: number;
   },
   message?: string,
-): Promise<APIChannel> {
+): Promise<APIThreadChannel> {
   let endpoint = `channels/${channel}/threads`;
   if (message) {
     endpoint = `messages/${message}/messages/${message}/threads`;
@@ -28,6 +32,56 @@ export async function createThread(
 
   const res = await callDiscord(endpoint, {
     method: "POST",
+    body: data,
+  });
+
+  return res.json();
+}
+
+/**
+ * Update a thread's settings.
+ * @param thread The thread to modify
+ * @param data The new data for the thread
+ */
+export async function modifyThread(
+  thread: string,
+  data: {
+    /**
+     * 1-100 character thread name
+     */
+    name?: string;
+    /**
+     * Whether the thread is archived
+     */
+    archived?: boolean;
+    /**
+     * The thread will stop showing in the channel list after `auto_archive_duration` minutes of inactivity, can be set to: 60, 1440, 4320, 10080
+     */
+    auto_archive_duration?: number;
+    /**
+     * Whether the thread is locked; when a thread is locked
+     */
+    locked?: boolean;
+    /**
+     * Whether non-moderators can add other non-moderators to a thread
+     */
+    invitable?: boolean;
+    /**
+     * Smount of seconds a user has to wait before sending another message (0-21600)
+     */
+    rate_limit_per_user?: number;
+    /**
+     * Channel flags combined as a bitfield
+     */
+    flags?: ChannelFlags;
+    /**
+     * The IDs of the set of tags that have been applied to a thread in a thread-only channel
+     */
+    applied_tags: Snowflake[];
+  },
+): Promise<APIThreadChannel> {
+  const res = await callDiscord(`channels/${thread}`, {
+    method: "PATCH",
     body: data,
   });
 
