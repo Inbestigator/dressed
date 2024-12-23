@@ -40,7 +40,12 @@ export {
   deleteMessage,
   editMessage,
 } from "../core/bot/messages.ts";
-
 export { deleteChannel, getChannel } from "../core/bot/channels.ts";
-
+export {
+  addThreadMember,
+  createThread,
+  joinThread,
+  leaveThread,
+  removeThreadMember,
+} from "../core/bot/threads.ts";
 export { getUser } from "../core/bot/users.ts";
