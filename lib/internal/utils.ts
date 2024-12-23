@@ -4,6 +4,7 @@ import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";
 import { env } from "node:process";
 import ora from "ora";
+import type { Command } from "./types/config.ts";
 
 /**
  * Verifies the signature of the POST request
@@ -40,28 +41,28 @@ export async function callDiscord(
   });
   if (!res.ok) {
     const data = await res.json();
-    console.log(res.status);
-    ora(`Failed to ${options.method} ${endpoint}`).fail();
+    ora(`Failed to ${options.method} ${endpoint} (${res.status})`).fail();
     console.error(`└ ${data.message}`);
+    throw new Error(data.message);
   }
   return res;
 }
 
-export async function InstallGlobalCommands(
+export async function installGlobalCommands(
   appId: string,
-  commands: {
-    name: string;
-    description: string;
-    type: number;
-    integration_types: number[];
-    contexts: number[];
-    options?: { name: string; description: string; type: number }[];
-  }[],
+  commands: (Omit<Command, "default"> & {
+    default?: Command["default"];
+  })[],
 ) {
-  const endpoint = `applications/${appId}/commands`;
-
+  commands = commands.map((c) => ({
+    ...c,
+    default: undefined,
+  }));
   try {
-    await callDiscord(endpoint, { method: "PUT", body: commands });
+    await callDiscord(`applications/${appId}/commands`, {
+      method: "PUT",
+      body: commands,
+    });
   } catch (err) {
     console.error(err);
   }

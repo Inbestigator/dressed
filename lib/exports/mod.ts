@@ -1,14 +1,14 @@
 export { createInstance } from "../core/instance.ts";
 import setupCommands from "../core/bot/commands.ts";
 import setupComponents from "../core/bot/components.ts";
-import type { Command as CommandType } from "../internal/types/config.ts";
+import type { Command } from "../internal/types/config.ts";
 
 /**
  * Configuration for a specific command.
  *
  * Specify the description and options here.
  */
-export interface CommandConfig extends Omit<CommandType, "name" | "default"> {}
+export interface CommandConfig extends Omit<Command, "name" | "default"> {}
 
 export type { BotConfig } from "../internal/types/config.ts";
 
@@ -32,6 +32,7 @@ export * from "../core/components/actionrow.ts";
 export * from "../core/components/button.ts";
 export * from "../core/components/selectmenu.ts";
 export * from "../core/components/textinput.ts";
+export * from "../core/bot/options.ts";
 
 export {
   bulkDelete,
