@@ -3,7 +3,7 @@ import { join, normalize } from "node:path";
 import { underline } from "@std/fmt/colors";
 import ora from "ora";
 import type { CommandConfig } from "../../exports/mod.ts";
-import { InstallGlobalCommands } from "../../internal/utils.ts";
+import { installGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
 import { fetchFiles, type WalkEntry } from "../build.ts";
 import { cwd, env } from "node:process";
@@ -47,15 +47,13 @@ export default async function setupCommands(
         throw new Error("No app id provided");
       }
 
-      InstallGlobalCommands(
+      installGlobalCommands(
         appId,
         commands.map((c) => ({
-          name: c.name,
-          description: c.description ?? "No description provided",
+          ...c,
           type: 1,
           integration_types: [0, 1],
           contexts: [0, 1, 2],
-          options: c.options ?? [],
         })),
       );
     }
@@ -103,10 +101,10 @@ export async function parseCommands(commandFiles: WalkEntry[]) {
       default: (interaction: CommandInteraction) => unknown;
     };
     const command: Command = {
+      ...commandModule.config,
       name: file.name,
       description: commandModule.config?.description ??
         "No description provided",
-      options: commandModule.config?.options ?? [],
       default: commandModule.default,
     };
 
