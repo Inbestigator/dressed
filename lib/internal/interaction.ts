@@ -13,8 +13,8 @@ import type {
   InteractionReplyOptions,
 } from "./types/interaction.ts";
 import type {
+  APIChatInputApplicationCommandInteractionData,
   APIInteraction,
-  APIInteractionDataResolved,
   APIModalInteractionResponseCallbackData,
 } from "discord-api-types/v10";
 import { InteractionType } from "discord-api-types/v10";
@@ -55,7 +55,8 @@ export default function createInteraction<T extends APIInteraction>(
             "options" in interaction.data
               ? interaction.data.options
               : undefined,
-            interaction.data.resolved as APIInteractionDataResolved,
+            (interaction.data as APIChatInputApplicationCommandInteractionData)
+              .resolved,
           ),
       } as unknown as Interaction<T>;
     }
