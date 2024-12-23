@@ -11,7 +11,7 @@ export async function createThread(
   channel: string,
   data: {
     name: string;
-    type?: "Private" | "Public";
+    type?: "Private" | "Public" | number;
     auto_archive_duration?: number;
     invitable?: boolean;
     rate_limit_per_user?: number;
@@ -22,8 +22,8 @@ export async function createThread(
   if (message) {
     endpoint = `messages/${message}/messages/${message}/threads`;
     delete data.type;
-  } else if (!data.type) {
-    data.type = "Private";
+  } else {
+    data.type = data.type === "Public" ? 11 : 12;
   }
 
   const res = await callDiscord(endpoint, {
