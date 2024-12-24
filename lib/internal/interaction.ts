@@ -15,10 +15,11 @@ import type {
 import type {
   APIChatInputApplicationCommandInteractionData,
   APIInteraction,
+  APIInteractionResponseCallbackData,
   APIModalInteractionResponseCallbackData,
+  RESTPatchAPIWebhookWithTokenMessageJSONBody,
 } from "discord-api-types/v10";
 import { InteractionType } from "discord-api-types/v10";
-import type { MessageOptions } from "./types/messages.ts";
 import { getOption } from "./options.ts";
 
 function baseMethods(interaction: APIInteraction): BaseInteractionMethods {
@@ -26,7 +27,8 @@ function baseMethods(interaction: APIInteraction): BaseInteractionMethods {
     reply: (data: InteractionReplyOptions) => reply(interaction, data),
     deferReply: (data?: DeferredReplyOptions) => deferReply(interaction, data),
     followUp: (data: InteractionReplyOptions) => followUp(interaction, data),
-    editReply: (data: MessageOptions) => editReply(interaction, data),
+    editReply: (data: string | RESTPatchAPIWebhookWithTokenMessageJSONBody) =>
+      editReply(interaction, data),
     showModal: (data: APIModalInteractionResponseCallbackData) =>
       showModal(interaction, data),
     user: interaction.user!,
@@ -64,7 +66,8 @@ export default function createInteraction<T extends APIInteraction>(
       return {
         ...interaction,
         ...baseMethods(interaction),
-        update: (data: MessageOptions) => update(interaction, data),
+        update: (data: string | APIInteractionResponseCallbackData) =>
+          update(interaction, data),
       } as unknown as Interaction<T>;
     }
     case InteractionType.ModalSubmit: {

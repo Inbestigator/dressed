@@ -1,15 +1,16 @@
 import {
   type APIInteraction,
+  type APIInteractionResponseCallbackData,
   type APIModalInteractionResponseCallbackData,
   InteractionResponseType,
   MessageFlags,
+  type RESTPatchAPIWebhookWithTokenMessageJSONBody,
 } from "discord-api-types/v10";
 import type {
   DeferredReplyOptions,
   InteractionReplyOptions,
 } from "./types/interaction.ts";
 import { callDiscord } from "./utils.ts";
-import type { MessageOptions } from "./types/messages.ts";
 import { env } from "node:process";
 
 const userId = env.DISCORD_APP_ID;
@@ -62,7 +63,7 @@ export async function deferReply(
 
 export async function update(
   interaction: APIInteraction,
-  data: MessageOptions,
+  data: string | APIInteractionResponseCallbackData,
 ) {
   if (typeof data === "string") {
     data = { content: data };
@@ -98,7 +99,7 @@ export async function showModal(
 
 export async function editReply(
   interaction: APIInteraction,
-  data: MessageOptions,
+  data: string | RESTPatchAPIWebhookWithTokenMessageJSONBody,
 ) {
   if (typeof data === "string") {
     data = { content: data };

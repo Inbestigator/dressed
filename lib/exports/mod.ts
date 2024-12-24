@@ -35,9 +35,17 @@ export * from "../core/components/textinput.ts";
 export * from "../core/bot/options.ts";
 
 export {
+  getGuild,
+  getMember,
+  listChannels,
+  listMembers,
+} from "../core/bot/guilds.ts";
+export {
   bulkDelete,
   createMessage,
+  createReaction,
   deleteMessage,
+  deleteReaction,
   editMessage,
   getMessage,
   getMessages,
@@ -49,10 +57,10 @@ export {
 } from "../core/bot/channels.ts";
 export {
   addThreadMember,
+  createForumThread,
   createThread,
   joinThread,
   leaveThread,
-  modifyThread,
   removeThreadMember,
 } from "../core/bot/threads.ts";
 export { getUser } from "../core/bot/users.ts";

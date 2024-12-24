@@ -7,8 +7,8 @@ import type {
   APIModalSubmitInteraction,
   APIUser,
   MessageFlags,
+  RESTPatchAPIWebhookWithTokenMessageJSONBody,
 } from "discord-api-types/v10";
-import type { MessageOptions } from "./messages.ts";
 import type { OptionReaders } from "../options.ts";
 
 export interface BaseInteractionMethods {
@@ -26,7 +26,9 @@ export interface BaseInteractionMethods {
    * Edit the initial interaction response
    * @param data The new data for the response message
    */
-  editReply: (data: MessageOptions) => Promise<void>;
+  editReply: (
+    data: string | RESTPatchAPIWebhookWithTokenMessageJSONBody,
+  ) => Promise<void>;
   /**
    * Create another response to the interaction
    * @param data The data for the message
@@ -70,7 +72,9 @@ export type MessageComponentInteraction =
      * For components, edit the message the component was attached to
      * @param data The new data for the component message
      */
-    update: (data: MessageOptions) => Promise<void>;
+    update: (
+      data: string | APIInteractionResponseCallbackData,
+    ) => Promise<void>;
   };
 
 /**
