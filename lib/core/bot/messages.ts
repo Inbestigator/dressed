@@ -24,6 +24,34 @@ export async function createMessage(
 }
 
 /**
+ * Retrieves the messages in a channel.
+ * @param channel The channel to get messages from
+ */
+export async function getMessages(channel: string): Promise<APIMessage[]> {
+  const res = await callDiscord(`channels/${channel}/messages`, {
+    method: "GET",
+  });
+
+  return res.json();
+}
+
+/**
+ * Retrieves a specific message in the channel.
+ * @param channel The channel to get the message from
+ * @param message The snowflake of the message to get
+ */
+export async function getMessage(
+  channel: string,
+  message: string,
+): Promise<APIMessage> {
+  const res = await callDiscord(`channels/${channel}/messages/${message}`, {
+    method: "GET",
+  });
+
+  return res.json();
+}
+
+/**
  * Edit a previously sent message.
  * @param channel The channel to edit the message in
  * @param message The snowflake of the message to edit
