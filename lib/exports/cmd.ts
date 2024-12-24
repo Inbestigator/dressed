@@ -1,7 +1,7 @@
 import ora from "ora";
 import { Command } from "commander";
 import { build } from "./mod.ts";
-import { writeFileSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 
 const program = new Command();
 
@@ -14,8 +14,10 @@ program
   .option("-r, --register", "Register slash commands")
   .action(async ({ instance, register }) => {
     const outputContent = await build(instance, register);
-    writeFileSync("./bot.gen.ts", new TextEncoder().encode(outputContent));
-    ora("Wrote to bot.gen.ts").succeed();
+    const writing = ora("Writing to bot.gen.ts");
+    await writeFile("./bot.gen.ts", new TextEncoder().encode(outputContent));
+    writing.succeed("Wrote to bot.gen.ts");
+    Deno.exit();
   });
 
 program.parse();
