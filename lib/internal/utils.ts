@@ -58,12 +58,8 @@ export async function installGlobalCommands(
     ...c,
     default: undefined,
   }));
-  try {
-    await callDiscord(`applications/${appId}/commands`, {
-      method: "PUT",
-      body: commands,
-    });
-  } catch (err) {
-    console.error(err);
-  }
+  await callDiscord(`applications/${appId}/commands`, {
+    method: "PUT",
+    body: commands,
+  });
 }

@@ -6,7 +6,7 @@ import type {
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "../../internal/types/interaction.ts";
-import { ComponentType } from "discord-api-types/v10";
+import { ComponentType, InteractionType } from "discord-api-types/v10";
 import { fetchFiles, type WalkEntry } from "../build.ts";
 import { cwd } from "node:process";
 import { runtime } from "std-env";
@@ -64,8 +64,11 @@ export default async function setupComponents(
       const category = getCategory();
 
       function getCategory() {
+        if (interaction.type === InteractionType.ModalSubmit) {
+          return "modals";
+        }
         switch (
-          (interaction.data as { component_type: number }).component_type
+          interaction.data.component_type
         ) {
           case ComponentType.Button:
             return "buttons";
@@ -75,8 +78,6 @@ export default async function setupComponents(
           case ComponentType.StringSelect:
           case ComponentType.MentionableSelect:
             return "selects";
-          default:
-            return "modals";
         }
       }
 
