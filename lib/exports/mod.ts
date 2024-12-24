@@ -39,6 +39,8 @@ export {
   createMessage,
   deleteMessage,
   editMessage,
+  getMessage,
+  getMessages,
 } from "../core/bot/messages.ts";
 export {
   deleteChannel,
