@@ -1,5 +1,9 @@
-import type { APIMessage } from "discord-api-types/v10";
-import type { MessageOptions } from "../../internal/types/messages.ts";
+import type {
+  APIMessage,
+  RESTPatchAPIChannelMessageJSONBody,
+  RESTPostAPIChannelMessageJSONBody,
+  Snowflake,
+} from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
@@ -9,7 +13,7 @@ import { callDiscord } from "../../internal/utils.ts";
  */
 export async function createMessage(
   channel: string,
-  data: string | MessageOptions,
+  data: string | RESTPostAPIChannelMessageJSONBody,
 ): Promise<APIMessage> {
   if (typeof data === "string") {
     data = { content: data };
@@ -60,7 +64,7 @@ export async function getMessage(
 export async function editMessage(
   channel: string,
   message: string,
-  data: string | MessageOptions,
+  data: string | RESTPatchAPIChannelMessageJSONBody,
 ): Promise<APIMessage> {
   if (typeof data === "string") {
     data = { content: data };
@@ -78,33 +82,65 @@ export async function editMessage(
  * Delete a message. If operating on a guild channel and trying to delete a message that was not sent by the current user, this endpoint requires the `MANAGE_MESSAGES` permission.
  * @param channel The channel to delete the message from
  * @param message The snowflake of the message to delete
- * @returns
  */
 export async function deleteMessage(
   channel: string,
   message: string,
-): Promise<APIMessage> {
-  const res = await callDiscord(`channels/${channel}/messages/${message}`, {
+): Promise<void> {
+  await callDiscord(`channels/${channel}/messages/${message}`, {
     method: "DELETE",
   });
-
-  return res.json();
 }
 
 /**
  * Delete multiple messages in a single request.
  * @param channel The channel to delete messages from
  * @param messages An array of snowflakes
- * @returns
  */
 export async function bulkDelete(
   channel: string,
-  messages: string[],
-): Promise<APIMessage> {
-  const res = await callDiscord(`channels/${channel}/messages/bulk-delete`, {
+  messages: Snowflake[],
+): Promise<void> {
+  await callDiscord(`channels/${channel}/messages/bulk-delete`, {
     method: "DELETE",
     body: { messages },
   });
+}
 
-  return res.json();
+/**
+ * Adds a reaction to a message.
+ * @param channel The channel to add the reaction in
+ * @param message The message to add the reaction to
+ * @param emoji The emoji to react with
+ */
+export async function createReaction(
+  channel: string,
+  message: string,
+  emoji: string,
+): Promise<void> {
+  await callDiscord(
+    `channels/${channel}/messages/${message}/reactions/${emoji}/@me`,
+    { method: "PUT" },
+  );
+}
+
+/**
+ * Deletes a reaction from a message.
+ * @param channel The channel to delete the reaction in
+ * @param message The message to delete the reaction from
+ * @param emoji The emoji to delete
+ * @param user The user to delete the reaction for (defaults to self)
+ */
+export async function deleteReaction(
+  channel: string,
+  message: string,
+  emoji: string,
+  user?: string,
+): Promise<void> {
+  await callDiscord(
+    `channels/${channel}/messages/${message}/reactions/${emoji}/${
+      user ?? "@me"
+    }`,
+    { method: "DELETE" },
+  );
 }
