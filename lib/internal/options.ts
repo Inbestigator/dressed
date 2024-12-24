@@ -1,5 +1,6 @@
 import type {
   APIApplicationCommandInteractionDataOption,
+  APIAttachment,
   APIInteractionDataResolved,
   APIInteractionDataResolvedChannel,
   APIRole,
@@ -56,7 +57,7 @@ export interface OptionReaders {
   /**
    * Get the option as an attachment
    */
-  attachment: () => string;
+  attachment: () => APIAttachment;
 }
 
 export function getOption<Required extends boolean>(
@@ -133,7 +134,8 @@ export function getOption<Required extends boolean>(
     },
     attachment: () => {
       if (option.type !== 11) throw new Error("Not an attachment");
-      return option.value;
+      if (!resolved?.attachments) throw new Error("No attachments found");
+      return resolved.attachments[option.value];
     },
   };
 }
