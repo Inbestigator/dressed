@@ -67,6 +67,28 @@ export default function createInteraction<T extends APIInteraction>(
         update: (data: MessageOptions) => update(interaction, data),
       } as unknown as Interaction<T>;
     }
+    case InteractionType.ModalSubmit: {
+      return {
+        ...interaction,
+        ...baseMethods(interaction),
+        getField: <Required extends boolean>(
+          name: string,
+          required: Required,
+        ) => {
+          const field = interaction.data.components.map((c) => c.components)
+            .flat().find((
+              c,
+            ) => c.custom_id === name);
+
+          if (!field) {
+            if (required) throw new Error(`Field "${name}" not found`);
+            return null;
+          }
+
+          return field.value;
+        },
+      } as unknown as Interaction<T>;
+    }
     default: {
       return null as unknown as Interaction<T>;
     }
