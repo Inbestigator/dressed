@@ -62,14 +62,14 @@ export interface OptionReaders {
 
 export function getOption<Required extends boolean>(
   name: string,
-  isRequired: Required,
+  required: Required,
   options?: APIApplicationCommandInteractionDataOption[],
   resolved?: APIInteractionDataResolved,
 ): Required extends true ? NonNullable<OptionReaders> : OptionReaders | null {
   if (!options || options.length === 0) throw new Error("No options found");
   const option = options.find((o) => o.name === name);
   if (!option) {
-    if (isRequired) throw new Error(`Required option ${name} not found`);
+    if (required) throw new Error(`Required option ${name} not found`);
     return null as Required extends true ? never : null;
   }
 
@@ -77,8 +77,8 @@ export function getOption<Required extends boolean>(
     subcommand: () => {
       if (option.type !== 1) throw new Error("Not a subcommand");
       return {
-        getOption: (name: string, isRequired = false) =>
-          getOption(name, isRequired, option.options, resolved),
+        getOption: (name: string, required = false) =>
+          getOption(name, required, option.options, resolved),
       };
     },
     groupSubcommand: () => {
@@ -89,8 +89,8 @@ export function getOption<Required extends boolean>(
           if (!subcommand) throw new Error(`Subcommand ${name} not found`);
           return {
             ...subcommand,
-            getOption: (name: string, isRequired = false) =>
-              getOption(name, isRequired, subcommand.options, resolved),
+            getOption: (name: string, required = false) =>
+              getOption(name, required, subcommand.options, resolved),
           };
         },
       };

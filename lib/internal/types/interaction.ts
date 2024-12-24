@@ -78,7 +78,19 @@ export type MessageComponentInteraction =
  */
 export type ModalSubmitInteraction =
   & APIModalSubmitInteraction
-  & Omit<BaseInteractionMethods, "showModal">;
+  & Omit<BaseInteractionMethods, "showModal">
+  & {
+    /**
+     * Get a field from the user's submission
+     * @param name The name of the field
+     * @param required Whether the field is required
+     */
+    getField: <Required extends boolean>(
+      name: string,
+      required?: Required,
+    ) => Required extends true ? NonNullable<string>
+      : string | null;
+  };
 
 export interface DeferredReplyOptions {
   ephemeral?: boolean;
