@@ -118,7 +118,7 @@ function generateImports(
   registerCommands?: boolean,
 ): string {
   const baseImport = addInstance
-    ? `import { createInstance${
+    ? `import { createHandlers${
       config.deno === false ? "" : ", createServer"
     } } from "@inbestigator/discord-http";`
     : "";
@@ -142,7 +142,7 @@ function generateInstanceCreation(
   return `
 ${registerEnv}
 async function startServer() {
-  const { runCommand, runComponent } = await createInstance(${commandArray}, ${componentArray});
+  const { runCommand, runComponent } = await createHandlers(${commandArray}, ${componentArray});
   ${
     config.deno === false
       ? 'console.warn("You will need to set up your own server if not on Deno.");'

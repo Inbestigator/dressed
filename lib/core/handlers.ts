@@ -3,7 +3,6 @@ config();
 import setupCommands from "./bot/commands.ts";
 import ora from "ora";
 import setupComponents from "./bot/components.ts";
-import getDetails from "../internal/details.ts";
 import { env } from "node:process";
 import type { WalkEntry } from "./build.ts";
 import type {
@@ -13,9 +12,9 @@ import type {
 } from "../internal/types/interaction.ts";
 
 /**
- * Creates a new instance of your bot.
+ * Create the command and component handlers.
  */
-export async function createInstance(
+export async function createHandlers(
   commandFiles?: WalkEntry[],
   componentFiles?: WalkEntry[],
 ): Promise<{
@@ -35,12 +34,7 @@ export async function createInstance(
 
   initLoader.succeed();
 
-  const details = await getDetails();
-
-  ora(`Logged in as ${details.username}`).succeed();
-
   const runCommand = await setupCommands(commandFiles);
-
   const runComponent = await setupComponents(componentFiles);
 
   return {
