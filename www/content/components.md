@@ -6,9 +6,13 @@ structure:
 ```ts
 src
 ├── components
-│   └── buttons
-│       ├── increase.ts // Will handle for buttons with ID `increase`
-│       └── trivia_guess_[answer].ts // Will handle for buttons with ID `trivia_guess_(.+)`
+│   ├── buttons
+│   │   ├── increase.ts // Will handle for buttons with ID `increase`
+│   │   └── trivia_guess_[answer].ts // Will handle for buttons with ID `trivia_guess_(.+)`
+│   ├── modals
+│   │   └── suggestion.ts // Will handle for modals with ID `suggestion`
+│   └── selects
+│       └── rating.ts // Will handle for selectmenu submissions with ID `rating`
 ```
 
 This means that component file names must be unique within their category.

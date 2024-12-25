@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Zap, Cloud, Code, Hexagon, Book } from "lucide-react";
+import { Zap, Cloud, Code, Hexagon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import DenoLogo from "@/components/deno-logo";
 import JSRLogo from "@/components/jsr-logo";
@@ -79,7 +79,7 @@ export default function Home() {
             Lightning Fast
           </h2>
           <p className="text-muted-foreground">
-            Optimized for speed and efficiency using Discord's HTTP API.
+            Optimized for speed and efficiency using Discord&apos;s HTTP API.
           </p>
         </div>
         <div className="bg-card p-6 rounded-lg shadow-lg">

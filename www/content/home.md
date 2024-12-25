@@ -18,6 +18,7 @@ deno add jsr:@inbestigator/discord-http
 ```
 
 ```ts
+// src/commands/ping.ts
 import type {
   CommandConfig,
   CommandInteraction,
@@ -33,6 +34,12 @@ export default async function ping(interaction: CommandInteraction) {
     ephemeral: true,
   });
 }
+```
+
+You can then build the bot with this command
+
+```bash
+deno run -A jsr:@inbestigator/discord-http/cmd build
 ```
 
 By default the builder outputs only the boilerplate data, if you want it to

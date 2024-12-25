@@ -4,11 +4,14 @@ import * as React from "react";
 import {
   Command,
   Github,
+  Hash,
   Home,
-  MessageCircleWarning,
+  MessageCircle,
   Puzzle,
+  Reply,
   Terminal,
-  Zap,
+  User,
+  Users,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -45,6 +48,36 @@ const data = {
       title: "Components",
       url: "/docs/components",
       icon: Puzzle,
+    },
+    {
+      title: "Interactions",
+      url: "/docs/interactions",
+      icon: Reply,
+    },
+    {
+      title: "Channels",
+      url: "/docs/channels",
+      icon: Hash,
+    },
+    {
+      title: "Guilds",
+      url: "/docs/guilds",
+      icon: Users,
+    },
+    {
+      title: "Messages",
+      url: "/docs/messages",
+      icon: MessageCircle,
+    },
+    {
+      title: "Threads",
+      url: "/docs/threads",
+      icon: Hash,
+    },
+    {
+      title: "Users",
+      url: "/docs/users",
+      icon: User,
     },
   ],
   navSecondary: [

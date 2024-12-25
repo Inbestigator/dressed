@@ -21,11 +21,4 @@ export const config: CommandConfig = {
 
 ## Config type
 
-### Description - _string_
-
-A description sets the command description when running it in Discord.
-
-### Options - _array_
-
-Options is an array of
-[Discord application command options](https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-structure)
+Discord-http supports all of the [Discord application command object](https://discord.com/developers/docs/interactions/application-commands#application-command-object)

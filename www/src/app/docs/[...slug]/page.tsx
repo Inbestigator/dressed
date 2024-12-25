@@ -70,7 +70,7 @@ export default async function DocsPage({
               {doc.slug.map((s, i) => {
                 if (i === doc.slug.length - 1) {
                   return (
-                    <BreadcrumbItem key={i}>
+                    <BreadcrumbItem key={s}>
                       <BreadcrumbPage>
                         {s
                           .split("-")

@@ -4,3 +4,4 @@ node_modules
 .next
 pnpm-lock.yaml
 .DS_STORE
+www/tsconfig.tsbuildinfo
