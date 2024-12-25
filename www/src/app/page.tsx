@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Zap, Cloud, Code, Hexagon, Book } from "lucide-react";
+import { Zap, Cloud, Code, Hexagon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import DenoLogo from "@/components/deno-logo";
 import JSRLogo from "@/components/jsr-logo";
