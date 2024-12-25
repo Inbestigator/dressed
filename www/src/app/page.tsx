@@ -79,7 +79,7 @@ export default function Home() {
             Lightning Fast
           </h2>
           <p className="text-muted-foreground">
-            Optimized for speed and efficiency using Discord's HTTP API.
+            Optimized for speed and efficiency using Discord&apos;s HTTP API.
           </p>
         </div>
         <div className="bg-card p-6 rounded-lg shadow-lg">
