@@ -16,10 +16,6 @@ import { env } from "node:process";
 
 const userId = env.DISCORD_APP_ID;
 
-if (!userId) {
-  throw new Error("No Discord app ID provided.");
-}
-
 export async function reply(
   interaction: APIInteraction,
   data: InteractionReplyOptions,
