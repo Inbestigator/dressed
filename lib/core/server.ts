@@ -8,20 +8,17 @@ import {
 } from "discord-api-types/v10";
 import createInteraction from "../internal/interaction.ts";
 import type {
-  CommandInteraction,
-  MessageComponentInteraction,
-  ModalSubmitInteraction,
-} from "../internal/types/interaction.ts";
-import type { BotConfig } from "../internal/types/config.ts";
+  BotConfig,
+  CommandHandler,
+  ComponentHandler,
+} from "../internal/types/config.ts";
 
 /**
  * Start serving a server
  */
 export function createServer(
-  runCommand: (interaction: CommandInteraction) => Promise<void>,
-  runComponent: (
-    interaction: MessageComponentInteraction | ModalSubmitInteraction,
-  ) => Promise<void>,
+  runCommand: CommandHandler,
+  runComponent: ComponentHandler,
   config: BotConfig,
 ) {
   Deno.serve(async (req) => {
@@ -48,10 +45,8 @@ export function createServer(
  * Runs an interaction, takes a function to run commands/components and the entry request
  */
 export async function runInteraction(
-  runCommand: (interaction: CommandInteraction) => Promise<void>,
-  runComponent: (
-    interaction: MessageComponentInteraction | ModalSubmitInteraction,
-  ) => Promise<void>,
+  runCommand: CommandHandler,
+  runComponent: ComponentHandler,
   req: Request,
 ): Promise<Response> {
   const json = await req.json();
