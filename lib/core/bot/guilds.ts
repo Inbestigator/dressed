@@ -3,6 +3,7 @@ import type {
   APIGuild,
   APIGuildMember,
 } from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
@@ -14,8 +15,9 @@ export async function getGuild(
   guild: string,
   with_counts?: boolean,
 ): Promise<APIGuild> {
-  const res = await callDiscord(`guilds/${guild}?with_counts=${with_counts}`, {
+  const res = await callDiscord(Routes.guild(guild), {
     method: "GET",
+    body: { with_counts },
   });
 
   return res.json();
@@ -26,7 +28,7 @@ export async function getGuild(
  * @param guild The guild to get the channels from
  */
 export async function listChannels(guild: string): Promise<APIChannel[]> {
-  const res = await callDiscord(`guilds/${guild}/channels`, {
+  const res = await callDiscord(Routes.guildChannels(guild), {
     method: "GET",
   });
 
@@ -42,7 +44,7 @@ export async function getMember(
   guild: string,
   member: string,
 ): Promise<APIGuildMember> {
-  const res = await callDiscord(`guilds/${guild}/members/${member}`, {
+  const res = await callDiscord(Routes.guildMember(guild, member), {
     method: "GET",
   });
 
@@ -54,7 +56,7 @@ export async function getMember(
  * @param guild The guild to get the members from
  */
 export async function listMembers(guild: string): Promise<APIGuildMember[]> {
-  const res = await callDiscord(`guilds/${guild}/members`, {
+  const res = await callDiscord(Routes.guildMembers(guild), {
     method: "GET",
   });
 

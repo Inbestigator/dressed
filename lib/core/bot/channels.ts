@@ -2,6 +2,7 @@ import type {
   APIChannel,
   RESTPatchAPIChannelJSONBody,
 } from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
@@ -9,7 +10,7 @@ import { callDiscord } from "../../internal/utils.ts";
  * @param channel The channel to fetch
  */
 export async function getChannel(channel: string): Promise<APIChannel> {
-  const res = await callDiscord(`channels/${channel}`, {
+  const res = await callDiscord(Routes.channel(channel), {
     method: "GET",
   });
 
@@ -25,7 +26,7 @@ export async function modifyChannel(
   channel: string,
   data: RESTPatchAPIChannelJSONBody,
 ): Promise<APIChannel> {
-  const res = await callDiscord(`channels/${channel}`, {
+  const res = await callDiscord(Routes.channel(channel), {
     method: "PATCH",
     body: data,
   });
@@ -38,7 +39,7 @@ export async function modifyChannel(
  * @param channel The channel to delete
  */
 export async function deleteChannel(channel: string): Promise<APIChannel> {
-  const res = await callDiscord(`channels/${channel}`, {
+  const res = await callDiscord(Routes.channel(channel), {
     method: "DELETE",
   });
 

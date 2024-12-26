@@ -47,8 +47,6 @@ export {
   addThreadMember,
   createForumThread,
   createThread,
-  joinThread,
-  leaveThread,
   removeThreadMember,
 } from "../core/bot/threads.ts";
 export { getUser } from "../core/bot/users.ts";

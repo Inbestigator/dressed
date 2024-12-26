@@ -1,12 +1,12 @@
-import type { APIUser } from "discord-api-types/v10";
+import { type APIUser, Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
  * Returns a user object for a given user ID.
- * @param id The ID of the user to fetch
+ * @param user The user to fetch (defaults to self)
  */
-export async function getUser(id: string): Promise<APIUser> {
-  const res = await callDiscord(`users/${id}`, {
+export async function getUser(user?: string): Promise<APIUser> {
+  const res = await callDiscord(Routes.user(user), {
     method: "GET",
   });
 
