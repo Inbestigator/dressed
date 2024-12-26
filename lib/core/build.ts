@@ -1,11 +1,13 @@
 import { walkFiles } from "@svarta/walk-it";
-import { yellow } from "@std/fmt/colors";
+import { underline, yellow } from "@std/fmt/colors";
 import ora from "ora";
 import { join, normalize } from "node:path";
 import type { BotConfig } from "../exports/mod.ts";
 import { readdirSync } from "node:fs";
 import { cwd } from "node:process";
 import { runtime } from "std-env";
+import { parseCommands } from "./bot/commands.ts";
+import { parseComponents } from "./bot/components.ts";
 
 export type WalkEntry = {
   name: string;
@@ -30,6 +32,9 @@ export async function build(
     fetchConfig(),
   ]);
 
+  const commandData = await parseCommands(commandFiles);
+  const componentData = parseComponents(componentFiles);
+
   if (!config) {
     buildLoader.fail();
     throw new Error("No bot config found");
@@ -37,17 +42,17 @@ export async function build(
 
   const outputContent = `
 ${generateImports(config, addInstance, registerCommands)}
-${generateFileImports([...commandFiles, ...componentFiles])}
+${generateFileImports([...commandData, ...componentData])}
 
-${defineFiles("commandFiles", commandFiles)}
-${defineFiles("componentFiles", componentFiles)}
+${defineFiles("commandData", commandData)}
+${defineFiles("componentData", componentData)}
 const config = ${JSON.stringify(config)};
 
 ${
     addInstance
       ? generateInstanceCreation(
-        commandFiles,
-        componentFiles,
+        commandData,
+        componentData,
         config,
         registerCommands,
       )
@@ -75,7 +80,7 @@ async function fetchConfig(): Promise<BotConfig | undefined> {
 /**
  * Fetches the files from a directory and formats paths for import.
  */
-export async function fetchFiles(directory: string): Promise<WalkEntry[]> {
+async function fetchFiles(directory: string): Promise<WalkEntry[]> {
   try {
     readdirSync(`./${directory}`);
   } catch {
@@ -102,11 +107,11 @@ export async function fetchFiles(directory: string): Promise<WalkEntry[]> {
   return filesArray;
 }
 
-function generateFileImports(files: WalkEntry[]): string {
+function generateFileImports(files: { path: string }[]): string {
   return files.map((f) => `import "./${f.path}";`).join("\n");
 }
 
-function defineFiles(variableName: string, files: WalkEntry[]): string {
+function defineFiles(variableName: string, files: unknown[]): string {
   return files.length > 0
     ? `const ${variableName} = ${JSON.stringify(files)};`
     : "";
@@ -129,16 +134,16 @@ function generateImports(
 }
 
 function generateInstanceCreation(
-  commandFiles: WalkEntry[],
-  componentFiles: WalkEntry[],
+  commandData: unknown[],
+  componentData: unknown[],
   config: BotConfig,
   registerCommands?: boolean,
 ): string {
   const registerEnv = registerCommands
     ? `env.REGISTER_COMMANDS = "true";\n`
     : "";
-  const commandArray = commandFiles.length > 0 ? "commandFiles" : "[]";
-  const componentArray = componentFiles.length > 0 ? "componentFiles" : "[]";
+  const commandArray = commandData.length > 0 ? "commandData" : "[]";
+  const componentArray = componentData.length > 0 ? "componentData" : "[]";
   return `
 ${registerEnv}
 async function startServer() {
@@ -152,4 +157,23 @@ async function startServer() {
   
 startServer();
 `.trim();
+}
+
+export function trackParts(title: string, total: number) {
+  const generatedStr: string[][] = [[underline(title)]];
+  let leftN = total;
+  return {
+    removeN: () => {
+      --leftN;
+    },
+    addRow: (name: string) => {
+      generatedStr.push([
+        total === 1 ? "-" : leftN === total - 1 ? "┌" : leftN === 0 ? "└" : "├",
+        name,
+      ]);
+    },
+    log: () => {
+      console.log(generatedStr.map((row) => row.join(" ")).join("\n"));
+    },
+  };
 }

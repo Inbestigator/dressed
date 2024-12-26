@@ -50,14 +50,8 @@ export async function callDiscord(
 
 export async function installGlobalCommands(
   appId: string,
-  commands: (Omit<Command, "default"> & {
-    default?: Command["default"];
-  })[],
+  commands: Omit<Command, "default">[],
 ) {
-  commands = commands.map((c) => ({
-    ...c,
-    default: undefined,
-  }));
   await callDiscord(`applications/${appId}/commands`, {
     method: "PUT",
     body: commands,

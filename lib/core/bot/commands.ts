@@ -1,122 +1,102 @@
-import type { Command } from "../../internal/types/config.ts";
+import type { Command, CommandHandler } from "../../internal/types/config.ts";
 import { join, normalize } from "node:path";
-import { underline } from "@std/fmt/colors";
 import ora from "ora";
 import type { CommandConfig } from "../../exports/mod.ts";
 import { installGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
-import { fetchFiles, type WalkEntry } from "../build.ts";
+import { trackParts, type WalkEntry } from "../build.ts";
 import { cwd, env } from "node:process";
 import { runtime } from "std-env";
 
 /**
- * Fetches the commands from the commands directory
- *
  * @returns A function that runs a command
  */
 export default async function setupCommands(
-  commandFiles?: WalkEntry[],
+  commands: Omit<Command, "default">[],
 ): Promise<(interaction: CommandInteraction) => Promise<void>> {
-  const generatingLoader = ora("Generating commands").start();
-  let generatedN = 0;
-  const generatedStr: string[][] = [[underline("\nCommand")]];
+  if (env.REGISTER_COMMANDS === "true") {
+    const appId = env.DISCORD_APP_ID;
 
-  function addCommand(name: string, totalCommands: number) {
-    generatedN++;
-    generatedStr.push([
-      totalCommands === 1
-        ? "-"
-        : generatedN === 1
-        ? "┌"
-        : totalCommands === generatedN
-        ? "└"
-        : "├",
-      name,
-    ]);
-  }
-
-  if (!commandFiles) commandFiles = await fetchFiles("src/commands");
-
-  try {
-    const commands = await parseCommands(commandFiles);
-
-    if (env.REGISTER_COMMANDS === "true") {
-      const appId = env.DISCORD_APP_ID;
-
-      if (!appId) {
-        throw new Error("No app id provided");
-      }
-
-      installGlobalCommands(
-        appId,
-        commands.map((c) => ({
-          ...c,
-          type: 1,
-          integration_types: [0, 1],
-          contexts: [0, 1, 2],
-        })),
-      );
+    if (!appId) {
+      throw new Error("No app id provided");
     }
 
-    commands.forEach((command) => {
-      addCommand(command.name, commands.length);
-    });
+    await installGlobalCommands(
+      appId,
+      commands.map((c) => ({
+        ...c,
+        type: 1,
+        integration_types: [0, 1],
+        contexts: [0, 1, 2],
+      })),
+    );
+  }
+
+  return async function runCommand(interaction: CommandInteraction) {
+    const command = commands.find((c) => c.name === interaction.data.name);
+
+    if (!command) {
+      ora(`Command "${interaction.data.name}" not found`).warn();
+      return;
+    }
+
+    const commandLoader = ora(`Running command "${command?.name}"`).start();
+
+    try {
+      const commandModule = (await import(
+        (runtime !== "bun" ? "file:" : "") +
+          normalize(join(cwd(), command.path))
+      )) as {
+        default: CommandHandler;
+      };
+      await Promise.resolve(commandModule.default(interaction));
+      commandLoader.succeed();
+    } catch (error) {
+      commandLoader.fail();
+      console.error("└", error);
+    }
+  };
+}
+
+export async function parseCommands(commandFiles: WalkEntry[]) {
+  const generatingLoader = ora("Generating commands").start();
+  const { addRow, removeN, log } = trackParts("\nCommand", commandFiles.length);
+
+  try {
+    const commandData: Command[] = [];
+
+    for (const file of commandFiles) {
+      removeN();
+      const commandModule = (await import(
+        (runtime !== "bun" ? "file:" : "") + normalize(join(cwd(), file.path))
+      )) as {
+        config?: CommandConfig;
+      };
+      const command: Command = {
+        ...commandModule.config,
+        name: file.name,
+        description: commandModule.config?.description ??
+          "No description provided",
+        path: file.path,
+      };
+
+      if (commandData.find((c) => c.name === command.name)) {
+        ora(
+          `Command "${command.name}" already exists, skipping the duplicate`,
+        ).warn();
+        continue;
+      }
+
+      commandData.push(command);
+      addRow(command.name);
+    }
 
     generatingLoader.succeed();
+    log();
 
-    console.log(generatedStr.map((row) => row.join(" ")).join("\n"));
-
-    return async function runCommand(interaction: CommandInteraction) {
-      const command = commands.find((c) => c.name === interaction.data.name);
-
-      if (!command) {
-        ora(`Command "${interaction.data.name}" not found`).warn();
-        return;
-      }
-
-      const commandLoader = ora(`Running command "${command?.name}"`).start();
-
-      try {
-        await Promise.resolve(command.default(interaction));
-        commandLoader.succeed();
-      } catch (error) {
-        commandLoader.fail();
-        console.error("└", error);
-      }
-    };
+    return commandData;
   } catch (e) {
     generatingLoader.fail();
     throw e;
   }
-}
-
-export async function parseCommands(commandFiles: WalkEntry[]) {
-  const commandData: Command[] = [];
-
-  for (const file of commandFiles) {
-    const commandModule = (await import(
-      (runtime !== "bun" ? "file:" : "") + normalize(join(cwd(), file.path))
-    )) as {
-      config?: CommandConfig;
-      default: (interaction: CommandInteraction) => unknown;
-    };
-    const command: Command = {
-      ...commandModule.config,
-      name: file.name,
-      description: commandModule.config?.description ??
-        "No description provided",
-      default: commandModule.default,
-    };
-
-    if (commandData.find((c) => c.name === command.name)) {
-      ora(
-        `Command "${command.name}" already exists, skipping the duplicate`,
-      ).warn();
-      continue;
-    }
-
-    commandData.push(command);
-  }
-
-  return commandData;
 }

@@ -7,7 +7,9 @@ import type { Command } from "../internal/types/config.ts";
  *
  * Specify the description and options here.
  */
-export interface CommandConfig extends Omit<Command, "name" | "default"> {}
+export interface CommandConfig
+  extends Omit<Command, "name" | "default" | "path"> {}
+
 export type { BotConfig } from "../internal/types/config.ts";
 export type {
   CommandInteraction,
@@ -21,7 +23,7 @@ export { verifySignature } from "../internal/utils.ts";
 export { setupCommands };
 export { setupComponents };
 
-export * from "../core/build.ts";
+export { build } from "../core/build.ts";
 
 export * from "../core/components/actionrow.ts";
 export * from "../core/components/button.ts";
