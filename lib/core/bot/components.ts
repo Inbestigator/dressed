@@ -103,7 +103,7 @@ const validComponentCategories = ["buttons", "modals", "selects"];
 export function parseComponents(componentFiles: WalkEntry[]) {
   const generatingLoader = ora("Generating components").start();
   const { addRow, removeN, log } = trackParts(
-    "\nCommand",
+    "\nComponent",
     componentFiles.length,
   );
   try {

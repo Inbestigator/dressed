@@ -30,8 +30,12 @@ export async function build(
     fetchConfig(),
   ]);
 
-  const commandData = await parseCommands(commandFiles);
-  const componentData = parseComponents(componentFiles);
+  const commandData = commandFiles.length > 0
+    ? await parseCommands(commandFiles)
+    : [];
+  const componentData = componentFiles.length > 0
+    ? parseComponents(componentFiles)
+    : [];
   const buildLoader = ora("Assembling generated build").start();
 
   if (!config) {
