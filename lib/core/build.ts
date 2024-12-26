@@ -24,8 +24,6 @@ export async function build(
   addInstance?: boolean,
   registerCommands?: boolean,
 ): Promise<string> {
-  const buildLoader = ora("Building").start();
-
   const [commandFiles, componentFiles, config] = await Promise.all([
     fetchFiles("src/commands"),
     fetchFiles("src/components"),
@@ -34,6 +32,7 @@ export async function build(
 
   const commandData = await parseCommands(commandFiles);
   const componentData = parseComponents(componentFiles);
+  const buildLoader = ora("Assembling generated build").start();
 
   if (!config) {
     buildLoader.fail();
