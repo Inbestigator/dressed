@@ -4,7 +4,7 @@ import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";
 import { env } from "node:process";
 import ora from "ora";
-import type { Command } from "./types/config.ts";
+import type { CommandConfig } from "./types/config.ts";
 
 /**
  * Verifies the signature of the POST request
@@ -50,7 +50,9 @@ export async function callDiscord(
 
 export async function installGlobalCommands(
   appId: string,
-  commands: Omit<Command, "default">[],
+  commands: (CommandConfig & {
+    name: string;
+  })[],
 ) {
   await callDiscord(`applications/${appId}/commands`, {
     method: "PUT",

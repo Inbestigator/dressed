@@ -4,7 +4,7 @@ import { build } from "../lib/exports/mod.ts";
 const withoutInstance = `import "./src/commands/ping.ts";
 import "./src/components/buttons/button.ts";
 
-const commandData = [{"description":"Replies with Pong!","name":"ping","path":"src/commands/ping.ts"}];
+const commandData = [{"name":"ping","path":"src/commands/ping.ts"}];
 const componentData = [{"name":"button","category":"buttons","path":"src/components/buttons/button.ts"}];
 const config = {"clientId":""};`;
 
@@ -14,7 +14,7 @@ import { env } from "node:process";
 import "./src/commands/ping.ts";
 import "./src/components/buttons/button.ts";
 
-const commandData = [{"description":"Replies with Pong!","name":"ping","path":"src/commands/ping.ts"}];
+const commandData = [{"name":"ping","path":"src/commands/ping.ts"}];
 const componentData = [{"name":"button","category":"buttons","path":"src/components/buttons/button.ts"}];
 const config = {"clientId":""};
 

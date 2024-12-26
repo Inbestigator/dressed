@@ -23,8 +23,12 @@ export interface BotConfig {
   deno?: boolean;
 }
 
-export interface Command {
-  name: string;
+/**
+ * Configuration for a specific command.
+ *
+ * Specify the description and options here.
+ */
+export interface CommandConfig {
   /**
    * Localization dictionary for the name field. Values follow the same restrictions as name
    */
@@ -71,6 +75,16 @@ export interface Command {
    * Indicates whether the command is age-restricted, defaults to `false`
    */
   nsfw?: boolean;
+}
+
+export interface Command {
+  name: string;
+  path: string;
+}
+
+export interface Component {
+  name: string;
+  category: "buttons" | "modals" | "selects" | string;
   path: string;
 }
 
@@ -79,9 +93,3 @@ export type ComponentHandler = (
   interaction: MessageComponentInteraction | ModalSubmitInteraction,
   args?: Record<string, string>,
 ) => unknown;
-
-export interface Component {
-  name: string;
-  category: "buttons" | "modals" | "selects" | string;
-  path: string;
-}

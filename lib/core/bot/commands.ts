@@ -12,8 +12,8 @@ import { runtime } from "std-env";
  * @returns A function that runs a command
  */
 export default async function setupCommands(
-  commands: Omit<Command, "default">[],
-): Promise<(interaction: CommandInteraction) => Promise<void>> {
+  commands: Command[],
+): Promise<CommandHandler> {
   if (env.REGISTER_COMMANDS === "true") {
     const appId = env.DISCORD_APP_ID;
 
@@ -23,11 +23,22 @@ export default async function setupCommands(
 
     await installGlobalCommands(
       appId,
-      commands.map((c) => ({
-        ...c,
-        type: 1,
-        integration_types: [0, 1],
-        contexts: [0, 1, 2],
+      await Promise.all(commands.map(async (c) => {
+        const commandModule = (await import(
+          (runtime !== "bun" ? "file:" : "") +
+            normalize(join(cwd(), c.path))
+        )) as {
+          config: CommandConfig;
+        };
+        return {
+          ...commandModule.config,
+          name: c.name,
+          description: commandModule.config.description ??
+            "No description provided",
+          type: 1,
+          integration_types: [0, 1],
+          contexts: [0, 1, 2],
+        };
       })),
     );
   }
@@ -58,7 +69,7 @@ export default async function setupCommands(
   };
 }
 
-export async function parseCommands(commandFiles: WalkEntry[]) {
+export function parseCommands(commandFiles: WalkEntry[]) {
   const generatingLoader = ora("Generating commands").start();
   const { addRow, removeN, log } = trackParts("\nCommand", commandFiles.length);
 
@@ -67,16 +78,8 @@ export async function parseCommands(commandFiles: WalkEntry[]) {
 
     for (const file of commandFiles) {
       removeN();
-      const commandModule = (await import(
-        (runtime !== "bun" ? "file:" : "") + normalize(join(cwd(), file.path))
-      )) as {
-        config?: CommandConfig;
-      };
       const command: Command = {
-        ...commandModule.config,
         name: file.name,
-        description: commandModule.config?.description ??
-          "No description provided",
         path: file.path,
       };
 

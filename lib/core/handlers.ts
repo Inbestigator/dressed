@@ -5,23 +5,21 @@ import ora from "ora";
 import setupComponents from "./bot/components.ts";
 import { env } from "node:process";
 import type {
-  CommandInteraction,
-  MessageComponentInteraction,
-  ModalSubmitInteraction,
-} from "../internal/types/interaction.ts";
-import type { Command, Component } from "../internal/types/config.ts";
+  Command,
+  CommandHandler,
+  Component,
+  ComponentHandler,
+} from "../internal/types/config.ts";
 
 /**
  * Create the command and component handlers.
  */
 export async function createHandlers(
-  commands: Omit<Command, "default">[],
-  components: Omit<Component, "default">[],
+  commands: Command[],
+  components: Component[],
 ): Promise<{
-  runCommand: (interaction: CommandInteraction) => Promise<void>;
-  runComponent: (
-    interaction: MessageComponentInteraction | ModalSubmitInteraction,
-  ) => Promise<void>;
+  runCommand: CommandHandler;
+  runComponent: ComponentHandler;
 }> {
   const initLoader = ora("Initializing").start();
 

@@ -1,16 +1,7 @@
 import setupCommands from "../core/bot/commands.ts";
 import setupComponents from "../core/bot/components.ts";
-import type { Command } from "../internal/types/config.ts";
 
-/**
- * Configuration for a specific command.
- *
- * Specify the description and options here.
- */
-export interface CommandConfig
-  extends Omit<Command, "name" | "default" | "path"> {}
-
-export type { BotConfig } from "../internal/types/config.ts";
+export type { BotConfig, CommandConfig } from "../internal/types/config.ts";
 export type {
   CommandInteraction,
   MessageComponentInteraction,

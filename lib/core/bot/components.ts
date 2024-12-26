@@ -17,10 +17,8 @@ import ora from "ora";
  * @returns A function that runs a component
  */
 export default function setupComponents(
-  components: Omit<Component, "default">[],
-): (
-  interaction: MessageComponentInteraction | ModalSubmitInteraction,
-) => Promise<void> {
+  components: Component[],
+): ComponentHandler {
   return async function runComponent(
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
   ) {
