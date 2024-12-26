@@ -4,19 +4,19 @@ import setupCommands from "./bot/commands.ts";
 import ora from "ora";
 import setupComponents from "./bot/components.ts";
 import { env } from "node:process";
-import type { WalkEntry } from "./build.ts";
 import type {
   CommandInteraction,
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "../internal/types/interaction.ts";
+import type { Command, Component } from "../internal/types/config.ts";
 
 /**
  * Create the command and component handlers.
  */
 export async function createHandlers(
-  commandFiles?: WalkEntry[],
-  componentFiles?: WalkEntry[],
+  commands: Omit<Command, "default">[],
+  components: Omit<Component, "default">[],
 ): Promise<{
   runCommand: (interaction: CommandInteraction) => Promise<void>;
   runComponent: (
@@ -34,8 +34,8 @@ export async function createHandlers(
 
   initLoader.succeed();
 
-  const runCommand = await setupCommands(commandFiles);
-  const runComponent = await setupComponents(componentFiles);
+  const runCommand = await setupCommands(commands);
+  const runComponent = setupComponents(components);
 
   return {
     runCommand,

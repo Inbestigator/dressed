@@ -1,128 +1,93 @@
-import type { Component } from "../../internal/types/config.ts";
+import type {
+  Component,
+  ComponentHandler,
+} from "../../internal/types/config.ts";
 import { join, normalize } from "node:path";
-import { underline } from "@std/fmt/colors";
-import ora from "ora";
 import type {
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "../../internal/types/interaction.ts";
 import { ComponentType, InteractionType } from "discord-api-types/v10";
-import { fetchFiles, type WalkEntry } from "../build.ts";
+import { trackParts, type WalkEntry } from "../build.ts";
 import { cwd } from "node:process";
 import { runtime } from "std-env";
+import ora from "ora";
 
 /**
- * Fetches the components from the components directory
- *
  * @returns A function that runs a component
  */
-export default async function setupComponents(
-  componentFiles?: WalkEntry[],
-): Promise<
-  (
+export default function setupComponents(
+  components: Omit<Component, "default">[],
+): (
+  interaction: MessageComponentInteraction | ModalSubmitInteraction,
+) => Promise<void> {
+  return async function runComponent(
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
-  ) => Promise<void>
-> {
-  const generatingLoader = ora("Generating components").start();
-  let generatedN = 0;
-  const generatedStr: string[][] = [[underline("\nComponent")]];
-
-  function addComponent(
-    name: string,
-    category: string,
-    totalComponents: number,
   ) {
-    generatedN++;
-    generatedStr.push([
-      totalComponents === 1
-        ? "-"
-        : generatedN === 1
-        ? "┌"
-        : totalComponents === generatedN
-        ? "└"
-        : "├",
-      name + ` (${category})`,
-    ]);
-  }
+    const category = getCategory();
 
-  if (!componentFiles) componentFiles = await fetchFiles("src/components");
-
-  try {
-    const components = await parseComponents(componentFiles);
-
-    components.forEach((component) => {
-      addComponent(component.name, component.category, components.length);
-    });
-
-    generatingLoader.succeed();
-
-    console.log(generatedStr.map((row) => row.join(" ")).join("\n"));
-
-    return async function runComponent(
-      interaction: MessageComponentInteraction | ModalSubmitInteraction,
-    ) {
-      const category = getCategory();
-
-      function getCategory() {
-        if (interaction.type === InteractionType.ModalSubmit) {
-          return "modals";
-        }
-        switch (
-          interaction.data.component_type
-        ) {
-          case ComponentType.Button:
-            return "buttons";
-          case ComponentType.ChannelSelect:
-          case ComponentType.RoleSelect:
-          case ComponentType.UserSelect:
-          case ComponentType.StringSelect:
-          case ComponentType.MentionableSelect:
-            return "selects";
-        }
+    function getCategory() {
+      if (interaction.type === InteractionType.ModalSubmit) {
+        return "modals";
       }
-
-      const component = components.find(
-        (c) =>
-          c.category === category &&
-          handleArgs(c.name).regex.test(interaction.data.custom_id),
-      );
-
-      if (!component) {
-        ora(`Component "${interaction.data.custom_id}" not found`).warn();
-        return;
+      switch (
+        interaction.data.component_type
+      ) {
+        case ComponentType.Button:
+          return "buttons";
+        case ComponentType.ChannelSelect:
+        case ComponentType.RoleSelect:
+        case ComponentType.UserSelect:
+        case ComponentType.StringSelect:
+        case ComponentType.MentionableSelect:
+          return "selects";
       }
+    }
 
-      const { regex, argNames } = handleArgs(component.name);
-      const matches = regex.exec(interaction.data.custom_id);
+    const component = components.find(
+      (c) =>
+        c.category === category &&
+        handleArgs(c.name).regex.test(interaction.data.custom_id),
+    );
 
-      const args: Record<string, string> = {};
+    if (!component) {
+      ora(`Component "${interaction.data.custom_id}" not found`).warn();
+      return;
+    }
 
-      if (matches) {
-        argNames.forEach((argName, i) => {
-          args[argName] = matches[i + 1];
-        });
-      }
+    const { regex, argNames } = handleArgs(component.name);
+    const matches = regex.exec(interaction.data.custom_id);
 
-      const componentLoader = ora(
-        `Running component "${component.name}"${
-          Object.keys(args).length > 0
-            ? " with args: " + JSON.stringify(args)
-            : ""
-        }`,
-      ).start();
+    const args: Record<string, string> = {};
 
-      try {
-        await Promise.resolve(component.default(interaction, args));
-        componentLoader.succeed();
-      } catch (error) {
-        componentLoader.fail();
-        console.error("└", error);
-      }
-    };
-  } catch (e) {
-    generatingLoader.fail();
-    throw e;
-  }
+    if (matches) {
+      argNames.forEach((argName, i) => {
+        args[argName] = matches[i + 1];
+      });
+    }
+
+    const componentLoader = ora(
+      `Running component "${component.name}"${
+        Object.keys(args).length > 0
+          ? " with args: " + JSON.stringify(args)
+          : ""
+      }`,
+    ).start();
+
+    try {
+      const componentModule = (await import(
+        (runtime !== "bun" ? "file:" : "") +
+          normalize(join(cwd(), component.path))
+      )) as {
+        default: ComponentHandler;
+      };
+      await Promise.resolve(componentModule.default(interaction, args));
+      componentLoader.succeed();
+    } catch (error) {
+      componentLoader.fail();
+      console.error("└", error);
+    }
+  };
 }
 
 export function handleArgs(str: string) {
@@ -135,50 +100,57 @@ export function handleArgs(str: string) {
 
 const validComponentCategories = ["buttons", "modals", "selects"];
 
-async function parseComponents(componentFiles: WalkEntry[]) {
-  const componentData: Component[] = [];
+export function parseComponents(componentFiles: WalkEntry[]) {
+  const generatingLoader = ora("Generating components").start();
+  const { addRow, removeN, log } = trackParts(
+    "\nCommand",
+    componentFiles.length,
+  );
+  try {
+    const componentData: Component[] = [];
 
-  for (const file of componentFiles) {
-    const componentModule = (await import(
-      (runtime !== "bun" ? "file:" : "") + normalize(join(cwd(), file.path))
-    )) as {
-      config?: Component;
-      default: (
-        interaction: MessageComponentInteraction | ModalSubmitInteraction,
-      ) => unknown;
-    };
+    for (const file of componentFiles) {
+      removeN();
 
-    const category = file.path.split(/[\\\/]/)[2];
+      const category = file.path.split(/[\\\/]/)[2];
 
-    if (!validComponentCategories.includes(category)) {
-      ora(
-        `Category for "${file.name}" could not be determined, skipping`,
-      ).warn();
-      continue;
+      if (!validComponentCategories.includes(category)) {
+        ora(
+          `Category for "${file.name}" could not be determined, skipping`,
+        ).warn();
+        continue;
+      }
+
+      const component: Component = {
+        name: file.name,
+        category: category as "buttons" | "modals" | "selects",
+        path: file.path,
+      };
+
+      if (
+        componentData.find(
+          (c) => c.name === component.name && c.category === category,
+        )
+      ) {
+        ora(
+          `${
+            component.category.slice(0, 1).toUpperCase() +
+            component.category.split("s")[0].slice(1)
+          } component "${component.name}" already exists, skipping the duplicate`,
+        ).warn();
+        continue;
+      }
+
+      componentData.push(component);
+      addRow(`${component.name} (${category.slice(0, -1)})`);
     }
 
-    const component: Component = {
-      name: file.name,
-      category: category as "buttons" | "modals" | "selects",
-      default: componentModule.default,
-    };
+    generatingLoader.succeed();
+    log();
 
-    if (
-      componentData.find(
-        (c) => c.name === component.name && c.category === category,
-      )
-    ) {
-      ora(
-        `${
-          component.category.slice(0, 1).toUpperCase() +
-          component.category.split("s")[0].slice(1)
-        } component "${component.name}" already exists, skipping the duplicate`,
-      ).warn();
-      continue;
-    }
-
-    componentData.push(component);
+    return componentData;
+  } catch (e) {
+    generatingLoader.fail();
+    throw e;
   }
-
-  return componentData;
 }

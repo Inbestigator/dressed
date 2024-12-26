@@ -71,14 +71,17 @@ export interface Command {
    * Indicates whether the command is age-restricted, defaults to `false`
    */
   nsfw?: boolean;
-  default: (interaction: CommandInteraction) => unknown;
+  path: string;
 }
+
+export type CommandHandler = (interaction: CommandInteraction) => unknown;
+export type ComponentHandler = (
+  interaction: MessageComponentInteraction | ModalSubmitInteraction,
+  args?: Record<string, string>,
+) => unknown;
 
 export interface Component {
   name: string;
-  category: "buttons" | "modals" | "selects";
-  default: (
-    interaction: MessageComponentInteraction | ModalSubmitInteraction,
-    args?: Record<string, string>,
-  ) => unknown;
+  category: "buttons" | "modals" | "selects" | string;
+  path: string;
 }
