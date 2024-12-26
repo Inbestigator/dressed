@@ -5,6 +5,7 @@ import { Buffer } from "node:buffer";
 import { env } from "node:process";
 import ora from "ora";
 import type { CommandConfig } from "./types/config.ts";
+import { RouteBases, Routes } from "discord-api-types/v10";
 
 /**
  * Verifies the signature of the POST request
@@ -30,9 +31,8 @@ export async function callDiscord(
   endpoint: string,
   options: Record<string, unknown>,
 ) {
-  const url = "https://discord.com/api/v10/" + endpoint;
   if (options.body) options.body = JSON.stringify(options.body);
-  const res = await fetch(url, {
+  const res = await fetch(RouteBases.api + endpoint, {
     headers: {
       Authorization: `Bot ${env.DISCORD_TOKEN}`,
       "Content-Type": "application/json; charset=UTF-8",
@@ -54,7 +54,7 @@ export async function installGlobalCommands(
     name: string;
   })[],
 ) {
-  await callDiscord(`applications/${appId}/commands`, {
+  await callDiscord(Routes.applicationCommands(appId), {
     method: "PUT",
     body: commands,
   });

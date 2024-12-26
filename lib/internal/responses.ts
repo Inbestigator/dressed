@@ -5,6 +5,7 @@ import {
   InteractionResponseType,
   MessageFlags,
   type RESTPatchAPIWebhookWithTokenMessageJSONBody,
+  Routes,
 } from "discord-api-types/v10";
 import type {
   DeferredReplyOptions,
@@ -29,7 +30,7 @@ export async function reply(
   }
 
   await callDiscord(
-    `interactions/${interaction.id}/${interaction.token}/callback`,
+    Routes.interactionCallback(interaction.id, interaction.token),
     {
       method: "POST",
       body: {
@@ -50,7 +51,7 @@ export async function deferReply(
   }
 
   await callDiscord(
-    `interactions/${interaction.id}/${interaction.token}/callback`,
+    Routes.interactionCallback(interaction.id, interaction.token),
     {
       method: "POST",
       body: {
@@ -70,7 +71,7 @@ export async function update(
   }
 
   await callDiscord(
-    `interactions/${interaction.id}/${interaction.token}/callback`,
+    Routes.interactionCallback(interaction.id, interaction.token),
     {
       method: "POST",
       body: {
@@ -86,7 +87,7 @@ export async function showModal(
   data: APIModalInteractionResponseCallbackData,
 ) {
   await callDiscord(
-    `interactions/${interaction.id}/${interaction.token}/callback`,
+    Routes.interactionCallback(interaction.id, interaction.token),
     {
       method: "POST",
       body: {
@@ -106,7 +107,7 @@ export async function editReply(
   }
 
   await callDiscord(
-    `webhooks/${userId}/${interaction.token}/messages/@original`,
+    Routes.webhookMessage(userId!, interaction.token),
     {
       method: "PATCH",
       body: data,
@@ -127,7 +128,7 @@ export async function followUp(
     data.flags = flags;
   }
 
-  await callDiscord(`webhooks/${userId}/${interaction.token}`, {
+  await callDiscord(Routes.webhook(userId!, interaction.token), {
     method: "POST",
     body: data,
   });

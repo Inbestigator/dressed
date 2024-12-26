@@ -4,6 +4,7 @@ import type {
   RESTPostAPIChannelMessageJSONBody,
   Snowflake,
 } from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
@@ -19,7 +20,7 @@ export async function createMessage(
     data = { content: data };
   }
 
-  const res = await callDiscord(`channels/${channel}/messages`, {
+  const res = await callDiscord(Routes.channelMessages(channel), {
     method: "POST",
     body: data,
   });
@@ -32,7 +33,7 @@ export async function createMessage(
  * @param channel The channel to get messages from
  */
 export async function getMessages(channel: string): Promise<APIMessage[]> {
-  const res = await callDiscord(`channels/${channel}/messages`, {
+  const res = await callDiscord(Routes.channelMessages(channel), {
     method: "GET",
   });
 
@@ -48,7 +49,7 @@ export async function getMessage(
   channel: string,
   message: string,
 ): Promise<APIMessage> {
-  const res = await callDiscord(`channels/${channel}/messages/${message}`, {
+  const res = await callDiscord(Routes.channelMessage(channel, message), {
     method: "GET",
   });
 
@@ -70,7 +71,7 @@ export async function editMessage(
     data = { content: data };
   }
 
-  const res = await callDiscord(`channels/${channel}/messages/${message}`, {
+  const res = await callDiscord(Routes.channelMessage(channel, message), {
     method: "PATCH",
     body: data,
   });
@@ -87,7 +88,7 @@ export async function deleteMessage(
   channel: string,
   message: string,
 ): Promise<void> {
-  await callDiscord(`channels/${channel}/messages/${message}`, {
+  await callDiscord(Routes.channelMessage(channel, message), {
     method: "DELETE",
   });
 }
@@ -101,7 +102,7 @@ export async function bulkDelete(
   channel: string,
   messages: Snowflake[],
 ): Promise<void> {
-  await callDiscord(`channels/${channel}/messages/bulk-delete`, {
+  await callDiscord(Routes.channelBulkDelete(channel), {
     method: "DELETE",
     body: { messages },
   });
@@ -119,7 +120,7 @@ export async function createReaction(
   emoji: string,
 ): Promise<void> {
   await callDiscord(
-    `channels/${channel}/messages/${message}/reactions/${emoji}/@me`,
+    Routes.channelMessageOwnReaction(channel, message, emoji),
     { method: "PUT" },
   );
 }
@@ -138,9 +139,7 @@ export async function deleteReaction(
   user?: string,
 ): Promise<void> {
   await callDiscord(
-    `channels/${channel}/messages/${message}/reactions/${emoji}/${
-      user ?? "@me"
-    }`,
+    Routes.channelMessageUserReaction(channel, message, emoji, user ?? "@me"),
     { method: "DELETE" },
   );
 }
