@@ -23,12 +23,6 @@ export function createServer(
 ) {
   Deno.serve(async (req) => {
     const reqLoader = ora("New request").start();
-    if (!(await verifySignature(req.clone()))) {
-      reqLoader.fail();
-      console.error("└ Invalid signature");
-      return new Response("Unauthorized", { status: 401 });
-    }
-
     if (
       req.method !== "POST" ||
       new URL(req.url).pathname !== (config.endpoint ?? "/")
@@ -36,7 +30,15 @@ export function createServer(
       return new Response("Not Found", { status: 404 });
     }
 
-    reqLoader.succeed();
+    if (!(await verifySignature(req.clone()))) {
+      reqLoader.fail();
+      console.error("└ Invalid signature");
+      return new Response("Unauthorized", { status: 401 });
+    }
+
+    reqLoader.stopAndPersist({
+      symbol: "┌",
+    });
     return await runInteraction(runCommand, runComponent, req);
   });
 }
@@ -57,8 +59,7 @@ export async function runInteraction(
     }
     case InteractionType.ApplicationCommand: {
       const command = json as APIApplicationCommandInteraction;
-      console.log("├ Received application command interaction");
-      console.log("└ Command:", command.data.name);
+      console.log("└ Received command:", command.data.name);
       const interaction = createInteraction(command);
 
       await runCommand(interaction);
@@ -66,8 +67,7 @@ export async function runInteraction(
     }
     case InteractionType.MessageComponent: {
       const component = json as APIMessageComponentInteraction;
-      console.log("├ Received message component interaction");
-      console.log("└ Component:", component.data.custom_id);
+      console.log("└ Received component:", component.data.custom_id);
       const interaction = createInteraction(component);
 
       await runComponent(interaction);
@@ -75,8 +75,7 @@ export async function runInteraction(
     }
     case InteractionType.ModalSubmit: {
       const component = json as APIModalSubmitInteraction;
-      console.log("├ Received modal submit interaction");
-      console.log("└ Modal:", component.data.custom_id);
+      console.log("└ Received modal:", component.data.custom_id);
       const interaction = createInteraction(component);
 
       await runComponent(interaction);

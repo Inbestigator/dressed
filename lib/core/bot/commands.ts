@@ -75,7 +75,7 @@ export default async function setupCommands(
 
 export function parseCommands(commandFiles: WalkEntry[]) {
   const generatingLoader = ora("Generating commands").start();
-  const { addRow, removeN, log } = trackParts("\nCommand", commandFiles.length);
+  const { addRow, removeN, log } = trackParts("Command", commandFiles.length);
 
   try {
     const commandData: Command[] = [];
@@ -98,8 +98,10 @@ export function parseCommands(commandFiles: WalkEntry[]) {
       addRow(command.name);
     }
 
-    generatingLoader.succeed("Generated commands");
-    log();
+    generatingLoader.succeed(
+      commandData.length > 0 ? "Generated commands" : "No commands found",
+    );
+    commandData.length > 0 && log();
 
     return commandData;
   } catch (e) {
