@@ -31,7 +31,7 @@ export async function build(
   ]);
 
   const commandData = commandFiles.length > 0
-    ? await parseCommands(commandFiles)
+    ? parseCommands(commandFiles)
     : [];
   const componentData = componentFiles.length > 0
     ? parseComponents(componentFiles)
@@ -39,24 +39,25 @@ export async function build(
   const buildLoader = ora("Assembling generated build").start();
 
   if (!config) {
-    buildLoader.fail();
-    throw new Error("No bot config found");
+    buildLoader.warn(
+      "Could not determine bot config\n└ Maybe you didn't add a default export from bot.config.ts",
+    ).start();
   }
 
   const outputContent = `
-${generateImports(config, addInstance, registerCommands)}
+${generateImports(config ?? {}, addInstance, registerCommands)}
 ${generateFileImports([...commandData, ...componentData])}
 
 ${defineFiles("commandData", commandData)}
 ${defineFiles("componentData", componentData)}
-const config = ${JSON.stringify(config)};
+const config = ${JSON.stringify(config ?? {})};
 
 ${
     addInstance
       ? generateInstanceCreation(
         commandData,
         componentData,
-        config,
+        config ?? {},
         registerCommands,
       )
       : ""
@@ -74,8 +75,7 @@ async function fetchConfig(): Promise<BotConfig | undefined> {
         normalize(join(cwd(), "bot.config.ts"))
     );
     return configModule.default;
-  } catch (error) {
-    console.error("Error loading bot.config.ts:", error);
+  } catch {
     return;
   }
 }
@@ -176,7 +176,7 @@ export function trackParts(title: string, total: number) {
       ]);
     },
     log: () => {
-      console.log(generatedStr.map((row) => row.join(" ")).join("\n"));
+      console.log(`\n${generatedStr.map((row) => row.join(" ")).join("\n")}\n`);
     },
   };
 }

@@ -6,7 +6,7 @@ import "./src/components/buttons/button.ts";
 
 const commandData = [{"name":"ping","path":"src/commands/ping.ts"}];
 const componentData = [{"name":"button","category":"buttons","path":"src/components/buttons/button.ts"}];
-const config = {"clientId":""};`;
+const config = {};`;
 
 const withInstance =
   `import { createHandlers, createServer } from "@inbestigator/discord-http";
@@ -16,7 +16,7 @@ import "./src/components/buttons/button.ts";
 
 const commandData = [{"name":"ping","path":"src/commands/ping.ts"}];
 const componentData = [{"name":"button","category":"buttons","path":"src/components/buttons/button.ts"}];
-const config = {"clientId":""};
+const config = {};
 
 env.REGISTER_COMMANDS = "true";
 

@@ -101,7 +101,7 @@ const validComponentCategories = ["buttons", "modals", "selects"];
 export function parseComponents(componentFiles: WalkEntry[]) {
   const generatingLoader = ora("Generating components").start();
   const { addRow, removeN, log } = trackParts(
-    "\nComponent",
+    "Component",
     componentFiles.length,
   );
   try {
@@ -143,8 +143,10 @@ export function parseComponents(componentFiles: WalkEntry[]) {
       addRow(`${component.name} (${category.slice(0, -1)})`);
     }
 
-    generatingLoader.succeed("Generated components");
-    log();
+    generatingLoader.succeed(
+      componentData.length > 0 ? "Generated components" : "No components found",
+    );
+    componentData.length > 0 && log();
 
     return componentData;
   } catch (e) {

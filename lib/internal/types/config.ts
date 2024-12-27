@@ -13,10 +13,6 @@ import type {
  * The configuration for the bot.
  */
 export interface BotConfig {
-  /** The ID for the bot */
-  clientId: string;
-  /** The bot's secret */
-  clientSecret?: string;
   /** The endpoint that Discord will use */
   endpoint?: string;
   /** Are you using Deno? Defaults to `true` */
