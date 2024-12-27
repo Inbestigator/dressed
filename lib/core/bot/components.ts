@@ -91,7 +91,7 @@ export default function setupComponents(
 export function handleArgs(str: string) {
   const argNames = [...str.matchAll(/\[(.+?)\]/g)].map((m) => m[1]);
   argNames.forEach((arg) => {
-    str = str.replace(`[${arg}]`, "([a-zA-Z0-9_-]+?)");
+    str = str.replace(`[${arg}]`, "(.+)");
   });
   return { regex: new RegExp(`^${str}$`), argNames };
 }
