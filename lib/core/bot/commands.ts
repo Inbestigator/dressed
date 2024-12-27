@@ -16,8 +16,10 @@ export default async function setupCommands(
 ): Promise<CommandHandler> {
   if (env.REGISTER_COMMANDS === "true") {
     const appId = env.DISCORD_APP_ID;
+    const registerLoader = ora("Registering commands").start();
 
     if (!appId) {
+      registerLoader.fail();
       throw new Error("No app id provided");
     }
 
@@ -41,6 +43,8 @@ export default async function setupCommands(
         };
       })),
     );
+
+    registerLoader.succeed("Registered commands");
   }
 
   return async function runCommand(interaction: CommandInteraction) {
@@ -94,7 +98,7 @@ export function parseCommands(commandFiles: WalkEntry[]) {
       addRow(command.name);
     }
 
-    generatingLoader.succeed();
+    generatingLoader.succeed("Generated commands");
     log();
 
     return commandData;

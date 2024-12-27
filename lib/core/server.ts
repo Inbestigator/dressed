@@ -22,7 +22,7 @@ export function createServer(
   config: BotConfig,
 ) {
   Deno.serve(async (req) => {
-    const reqLoader = ora(`New request`).start();
+    const reqLoader = ora("New request").start();
     if (!(await verifySignature(req.clone()))) {
       reqLoader.fail();
       console.error("└ Invalid signature");
