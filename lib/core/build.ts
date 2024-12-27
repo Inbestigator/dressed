@@ -63,7 +63,7 @@ ${
   }
 `.trim();
 
-  buildLoader.succeed();
+  buildLoader.succeed("Assembled generated build");
   return outputContent;
 }
 

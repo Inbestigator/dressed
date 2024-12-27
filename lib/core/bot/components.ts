@@ -143,7 +143,7 @@ export function parseComponents(componentFiles: WalkEntry[]) {
       addRow(`${component.name} (${category.slice(0, -1)})`);
     }
 
-    generatingLoader.succeed();
+    generatingLoader.succeed("Generated components");
     log();
 
     return componentData;
