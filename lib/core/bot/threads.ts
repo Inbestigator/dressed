@@ -2,6 +2,7 @@ import type {
   APIThreadChannel,
   RESTPostAPIChannelThreadsJSONBody,
   RESTPostAPIGuildForumThreadsJSONBody,
+  Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
@@ -13,11 +14,11 @@ import { callDiscord } from "../../internal/utils.ts";
  * @param message The message to create the thread from
  */
 export async function createThread(
-  channel: string,
+  channel: Snowflake,
   data: Omit<RESTPostAPIChannelThreadsJSONBody, "type"> & {
     type?: "Public" | "Private" | number;
   },
-  message?: string,
+  message?: Snowflake,
 ): Promise<APIThreadChannel> {
   let endpoint = Routes.threads(channel);
   if (message) {
@@ -35,8 +36,13 @@ export async function createThread(
   return res.json();
 }
 
+/**
+ * Creates a new forum thread.
+ * @param channel The channel to create the thread in
+ * @param data The thread data
+ */
 export async function createForumThread(
-  channel: string,
+  channel: Snowflake,
   data: RESTPostAPIGuildForumThreadsJSONBody,
 ): Promise<APIThreadChannel> {
   const res = await callDiscord(Routes.threads(channel), {
@@ -54,7 +60,7 @@ export async function createForumThread(
  */
 export async function addThreadMember(
   thread: string,
-  user?: string,
+  user?: Snowflake,
 ): Promise<void> {
   await callDiscord(Routes.threadMembers(thread, user ?? "@me"), {
     method: "PUT",
@@ -68,7 +74,7 @@ export async function addThreadMember(
  */
 export async function removeThreadMember(
   thread: string,
-  user?: string,
+  user?: Snowflake,
 ): Promise<void> {
   await callDiscord(Routes.threadMembers(thread, user ?? "@me"), {
     method: "DELETE",
