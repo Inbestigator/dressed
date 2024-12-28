@@ -29,10 +29,10 @@ export async function createMessage(
 }
 
 /**
- * Retrieves the messages in a channel.
- * @param channel The channel to get messages from
+ * Lists the messages in a channel.
+ * @param channel The channel to get the messages from
  */
-export async function getMessages(channel: Snowflake): Promise<APIMessage[]> {
+export async function listMessages(channel: Snowflake): Promise<APIMessage[]> {
   const res = await callDiscord(Routes.channelMessages(channel), {
     method: "GET",
   });
