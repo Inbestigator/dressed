@@ -83,7 +83,7 @@ const data = {
   navSecondary: [
     {
       title: "GitHub",
-      url: "https://github.com/inbestigator/discord-http",
+      url: "https://github.com/inbestigator/dressed",
       icon: Github,
     },
   ],
@@ -103,7 +103,7 @@ export function DocsSidebar({
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left leading-tight">
-                  <span className="truncate font-semibold">Discord-HTTP</span>
+                  <span className="truncate font-semibold">Dressed</span>
                 </div>
               </Link>
             </SidebarMenuButton>

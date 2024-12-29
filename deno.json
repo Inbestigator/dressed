@@ -1,5 +1,5 @@
 {
-  "name": "@inbestigator/discord-http",
+  "name": "@dressed/dressed",
   "version": "0.8.8",
   "publish": {
     "include": [

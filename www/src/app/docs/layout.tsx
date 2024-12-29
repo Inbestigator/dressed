@@ -3,7 +3,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { DocsSidebar } from "@/components/docs-sidebar";
 
 export const metadata: Metadata = {
-  title: "Discord-HTTP Docs",
+  title: "Dressed Docs",
   description: "",
 };
 

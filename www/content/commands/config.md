@@ -3,7 +3,7 @@
 Each command can optionally export a `config` object.
 
 ```ts
-import type { CommandConfig } from "@inbestigator/discord-http";
+import type { CommandConfig } from "@dressed/dressed";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
 
 export const config: CommandConfig = {
@@ -21,4 +21,4 @@ export const config: CommandConfig = {
 
 ## Config type
 
-Discord-http supports all of the [Discord application command object](https://discord.com/developers/docs/interactions/application-commands#application-command-object)
+Dressed supports all of the [Discord application command object](https://discord.com/developers/docs/interactions/application-commands#application-command-object)
