@@ -1,9 +1,5 @@
-import {
-  type APISKU,
-  APISubscription,
-  Routes,
-  Snowflake,
-} from "discord-api-types/v10";
+import type { APISKU, APISubscription, Snowflake } from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 import process from "node:process";
 

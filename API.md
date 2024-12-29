@@ -39,9 +39,9 @@
   - [ ] DELETE role
   - [ ] GET prune
   - [ ] POST prune
-  Many more
 - [x] Polls
 - [x] SKUs
 - [x] Subscriptions
 - [x] Voice
 
+Many more not listed (listing worked on endpoints)
