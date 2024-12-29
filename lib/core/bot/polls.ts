@@ -3,7 +3,7 @@ import type {
   RESTGetAPIPollAnswerVotersResult,
   Snowflake,
 } from "discord-api-types/v10";
-import { Routes } from "discord-api-types/v10";
+import { RouteBases, Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
@@ -24,14 +24,18 @@ export async function listAnswerVoters(
     limit?: number;
   },
 ): Promise<RESTGetAPIPollAnswerVotersResult> {
-  const queryParams = new URLSearchParams();
-  if (options?.after) queryParams.append("after", options.after);
-  if (options?.limit) queryParams.append("limit", options.limit.toString());
+  const url = new URL(
+    Routes.pollAnswerVoters(channel, message, answer),
+    RouteBases.api,
+  );
+
+  if (options?.after) url.searchParams.append("after", options.after);
+  if (options?.limit) {
+    url.searchParams.append("limit", options.limit.toString());
+  }
 
   const res = await callDiscord(
-    `${
-      Routes.pollAnswerVoters(channel, message, answer)
-    }?${queryParams.toString()}`,
+    url.toString(),
     {
       method: "GET",
     },

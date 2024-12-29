@@ -14,7 +14,7 @@ import type {
   RESTPutAPIChannelRecipientJSONBody,
   Snowflake,
 } from "discord-api-types/v10";
-import { Routes } from "discord-api-types/v10";
+import { RouteBases, Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
@@ -331,6 +331,7 @@ export async function listThreadMembers(
  * @param channel The channel to get from
  * @param publicThreads Whether to get public or private threads
  * @param joinedOnly Whether to only return private threads the user has joined (will force publicThreads to false)
+ * @param options Optional query parameters
  */
 export async function listArchivedThreads(
   channel: Snowflake,
@@ -343,16 +344,19 @@ export async function listArchivedThreads(
     limit?: number;
   },
 ): Promise<RESTGetAPIChannelUsersThreadsArchivedResult> {
-  const queryParams = new URLSearchParams();
-  if (options?.before) queryParams.append("before", options.before);
-  if (options?.limit) queryParams.append("limit", options.limit.toString());
+  const url = new URL(
+    joinedOnly
+      ? Routes.channelThreads(channel, publicThreads ? "public" : "private")
+      : Routes.channelJoinedArchivedThreads(channel),
+    RouteBases.api,
+  );
+  if (options?.before) url.searchParams.append("before", options.before);
+  if (options?.limit) {
+    url.searchParams.append("limit", options.limit.toString());
+  }
 
   const res = await callDiscord(
-    `${
-      joinedOnly
-        ? Routes.channelThreads(channel, publicThreads ? "public" : "private")
-        : Routes.channelJoinedArchivedThreads(channel)
-    }?${queryParams.toString()}`,
+    url.toString(),
     {
       method: "GET",
     },

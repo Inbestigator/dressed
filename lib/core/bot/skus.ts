@@ -1,5 +1,5 @@
 import type { APISKU, APISubscription, Snowflake } from "discord-api-types/v10";
-import { Routes } from "discord-api-types/v10";
+import { RouteBases, Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 import process from "node:process";
 
@@ -37,15 +37,17 @@ export async function listSubscriptions(
     user_id?: Snowflake;
   },
 ): Promise<APISubscription[]> {
-  const queryParams = new URLSearchParams();
+  const url = new URL(Routes.skuSubscriptions(sku), RouteBases.api);
 
-  if (options?.before) queryParams.append("before", options.before);
-  if (options?.after) queryParams.append("after", options.after);
-  if (options?.limit) queryParams.append("limit", options.limit.toString());
-  if (options?.user_id) queryParams.append("user_id", options.user_id);
+  if (options?.before) url.searchParams.append("before", options.before);
+  if (options?.after) url.searchParams.append("after", options.after);
+  if (options?.limit) {
+    url.searchParams.append("limit", options.limit.toString());
+  }
+  if (options?.user_id) url.searchParams.append("user_id", options.user_id);
 
   const res = await callDiscord(
-    `${Routes.skuSubscriptions(sku)}?${queryParams.toString()}`,
+    url.toString(),
     {
       method: "GET",
     },

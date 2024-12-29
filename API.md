@@ -40,9 +40,18 @@
   - [ ] GET prune
   - [ ] POST prune
 - [x] Invites
+- [x] Messages
 - [x] Polls
 - [x] SKUs
 - [x] Subscriptions
 - [x] Voice
 
 Many more not listed (listing worked on endpoints)
+
+TODO:
+Guilds,
+Guild Events,
+Guild Templates,
+Soundboards,
+Stages,
+Stickers

@@ -4,7 +4,7 @@ import type {
   APIGuildMember,
   Snowflake,
 } from "discord-api-types/v10";
-import { Routes } from "discord-api-types/v10";
+import { RouteBases, Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
@@ -16,10 +16,12 @@ export async function getGuild(
   guild: Snowflake,
   with_counts?: boolean,
 ): Promise<APIGuild> {
-  const queryParams = new URLSearchParams();
-  if (with_counts) queryParams.append("with_counts", with_counts.toString());
+  const url = new URL(Routes.guild(guild), RouteBases.api);
+  if (with_counts) {
+    url.searchParams.append("with_counts", with_counts.toString());
+  }
   const res = await callDiscord(
-    `${Routes.guild(guild)}?${queryParams.toString()}`,
+    url.toString(),
     {
       method: "GET",
     },
