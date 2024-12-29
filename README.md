@@ -1,3 +1,5 @@
+![Dressed](www/public/dressed_small.webp)
+
 # Dressed
 
 Dressed is a wrapper around the Discord API. It allows you to host a bot using
