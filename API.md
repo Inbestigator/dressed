@@ -39,6 +39,7 @@
   - [ ] DELETE role
   - [ ] GET prune
   - [ ] POST prune
+- [x] Invites
 - [x] Polls
 - [x] SKUs
 - [x] Subscriptions

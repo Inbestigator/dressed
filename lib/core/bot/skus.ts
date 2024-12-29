@@ -55,11 +55,11 @@ export async function listSubscriptions(
 }
 
 /**
- * Returns all subscriptions containing the SKU, filtered by user.
- * @param sku The sku to get the subscriptions for
+ * Get a subscription by its ID.
+ * @param sku The sku to get the subscription for
  * @param subscription The subscription to get
  */
-export async function getSubscriptions(
+export async function getSubscription(
   sku: Snowflake,
   subscription: Snowflake,
 ): Promise<APISubscription> {
