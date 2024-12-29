@@ -2,7 +2,7 @@ import { walkFiles } from "@svarta/walk-it";
 import { underline, yellow } from "@std/fmt/colors";
 import ora from "ora";
 import { join, normalize } from "node:path";
-import type { BotConfig } from "../exports/mod.ts";
+import type { BotConfig } from "../mod.ts";
 import { readdirSync } from "node:fs";
 import { cwd } from "node:process";
 import { runtime } from "std-env";

@@ -1,8 +1,7 @@
 .env
 deno.lock
-node_modules
+.DS_STORE
 .next
 pnpm-lock.yaml
-.DS_STORE
 www/tsconfig.tsbuildinfo
 bot.gen.ts

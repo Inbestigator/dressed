@@ -39,7 +39,7 @@ export default async function ping(interaction: CommandInteraction) {
 You can then build the bot with this command
 
 ```bash
-deno run -A jsr:@dressed/dressed/cmd build
+deno run -A jsr:@dressed/cmd build
 ```
 
 By default the builder outputs only the boilerplate data, if you want it to

@@ -1,7 +1,7 @@
 import type { Command, CommandHandler } from "../../internal/types/config.ts";
 import { join, normalize } from "node:path";
 import ora from "ora";
-import type { CommandConfig } from "../../exports/mod.ts";
+import type { CommandConfig } from "../../mod.ts";
 import { installGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
