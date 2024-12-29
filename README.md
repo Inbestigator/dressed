@@ -1,25 +1,23 @@
-# Discord-http
+# Dressed
 
-Discord-http allows you to host a bot using the
+Dressed is a wrapper around the Discord API. It allows you to host a bot using
+the
 [interactions endpoint](https://discord.com/developers/docs/interactions/overview#configuring-an-interactions-endpoint-url)
 system for Discord.
 
 Discord will send POST requests to your bot, instead of the websocket system
 that Discord.js utilizes.
 
-Discord-http also allows for a dynamic component ID system, so that you only
-need to write one component handler for many different scenarios.
-[See more](https://discord-http.vercel.app/docs/components#dynamic-component-ids)
+Dressed also allows for a dynamic component ID system, so that you only need to
+write one component handler for many different scenarios.
+[See more](https://dressed.vercel.app/docs/components#dynamic-component-ids)
 
 You can find an example of a bot ready to deploy on
 [Deno deploy](https://deno.com/deploy) in
-[this repo](https://github.com/Inbestigator/discord-http-example).
+[this repo](https://github.com/Inbestigator/dressed-example).
 
 ```ts
-import type {
-  CommandConfig,
-  CommandInteraction,
-} from "@inbestigator/discord-http";
+import type { CommandConfig, CommandInteraction } from "@dressed/dressed";
 
 export const config: CommandConfig = {
   description: "Returns pong",
@@ -41,7 +39,7 @@ Here's the build script I use for testing non-Deno environments (where afaik I
 can't use the cli):
 
 ```ts
-import { build } from "@inbestigator/discord-http";
+import { build } from "@dressed/dressed";
 import { writeFileSync } from "fs";
 
 async function genBot() {
@@ -54,7 +52,7 @@ async function genBot() {
 genBot();
 ```
 
-Discord-http comes with a serve system for Deno projects, but otherwise you'll
-have to BYO (all the Discord-http resources needed to do so are available).
-[The Node-compatible example](https://github.com/Inbestigator/discord-http-example/tree/node)
+Dressed comes with a serve system for Deno projects, but otherwise you'll have
+to BYO (all the Dressed resources needed to do so are available).
+[The Node-compatible example](https://github.com/Inbestigator/dressed-example/tree/node)
 uses a server made with Express.

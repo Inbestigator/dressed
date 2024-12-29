@@ -17,8 +17,8 @@ export default function Home() {
         </span>
       </h1>
       <p className="text-lg sm:text-xl max-w-2xl mx-auto animate-fade-in-up animation-delay-200 text-foreground">
-        Discord-http is a powerful Discord.js alternative that leverages the
-        Discord HTTP API, making it perfect for serverless deployments.
+        Dressed is a powerful Discord.js alternative that leverages the Discord
+        HTTP API, making it perfect for serverless deployments.
       </p>
       <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up animation-delay-400">
         <Button className="text-base" asChild size="lg">
@@ -31,7 +31,7 @@ export default function Home() {
           asChild
         >
           <Link
-            href="https://jsr.io/@inbestigator/discord-http"
+            href="https://jsr.io/@dressed/dressed"
             target="_blank"
             rel="noreferrer"
           >
@@ -47,7 +47,7 @@ export default function Home() {
             size="icon"
           >
             <Link
-              href="https://github.com/inbestigator/discord-http-example"
+              href="https://github.com/inbestigator/dressed-example"
               target="_blank"
               rel="noreferrer"
             >
@@ -63,7 +63,7 @@ export default function Home() {
             size="icon"
           >
             <Link
-              href="https://github.com/inbestigator/discord-http-example/tree/node"
+              href="https://github.com/inbestigator/dressed-example/tree/node"
               target="_blank"
               rel="noreferrer"
             >

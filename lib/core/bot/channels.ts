@@ -1,6 +1,7 @@
 import type {
   APIChannel,
   RESTPatchAPIChannelJSONBody,
+  Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
@@ -9,7 +10,7 @@ import { callDiscord } from "../../internal/utils.ts";
  * Get a channel by ID.
  * @param channel The channel to fetch
  */
-export async function getChannel(channel: string): Promise<APIChannel> {
+export async function getChannel(channel: Snowflake): Promise<APIChannel> {
   const res = await callDiscord(Routes.channel(channel), {
     method: "GET",
   });
@@ -23,7 +24,7 @@ export async function getChannel(channel: string): Promise<APIChannel> {
  * @param data The new data for the channel
  */
 export async function modifyChannel(
-  channel: string,
+  channel: Snowflake,
   data: RESTPatchAPIChannelJSONBody,
 ): Promise<APIChannel> {
   const res = await callDiscord(Routes.channel(channel), {
@@ -38,7 +39,7 @@ export async function modifyChannel(
  * Delete a channel, or close a private message.
  * @param channel The channel to delete
  */
-export async function deleteChannel(channel: string): Promise<APIChannel> {
+export async function deleteChannel(channel: Snowflake): Promise<APIChannel> {
   const res = await callDiscord(Routes.channel(channel), {
     method: "DELETE",
   });

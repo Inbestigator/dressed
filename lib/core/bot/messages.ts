@@ -13,7 +13,7 @@ import { callDiscord } from "../../internal/utils.ts";
  * @param data The message data
  */
 export async function createMessage(
-  channel: string,
+  channel: Snowflake,
   data: string | RESTPostAPIChannelMessageJSONBody,
 ): Promise<APIMessage> {
   if (typeof data === "string") {
@@ -29,10 +29,10 @@ export async function createMessage(
 }
 
 /**
- * Retrieves the messages in a channel.
- * @param channel The channel to get messages from
+ * Lists the messages in a channel.
+ * @param channel The channel to get the messages from
  */
-export async function getMessages(channel: string): Promise<APIMessage[]> {
+export async function listMessages(channel: Snowflake): Promise<APIMessage[]> {
   const res = await callDiscord(Routes.channelMessages(channel), {
     method: "GET",
   });
@@ -46,8 +46,8 @@ export async function getMessages(channel: string): Promise<APIMessage[]> {
  * @param message The snowflake of the message to get
  */
 export async function getMessage(
-  channel: string,
-  message: string,
+  channel: Snowflake,
+  message: Snowflake,
 ): Promise<APIMessage> {
   const res = await callDiscord(Routes.channelMessage(channel, message), {
     method: "GET",
@@ -63,8 +63,8 @@ export async function getMessage(
  * @param data The new message data
  */
 export async function editMessage(
-  channel: string,
-  message: string,
+  channel: Snowflake,
+  message: Snowflake,
   data: string | RESTPatchAPIChannelMessageJSONBody,
 ): Promise<APIMessage> {
   if (typeof data === "string") {
@@ -85,8 +85,8 @@ export async function editMessage(
  * @param message The snowflake of the message to delete
  */
 export async function deleteMessage(
-  channel: string,
-  message: string,
+  channel: Snowflake,
+  message: Snowflake,
 ): Promise<void> {
   await callDiscord(Routes.channelMessage(channel, message), {
     method: "DELETE",
@@ -99,7 +99,7 @@ export async function deleteMessage(
  * @param messages An array of snowflakes
  */
 export async function bulkDelete(
-  channel: string,
+  channel: Snowflake,
   messages: Snowflake[],
 ): Promise<void> {
   await callDiscord(Routes.channelBulkDelete(channel), {
@@ -115,8 +115,8 @@ export async function bulkDelete(
  * @param emoji The emoji to react with
  */
 export async function createReaction(
-  channel: string,
-  message: string,
+  channel: Snowflake,
+  message: Snowflake,
   emoji: string,
 ): Promise<void> {
   await callDiscord(
@@ -133,10 +133,10 @@ export async function createReaction(
  * @param user The user to delete the reaction for (defaults to self)
  */
 export async function deleteReaction(
-  channel: string,
-  message: string,
+  channel: Snowflake,
+  message: Snowflake,
   emoji: string,
-  user?: string,
+  user?: Snowflake,
 ): Promise<void> {
   await callDiscord(
     Routes.channelMessageUserReaction(channel, message, emoji, user ?? "@me"),

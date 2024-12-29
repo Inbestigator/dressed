@@ -2,6 +2,7 @@ import type {
   APIChannel,
   APIGuild,
   APIGuildMember,
+  Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
@@ -12,7 +13,7 @@ import { callDiscord } from "../../internal/utils.ts";
  * @param with_counts Whether to include member and presence counts in the response
  */
 export async function getGuild(
-  guild: string,
+  guild: Snowflake,
   with_counts?: boolean,
 ): Promise<APIGuild> {
   const res = await callDiscord(Routes.guild(guild), {
@@ -27,7 +28,7 @@ export async function getGuild(
  * Get a list of channels in a guild, does not include threads
  * @param guild The guild to get the channels from
  */
-export async function listChannels(guild: string): Promise<APIChannel[]> {
+export async function listChannels(guild: Snowflake): Promise<APIChannel[]> {
   const res = await callDiscord(Routes.guildChannels(guild), {
     method: "GET",
   });
@@ -41,7 +42,7 @@ export async function listChannels(guild: string): Promise<APIChannel[]> {
  * @param member The member to get
  */
 export async function getMember(
-  guild: string,
+  guild: Snowflake,
   member: string,
 ): Promise<APIGuildMember> {
   const res = await callDiscord(Routes.guildMember(guild, member), {
@@ -55,7 +56,7 @@ export async function getMember(
  * Get a list of members in a guild
  * @param guild The guild to get the members from
  */
-export async function listMembers(guild: string): Promise<APIGuildMember[]> {
+export async function listMembers(guild: Snowflake): Promise<APIGuildMember[]> {
   const res = await callDiscord(Routes.guildMembers(guild), {
     method: "GET",
   });

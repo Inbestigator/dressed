@@ -9,7 +9,7 @@ const componentData = [{"name":"button","category":"buttons","path":"src/compone
 const config = {};`;
 
 const withInstance =
-  `import { createHandlers, createServer } from "@inbestigator/discord-http";
+  `import { createHandlers, createServer } from "@dressed/dressed";
 import { env } from "node:process";
 import "./src/commands/ping.ts";
 import "./src/components/buttons/button.ts";

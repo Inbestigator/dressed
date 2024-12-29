@@ -128,7 +128,7 @@ function generateImports(
   const baseImport = addInstance
     ? `import { createHandlers${
       config.deno === false ? "" : ", createServer"
-    } } from "@inbestigator/discord-http";`
+    } } from "@dressed/dressed";`
     : "";
   const processEnvImport = registerCommands
     ? `import { env } from "node:process";`

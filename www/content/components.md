@@ -25,7 +25,7 @@ All components are required to have a default export, this function is how your
 component will be handled.
 
 ```ts
-import type { ComponentInteraction } from "discord-http";
+import type { ComponentInteraction } from "@dressed/dressed";
 
 export default async function triviaGuess(
   interaction: ComponentInteraction,

@@ -5,7 +5,7 @@ import { writeFile } from "node:fs/promises";
 
 const program = new Command();
 
-program.name("discord-http").description("An HTTP Discord bot framework.");
+program.name("dressed").description("An HTTP Discord bot framework.");
 
 program
   .command("build")

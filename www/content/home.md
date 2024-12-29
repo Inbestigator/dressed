@@ -1,6 +1,6 @@
-# Discord-http
+# Dressed
 
-Discord-http allows you to host a bot using the
+Dressed allows you to host a bot using the
 [interactions endpoint](https://discord.com/developers/docs/interactions/overview#configuring-an-interactions-endpoint-url)
 system for Discord.
 
@@ -9,12 +9,12 @@ that Discord.js utilizes.
 
 You can find an example of a bot ready to deploy on
 [Deno deploy](https://deno.com/deploy) in
-[this repo](https://github.com/Inbestigator/discord-http-example).
+[this repo](https://github.com/Inbestigator/dressed-example).
 
 ## Installation
 
 ```bash
-deno add jsr:@inbestigator/discord-http
+deno add jsr:@dressed/dressed
 ```
 
 ```ts
@@ -22,7 +22,7 @@ deno add jsr:@inbestigator/discord-http
 import type {
   CommandConfig,
   CommandInteraction,
-} from "@inbestigator/discord-http";
+} from "@dressed/dressed";
 
 export const config: CommandConfig = {
   description: "Returns pong",
@@ -39,7 +39,7 @@ export default async function ping(interaction: CommandInteraction) {
 You can then build the bot with this command
 
 ```bash
-deno run -A jsr:@inbestigator/discord-http/cmd build
+deno run -A jsr:@dressed/dressed/cmd build
 ```
 
 By default the builder outputs only the boilerplate data, if you want it to
@@ -47,11 +47,11 @@ include an instance creator, add `-i` when running the build command.
 
 In order to register the commands for your bot, run the build command with `-r`.
 
-In addition to Discord-http, I'd recommend installing
+In addition to Dressed, I'd recommend installing
 [Discord API Types](https://www.npmjs.com/package/discord-api-types) (The type
-lib that Discord-http uses internally)
+lib that Dressed uses internally)
 
-Discord-http comes with a serve system for Deno projects, but otherwise you'll
-have to BYO (all the Discord-http resources needed to do so are available)
-[The Node-compatible example](https://github.com/Inbestigator/discord-http-example/tree/node)
+Dressed comes with a serve system for Deno projects, but otherwise you'll
+have to BYO (all the Dressed resources needed to do so are available)
+[The Node-compatible example](https://github.com/Inbestigator/dressed-example/tree/node)
 uses a server made with Express

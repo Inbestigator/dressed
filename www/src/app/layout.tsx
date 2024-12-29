@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Discord-HTTP",
+  title: "Dressed",
   description: " An HTTP Discord bot framework.",
 };
 
