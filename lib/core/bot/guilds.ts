@@ -16,10 +16,14 @@ export async function getGuild(
   guild: Snowflake,
   with_counts?: boolean,
 ): Promise<APIGuild> {
-  const res = await callDiscord(Routes.guild(guild), {
-    method: "GET",
-    body: { with_counts },
-  });
+  const queryParams = new URLSearchParams();
+  if (with_counts) queryParams.append("with_counts", with_counts.toString());
+  const res = await callDiscord(
+    `${Routes.guild(guild)}?${queryParams.toString()}`,
+    {
+      method: "GET",
+    },
+  );
 
   return res.json();
 }

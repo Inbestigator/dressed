@@ -331,39 +331,32 @@ export async function listThreadMembers(
  * @param channel The channel to get from
  * @param publicThreads Whether to get public or private threads
  * @param joinedOnly Whether to only return private threads the user has joined (will force publicThreads to false)
- * @param before Returns threads archived before this timestamp
- * @param limit Optional maximum number of threads to return
  */
 export async function listArchivedThreads(
   channel: Snowflake,
   publicThreads: boolean,
   joinedOnly?: boolean,
-  before?: string,
-  limit?: number,
+  options?: {
+    /** Returns threads archived before this timestamp */
+    before?: string;
+    /** Optional maximum number of threads to return */
+    limit?: number;
+  },
 ): Promise<RESTGetAPIChannelUsersThreadsArchivedResult> {
-  const query = new URLSearchParams();
-  if (before) query.append("before", before);
-  if (limit) query.append("limit", limit.toString());
+  const queryParams = new URLSearchParams();
+  if (options?.before) queryParams.append("before", options.before);
+  if (options?.limit) queryParams.append("limit", options.limit.toString());
 
-  if (joinedOnly) {
-    const res = await callDiscord(
-      `${
-        Routes.channelThreads(channel, publicThreads ? "public" : "private")
-      }?${query.toString()}`,
-      {
-        method: "GET",
-      },
-    );
+  const res = await callDiscord(
+    `${
+      joinedOnly
+        ? Routes.channelThreads(channel, publicThreads ? "public" : "private")
+        : Routes.channelJoinedArchivedThreads(channel)
+    }?${queryParams.toString()}`,
+    {
+      method: "GET",
+    },
+  );
 
-    return res.json();
-  } else {
-    const res = await callDiscord(
-      `${Routes.channelJoinedArchivedThreads(channel)}?${query.toString()}`,
-      {
-        method: "GET",
-      },
-    );
-
-    return res.json();
-  }
+  return res.json();
 }
