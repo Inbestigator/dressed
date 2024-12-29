@@ -1,7 +1,7 @@
 # Contributing to Dressed
 
-Thank you for considering contributing to Dressed! Below are some
-guidelines to help you get started.
+Thank you for considering contributing to Dressed! Below are some guidelines to
+help you get started.
 
 ## Naming system for helper functions
 
