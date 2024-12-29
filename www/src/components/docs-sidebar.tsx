@@ -25,6 +25,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import Image from "next/image";
 
 const data = {
   navMain: [
@@ -100,7 +101,13 @@ export function DocsSidebar({
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Command className="size-4" />
+                  <Image
+                    src="/dressed_small.webp"
+                    width={256}
+                    height={256}
+                    alt="Dressed logo"
+                    className="rounded-lg"
+                  />
                 </div>
                 <div className="grid flex-1 text-left leading-tight">
                   <span className="truncate font-semibold">Dressed</span>

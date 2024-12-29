@@ -17,8 +17,8 @@ export default function Home() {
         </span>
       </h1>
       <p className="text-lg sm:text-xl max-w-2xl mx-auto animate-fade-in-up animation-delay-200 text-foreground">
-        Dressed is a powerful Discord.js alternative that leverages the Discord
-        HTTP API, making it perfect for serverless deployments.
+        Dressed is a powerful Discord.js alternative that leverages
+        Discord&apos;s REST API, making it perfect for serverless deployments.
       </p>
       <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up animation-delay-400">
         <Button className="text-base" asChild size="lg">
@@ -79,7 +79,7 @@ export default function Home() {
             Lightning Fast
           </h2>
           <p className="text-muted-foreground">
-            Optimized for speed and efficiency using Discord&apos;s HTTP API.
+            Optimized for speed and efficiency using Discord&apos;s REST API.
           </p>
         </div>
         <div className="bg-card p-6 rounded-lg shadow-lg">
