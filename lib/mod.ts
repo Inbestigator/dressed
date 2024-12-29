@@ -31,6 +31,5 @@ export * from "./core/bot/channels.ts";
 export * from "./core/bot/guilds.ts";
 export * from "./core/bot/messages.ts";
 export * from "./core/bot/role-connections.ts";
-export * from "./core/bot/threads.ts";
 export * from "./core/bot/users.ts";
 export * from "./core/bot/voice.ts";

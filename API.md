@@ -4,31 +4,9 @@
 - [x] App role connections
 - [x] Audit log
 - [x] Automod
-- [ ] Channels
-  - [x] GET channel
-  - [x] PATCH channel
-  - [x] DELETE channel
-  - [ ] PUT permissions
-  - [ ] GET invites
-  - [ ] POST invite
-  - [ ] DELETE permission
-  - [ ] POST follow announcement
-  - [ ] POST typing
-  - [ ] GET pinned messages
-  - [ ] PUT pin message
-  - [ ] DELETE message pin
-  - [ ] PUT GDM add
-  - [ ] DELETE GDM remove
-  - [x] POST thread
-  - [x] POST forum thread
-  - [x] PUT thread members
-  - [x] DELETE thread members
-  - [ ] GET thread member
-  - [ ] GET thread members
-  - [ ] GET archived threads
-  - [ ] GET joined archived threads
-- [ ] Emojis
-- [ ] Entitlements
+- [x] Channels
+- [x] Emojis
+- [x] Entitlements
 - [ ] Guilds
   - [ ] POST guild
   - [x] GET guild
