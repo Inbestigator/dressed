@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { build } from "../lib/exports/mod.ts";
+import { build } from "@dressed/dressed";
 
 const withoutInstance = `import "./src/commands/ping.ts";
 import "./src/components/buttons/button.ts";
