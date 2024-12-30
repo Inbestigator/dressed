@@ -38,7 +38,7 @@ export async function callDiscord(
     flattenBodyInForm?: boolean;
   },
 ) {
-  const url = new URL(endpoint, RouteBases.api);
+  const url = new URL(RouteBases.api + endpoint);
   if (options.params) {
     Object.entries(options.params).forEach(([key, value]) => {
       url.searchParams.append(
@@ -90,7 +90,7 @@ export async function callDiscord(
   } else if (options.body) {
     options.body = JSON.stringify(options.body);
   }
-  const res = await fetch(url.toString(), {
+  const res = await fetch(url, {
     headers: options.files?.length
       ? {
         Authorization: `Bot ${env.DISCORD_TOKEN}`,
