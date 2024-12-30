@@ -2,8 +2,8 @@
 
 # Dressed
 
-Dressed is a wrapper around the Discord API. It allows you to host a bot using
-the
+Dressed is a Discord bot framework with 100% API support. It allows you to host
+a bot using the
 [interactions endpoint](https://discord.com/developers/docs/interactions/overview#configuring-an-interactions-endpoint-url)
 system for Discord.
 
