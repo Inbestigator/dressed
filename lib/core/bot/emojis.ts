@@ -1,7 +1,10 @@
 import type {
-  APIEmoji,
+  RESTGetAPIGuildEmojiResult,
+  RESTGetAPIGuildEmojisResult,
   RESTPatchAPIGuildEmojiJSONBody,
+  RESTPatchAPIGuildEmojiResult,
   RESTPostAPIGuildEmojiJSONBody,
+  RESTPostAPIGuildEmojiResult,
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
@@ -16,7 +19,7 @@ const appId = process.env.APP_ID;
  */
 export async function listEmojis(
   guild?: Snowflake,
-): Promise<APIEmoji[]> {
+): Promise<RESTGetAPIGuildEmojisResult> {
   const res = await callDiscord(
     guild
       ? Routes.guildEmojis(guild)
@@ -41,7 +44,7 @@ export async function listEmojis(
 export async function getEmoji(
   emoji: Snowflake,
   guild?: Snowflake,
-): Promise<APIEmoji> {
+): Promise<RESTGetAPIGuildEmojiResult> {
   const res = await callDiscord(
     guild
       ? Routes.guildEmoji(guild, emoji)
@@ -62,7 +65,7 @@ export async function getEmoji(
 export async function createEmoji(
   data: RESTPostAPIGuildEmojiJSONBody,
   guild?: Snowflake,
-): Promise<APIEmoji> {
+): Promise<RESTPostAPIGuildEmojiResult> {
   const res = await callDiscord(
     guild
       ? Routes.guildEmojis(guild)
@@ -86,7 +89,7 @@ export async function modifyEmoji(
   emoji: Snowflake,
   data: RESTPatchAPIGuildEmojiJSONBody,
   guild?: Snowflake,
-): Promise<APIEmoji> {
+): Promise<RESTPatchAPIGuildEmojiResult> {
   const res = await callDiscord(
     guild
       ? Routes.guildEmoji(guild, emoji)

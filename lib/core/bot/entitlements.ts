@@ -1,5 +1,7 @@
 import type {
-  APIEntitlement,
+  RESTGetAPIEntitlementResult,
+  RESTGetAPIEntitlementsQuery,
+  RESTGetAPIEntitlementsResult,
   RESTPostAPIEntitlementJSONBody,
   RESTPostAPIEntitlementResult,
   Snowflake,
@@ -12,12 +14,16 @@ const appId = process.env.APP_ID;
 
 /**
  * Returns all entitlements for the app, active and expired.
+ * @param options Optional parameters for the request
  */
-export async function listEntitlements(): Promise<APIEntitlement[]> {
+export async function listEntitlements(
+  options?: RESTGetAPIEntitlementsQuery,
+): Promise<RESTGetAPIEntitlementsResult> {
   const res = await callDiscord(
     Routes.entitlements(appId as string),
     {
       method: "GET",
+      params: options as Record<string, unknown>,
     },
   );
 
@@ -30,7 +36,7 @@ export async function listEntitlements(): Promise<APIEntitlement[]> {
  */
 export async function getEntitlement(
   entitlement: Snowflake,
-): Promise<APIEntitlement> {
+): Promise<RESTGetAPIEntitlementResult> {
   const res = await callDiscord(
     Routes.entitlement(appId as string, entitlement),
     {

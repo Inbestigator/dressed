@@ -1,6 +1,10 @@
 import type {
-  APISticker,
+  RESTGetAPIGuildStickerResult,
+  RESTGetAPIGuildStickersResult,
   RESTPatchAPIGuildStickerJSONBody,
+  RESTPatchAPIGuildStickerResult,
+  RESTPostAPIGuildStickerFormDataBody,
+  RESTPostAPIGuildStickerResult,
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
@@ -13,7 +17,7 @@ import type { RawFile } from "../../internal/types/file.ts";
  */
 export async function listStickers(
   guild: Snowflake,
-): Promise<APISticker[]> {
+): Promise<RESTGetAPIGuildStickersResult> {
   const res = await callDiscord(
     Routes.guildStickers(guild),
     {
@@ -32,7 +36,7 @@ export async function listStickers(
 export async function getSticker(
   guild: Snowflake,
   sticker: Snowflake,
-): Promise<APISticker> {
+): Promise<RESTGetAPIGuildStickerResult> {
   const res = await callDiscord(
     Routes.guildSticker(guild, sticker),
     {
@@ -44,30 +48,6 @@ export async function getSticker(
 }
 
 /**
- * https://discord.com/developers/docs/resources/sticker#create-guild-sticker
- */
-interface RESTPostAPIGuildStickerFormDataBody {
-  /**
-   * Name of the sticker (2-30 characters)
-   */
-  name: string;
-  /**
-   * Description of the sticker (empty or 2-100 characters)
-   */
-  description: string;
-  /**
-   * The Discord name of a unicode emoji representing the sticker's expression (2-200 characters)
-   */
-  tags: string;
-  /**
-   * The sticker file to upload, must be a PNG, APNG, GIF, or Lottie JSON file, max 512 KB
-   *
-   * Uploaded stickers are constrained to 5 seconds in length for animated stickers, and 320 x 320 pixels.
-   */
-  file: Blob;
-}
-
-/**
  * Create a new sticker for the guild.
  * @param guild The guild to create the sticker from
  */
@@ -76,7 +56,7 @@ export async function createSticker(
   { file, ...data }: Omit<RESTPostAPIGuildStickerFormDataBody, "file"> & {
     file: RawFile;
   },
-): Promise<APISticker> {
+): Promise<RESTPostAPIGuildStickerResult> {
   const res = await callDiscord(
     Routes.guildStickers(guild),
     {
@@ -99,7 +79,7 @@ export async function modifySticker(
   guild: Snowflake,
   sticker: Snowflake,
   data: RESTPatchAPIGuildStickerJSONBody,
-): Promise<APISticker> {
+): Promise<RESTPatchAPIGuildStickerResult> {
   const res = await callDiscord(
     Routes.guildSticker(guild, sticker),
     {

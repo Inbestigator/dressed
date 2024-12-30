@@ -1,29 +1,29 @@
 import type {
-  APIChannel,
-  APIGuild,
-  APIGuildMember,
+  RESTGetAPIGuildChannelsResult,
+  RESTGetAPIGuildMemberResult,
+  RESTGetAPIGuildMembersQuery,
+  RESTGetAPIGuildMembersResult,
+  RESTGetAPIGuildQuery,
+  RESTGetAPIGuildResult,
   Snowflake,
 } from "discord-api-types/v10";
-import { RouteBases, Routes } from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
  * Get a guild by ID.
  * @param guild The guild to fetch
- * @param with_counts Whether to include member and presence counts in the response
+ * @param options Optional parameters for the request
  */
 export async function getGuild(
   guild: Snowflake,
-  with_counts?: boolean,
-): Promise<APIGuild> {
-  const url = new URL(Routes.guild(guild), RouteBases.api);
-  if (with_counts) {
-    url.searchParams.append("with_counts", with_counts.toString());
-  }
+  options?: RESTGetAPIGuildQuery,
+): Promise<RESTGetAPIGuildResult> {
   const res = await callDiscord(
-    url.toString(),
+    Routes.guild(guild),
     {
       method: "GET",
+      params: options as Record<string, unknown>,
     },
   );
 
@@ -34,7 +34,9 @@ export async function getGuild(
  * Get a list of channels in a guild, does not include threads
  * @param guild The guild to get the channels from
  */
-export async function listChannels(guild: Snowflake): Promise<APIChannel[]> {
+export async function listChannels(
+  guild: Snowflake,
+): Promise<RESTGetAPIGuildChannelsResult> {
   const res = await callDiscord(Routes.guildChannels(guild), {
     method: "GET",
   });
@@ -50,7 +52,7 @@ export async function listChannels(guild: Snowflake): Promise<APIChannel[]> {
 export async function getMember(
   guild: Snowflake,
   member: string,
-): Promise<APIGuildMember> {
+): Promise<RESTGetAPIGuildMemberResult> {
   const res = await callDiscord(Routes.guildMember(guild, member), {
     method: "GET",
   });
@@ -61,10 +63,15 @@ export async function getMember(
 /**
  * Get a list of members in a guild
  * @param guild The guild to get the members from
+ * @param options Optional parameters for the request
  */
-export async function listMembers(guild: Snowflake): Promise<APIGuildMember[]> {
+export async function listMembers(
+  guild: Snowflake,
+  options?: RESTGetAPIGuildMembersQuery,
+): Promise<RESTGetAPIGuildMembersResult> {
   const res = await callDiscord(Routes.guildMembers(guild), {
     method: "GET",
+    params: options as Record<string, unknown>,
   });
 
   return res.json();

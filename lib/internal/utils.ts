@@ -32,11 +32,21 @@ export async function verifySignature(req: Request): Promise<boolean> {
 export async function callDiscord(
   endpoint: string,
   options: Omit<RequestInit, "body"> & {
+    params?: Record<string, unknown>;
     body?: unknown;
     files?: RawFile[];
     flattenBodyInForm?: boolean;
   },
 ) {
+  const url = new URL(endpoint, RouteBases.api);
+  if (options.params) {
+    Object.entries(options.params).forEach(([key, value]) => {
+      url.searchParams.append(
+        key,
+        typeof value === "string" ? value : JSON.stringify(value),
+      );
+    });
+  }
   if (options.files?.length) {
     const files = options.files;
     const formData = new FormData();
@@ -80,7 +90,7 @@ export async function callDiscord(
   } else if (options.body) {
     options.body = JSON.stringify(options.body);
   }
-  const res = await fetch(RouteBases.api + endpoint, {
+  const res = await fetch(url.toString(), {
     headers: options.files?.length
       ? {
         Authorization: `Bot ${env.DISCORD_TOKEN}`,

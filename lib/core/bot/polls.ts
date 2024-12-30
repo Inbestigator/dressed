@@ -1,9 +1,10 @@
 import type {
-  APIMessage,
+  RESTGetAPIPollAnswerVotersQuery,
   RESTGetAPIPollAnswerVotersResult,
+  RESTPostAPIPollExpireResult,
   Snowflake,
 } from "discord-api-types/v10";
-import { RouteBases, Routes } from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
@@ -11,33 +12,19 @@ import { callDiscord } from "../../internal/utils.ts";
  * @param channel The channel to get the message from
  * @param message The message to get the poll from
  * @param answer The answer to get the voters from
- * @param options Query parameters for filtering the voters
+ * @param options Optional parameters for the request
  */
 export async function listAnswerVoters(
   channel: Snowflake,
   message: Snowflake,
   answer: number,
-  options?: {
-    /** Get users after this user ID */
-    after?: Snowflake;
-    /** The maximum number of users to return */
-    limit?: number;
-  },
+  options?: RESTGetAPIPollAnswerVotersQuery,
 ): Promise<RESTGetAPIPollAnswerVotersResult> {
-  const url = new URL(
-    Routes.pollAnswerVoters(channel, message, answer),
-    RouteBases.api,
-  );
-
-  if (options?.after) url.searchParams.append("after", options.after);
-  if (options?.limit) {
-    url.searchParams.append("limit", options.limit.toString());
-  }
-
   const res = await callDiscord(
-    url.toString(),
+    Routes.pollAnswerVoters(channel, message, answer),
     {
       method: "GET",
+      params: options as Record<string, unknown>,
     },
   );
 
@@ -52,7 +39,7 @@ export async function listAnswerVoters(
 export async function endPoll(
   channel: Snowflake,
   message: Snowflake,
-): Promise<APIMessage> {
+): Promise<RESTPostAPIPollExpireResult> {
   const res = await callDiscord(
     Routes.expirePoll(channel, message),
     {

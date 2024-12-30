@@ -61,13 +61,15 @@ export const baseInteractionMethods = (
     delete data.files;
 
     const res = await callDiscord(
-      Routes.interactionCallback(interaction.id, interaction.token) +
-        `?with_response=${data?.with_response}`,
+      Routes.interactionCallback(interaction.id, interaction.token),
       {
         method: "POST",
         body: {
           type: InteractionResponseType.ChannelMessageWithSource,
           data,
+        },
+        params: {
+          with_response: data?.with_response,
         },
         files,
       },
@@ -82,13 +84,15 @@ export const baseInteractionMethods = (
     }
 
     const res = await callDiscord(
-      Routes.interactionCallback(interaction.id, interaction.token) +
-        `?with_response=${data?.with_response}`,
+      Routes.interactionCallback(interaction.id, interaction.token),
       {
         method: "POST",
         body: {
           type: InteractionResponseType.DeferredChannelMessageWithSource,
           data,
+        },
+        params: {
+          with_response: data?.with_response,
         },
       },
     );

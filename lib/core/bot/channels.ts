@@ -1,20 +1,28 @@
 import type {
-  APIChannel,
-  APIFollowedChannel,
-  APIInvite,
   APIMessage,
   APIThreadChannel,
-  APIThreadMember,
+  RESTDeleteAPIChannelResult,
+  RESTGetAPIChannelInvitesResult,
+  RESTGetAPIChannelPinsResult,
+  RESTGetAPIChannelResult,
+  RESTGetAPIChannelThreadMemberQuery,
+  RESTGetAPIChannelThreadMemberResult,
+  RESTGetAPIChannelThreadMembersResult,
+  RESTGetAPIChannelThreadsArchivedQuery,
   RESTGetAPIChannelUsersThreadsArchivedResult,
   RESTPatchAPIChannelJSONBody,
+  RESTPatchAPIChannelResult,
+  RESTPostAPIChannelFollowersResult,
   RESTPostAPIChannelInviteJSONBody,
+  RESTPostAPIChannelInviteResult,
   RESTPostAPIChannelThreadsJSONBody,
+  RESTPostAPIChannelThreadsResult,
   RESTPostAPIGuildForumThreadsJSONBody,
   RESTPutAPIChannelPermissionJSONBody,
   RESTPutAPIChannelRecipientJSONBody,
   Snowflake,
 } from "discord-api-types/v10";
-import { RouteBases, Routes } from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 import type { RawFile } from "../../internal/types/file.ts";
 
@@ -22,7 +30,9 @@ import type { RawFile } from "../../internal/types/file.ts";
  * Get a channel by ID.
  * @param channel The channel to fetch
  */
-export async function getChannel(channel: Snowflake): Promise<APIChannel> {
+export async function getChannel(
+  channel: Snowflake,
+): Promise<RESTGetAPIChannelResult> {
   const res = await callDiscord(Routes.channel(channel), {
     method: "GET",
   });
@@ -38,7 +48,7 @@ export async function getChannel(channel: Snowflake): Promise<APIChannel> {
 export async function modifyChannel(
   channel: Snowflake,
   data: RESTPatchAPIChannelJSONBody,
-): Promise<APIChannel> {
+): Promise<RESTPatchAPIChannelResult> {
   const res = await callDiscord(Routes.channel(channel), {
     method: "PATCH",
     body: data,
@@ -51,7 +61,9 @@ export async function modifyChannel(
  * Delete a channel, or close a private message.
  * @param channel The channel to delete
  */
-export async function deleteChannel(channel: Snowflake): Promise<APIChannel> {
+export async function deleteChannel(
+  channel: Snowflake,
+): Promise<RESTDeleteAPIChannelResult> {
   const res = await callDiscord(Routes.channel(channel), {
     method: "DELETE",
   });
@@ -81,7 +93,7 @@ export async function modifyChannelPermissions(
  */
 export async function listChannelInvites(
   channel: Snowflake,
-): Promise<APIInvite[]> {
+): Promise<RESTGetAPIChannelInvitesResult> {
   const res = await callDiscord(Routes.channelInvites(channel), {
     method: "GET",
   });
@@ -96,7 +108,7 @@ export async function listChannelInvites(
 export async function createChannelInvite(
   channel: Snowflake,
   data: RESTPostAPIChannelInviteJSONBody,
-): Promise<APIInvite[]> {
+): Promise<RESTPostAPIChannelInviteResult> {
   const res = await callDiscord(Routes.channelInvites(channel), {
     method: "GET",
     body: data,
@@ -127,7 +139,7 @@ export async function deleteChannelPermissions(
 export async function followChannel(
   channel: Snowflake,
   target: Snowflake,
-): Promise<APIFollowedChannel> {
+): Promise<RESTPostAPIChannelFollowersResult> {
   const res = await callDiscord(Routes.channelFollowers(channel), {
     method: "POST",
     body: { webhook_channel_id: target },
@@ -154,7 +166,7 @@ export async function createTypingIndicator(
  */
 export async function listPins(
   channel: Snowflake,
-): Promise<APIMessage[]> {
+): Promise<RESTGetAPIChannelPinsResult> {
   const res = await callDiscord(Routes.channelPins(channel), {
     method: "GET",
   });
@@ -232,7 +244,7 @@ export async function createThread(
     type?: "Public" | "Private" | number;
   },
   message?: Snowflake,
-): Promise<APIThreadChannel> {
+): Promise<RESTPostAPIChannelThreadsResult> {
   let endpoint = Routes.threads(channel);
   if (message) {
     endpoint = Routes.threads(channel, message);
@@ -259,7 +271,7 @@ export async function createForumThread(
   data: RESTPostAPIGuildForumThreadsJSONBody & {
     files?: RawFile[];
   },
-): Promise<APIThreadChannel> {
+): Promise<APIThreadChannel & { message: APIMessage }> {
   const res = await callDiscord(Routes.threads(channel), {
     method: "POST",
     body: data,
@@ -300,15 +312,18 @@ export async function removeThreadMember(
  * Returns a thread member object if the user is a member of the thread.
  * @param thread The thread to get the user from
  * @param user The user to get from the thread
+ * @param options Optional parameters for the request
  */
 export async function getThreadMember(
   thread: Snowflake,
   user: Snowflake,
-): Promise<APIThreadMember> {
+  options?: RESTGetAPIChannelThreadMemberQuery,
+): Promise<RESTGetAPIChannelThreadMemberResult> {
   const res = await callDiscord(
     Routes.threadMembers(thread, user),
     {
       method: "GET",
+      params: options as Record<string, unknown>,
     },
   );
 
@@ -318,12 +333,15 @@ export async function getThreadMember(
 /**
  * Returns a list of thread members in the thread.
  * @param thread The thread to get from
+ * @param options Optional parameters for the request
  */
 export async function listThreadMembers(
   thread: Snowflake,
-): Promise<APIThreadMember[]> {
+  options?: RESTGetAPIChannelThreadMemberQuery,
+): Promise<RESTGetAPIChannelThreadMembersResult> {
   const res = await callDiscord(Routes.threadMembers(thread), {
     method: "GET",
+    params: options as Record<string, unknown>,
   });
 
   return res.json();
@@ -334,34 +352,21 @@ export async function listThreadMembers(
  * @param channel The channel to get from
  * @param publicThreads Whether to get public or private threads
  * @param joinedOnly Whether to only return private threads the user has joined (will force publicThreads to false)
- * @param options Optional query parameters
+ * @param options Optional parameters for the request
  */
 export async function listArchivedThreads(
   channel: Snowflake,
   publicThreads: boolean,
   joinedOnly?: boolean,
-  options?: {
-    /** Returns threads archived before this timestamp */
-    before?: string;
-    /** Optional maximum number of threads to return */
-    limit?: number;
-  },
+  options?: RESTGetAPIChannelThreadsArchivedQuery,
 ): Promise<RESTGetAPIChannelUsersThreadsArchivedResult> {
-  const url = new URL(
-    joinedOnly
-      ? Routes.channelThreads(channel, publicThreads ? "public" : "private")
-      : Routes.channelJoinedArchivedThreads(channel),
-    RouteBases.api,
-  );
-  if (options?.before) url.searchParams.append("before", options.before);
-  if (options?.limit) {
-    url.searchParams.append("limit", options.limit.toString());
-  }
-
   const res = await callDiscord(
-    url.toString(),
+    joinedOnly
+      ? Routes.channelJoinedArchivedThreads(channel)
+      : Routes.channelThreads(channel, publicThreads ? "public" : "private"),
     {
       method: "GET",
+      params: options as Record<string, unknown>,
     },
   );
 

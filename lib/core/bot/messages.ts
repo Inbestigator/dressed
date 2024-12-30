@@ -1,20 +1,32 @@
 import type {
   APIMessage,
+  RESTGetAPIChannelMessageReactionUsersQuery,
+  RESTGetAPIChannelMessageReactionUsersResult,
+  RESTGetAPIChannelMessageResult,
+  RESTGetAPIChannelMessagesQuery,
+  RESTGetAPIChannelMessagesResult,
   RESTPatchAPIChannelMessageJSONBody,
+  RESTPostAPIChannelMessageCrosspostResult,
   RESTPostAPIChannelMessageJSONBody,
+  RESTPostAPIChannelMessageResult,
   Snowflake,
 } from "discord-api-types/v10";
-import { RouteBases, Routes } from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 import type { RawFile } from "../../internal/types/file.ts";
 
 /**
  * Lists the messages in a channel.
  * @param channel The channel to get the messages from
+ * @param options Optional parameters for the request
  */
-export async function listMessages(channel: Snowflake): Promise<APIMessage[]> {
+export async function listMessages(
+  channel: Snowflake,
+  options?: RESTGetAPIChannelMessagesQuery,
+): Promise<RESTGetAPIChannelMessagesResult> {
   const res = await callDiscord(Routes.channelMessages(channel), {
     method: "GET",
+    params: options as Record<string, unknown>,
   });
 
   return res.json();
@@ -28,7 +40,7 @@ export async function listMessages(channel: Snowflake): Promise<APIMessage[]> {
 export async function getMessage(
   channel: Snowflake,
   message: Snowflake,
-): Promise<APIMessage> {
+): Promise<RESTGetAPIChannelMessageResult> {
   const res = await callDiscord(Routes.channelMessage(channel, message), {
     method: "GET",
   });
@@ -44,7 +56,7 @@ export async function getMessage(
 export async function createMessage(
   channel: Snowflake,
   data: string | (RESTPostAPIChannelMessageJSONBody & { files?: RawFile[] }),
-): Promise<APIMessage> {
+): Promise<RESTPostAPIChannelMessageResult> {
   if (typeof data === "string") {
     data = { content: data };
   }
@@ -65,7 +77,7 @@ export async function createMessage(
 export async function crosspostMessage(
   channel: Snowflake,
   message: Snowflake,
-): Promise<APIMessage> {
+): Promise<RESTPostAPIChannelMessageCrosspostResult> {
   const res = await callDiscord(
     Routes.channelMessageCrosspost(channel, message),
     {
@@ -117,35 +129,18 @@ export async function deleteReaction(
  * @param channel The channel to get the reaction in
  * @param message The message to get the reaction from
  * @param emoji The emoji to list
- * @param options Optional query parameters
+ * @param options Optional parameters for the request
  */
 export async function listReactions(
   channel: Snowflake,
   message: Snowflake,
   emoji: string,
-  options?: {
-    /** The type of reaction */
-    type?: "Normal" | "Burst";
-    /** Get users after this user ID */
-    after?: Snowflake;
-    /** Max number of users to return */
-    limit?: number;
-  },
-): Promise<void> {
-  const url = new URL(
+  options?: RESTGetAPIChannelMessageReactionUsersQuery,
+): Promise<RESTGetAPIChannelMessageReactionUsersResult> {
+  const res = await callDiscord(
     Routes.channelMessageReaction(channel, message, emoji),
-    RouteBases.api,
+    { method: "GET", params: options as Record<string, unknown> },
   );
-
-  if (options?.type !== undefined) {
-    url.searchParams.append("type", options.type === "Normal" ? "0" : "1");
-  }
-  if (options?.after) url.searchParams.append("after", options.after);
-  if (options?.limit !== undefined) {
-    url.searchParams.append("limit", options.limit.toString());
-  }
-
-  const res = await callDiscord(url.toString(), { method: "GET" });
 
   return res.json();
 }

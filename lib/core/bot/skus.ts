@@ -1,5 +1,11 @@
-import type { APISKU, APISubscription, Snowflake } from "discord-api-types/v10";
-import { RouteBases, Routes } from "discord-api-types/v10";
+import type {
+  RESTGetAPISKUsResult,
+  RESTGetAPISKUSubscriptionResult,
+  RESTGetAPISKUSubscriptionsQuery,
+  RESTGetAPISKUSubscriptionsResult,
+  Snowflake,
+} from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 import process from "node:process";
 
@@ -8,7 +14,7 @@ const appId = process.env.APP_ID;
 /**
  * Returns all SKUs for the application.
  */
-export async function listSKUs(): Promise<APISKU[]> {
+export async function listSKUs(): Promise<RESTGetAPISKUsResult> {
   const res = await callDiscord(
     Routes.skus(appId as string),
     {
@@ -22,34 +28,17 @@ export async function listSKUs(): Promise<APISKU[]> {
 /**
  * Returns all subscriptions containing the SKU, filtered by user.
  * @param sku The sku to get the subscriptions for
- * @param options Query parameters for filtering the subscriptions
+ * @param options Optional parameters for the request
  */
 export async function listSubscriptions(
   sku: Snowflake,
-  options?: {
-    /** Get subscriptions before this subscription ID */
-    before?: Snowflake;
-    /** Get subscriptions after this subscription ID */
-    after?: Snowflake;
-    /** The maximum number of subscriptions to return */
-    limit?: number;
-    /** Get subscriptions for this user ID */
-    user_id?: Snowflake;
-  },
-): Promise<APISubscription[]> {
-  const url = new URL(Routes.skuSubscriptions(sku), RouteBases.api);
-
-  if (options?.before) url.searchParams.append("before", options.before);
-  if (options?.after) url.searchParams.append("after", options.after);
-  if (options?.limit) {
-    url.searchParams.append("limit", options.limit.toString());
-  }
-  if (options?.user_id) url.searchParams.append("user_id", options.user_id);
-
+  options?: RESTGetAPISKUSubscriptionsQuery,
+): Promise<RESTGetAPISKUSubscriptionsResult> {
   const res = await callDiscord(
-    url.toString(),
+    Routes.skuSubscriptions(sku),
     {
       method: "GET",
+      params: options as Record<string, unknown>,
     },
   );
 
@@ -64,7 +53,7 @@ export async function listSubscriptions(
 export async function getSubscription(
   sku: Snowflake,
   subscription: Snowflake,
-): Promise<APISubscription> {
+): Promise<RESTGetAPISKUSubscriptionResult> {
   const res = await callDiscord(
     Routes.skuSubscription(sku, subscription),
     {
