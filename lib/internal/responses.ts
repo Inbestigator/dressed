@@ -68,9 +68,11 @@ export const baseInteractionMethods = (
           type: InteractionResponseType.ChannelMessageWithSource,
           data,
         },
-        params: {
-          with_response: data?.with_response,
-        },
+        params: data.with_response
+          ? {
+            with_response: data.with_response,
+          }
+          : undefined,
         files,
       },
     );
@@ -91,9 +93,11 @@ export const baseInteractionMethods = (
           type: InteractionResponseType.DeferredChannelMessageWithSource,
           data,
         },
-        params: {
-          with_response: data?.with_response,
-        },
+        params: data?.with_response
+          ? {
+            with_response: data.with_response,
+          }
+          : undefined,
       },
     );
 
