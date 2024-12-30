@@ -2,52 +2,23 @@ import type {
   APIApplicationCommandInteraction,
   APIInteraction,
   APIInteractionResponseCallbackData,
+  APIMessage,
   APIMessageComponentInteraction,
   APIModalInteractionResponseCallbackData,
   APIModalSubmitInteraction,
   APIUser,
   MessageFlags,
-  RESTPatchAPIWebhookWithTokenMessageJSONBody,
 } from "discord-api-types/v10";
 import type { OptionReaders } from "../options.ts";
-
-export interface BaseInteractionMethods {
-  /**
-   * Respond to an interaction with a message
-   * @param data The response message
-   */
-  reply: (data: InteractionReplyOptions) => Promise<void>;
-  /**
-   * ACK an interaction and edit a response later, the user sees a loading state
-   * @param data Optional data for the deferred response
-   */
-  deferReply: (data?: DeferredReplyOptions) => Promise<void>;
-  /**
-   * Edit the initial interaction response
-   * @param data The new data for the response message
-   */
-  editReply: (
-    data: string | RESTPatchAPIWebhookWithTokenMessageJSONBody,
-  ) => Promise<void>;
-  /**
-   * Create another response to the interaction
-   * @param data The data for the message
-   */
-  followUp: (data: InteractionReplyOptions) => Promise<void>;
-  /**
-   * Respond to an interaction with a popup modal
-   * @param data The data for the modal response
-   */
-  showModal: (data: APIModalInteractionResponseCallbackData) => Promise<void>;
-  user: APIUser;
-}
+import type { RawFile } from "./file.ts";
+import type { baseInteractionMethods } from "../responses.ts";
 
 /**
  * A command interaction, includes methods for responding to the interaction.
  */
 export type CommandInteraction =
   & APIApplicationCommandInteraction
-  & BaseInteractionMethods
+  & ReturnType<typeof baseInteractionMethods>
   & {
     /**
      * Get an option from the interaction
@@ -66,14 +37,16 @@ export type CommandInteraction =
  */
 export type MessageComponentInteraction =
   & APIMessageComponentInteraction
-  & BaseInteractionMethods
+  & ReturnType<typeof baseInteractionMethods>
   & {
     /**
      * For components, edit the message the component was attached to
      * @param data The new data for the component message
      */
     update: (
-      data: string | APIInteractionResponseCallbackData,
+      data:
+        | string
+        | (APIInteractionResponseCallbackData & { files?: RawFile[] }),
     ) => Promise<void>;
   };
 
@@ -82,7 +55,7 @@ export type MessageComponentInteraction =
  */
 export type ModalSubmitInteraction =
   & APIModalSubmitInteraction
-  & Omit<BaseInteractionMethods, "showModal">
+  & Omit<ReturnType<typeof baseInteractionMethods>, "showModal">
   & {
     /**
      * Get a field from the user's submission
@@ -96,16 +69,72 @@ export type ModalSubmitInteraction =
       : string | null;
   };
 
-export interface DeferredReplyOptions {
-  ephemeral?: boolean;
-  flags?: MessageFlags;
+export interface BaseInteractionMethods {
+  /**
+   * Respond to an interaction with a message
+   * @param data The response message
+   */
+  reply: (
+    data:
+      | string
+      | (APIInteractionResponseCallbackData & {
+        /** Whether the message is ephemeral */
+        ephemeral?: boolean;
+        /** The files to send with the message */
+        files?: RawFile[];
+        /** Whether to return the source message with the response */
+        with_response?: boolean;
+      }),
+  ) => Promise<null | APIMessage>;
+  /**
+   * ACK an interaction and edit a response later, the user sees a loading state
+   * @param data Optional data for the deferred response
+   */
+  deferReply: (
+    data?: {
+      /** Whether the message is ephemeral */
+      ephemeral?: boolean;
+      /** Message flags combined as a bitfield */
+      flags?: MessageFlags;
+      /** Whether to return the source message with the response */
+      with_response?: boolean;
+    },
+  ) => Promise<null | APIMessage>;
+  /**
+   * Edit the initial interaction response
+   * @param data The new data for the response message
+   */
+  editReply: (
+    data:
+      | string
+      | (APIInteractionResponseCallbackData & {
+        /** The files to send with the message */
+        files?: RawFile[];
+      }),
+  ) => Promise<void>;
+  /**
+   * Create another response to the interaction
+   * @param data The data for the message
+   */
+  followUp: (
+    data:
+      | string
+      | (APIInteractionResponseCallbackData & {
+        /** The files to send with the message */
+        files?: RawFile[];
+        /** Whether the message is ephemeral */
+        ephemeral?: boolean;
+      }),
+  ) => Promise<void>;
+  /**
+   * Respond to an interaction with a popup modal
+   * @param data The data for the modal response
+   */
+  showModal: (
+    data: APIModalInteractionResponseCallbackData,
+  ) => Promise<void>;
+  user: APIUser;
 }
-
-export type InteractionReplyOptions =
-  | (APIInteractionResponseCallbackData & {
-    ephemeral?: boolean;
-  })
-  | string;
 
 export type Interaction<T extends APIInteraction> = T extends
   APIApplicationCommandInteraction ? CommandInteraction

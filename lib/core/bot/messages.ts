@@ -6,6 +6,7 @@ import type {
 } from "discord-api-types/v10";
 import { RouteBases, Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
+import type { RawFile } from "../../internal/types/file.ts";
 
 /**
  * Lists the messages in a channel.
@@ -42,7 +43,7 @@ export async function getMessage(
  */
 export async function createMessage(
   channel: Snowflake,
-  data: string | RESTPostAPIChannelMessageJSONBody,
+  data: string | (RESTPostAPIChannelMessageJSONBody & { files?: RawFile[] }),
 ): Promise<APIMessage> {
   if (typeof data === "string") {
     data = { content: data };
@@ -189,7 +190,7 @@ export async function deleteAllEmojiReactions(
 export async function editMessage(
   channel: Snowflake,
   message: Snowflake,
-  data: string | RESTPatchAPIChannelMessageJSONBody,
+  data: string | (RESTPatchAPIChannelMessageJSONBody & { files?: RawFile[] }),
 ): Promise<APIMessage> {
   if (typeof data === "string") {
     data = { content: data };

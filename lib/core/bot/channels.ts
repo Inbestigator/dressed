@@ -16,6 +16,7 @@ import type {
 } from "discord-api-types/v10";
 import { RouteBases, Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
+import type { RawFile } from "../../internal/types/file.ts";
 
 /**
  * Get a channel by ID.
@@ -255,7 +256,9 @@ export async function createThread(
  */
 export async function createForumThread(
   channel: Snowflake,
-  data: RESTPostAPIGuildForumThreadsJSONBody,
+  data: RESTPostAPIGuildForumThreadsJSONBody & {
+    files?: RawFile[];
+  },
 ): Promise<APIThreadChannel> {
   const res = await callDiscord(Routes.threads(channel), {
     method: "POST",
