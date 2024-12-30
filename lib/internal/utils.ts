@@ -41,7 +41,7 @@ export async function callDiscord(
     const files = options.files;
     const formData = new FormData();
 
-    files.entries().forEach(([index, file]) => {
+    for (const [index, file] of files.entries()) {
       const fileKey = file.key ?? `files[${index}]`;
       if (Buffer.isBuffer(file.data)) {
         let contentType = file.contentType;
@@ -66,7 +66,7 @@ export async function callDiscord(
           file.name,
         );
       }
-    });
+    }
 
     if (options.body && options.flattenBodyInForm) {
       for (const [key, value] of Object.entries(options.body)) {
