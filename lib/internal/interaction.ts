@@ -1,39 +1,13 @@
-import {
-  deferReply,
-  editReply,
-  followUp,
-  reply,
-  showModal,
-  update,
-} from "./responses.ts";
-import type {
-  BaseInteractionMethods,
-  DeferredReplyOptions,
-  Interaction,
-  InteractionReplyOptions,
-} from "./types/interaction.ts";
+import { baseInteractionMethods, update } from "./responses.ts";
+import type { Interaction } from "./types/interaction.ts";
 import type {
   APIChatInputApplicationCommandInteractionData,
   APIInteraction,
   APIInteractionResponseCallbackData,
-  APIModalInteractionResponseCallbackData,
-  RESTPatchAPIWebhookWithTokenMessageJSONBody,
 } from "discord-api-types/v10";
 import { InteractionType } from "discord-api-types/v10";
 import { getOption } from "./options.ts";
-
-function baseMethods(interaction: APIInteraction): BaseInteractionMethods {
-  return {
-    reply: (data: InteractionReplyOptions) => reply(interaction, data),
-    deferReply: (data?: DeferredReplyOptions) => deferReply(interaction, data),
-    followUp: (data: InteractionReplyOptions) => followUp(interaction, data),
-    editReply: (data: string | RESTPatchAPIWebhookWithTokenMessageJSONBody) =>
-      editReply(interaction, data),
-    showModal: (data: APIModalInteractionResponseCallbackData) =>
-      showModal(interaction, data),
-    user: interaction.user!,
-  };
-}
+import type { RawFile } from "./types/file.ts";
 
 export default function createInteraction<T extends APIInteraction>(
   interaction: T,
@@ -46,7 +20,7 @@ export default function createInteraction<T extends APIInteraction>(
     case InteractionType.ApplicationCommand: {
       return {
         ...interaction,
-        ...baseMethods(interaction),
+        ...baseInteractionMethods(interaction),
         getOption: <Required extends boolean>(
           name: string,
           required: Required,
@@ -65,15 +39,18 @@ export default function createInteraction<T extends APIInteraction>(
     case InteractionType.MessageComponent: {
       return {
         ...interaction,
-        ...baseMethods(interaction),
-        update: (data: string | APIInteractionResponseCallbackData) =>
-          update(interaction, data),
+        ...baseInteractionMethods(interaction),
+        update: (
+          data:
+            | string
+            | (APIInteractionResponseCallbackData & { files?: RawFile[] }),
+        ) => update(interaction, data),
       } as unknown as Interaction<T>;
     }
     case InteractionType.ModalSubmit: {
       return {
         ...interaction,
-        ...baseMethods(interaction),
+        ...baseInteractionMethods(interaction),
         getField: <Required extends boolean>(
           name: string,
           required: Required,

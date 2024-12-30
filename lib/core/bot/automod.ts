@@ -1,7 +1,10 @@
 import type {
-  APIAutoModerationRule,
+  RESTGetAPIAutoModerationRuleResult,
+  RESTGetAPIAutoModerationRulesResult,
   RESTPatchAPIAutoModerationRuleJSONBody,
+  RESTPatchAPIAutoModerationRuleResult,
   RESTPostAPIAutoModerationRuleJSONBody,
+  RESTPostAPIAutoModerationRuleResult,
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
@@ -13,7 +16,7 @@ import { callDiscord } from "../../internal/utils.ts";
  */
 export async function listAutomodRules(
   guild: Snowflake,
-): Promise<APIAutoModerationRule[]> {
+): Promise<RESTGetAPIAutoModerationRulesResult> {
   const res = await callDiscord(Routes.guildAutoModerationRules(guild), {
     method: "GET",
   });
@@ -29,7 +32,7 @@ export async function listAutomodRules(
 export async function getAutomodRule(
   guild: Snowflake,
   rule: string,
-): Promise<APIAutoModerationRule> {
+): Promise<RESTGetAPIAutoModerationRuleResult> {
   const res = await callDiscord(Routes.guildAutoModerationRule(guild, rule), {
     method: "GET",
   });
@@ -45,7 +48,7 @@ export async function getAutomodRule(
 export async function createAutomodRule(
   guild: Snowflake,
   data: RESTPostAPIAutoModerationRuleJSONBody,
-): Promise<APIAutoModerationRule> {
+): Promise<RESTPostAPIAutoModerationRuleResult> {
   const res = await callDiscord(Routes.guildAutoModerationRules(guild), {
     method: "POST",
     body: data,
@@ -64,7 +67,7 @@ export async function modifyAutomodRule(
   guild: Snowflake,
   rule: string,
   data: RESTPatchAPIAutoModerationRuleJSONBody,
-): Promise<APIAutoModerationRule> {
+): Promise<RESTPatchAPIAutoModerationRuleResult> {
   const res = await callDiscord(Routes.guildAutoModerationRule(guild, rule), {
     method: "PATCH",
     body: data,

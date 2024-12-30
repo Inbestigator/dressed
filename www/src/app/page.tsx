@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Zap, Cloud, Code, Hexagon } from "lucide-react";
+import { BookHeart, Cloud, Code, Hexagon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import DenoLogo from "@/components/deno-logo";
 import JSRLogo from "@/components/jsr-logo";
@@ -74,12 +74,12 @@ export default function Home() {
       </div>
       <div className="grid md:grid-cols-3 gap-8 text-left animate-fade-in-up animation-delay-600">
         <div className="bg-card p-6 rounded-lg shadow-lg">
-          <Zap className="h-10 w-10 mb-4 text-primary" />
+          <BookHeart className="h-10 w-10 mb-4 text-primary" />
           <h2 className="text-xl font-semibold mb-2 text-card-foreground">
-            Lightning Fast
+            Anything, Anytime
           </h2>
           <p className="text-muted-foreground">
-            Optimized for speed and efficiency using Discord&apos;s REST API.
+            Dressed has 100% support for the Discord API.
           </p>
         </div>
         <div className="bg-card p-6 rounded-lg shadow-lg">

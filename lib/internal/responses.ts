@@ -4,71 +4,30 @@ import {
   type APIModalInteractionResponseCallbackData,
   InteractionResponseType,
   MessageFlags,
-  type RESTPatchAPIWebhookWithTokenMessageJSONBody,
   Routes,
 } from "discord-api-types/v10";
-import type {
-  DeferredReplyOptions,
-  InteractionReplyOptions,
-} from "./types/interaction.ts";
 import { callDiscord } from "./utils.ts";
 import { env } from "node:process";
+import type { RawFile } from "./types/file.ts";
+import type { BaseInteractionMethods } from "./types/interaction.ts";
 
 const userId = env.DISCORD_APP_ID;
 
-export async function reply(
-  interaction: APIInteraction,
-  data: InteractionReplyOptions,
-) {
-  if (typeof data === "string") {
-    data = { content: data };
-  }
-
-  if (data.ephemeral) {
-    const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
-    data.flags = flags;
-  }
-
-  await callDiscord(
-    Routes.interactionCallback(interaction.id, interaction.token),
-    {
-      method: "POST",
-      body: {
-        type: InteractionResponseType.ChannelMessageWithSource,
-        data,
-      },
-    },
-  );
-}
-
-export async function deferReply(
-  interaction: APIInteraction,
-  data?: DeferredReplyOptions,
-) {
-  if (data?.ephemeral) {
-    const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
-    data.flags = flags;
-  }
-
-  await callDiscord(
-    Routes.interactionCallback(interaction.id, interaction.token),
-    {
-      method: "POST",
-      body: {
-        type: InteractionResponseType.DeferredChannelMessageWithSource,
-        data,
-      },
-    },
-  );
-}
-
 export async function update(
   interaction: APIInteraction,
-  data: string | APIInteractionResponseCallbackData,
+  data:
+    | string
+    | (APIInteractionResponseCallbackData & {
+      /** The files to send with the message */
+      files?: RawFile[];
+    }),
 ) {
   if (typeof data === "string") {
     data = { content: data };
   }
+
+  const files = data.files;
+  delete data.files;
 
   await callDiscord(
     Routes.interactionCallback(interaction.id, interaction.token),
@@ -78,58 +37,124 @@ export async function update(
         type: InteractionResponseType.UpdateMessage,
         data,
       },
+      files,
     },
   );
 }
 
-export async function showModal(
+export const baseInteractionMethods = (
   interaction: APIInteraction,
-  data: APIModalInteractionResponseCallbackData,
-) {
-  await callDiscord(
-    Routes.interactionCallback(interaction.id, interaction.token),
-    {
-      method: "POST",
-      body: {
-        type: InteractionResponseType.Modal,
-        data,
+): BaseInteractionMethods => ({
+  reply: async function (
+    data,
+  ) {
+    if (typeof data === "string") {
+      data = { content: data };
+    }
+
+    if (data.ephemeral) {
+      const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
+      data.flags = flags;
+    }
+
+    const files = data.files;
+    delete data.files;
+
+    const res = await callDiscord(
+      Routes.interactionCallback(interaction.id, interaction.token),
+      {
+        method: "POST",
+        body: {
+          type: InteractionResponseType.ChannelMessageWithSource,
+          data,
+        },
+        params: {
+          with_response: data?.with_response,
+        },
+        files,
       },
-    },
-  );
-}
+    );
 
-export async function editReply(
-  interaction: APIInteraction,
-  data: string | RESTPatchAPIWebhookWithTokenMessageJSONBody,
-) {
-  if (typeof data === "string") {
-    data = { content: data };
-  }
+    return data.with_response ? res.json() : null;
+  },
+  deferReply: async function (data) {
+    if (data?.ephemeral) {
+      const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
+      data.flags = flags;
+    }
 
-  await callDiscord(
-    Routes.webhookMessage(userId!, interaction.token),
-    {
-      method: "PATCH",
+    const res = await callDiscord(
+      Routes.interactionCallback(interaction.id, interaction.token),
+      {
+        method: "POST",
+        body: {
+          type: InteractionResponseType.DeferredChannelMessageWithSource,
+          data,
+        },
+        params: {
+          with_response: data?.with_response,
+        },
+      },
+    );
+
+    return data?.with_response ? res.json() : null;
+  },
+  editReply: async function (data) {
+    if (typeof data === "string") {
+      data = { content: data };
+    }
+
+    const files = data.files;
+    delete data.files;
+
+    await callDiscord(
+      Routes.webhookMessage(userId!, interaction.token),
+      {
+        method: "PATCH",
+        body: data,
+        files,
+      },
+    );
+  },
+  followUp: async function (
+    data:
+      | string
+      | (APIInteractionResponseCallbackData & {
+        files?: RawFile[];
+        ephemeral?: boolean;
+      }),
+  ): Promise<void> {
+    if (typeof data === "string") {
+      data = { content: data };
+    }
+
+    if (data.ephemeral) {
+      const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
+      data.flags = flags;
+    }
+
+    const files = data.files;
+    delete data.files;
+
+    await callDiscord(Routes.webhook(userId!, interaction.token), {
+      method: "POST",
       body: data,
-    },
-  );
-}
-
-export async function followUp(
-  interaction: APIInteraction,
-  data: InteractionReplyOptions,
-) {
-  if (typeof data === "string") {
-    data = { content: data };
-  }
-
-  if (data.ephemeral) {
-    const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
-    data.flags = flags;
-  }
-
-  await callDiscord(Routes.webhook(userId!, interaction.token), {
-    method: "POST",
-    body: data,
-  });
-}
+      files,
+    });
+  },
+  showModal: async function (
+    data: APIModalInteractionResponseCallbackData,
+  ): Promise<void> {
+    await callDiscord(
+      Routes.interactionCallback(interaction.id, interaction.token),
+      {
+        method: "POST",
+        body: {
+          type: InteractionResponseType.Modal,
+          data,
+        },
+      },
+    );
+  },
+  user: interaction.member?.user ?? interaction.user!,
+});

@@ -1,5 +1,5 @@
 import type {
-  APIVoiceState,
+  RESTGetAPIGuildVoiceStateUserResult,
   RESTPatchAPIGuildVoiceStateCurrentMemberJSONBody,
   RESTPatchAPIGuildVoiceStateUserJSONBody,
   Snowflake,
@@ -15,7 +15,7 @@ import { callDiscord } from "../../internal/utils.ts";
 export async function getVoiceState(
   guild: Snowflake,
   user?: Snowflake,
-): Promise<APIVoiceState> {
+): Promise<RESTGetAPIGuildVoiceStateUserResult> {
   const res = await callDiscord(Routes.guildVoiceState(guild, user), {
     method: "GET",
   });
@@ -35,11 +35,9 @@ export async function modifyVoiceState(
   data:
     | RESTPatchAPIGuildVoiceStateCurrentMemberJSONBody
     | RESTPatchAPIGuildVoiceStateUserJSONBody,
-): Promise<APIVoiceState> {
-  const res = await callDiscord(Routes.guildVoiceState(guild, user), {
+): Promise<void> {
+  await callDiscord(Routes.guildVoiceState(guild, user), {
     method: "PATCH",
     body: data,
   });
-
-  return res.json();
 }

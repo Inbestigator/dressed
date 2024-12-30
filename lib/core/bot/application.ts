@@ -1,14 +1,15 @@
-import {
-  type APIApplication,
-  type RESTPatchCurrentApplicationJSONBody,
-  Routes,
+import type {
+  RESTGetCurrentApplicationResult,
+  RESTPatchCurrentApplicationJSONBody,
+  RESTPatchCurrentApplicationResult,
 } from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
  * Get the current bot application.
  */
-export async function getApp(): Promise<APIApplication> {
+export async function getApp(): Promise<RESTGetCurrentApplicationResult> {
   const res = await callDiscord(Routes.currentApplication(), {
     method: "GET",
   });
@@ -22,7 +23,7 @@ export async function getApp(): Promise<APIApplication> {
  */
 export async function modifyApp(
   data: RESTPatchCurrentApplicationJSONBody,
-): Promise<APIApplication> {
+): Promise<RESTPatchCurrentApplicationResult> {
   const res = await callDiscord(Routes.currentApplication(), {
     method: "PATCH",
     body: data,
