@@ -17,6 +17,7 @@
     "@std/fmt": "jsr:@std/fmt@^1.0.3",
     "@svarta/walk-it": "jsr:@svarta/walk-it@^5.0.1",
     "discord-api-types": "npm:discord-api-types@^0.37.104",
+    "magic-bytes.js": "npm:magic-bytes.js@^1.10.0",
     "ora": "npm:ora@^8.1.1",
     "std-env": "npm:std-env@^3.8.0",
     "tweetnacl": "npm:tweetnacl@^1.0.3"

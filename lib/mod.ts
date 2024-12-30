@@ -35,5 +35,6 @@ export * from "./core/bot/messages.ts";
 export * from "./core/bot/polls.ts";
 export * from "./core/bot/role-connections.ts";
 export * from "./core/bot/skus.ts";
+export * from "./core/bot/stickers.ts";
 export * from "./core/bot/users.ts";
 export * from "./core/bot/voice.ts";

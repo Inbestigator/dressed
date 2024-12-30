@@ -6,6 +6,8 @@ import { env } from "node:process";
 import ora from "ora";
 import type { CommandConfig } from "./types/config.ts";
 import { RouteBases, Routes } from "discord-api-types/v10";
+import { filetypeinfo } from "magic-bytes.js";
+import type { RawFile } from "./types/file.ts";
 
 /**
  * Verifies the signature of the POST request
@@ -29,15 +31,65 @@ export async function verifySignature(req: Request): Promise<boolean> {
 
 export async function callDiscord(
   endpoint: string,
-  options: Record<string, unknown>,
+  options: Omit<RequestInit, "body"> & {
+    body?: unknown;
+    files?: RawFile[];
+    flattenBodyInForm?: boolean;
+  },
 ) {
-  if (options.body) options.body = JSON.stringify(options.body);
+  if (options.files?.length) {
+    const files = options.files;
+    const formData = new FormData();
+
+    files.entries().forEach(([index, file]) => {
+      const fileKey = file.key ?? `files[${index}]`;
+      if (Buffer.isBuffer(file.data)) {
+        let contentType = file.contentType;
+        if (!contentType) {
+          const [parsedType] = filetypeinfo(file.data);
+          if (parsedType) {
+            contentType = parsedType.mime === "image/apng"
+              ? "image/png"
+              : parsedType.mime ??
+                "application/octet-stream";
+          }
+        }
+        formData.append(
+          fileKey,
+          new Blob([file.data], { type: contentType }),
+          file.name,
+        );
+      } else {
+        formData.append(
+          fileKey,
+          new Blob([`${file.data}`], { type: file.contentType }),
+          file.name,
+        );
+      }
+    });
+
+    if (options.body && options.flattenBodyInForm) {
+      for (const [key, value] of Object.entries(options.body)) {
+        formData.append(key, value);
+      }
+    } else if (options.body) {
+      formData.append("payload_json", JSON.stringify(options.body));
+    }
+
+    options.body = formData;
+  } else if (options.body) {
+    options.body = JSON.stringify(options.body);
+  }
   const res = await fetch(RouteBases.api + endpoint, {
-    headers: {
-      Authorization: `Bot ${env.DISCORD_TOKEN}`,
-      "Content-Type": "application/json; charset=UTF-8",
-    },
-    ...options,
+    headers: options.files?.length
+      ? {
+        Authorization: `Bot ${env.DISCORD_TOKEN}`,
+      }
+      : {
+        Authorization: `Bot ${env.DISCORD_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    ...options as unknown as RequestInit,
   });
   if (!res.ok) {
     const data = await res.json();
