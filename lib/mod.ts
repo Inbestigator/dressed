@@ -30,6 +30,7 @@ export * from "./core/bot/channels.ts";
 export * from "./core/bot/emojis.ts";
 export * from "./core/bot/entitlements.ts";
 export * from "./core/bot/guilds.ts";
+export * from "./core/bot/guild-events.ts";
 export * from "./core/bot/invites.ts";
 export * from "./core/bot/messages.ts";
 export * from "./core/bot/polls.ts";

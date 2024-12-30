@@ -8,7 +8,7 @@
 - [x] Emojis
 - [x] Entitlements
 - [x] Guilds
-- [ ] Guild events
+- [x] Guild events
 - [ ] Guild templates
 - [x] Invites
 - [x] Messages

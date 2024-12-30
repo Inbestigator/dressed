@@ -660,7 +660,7 @@ export async function getWidgetSettings(
  * @param guild The guild to modify the widget settings for
  * @param data The new data for the widget settings
  */
-export async function modifyWidget(
+export async function modifyWidgetSettinga(
   guild: Snowflake,
   data: RESTPatchAPIGuildWidgetSettingsJSONBody,
 ): Promise<RESTPatchAPIGuildWidgetSettingsResult> {
