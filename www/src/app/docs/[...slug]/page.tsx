@@ -82,7 +82,7 @@ export default async function DocsPage({
                 }
                 return (
                   <>
-                    <BreadcrumbItem key={i} className="hidden md:block">
+                    <BreadcrumbItem key={s} className="hidden md:block">
                       <BreadcrumbLink
                         href={"/docs/" + doc.slug.slice(0, i + 1).join("/")}
                       >

@@ -1,17 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Github,
-  Hash,
-  Home,
-  MessageCircle,
-  Puzzle,
-  Reply,
-  Terminal,
-  User,
-  Users,
-} from "lucide-react";
+import { Github, Home, Puzzle, Reply, Terminal } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
@@ -53,31 +43,6 @@ const data = {
       title: "Interactions",
       url: "/docs/interactions",
       icon: Reply,
-    },
-    {
-      title: "Channels",
-      url: "/docs/channels",
-      icon: Hash,
-    },
-    {
-      title: "Guilds",
-      url: "/docs/guilds",
-      icon: Users,
-    },
-    {
-      title: "Messages",
-      url: "/docs/messages",
-      icon: MessageCircle,
-    },
-    {
-      title: "Threads",
-      url: "/docs/threads",
-      icon: Hash,
-    },
-    {
-      title: "Users",
-      url: "/docs/users",
-      icon: User,
     },
   ],
   navSecondary: [

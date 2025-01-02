@@ -94,7 +94,9 @@ async function fetchFiles(directory: string): Promise<WalkEntry[]> {
   const filesArray = [];
   for await (
     const file of walkFiles(`./${directory}`, {
-      filterFile: (f) => f.name.endsWith(".ts"),
+      filterFile: (f) =>
+        f.name.endsWith(".ts") || f.name.endsWith(".js") ||
+        f.name.endsWith(".mjs") || f.name.endsWith(".cjs"),
     })
   ) {
     filesArray.push({
