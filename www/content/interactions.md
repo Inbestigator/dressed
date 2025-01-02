@@ -1,3 +1,5 @@
+# Interactions
+
 All interaction types share a set of core response methods. Additional methods are available for specific interaction types.
 
 ## Base methods

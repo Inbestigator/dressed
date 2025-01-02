@@ -18,7 +18,7 @@ export { setupCommands, setupComponents };
 // Components
 export * from "./core/components/actionrow.ts";
 export * from "./core/components/button.ts";
-export * from "./core/bot/options.ts";
+export * from "./core/components/command-option.ts";
 export * from "./core/components/selectmenu.ts";
 export * from "./core/components/textinput.ts";
 

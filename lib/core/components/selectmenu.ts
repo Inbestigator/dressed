@@ -1,10 +1,6 @@
 import type {
-  APIChannelSelectComponent,
-  APIMentionableSelectComponent,
-  APIRoleSelectComponent,
   APISelectMenuComponent,
-  APIStringSelectComponent,
-  APIUserSelectComponent,
+  ComponentType,
 } from "discord-api-types/v10";
 
 enum SelectType {
@@ -15,33 +11,32 @@ enum SelectType {
   User = 5,
 }
 
-interface ChannelSelect extends Omit<APIChannelSelectComponent, "type"> {
-  type: "Channel";
-}
-interface MentionableSelect
-  extends Omit<APIMentionableSelectComponent, "type"> {
-  type: "Mentionable";
-}
-interface RoleSelect extends Omit<APIRoleSelectComponent, "type"> {
-  type: "Role";
-}
-interface StringSelect extends Omit<APIStringSelectComponent, "type"> {
-  type: "String";
-}
-interface UserSelect extends Omit<APIUserSelectComponent, "type"> {
-  type: "User";
-}
+type SelectMap = {
+  [Key in keyof typeof ComponentType]: Extract<
+    APISelectMenuComponent,
+    { type: typeof ComponentType[Key] }
+  >;
+};
 
 /**
  * Creates a select menu component
  */
-export function SelectMenu(
+export function SelectMenu<K extends keyof typeof SelectType>(
   data:
-    | ChannelSelect
-    | MentionableSelect
-    | RoleSelect
-    | StringSelect
-    | UserSelect,
+    & Omit<
+      SelectMap[
+        K extends "Channel" ? "ChannelSelect"
+          : K extends "Mentionable" ? "MentionableSelect"
+          : K extends "Role" ? "RoleSelect"
+          : K extends "String" ? "StringSelect"
+          : K extends "User" ? "UserSelect"
+          : never
+      ],
+      "type"
+    >
+    & {
+      type: K;
+    },
 ): APISelectMenuComponent {
   const select = {
     ...data,

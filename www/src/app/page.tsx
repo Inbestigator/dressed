@@ -25,7 +25,7 @@ export default function Home() {
           <Link href="/docs">Docs</Link>
         </Button>
         <Button
-          title="JS Registry Entry"
+          title="JS Registry entry"
           className="h-11"
           variant="outline"
           asChild
@@ -40,7 +40,7 @@ export default function Home() {
         </Button>
         <div className="flex items-center">
           <Button
-            title="Deno Example"
+            title="Deno example"
             className="rounded-r-none border-r-0 size-11"
             variant="outline"
             asChild
@@ -56,7 +56,7 @@ export default function Home() {
           </Button>
           <Separator orientation="vertical" className="h-11" />
           <Button
-            title="Non Deno Example"
+            title="All runtimes example"
             className="rounded-l-none border-l-0 size-11"
             variant="outline"
             asChild

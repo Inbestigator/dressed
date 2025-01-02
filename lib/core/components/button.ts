@@ -7,27 +7,22 @@ import {
   ComponentType,
 } from "discord-api-types/v10";
 
-type StringButtonStyle =
-  | "Primary"
-  | "Secondary"
-  | "Success"
-  | "Danger"
-  | "Link"
-  | "Premium";
-
 interface ButtonWithCustomId
   extends Omit<APIButtonComponentWithCustomId, "type" | "style"> {
-  style?: StringButtonStyle;
+  sku_id?: never;
+  url?: never;
 }
 
 interface ButtonWithSKUId
   extends Omit<APIButtonComponentWithSKUId, "type" | "style"> {
-  style?: StringButtonStyle;
+  custom_id?: never;
+  url?: never;
 }
 
 interface ButtonWithURL
-  extends Omit<APIButtonComponentWithURL, "type" | "style"> {
-  style?: StringButtonStyle;
+  extends Omit<(APIButtonComponentWithURL), "type" | "style"> {
+  custom_id?: never;
+  sku_id?: never;
 }
 
 interface Button {
@@ -39,7 +34,9 @@ interface Button {
  * Creates a button component
  */
 export function Button(
-  data: ButtonWithCustomId | ButtonWithSKUId | ButtonWithURL,
+  data: (ButtonWithCustomId | ButtonWithSKUId | ButtonWithURL) & {
+    style?: keyof typeof ButtonStyle;
+  },
 ): APIButtonComponent {
   const button = data as Button;
   button.type = ComponentType.Button;

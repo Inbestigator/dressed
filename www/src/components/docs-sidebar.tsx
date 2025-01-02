@@ -54,31 +54,6 @@ const data = {
       url: "/docs/interactions",
       icon: Reply,
     },
-    {
-      title: "Channels",
-      url: "/docs/channels",
-      icon: Hash,
-    },
-    {
-      title: "Guilds",
-      url: "/docs/guilds",
-      icon: Users,
-    },
-    {
-      title: "Messages",
-      url: "/docs/messages",
-      icon: MessageCircle,
-    },
-    {
-      title: "Threads",
-      url: "/docs/threads",
-      icon: Hash,
-    },
-    {
-      title: "Users",
-      url: "/docs/users",
-      icon: User,
-    },
   ],
   navSecondary: [
     {

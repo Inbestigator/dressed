@@ -2,14 +2,16 @@ import nacl from "tweetnacl";
 import { verifySignature } from "../lib/internal/utils.ts";
 import { Buffer } from "node:buffer";
 import { assertEquals } from "@std/assert";
-import { env } from "node:process";
 
-function generateXSignature(timestamp: string) {
+export function generateXSignature(timestamp: string, content: string) {
   const keyPair = nacl.sign.keyPair();
-  const message = new TextEncoder().encode(timestamp + "content");
+  const message = new TextEncoder().encode(timestamp + content);
   const signature = nacl.sign.detached(message, keyPair.secretKey);
 
-  env.DISCORD_PUBLIC_KEY = Buffer.from(keyPair.publicKey).toString("hex");
+  Deno.env.set(
+    "DISCORD_PUBLIC_KEY",
+    Buffer.from(keyPair.publicKey).toString("hex"),
+  );
   return Buffer.from(signature).toString("hex");
 }
 
@@ -19,10 +21,10 @@ Deno.test("Don't verify invalid signature", async () => {
     new Request("http://localhost:8000", {
       method: "POST",
       headers: {
-        "X-Signature-Ed25519": generateXSignature(stamp),
+        "X-Signature-Ed25519": generateXSignature(stamp, "test"),
         "X-Signature-Timestamp": stamp,
       },
-      body: "different content",
+      body: "different test",
     }),
   );
 
@@ -35,10 +37,10 @@ Deno.test("Verify valid signature", async () => {
     new Request("http://localhost:8000", {
       method: "POST",
       headers: {
-        "X-Signature-Ed25519": generateXSignature(stamp),
+        "X-Signature-Ed25519": generateXSignature(stamp, "test"),
         "X-Signature-Timestamp": stamp,
       },
-      body: "content",
+      body: "test",
     }),
   );
 
