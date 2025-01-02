@@ -1,17 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Github,
-  Hash,
-  Home,
-  MessageCircle,
-  Puzzle,
-  Reply,
-  Terminal,
-  User,
-  Users,
-} from "lucide-react";
+import { Github, Home, Puzzle, Reply, Terminal } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
