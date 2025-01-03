@@ -7,20 +7,19 @@ import JSRLogo from "@/components/jsr-logo";
 
 export default function Home() {
   return (
-    <div className="min-h-dvh flex flex-col gap-8 items-center justify-center bg-background text-foreground py-10 px-4 max-w-5xl mx-auto text-center">
-      <h1 className="animate-fade-in-up">
-        <span className="block text-[max(28px,min(4vw,56px))] font-black leading-tight sm:leading-tight text-primary">
+    <div className="min-h-dvh flex flex-col gap-8 items-center justify-center py-10 px-4 max-w-5xl mx-auto text-center">
+      <h1 className="block font-black leading-tight sm:leading-tight ">
+        <span className="block text-[max(28px,min(4vw,56px))] text-primary">
           Build Faster
         </span>
-        <span className="block text-[max(36px,min(5vw,72px))] font-black leading-tight sm:leading-tight text-white">
+        <span className="block text-[max(36px,min(5vw,72px))] text-white">
           Deploy Anywhere
         </span>
       </h1>
-      <p className="text-lg sm:text-xl max-w-2xl mx-auto animate-fade-in-up animation-delay-200 text-foreground">
-        Dressed is a powerful Discord.js alternative that leverages
-        Discord&apos;s REST API, making it perfect for serverless deployments.
+      <p className="text-lg sm:text-xl max-w-2xl mx-auto">
+        Dressed is a serverless Discord bot framework with 100% API support.
       </p>
-      <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up animation-delay-400">
+      <div className="flex flex-wrap justify-center gap-4">
         <Button className="text-base" asChild size="lg">
           <Link href="/docs">Docs</Link>
         </Button>
@@ -40,7 +39,7 @@ export default function Home() {
         </Button>
         <div className="flex items-center">
           <Button
-            title="Deno example"
+            title="Deno examples"
             className="rounded-r-none border-r-0 size-11"
             variant="outline"
             asChild
@@ -56,7 +55,7 @@ export default function Home() {
           </Button>
           <Separator orientation="vertical" className="h-11" />
           <Button
-            title="All runtimes example"
+            title="All runtimes examples"
             className="rounded-l-none border-l-0 size-11"
             variant="outline"
             asChild
@@ -72,21 +71,17 @@ export default function Home() {
           </Button>
         </div>
       </div>
-      <div className="grid md:grid-cols-3 gap-8 text-left animate-fade-in-up animation-delay-600">
+      <div className="grid md:grid-cols-3 gap-8 text-left">
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <BookHeart className="h-10 w-10 mb-4 text-primary" />
-          <h2 className="text-xl font-semibold mb-2 text-card-foreground">
-            Anything, Anytime
-          </h2>
+          <h2 className="text-xl font-semibold mb-2">Anything, Anytime</h2>
           <p className="text-muted-foreground">
             Dressed has 100% support for the Discord API.
           </p>
         </div>
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <Cloud className="h-10 w-10 mb-4 text-primary" />
-          <h2 className="text-xl font-semibold mb-2 text-card-foreground">
-            Serverless Ready
-          </h2>
+          <h2 className="text-xl font-semibold mb-2">Serverless Ready</h2>
           <p className="text-muted-foreground">
             Deploy effortlessly to serverless environments like{" "}
             <Link
@@ -101,9 +96,7 @@ export default function Home() {
         </div>
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <Code className="h-10 w-10 mb-4 text-primary" />
-          <h2 className="text-xl font-semibold mb-2 text-card-foreground">
-            Developer Friendly
-          </h2>
+          <h2 className="text-xl font-semibold mb-2">Developer Friendly</h2>
           <p className="text-muted-foreground">
             Simple API design, making bot development a breeze.
           </p>
