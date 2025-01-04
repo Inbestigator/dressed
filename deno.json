@@ -9,7 +9,8 @@
     ]
   },
   "exports": {
-    ".": "./lib/mod.ts"
+    ".": "./lib/mod.ts",
+    "./server": "./lib/server-mod.ts"
   },
   "imports": {
     "@dotenvx/dotenvx": "npm:@dotenvx/dotenvx@^1.24.0",

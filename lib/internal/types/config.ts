@@ -84,8 +84,10 @@ export interface Component {
   path: string;
 }
 
-export type CommandHandler = (interaction: CommandInteraction) => unknown;
+export type CommandHandler = (
+  interaction: CommandInteraction,
+) => Promise<void> | void;
 export type ComponentHandler = (
   interaction: MessageComponentInteraction | ModalSubmitInteraction,
   args?: Record<string, string>,
-) => unknown;
+) => Promise<void> | void;

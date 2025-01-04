@@ -94,9 +94,7 @@ async function fetchFiles(directory: string): Promise<WalkEntry[]> {
   const filesArray = [];
   for await (
     const file of walkFiles(`./${directory}`, {
-      filterFile: (f) =>
-        f.name.endsWith(".ts") || f.name.endsWith(".js") ||
-        f.name.endsWith(".mjs") || f.name.endsWith(".cjs"),
+      filterFile: (f) => /.+\.(js|ts|mjs|cjs)$/.test(f.name),
     })
   ) {
     filesArray.push({
@@ -130,7 +128,7 @@ function generateImports(
   const baseImport = addInstance
     ? `import { createHandlers${
       config.deno === false ? "" : ", createServer"
-    } } from "@dressed/dressed";`
+    } } from "@dressed/dressed/server";`
     : "";
   const processEnvImport = registerCommands
     ? `import { env } from "node:process";`

@@ -1,4 +1,4 @@
-import { runInteraction } from "@dressed/dressed";
+import { runInteraction } from "@dressed/dressed/server";
 import { generateXSignature } from "./signature.test.ts";
 import { assertEquals, assertExists } from "@std/assert";
 

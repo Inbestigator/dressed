@@ -22,7 +22,7 @@ export async function createHandlers(
 }> {
   if (!env.DISCORD_TOKEN) {
     throw new Error(
-      "No bot token provided, make sure to provide a TOKEN environment variable",
+      "No bot token provided, make sure to provide a DISCORD_TOKEN environment variable",
     );
   }
 

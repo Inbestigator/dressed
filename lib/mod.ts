@@ -6,15 +6,6 @@ export type {
   ModalSubmitInteraction,
 } from "./internal/types/interaction.ts";
 
-// Core
-export * from "./core/handlers.ts";
-export * from "./core/server.ts";
-export { verifySignature } from "./internal/utils.ts";
-export { build } from "./core/build.ts";
-import setupCommands from "./core/bot/commands.ts";
-import setupComponents from "./core/bot/components.ts";
-export { setupCommands, setupComponents };
-
 // Components
 export * from "./core/components/actionrow.ts";
 export * from "./core/components/button.ts";
