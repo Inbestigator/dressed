@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { build } from "@dressed/dressed";
+import { build } from "@dressed/dressed/server";
 
 const withoutInstance = `import "./src/commands/ping.ts";
 import "./src/components/buttons/button.ts";
@@ -9,7 +9,7 @@ const componentData = [{"name":"button","category":"buttons","path":"src/compone
 const config = {};`;
 
 const withInstance =
-  `import { createHandlers, createServer } from "@dressed/dressed";
+  `import { createHandlers, createServer } from "@dressed/dressed/server";
 import { env } from "node:process";
 import "./src/commands/ping.ts";
 import "./src/components/buttons/button.ts";
