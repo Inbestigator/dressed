@@ -3,11 +3,16 @@ import { underline, yellow } from "@std/fmt/colors";
 import ora from "ora";
 import { join, normalize } from "node:path";
 import type { BotConfig } from "../mod.ts";
-import { readdirSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { cwd } from "node:process";
 import { runtime } from "std-env";
 import { parseCommands } from "./bot/commands.ts";
 import { parseComponents } from "./bot/components.ts";
+import type {
+  BuildCommand,
+  BuildComponent,
+  Component,
+} from "../internal/types/config.ts";
 
 export type WalkEntry = {
   name: string;
@@ -46,7 +51,6 @@ export async function build(
 
   const outputContent = `
 ${generateImports(config ?? {}, addInstance, registerCommands)}
-${generateFileImports([...commandData, ...componentData])}
 
 ${defineFiles("commandData", commandData)}
 ${defineFiles("componentData", componentData)}
@@ -84,9 +88,7 @@ async function fetchConfig(): Promise<BotConfig | undefined> {
  * Fetches the files from a directory and formats paths for import.
  */
 async function fetchFiles(directory: string): Promise<WalkEntry[]> {
-  try {
-    readdirSync(`./${directory}`);
-  } catch {
+  if (!existsSync(`./${directory}`)) {
     console.warn(`${yellow("!")} ${directory} directory not found`);
     return [];
   }
@@ -110,13 +112,17 @@ async function fetchFiles(directory: string): Promise<WalkEntry[]> {
   return filesArray;
 }
 
-function generateFileImports(files: { path: string }[]): string {
-  return files.map((f) => `import "./${f.path}";`).join("\n");
-}
-
-function defineFiles(variableName: string, files: unknown[]): string {
+function defineFiles<T extends BuildCommand | Component>(
+  variableName: string,
+  files: T[],
+): string {
   return files.length > 0
-    ? `const ${variableName} = ${JSON.stringify(files)};`
+    ? `const ${variableName} = ${
+      JSON.stringify(files).replaceAll(
+        /"path":"(.+?)"/g,
+        '"import": ()=>import("./$1")',
+      )
+    };`
     : "";
 }
 
@@ -137,8 +143,8 @@ function generateImports(
 }
 
 function generateInstanceCreation(
-  commandData: unknown[],
-  componentData: unknown[],
+  commandData: BuildCommand[],
+  componentData: BuildComponent[],
   config: BotConfig,
   registerCommands?: boolean,
 ): string {
