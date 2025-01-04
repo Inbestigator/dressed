@@ -1,6 +1,6 @@
 {
   "name": "@dressed/dressed",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publish": {
     "include": [
       "lib",

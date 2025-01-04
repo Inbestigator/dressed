@@ -223,15 +223,18 @@ export async function listActiveThreads(
 /**
  * Get a specific member from a guild
  * @param guild The guild to get the member from
- * @param member The member to get
+ * @param member The member to get (defaults to self)
  */
 export async function getMember(
   guild: Snowflake,
-  member: string,
+  member?: Snowflake,
 ): Promise<RESTGetAPIGuildMemberResult> {
-  const res = await callDiscord(Routes.guildMember(guild, member), {
-    method: "GET",
-  });
+  const res = await callDiscord(
+    member ? Routes.guildMember(guild, member) : Routes.userGuildMember(guild),
+    {
+      method: "GET",
+    },
+  );
 
   return res.json();
 }
