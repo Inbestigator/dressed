@@ -1,16 +1,14 @@
 import type {
+  BuildComponent,
   Component,
   ComponentHandler,
 } from "../../internal/types/config.ts";
-import { join, normalize } from "node:path";
 import type {
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "../../internal/types/interaction.ts";
 import { ComponentType, InteractionType } from "discord-api-types/v10";
 import { trackParts, type WalkEntry } from "../build.ts";
-import { cwd } from "node:process";
-import { runtime } from "std-env";
 import ora from "ora";
 
 /**
@@ -73,13 +71,12 @@ export default function setupComponents(
     ).start();
 
     try {
-      const componentModule = (await import(
-        (runtime !== "bun" ? "file:" : "") +
-          normalize(join(cwd(), component.path))
-      )) as {
-        default: ComponentHandler;
-      };
-      await Promise.resolve(componentModule.default(interaction, args));
+      await Promise.resolve(
+        ((await component.import()).default as ComponentHandler)(
+          interaction,
+          args,
+        ),
+      );
       componentLoader.succeed();
     } catch (error) {
       componentLoader.fail();
@@ -105,7 +102,7 @@ export function parseComponents(componentFiles: WalkEntry[]) {
     componentFiles.length,
   );
   try {
-    const componentData: Component[] = [];
+    const componentData: BuildComponent[] = [];
 
     for (const file of componentFiles) {
       removeN();
@@ -119,9 +116,9 @@ export function parseComponents(componentFiles: WalkEntry[]) {
         continue;
       }
 
-      const component: Component = {
+      const component: BuildComponent = {
         name: file.name,
-        category: category as "buttons" | "modals" | "selects",
+        category: category as BuildComponent["category"],
         path: file.path,
       };
 

@@ -75,19 +75,35 @@ export interface CommandConfig {
 
 export interface Command {
   name: string;
+  import: () => Promise<{
+    config?: CommandConfig;
+    default: CommandHandler;
+  }>;
+}
+
+export interface BuildCommand {
+  name: string;
   path: string;
 }
 
 export interface Component {
   name: string;
-  category: "buttons" | "modals" | "selects" | string;
+  import: () => Promise<{
+    default: unknown;
+  }>;
+  category: string;
+}
+
+export interface BuildComponent {
+  name: string;
+  category: "buttons" | "modals" | "selects";
   path: string;
 }
 
 export type CommandHandler = (
   interaction: CommandInteraction,
-) => Promise<void> | void;
+) => Promise<unknown> | unknown;
 export type ComponentHandler = (
   interaction: MessageComponentInteraction | ModalSubmitInteraction,
   args?: Record<string, string>,
-) => Promise<void> | void;
+) => Promise<unknown> | unknown;

@@ -1,12 +1,13 @@
-import type { Command, CommandHandler } from "../../internal/types/config.ts";
-import { join, normalize } from "node:path";
+import type {
+  BuildCommand,
+  Command,
+  CommandHandler,
+} from "../../internal/types/config.ts";
 import ora from "ora";
-import type { CommandConfig } from "../../mod.ts";
 import { installGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
-import { cwd, env } from "node:process";
-import { runtime } from "std-env";
+import { env } from "node:process";
 
 /**
  * @returns A function that runs a command
@@ -26,16 +27,11 @@ export default async function setupCommands(
     await installGlobalCommands(
       appId,
       await Promise.all(commands.map(async (c) => {
-        const commandModule = (await import(
-          (runtime !== "bun" ? "file:" : "") +
-            normalize(join(cwd(), c.path))
-        )) as {
-          config: CommandConfig;
-        };
+        const commandModule = await c.import();
         return {
           ...commandModule.config,
           name: c.name,
-          description: commandModule.config.description ??
+          description: commandModule.config?.description ??
             "No description provided",
           type: 1,
           integration_types: [0, 1],
@@ -58,13 +54,7 @@ export default async function setupCommands(
     const commandLoader = ora(`Running command "${command?.name}"`).start();
 
     try {
-      const commandModule = (await import(
-        (runtime !== "bun" ? "file:" : "") +
-          normalize(join(cwd(), command.path))
-      )) as {
-        default: CommandHandler;
-      };
-      await Promise.resolve(commandModule.default(interaction));
+      await Promise.resolve((await command.import()).default(interaction));
       commandLoader.succeed();
     } catch (error) {
       commandLoader.fail();
@@ -78,11 +68,11 @@ export function parseCommands(commandFiles: WalkEntry[]) {
   const { addRow, removeN, log } = trackParts("Command", commandFiles.length);
 
   try {
-    const commandData: Command[] = [];
+    const commandData: BuildCommand[] = [];
 
     for (const file of commandFiles) {
       removeN();
-      const command: Command = {
+      const command: BuildCommand = {
         name: file.name,
         path: file.path,
       };
