@@ -11,7 +11,7 @@ import { env } from "node:process";
 import type { RawFile } from "./types/file.ts";
 import type { BaseInteractionMethods } from "./types/interaction.ts";
 
-const userId = env.DISCORD_APP_ID;
+const appId = env.DISCORD_APP_ID;
 
 export async function update(
   interaction: APIInteraction,
@@ -112,7 +112,7 @@ export const baseInteractionMethods = (
     delete data.files;
 
     await callDiscord(
-      Routes.webhookMessage(userId!, interaction.token),
+      Routes.webhookMessage(appId!, interaction.token),
       {
         method: "PATCH",
         body: data,
@@ -140,7 +140,7 @@ export const baseInteractionMethods = (
     const files = data.files;
     delete data.files;
 
-    await callDiscord(Routes.webhook(userId!, interaction.token), {
+    await callDiscord(Routes.webhook(appId!, interaction.token), {
       method: "POST",
       body: data,
       files,
