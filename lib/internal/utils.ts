@@ -99,7 +99,7 @@ export async function callDiscord(
         Authorization: `Bot ${env.DISCORD_TOKEN}`,
         "Content-Type": "application/json",
       },
-    ...options,
+    ...options as unknown as RequestInit,
   });
   if (!res.ok) {
     const data = await res.json();
