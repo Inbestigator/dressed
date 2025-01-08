@@ -12,41 +12,8 @@ import type {
   CommandHandler,
   ComponentHandler,
 } from "../internal/types/config.ts";
-import { handle } from "@http/route/handle";
-import { byPattern } from "@http/route/by-pattern";
-import { byMethod } from "@http/route/by-method";
 // @ts-types="@types/express"
 import express from "express";
-
-/**
- * Start serving a Deno server
- */
-export function startDenoServer(
-  runCommand: CommandHandler,
-  runComponent: ComponentHandler,
-  config: BotConfig,
-) {
-  Deno.serve(handle([
-    byPattern(
-      config.endpoint ?? "/",
-      byMethod({
-        POST: async (req) => {
-          const reqLoader = ora("New request").start();
-          if (!(await verifySignature(req))) {
-            reqLoader.fail();
-            console.error("└ Invalid signature");
-            return new Response("Unauthorized", { status: 401 });
-          }
-
-          reqLoader.stopAndPersist({
-            symbol: "┌",
-          });
-          return await runInteraction(runCommand, runComponent, req);
-        },
-      }),
-    ),
-  ]));
-}
 
 interface ExpressReq {
   headers: Record<string, string>;
@@ -68,9 +35,9 @@ interface ExpressRes {
 }
 
 /**
- * Start serving a Node server
+ * Start serving an Express server
  */
-export function startNodeServer(
+export function createServer(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
   config: BotConfig,
@@ -85,6 +52,7 @@ export function startNodeServer(
       req: ExpressReq,
       res: ExpressRes,
     ) => {
+      const reqLoader = ora("New request").start();
       const maskedReq = {
         headers: {
           get: (name: string) => {
@@ -96,10 +64,15 @@ export function startNodeServer(
       };
 
       if (!(await verifySignature(maskedReq as unknown as Request))) {
+        reqLoader.fail();
         console.error(" └ Invalid signature");
         res.send(null).status(401);
         return;
       }
+
+      reqLoader.stopAndPersist({
+        symbol: "┌",
+      });
 
       try {
         const response = await runInteraction(

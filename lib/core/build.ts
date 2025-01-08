@@ -50,7 +50,7 @@ export async function build(
   }
 
   const outputContent = `
-${generateImports(config ?? {}, addInstance, registerCommands)}
+${generateImports(addInstance, registerCommands)}
 
 ${defineFiles("commandData", commandData)}
 ${defineFiles("componentData", componentData)}
@@ -61,7 +61,6 @@ ${
       ? generateInstanceCreation(
         commandData,
         componentData,
-        config ?? {},
         registerCommands,
       )
       : ""
@@ -127,14 +126,11 @@ function defineFiles<T extends BuildCommand | Component>(
 }
 
 function generateImports(
-  config: BotConfig,
   addInstance?: boolean,
   registerCommands?: boolean,
 ): string {
   const baseImport = addInstance
-    ? `import { createHandlers, ${
-      config.deno === false ? "startNodeServer" : "startDenoServer"
-    } } from "@dressed/dressed/server";`
+    ? `import { createHandlers, createServer } from "@dressed/dressed/server";`
     : "";
   const processEnvImport = registerCommands
     ? `import { env } from "node:process";`
@@ -145,7 +141,6 @@ function generateImports(
 function generateInstanceCreation(
   commandData: BuildCommand[],
   componentData: BuildComponent[],
-  config: BotConfig,
   registerCommands?: boolean,
 ): string {
   const registerEnv = registerCommands
@@ -157,11 +152,7 @@ function generateInstanceCreation(
 ${registerEnv}
 async function startServer() {
   const { runCommand, runComponent } = await createHandlers(${commandArray}, ${componentArray});
-  ${
-    config.deno === false
-      ? "startNodeServer(runCommand, runComponent, config);"
-      : "startDenoServer(runCommand, runComponent, config);"
-  }
+  createServer(runCommand, runComponent, config);
 }
   
 startServer();

@@ -12,11 +12,11 @@
  *   const nodeServer = outputContent
  *     .replace(
  *       /server";\n/,
- *       '$&import { startDenoServer } from "./server.ts";\n',
+ *       '$&import { createServer } from "./server.ts";\n',
  *     )
  *     .replace(
  *       /console.warn\(.+\)/,
- *       "startDenoServer(runCommand, runComponent, config)",
+ *       "createServer(runCommand, runComponent, config)",
  *     );
  *   writeFileSync("./bot.gen.ts", new TextEncoder().encode(nodeServer));
  *   console.log("✔ Wrote to bot.gen.ts");
