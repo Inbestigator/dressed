@@ -1,13 +1,11 @@
-import { baseInteractionMethods, update } from "./responses.ts";
+import { baseInteractionMethods } from "./responses.ts";
 import type { Interaction } from "./types/interaction.ts";
 import type {
   APIChatInputApplicationCommandInteractionData,
   APIInteraction,
-  APIInteractionResponseCallbackData,
 } from "discord-api-types/v10";
 import { InteractionType } from "discord-api-types/v10";
 import { getOption } from "./options.ts";
-import type { RawFile } from "./types/file.ts";
 
 export default function createInteraction<T extends APIInteraction>(
   interaction: T,
@@ -40,11 +38,6 @@ export default function createInteraction<T extends APIInteraction>(
       return {
         ...interaction,
         ...baseInteractionMethods(interaction),
-        update: (
-          data:
-            | string
-            | (APIInteractionResponseCallbackData & { files?: RawFile[] }),
-        ) => update(interaction, data),
       } as unknown as Interaction<T>;
     }
     case InteractionType.ModalSubmit: {
