@@ -13,35 +13,6 @@ import type { BaseInteractionMethods } from "./types/interaction.ts";
 
 const appId = env.DISCORD_APP_ID;
 
-export async function update(
-  interaction: APIInteraction,
-  data:
-    | string
-    | (APIInteractionResponseCallbackData & {
-      /** The files to send with the message */
-      files?: RawFile[];
-    }),
-) {
-  if (typeof data === "string") {
-    data = { content: data };
-  }
-
-  const files = data.files;
-  delete data.files;
-
-  await callDiscord(
-    Routes.interactionCallback(interaction.id, interaction.token),
-    {
-      method: "POST",
-      body: {
-        type: InteractionResponseType.UpdateMessage,
-        data,
-      },
-      files,
-    },
-  );
-}
-
 export const baseInteractionMethods = (
   interaction: APIInteraction,
 ): BaseInteractionMethods => ({
@@ -102,6 +73,39 @@ export const baseInteractionMethods = (
     );
 
     return data?.with_response ? res.json() : null;
+  },
+  update: async function (
+    data,
+  ) {
+    if (typeof data === "string") {
+      data = { content: data };
+    }
+
+    const files = data.files;
+    delete data.files;
+
+    await callDiscord(
+      Routes.interactionCallback(interaction.id, interaction.token),
+      {
+        method: "POST",
+        body: {
+          type: InteractionResponseType.UpdateMessage,
+          data,
+        },
+        files,
+      },
+    );
+  },
+  deferUpdate: async function () {
+    await callDiscord(
+      Routes.interactionCallback(interaction.id, interaction.token),
+      {
+        method: "POST",
+        body: {
+          type: InteractionResponseType.DeferredMessageUpdate,
+        },
+      },
+    );
   },
   editReply: async function (data) {
     if (typeof data === "string") {

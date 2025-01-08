@@ -11,14 +11,13 @@ import type {
 } from "discord-api-types/v10";
 import type { OptionReaders } from "../options.ts";
 import type { RawFile } from "./file.ts";
-import type { baseInteractionMethods } from "../responses.ts";
 
 /**
  * A command interaction, includes methods for responding to the interaction.
  */
 export type CommandInteraction =
   & APIApplicationCommandInteraction
-  & ReturnType<typeof baseInteractionMethods>
+  & Omit<BaseInteractionMethods, "update" | "deferUpdate">
   & {
     /**
      * Get an option from the interaction
@@ -37,7 +36,7 @@ export type CommandInteraction =
  */
 export type MessageComponentInteraction =
   & APIMessageComponentInteraction
-  & ReturnType<typeof baseInteractionMethods>
+  & BaseInteractionMethods
   & {
     /**
      * For components, edit the message the component was attached to
@@ -55,7 +54,7 @@ export type MessageComponentInteraction =
  */
 export type ModalSubmitInteraction =
   & APIModalSubmitInteraction
-  & Omit<ReturnType<typeof baseInteractionMethods>, "showModal">
+  & Omit<BaseInteractionMethods, "showModal">
   & {
     /**
      * Get a field from the user's submission
@@ -100,6 +99,22 @@ export interface BaseInteractionMethods {
       with_response?: boolean;
     },
   ) => Promise<null | APIMessage>;
+
+  /**
+   * For components, edit the message the component was attached to
+   * @param data The new data for the component message
+   */
+  update: (
+    data:
+      | string
+      | (APIInteractionResponseCallbackData & { files?: RawFile[] }),
+  ) => Promise<void>;
+
+  /**
+   * For components, ACK an interaction and edit the original message later; the user does not see a loading state
+   */
+  deferUpdate: () => Promise<void>;
+
   /**
    * Edit the initial interaction response
    * @param data The new data for the response message
