@@ -12,7 +12,6 @@ import type {
   CommandHandler,
   ComponentHandler,
 } from "../internal/types/config.ts";
-// @ts-types="@types/express"
 import express from "express";
 
 interface ExpressReq {
