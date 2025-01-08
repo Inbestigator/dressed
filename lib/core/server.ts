@@ -12,35 +12,38 @@ import type {
   CommandHandler,
   ComponentHandler,
 } from "../internal/types/config.ts";
+import { handle } from "@http/route/handle";
+import { byPattern } from "@http/route/by-pattern";
+import { byMethod } from "@http/route/by-method";
 
 /**
- * Start serving a server
+ * Start serving a Deno server
  */
 export function createServer(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
   config: BotConfig,
 ) {
-  Deno.serve(async (req) => {
-    const reqLoader = ora("New request").start();
-    if (
-      req.method !== "POST" ||
-      new URL(req.url).pathname !== (config.endpoint ?? "/")
-    ) {
-      return new Response("Not Found", { status: 404 });
-    }
+  Deno.serve(handle([
+    byPattern(
+      config.endpoint ?? "/",
+      byMethod({
+        POST: async (req) => {
+          const reqLoader = ora("New request").start();
+          if (!(await verifySignature(req))) {
+            reqLoader.fail();
+            console.error("└ Invalid signature");
+            return new Response("Unauthorized", { status: 401 });
+          }
 
-    if (!(await verifySignature(req.clone()))) {
-      reqLoader.fail();
-      console.error("└ Invalid signature");
-      return new Response("Unauthorized", { status: 401 });
-    }
-
-    reqLoader.stopAndPersist({
-      symbol: "┌",
-    });
-    return await runInteraction(runCommand, runComponent, req);
-  });
+          reqLoader.stopAndPersist({
+            symbol: "┌",
+          });
+          return await runInteraction(runCommand, runComponent, req);
+        },
+      }),
+    ),
+  ]));
 }
 
 /**
