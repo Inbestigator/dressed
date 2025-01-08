@@ -36,25 +36,14 @@ export type CommandInteraction =
  */
 export type MessageComponentInteraction =
   & APIMessageComponentInteraction
-  & BaseInteractionMethods
-  & {
-    /**
-     * For components, edit the message the component was attached to
-     * @param data The new data for the component message
-     */
-    update: (
-      data:
-        | string
-        | (APIInteractionResponseCallbackData & { files?: RawFile[] }),
-    ) => Promise<void>;
-  };
+  & BaseInteractionMethods;
 
 /**
  * A modal submit interaction, includes methods for responding to the interaction.
  */
 export type ModalSubmitInteraction =
   & APIModalSubmitInteraction
-  & Omit<BaseInteractionMethods, "showModal">
+  & Omit<BaseInteractionMethods, "showModal" | "update">
   & {
     /**
      * Get a field from the user's submission
