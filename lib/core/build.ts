@@ -132,8 +132,8 @@ function generateImports(
   registerCommands?: boolean,
 ): string {
   const baseImport = addInstance
-    ? `import { createHandlers${
-      config.deno === false ? "" : ", createServer"
+    ? `import { createHandlers, ${
+      config.deno === false ? "startNodeServer" : "startDenoServer"
     } } from "@dressed/dressed/server";`
     : "";
   const processEnvImport = registerCommands
@@ -159,8 +159,8 @@ async function startServer() {
   const { runCommand, runComponent } = await createHandlers(${commandArray}, ${componentArray});
   ${
     config.deno === false
-      ? 'console.warn("You will need to set up your own server if not on Deno.");'
-      : "createServer(runCommand, runComponent, config);"
+      ? "startNodeServer(runCommand, runComponent, config);"
+      : "startDenoServer(runCommand, runComponent, config);"
   }
 }
   

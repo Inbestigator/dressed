@@ -7,7 +7,7 @@ const componentData = [{"name":"button","category":"buttons","import": ()=>impor
 const config = {};`;
 
 const withInstance =
-  `import { createHandlers, createServer } from "@dressed/dressed/server";
+  `import { createHandlers, startDenoServer } from "@dressed/dressed/server";
 import { env } from "node:process";
 
 const commandData = [{"name":"ping","import": ()=>import("./src/commands/ping.ts")}];
@@ -18,7 +18,7 @@ env.REGISTER_COMMANDS = "true";
 
 async function startServer() {
   const { runCommand, runComponent } = await createHandlers(commandData, componentData);
-  createServer(runCommand, runComponent, config);
+  startDenoServer(runCommand, runComponent, config);
 }
   
 startServer();`;

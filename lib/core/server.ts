@@ -15,11 +15,13 @@ import type {
 import { handle } from "@http/route/handle";
 import { byPattern } from "@http/route/by-pattern";
 import { byMethod } from "@http/route/by-method";
+// @ts-types="@types/express"
+import express from "express";
 
 /**
  * Start serving a Deno server
  */
-export function createServer(
+export function startDenoServer(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
   config: BotConfig,
@@ -44,6 +46,83 @@ export function createServer(
       }),
     ),
   ]));
+}
+
+interface ExpressReq {
+  headers: Record<string, string>;
+  body: unknown;
+}
+
+interface ExpressRes {
+  send: (
+    x: unknown,
+  ) => {
+    status: ExpressRes["status"];
+  };
+  json: (arg0: { type: number }) => void;
+  status: (
+    arg0: number,
+  ) => {
+    send: ExpressRes["send"];
+  };
+}
+
+/**
+ * Start serving a Node server
+ */
+export function startNodeServer(
+  runCommand: CommandHandler,
+  runComponent: ComponentHandler,
+  config: BotConfig,
+) {
+  const app = express();
+  app.use(express.json());
+
+  app.post(
+    config.endpoint ?? "/",
+    // @ts-ignore This works fine
+    async (
+      req: ExpressReq,
+      res: ExpressRes,
+    ) => {
+      const maskedReq = {
+        headers: {
+          get: (name: string) => {
+            return req.headers[name.toLowerCase()];
+          },
+        },
+        text: () => JSON.stringify(req.body),
+        json: () => req.body,
+      };
+
+      if (!(await verifySignature(maskedReq as unknown as Request))) {
+        console.error(" └ Invalid signature");
+        res.send(null).status(401);
+        return;
+      }
+
+      try {
+        const response = await runInteraction(
+          runCommand,
+          runComponent,
+          maskedReq as unknown as Request,
+        );
+
+        const { status } = response;
+        if (status === 200) {
+          res.json({ type: 1 });
+        }
+        res.status(status);
+      } catch (error) {
+        console.error(" └ Error processing request:", error);
+        res.status(500).send("Internal Server Error");
+      }
+    },
+  );
+
+  app.listen(8000, () => {
+    console.log(`Example app listening on port 8000`);
+  });
 }
 
 /**
