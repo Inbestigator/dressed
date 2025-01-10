@@ -25,7 +25,7 @@ interface ExpressRes {
   ) => {
     status: ExpressRes["status"];
   };
-  json: (arg0: { type: number }) => void;
+  json: (x: unknown) => void;
   status: (
     arg0: number,
   ) => {
@@ -93,7 +93,7 @@ export function createServer(
   );
 
   app.listen(8000, () => {
-    console.log(`Example app listening on port 8000`);
+    console.log("Bot listening on port 8000");
   });
 }
 
