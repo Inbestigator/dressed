@@ -28,14 +28,33 @@ export default async function setupCommands(
       appId,
       await Promise.all(commands.map(async (c) => {
         const commandModule = await c.import();
+        let contexts = [];
+        contexts = commandModule.config?.contexts
+          ? commandModule.config.contexts.reduce<number[]>((acc, c) => {
+            switch (c) {
+              case "Guild":
+                return [...acc, 0];
+              case "Bot DM":
+                return [...acc, 1];
+              case "Private channel":
+                return [...acc, 2];
+              default:
+                return acc;
+            }
+          }, [])
+          : [0, 1, 2];
+        let integration_types = [];
+        integration_types = commandModule.config?.integration_type
+          ? [commandModule.config.integration_type == "Guild" ? 0 : 1]
+          : [0, 1];
         return {
           ...commandModule.config,
           name: c.name,
           description: commandModule.config?.description ??
             "No description provided",
           type: 1,
-          integration_types: [0, 1],
-          contexts: [0, 1, 2],
+          integration_types,
+          contexts,
         };
       })),
     );

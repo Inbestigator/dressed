@@ -4,8 +4,11 @@ import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";
 import { env } from "node:process";
 import ora from "ora";
-import type { CommandConfig } from "./types/config.ts";
-import { RouteBases, Routes } from "discord-api-types/v10";
+import {
+  type RESTPostAPIChatInputApplicationCommandsJSONBody,
+  RouteBases,
+  Routes,
+} from "discord-api-types/v10";
 import { filetypeinfo } from "magic-bytes.js";
 import type { RawFile } from "./types/file.ts";
 
@@ -163,9 +166,7 @@ export async function callDiscord(
 
 export async function installGlobalCommands(
   appId: string,
-  commands: (CommandConfig & {
-    name: string;
-  })[],
+  commands: RESTPostAPIChatInputApplicationCommandsJSONBody[],
 ) {
   await callDiscord(Routes.applicationCommands(appId), {
     method: "PUT",

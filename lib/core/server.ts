@@ -92,8 +92,8 @@ export function createServer(
     },
   );
 
-  app.listen(8000, () => {
-    console.log("Bot listening on port 8000");
+  app.listen(config.port ?? 8000, () => {
+    console.log(`Bot listening on port ${config.port ?? 8000}`);
   });
 }
 
