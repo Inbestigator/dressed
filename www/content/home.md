@@ -53,7 +53,5 @@ In addition to Dressed, I'd recommend installing
 [Discord API Types](https://www.npmjs.com/package/discord-api-types) (The type
 lib that Dressed uses internally).
 
-Dressed comes with a serve system for Deno projects, but otherwise you'll
-have to BYO (all the functions needed to do so are available).
-The all-runtime-compatible example
-uses a [server made with Express](https://github.com/Inbestigator/dressed-examples/blob/main/node/simple/server.ts).
+Dressed comes with an Express serve system OOB, if you'd like to make your own,
+all the functions needed to do so are available in `@dressed/dressed/server`.
