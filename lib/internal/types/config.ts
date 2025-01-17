@@ -49,12 +49,14 @@ export interface Component {
   import: () => Promise<{
     default: unknown;
   }>;
+  regex: string;
   category: string;
 }
 
 export interface BuildComponent {
   name: string;
   category: "buttons" | "modals" | "selects";
+  regex: string;
   path: string;
 }
 

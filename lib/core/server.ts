@@ -116,24 +116,24 @@ export async function runInteraction(
       console.log("└ Received command:", command.data.name);
       const interaction = createInteraction(command);
 
-      await runCommand(interaction);
-      return new Response(null, { status: 204 });
+      runCommand(interaction);
+      return new Response(null, { status: 202 });
     }
     case InteractionType.MessageComponent: {
       const component = json as APIMessageComponentInteraction;
       console.log("└ Received component:", component.data.custom_id);
       const interaction = createInteraction(component);
 
-      await runComponent(interaction);
-      return new Response(null, { status: 204 });
+      runComponent(interaction);
+      return new Response(null, { status: 202 });
     }
     case InteractionType.ModalSubmit: {
       const component = json as APIModalSubmitInteraction;
       console.log("└ Received modal:", component.data.custom_id);
       const interaction = createInteraction(component);
 
-      await runComponent(interaction);
-      return new Response(null, { status: 204 });
+      runComponent(interaction);
+      return new Response(null, { status: 202 });
     }
   }
 

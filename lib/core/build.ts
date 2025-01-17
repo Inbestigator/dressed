@@ -1,5 +1,5 @@
 import { walkFiles } from "@svarta/walk-it";
-import { underline, yellow } from "@std/fmt/colors";
+import { underline } from "@std/fmt/colors";
 import ora from "ora";
 import { join, normalize } from "node:path";
 import type { BotConfig } from "../mod.ts";
@@ -8,11 +8,7 @@ import { cwd } from "node:process";
 import { runtime } from "std-env";
 import { parseCommands } from "./bot/commands.ts";
 import { parseComponents } from "./bot/components.ts";
-import type {
-  BuildCommand,
-  BuildComponent,
-  Component,
-} from "../internal/types/config.ts";
+import type { BuildCommand, BuildComponent } from "../internal/types/config.ts";
 
 export type WalkEntry = {
   name: string;
@@ -35,6 +31,10 @@ export async function build(
     fetchConfig(),
   ]);
 
+  if (!addInstance && registerCommands) {
+    ora("Commands will not be registered without an instance").warn();
+  }
+
   const commandData = commandFiles.length > 0
     ? parseCommands(commandFiles)
     : [];
@@ -52,19 +52,11 @@ export async function build(
   const outputContent = `
 ${generateImports(addInstance, registerCommands)}
 
-${defineFiles("commandData", commandData)}
-${defineFiles("componentData", componentData)}
-const config = ${JSON.stringify(config ?? {})};
-
-${
-    addInstance
-      ? generateInstanceCreation(
-        commandData,
-        componentData,
-        registerCommands,
-      )
-      : ""
-  }
+${defineExport("commandData", commandData)}
+${defineExport("componentData", componentData)}
+${defineExport("config", config ?? {}, false)}
+${registerCommands ? `\nenv.REGISTER_COMMANDS = "true";\n` : ""}
+${addInstance ? generateInstanceCreation() : ""}
 `.trim();
 
   buildLoader.succeed("Assembled generated build");
@@ -88,7 +80,7 @@ async function fetchConfig(): Promise<BotConfig | undefined> {
  */
 async function fetchFiles(directory: string): Promise<WalkEntry[]> {
   if (!existsSync(`./${directory}`)) {
-    console.warn(`${yellow("!")} ${directory} directory not found`);
+    ora(`${directory} directory not found`).warn();
     return [];
   }
 
@@ -111,18 +103,19 @@ async function fetchFiles(directory: string): Promise<WalkEntry[]> {
   return filesArray;
 }
 
-function defineFiles<T extends BuildCommand | Component>(
+function defineExport<T extends BotConfig | BuildCommand[] | BuildComponent[]>(
   variableName: string,
-  files: T[],
+  content: T,
+  pathToImport = true,
 ): string {
-  return files.length > 0
-    ? `const ${variableName} = ${
-      JSON.stringify(files).replaceAll(
+  return `export const ${variableName} = ${
+    pathToImport
+      ? JSON.stringify(content).replaceAll(
         /"path":"(.+?)"/g,
         '"import": ()=>import("./$1")',
       )
-    };`
-    : "";
+      : JSON.stringify(content)
+  };`;
 }
 
 function generateImports(
@@ -138,20 +131,9 @@ function generateImports(
   return [baseImport, processEnvImport].filter(Boolean).join("\n");
 }
 
-function generateInstanceCreation(
-  commandData: BuildCommand[],
-  componentData: BuildComponent[],
-  registerCommands?: boolean,
-): string {
-  const registerEnv = registerCommands
-    ? `env.REGISTER_COMMANDS = "true";\n`
-    : "";
-  const commandArray = commandData.length > 0 ? "commandData" : "[]";
-  const componentArray = componentData.length > 0 ? "componentData" : "[]";
-  return `
-${registerEnv}
-async function startServer() {
-  const { runCommand, runComponent } = await createHandlers(${commandArray}, ${componentArray});
+function generateInstanceCreation(): string {
+  return `async function startServer() {
+  const { runCommand, runComponent } = await createHandlers(commandData, componentData);
   createServer(runCommand, runComponent, config);
 }
   

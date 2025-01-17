@@ -7,7 +7,6 @@ import type {
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "../../internal/types/interaction.ts";
-import { ComponentType, InteractionType } from "discord-api-types/v10";
 import { trackParts, type WalkEntry } from "../build.ts";
 import ora from "ora";
 
@@ -23,19 +22,19 @@ export default function setupComponents(
     const category = getCategory();
 
     function getCategory() {
-      if (interaction.type === InteractionType.ModalSubmit) {
+      if (interaction.type === 5) {
         return "modals";
       }
       switch (
         interaction.data.component_type
       ) {
-        case ComponentType.Button:
+        case 2:
           return "buttons";
-        case ComponentType.ChannelSelect:
-        case ComponentType.RoleSelect:
-        case ComponentType.UserSelect:
-        case ComponentType.StringSelect:
-        case ComponentType.MentionableSelect:
+        case 8:
+        case 7:
+        case 6:
+        case 5:
+        case 3:
           return "selects";
       }
     }
@@ -43,7 +42,7 @@ export default function setupComponents(
     const component = components.find(
       (c) =>
         c.category === category &&
-        handleArgs(c.name).regex.test(interaction.data.custom_id),
+        new RegExp(c.regex).test(interaction.data.custom_id),
     );
 
     if (!component) {
@@ -51,16 +50,8 @@ export default function setupComponents(
       return;
     }
 
-    const { regex, argNames } = handleArgs(component.name);
-    const matches = regex.exec(interaction.data.custom_id);
-
-    const args: Record<string, string> = {};
-
-    if (matches) {
-      argNames.forEach((argName, i) => {
-        args[argName] = matches[i + 1];
-      });
-    }
+    const match = new RegExp(component.regex).exec(interaction.data.custom_id);
+    const args = match?.groups ?? {};
 
     const componentLoader = ora(
       `Running component "${component.name}"${
@@ -85,12 +76,9 @@ export default function setupComponents(
   };
 }
 
-export function handleArgs(str: string) {
-  const argNames = [...str.matchAll(/\[(.+?)\]/g)].map((m) => m[1]);
-  argNames.forEach((arg) => {
-    str = str.replace(`[${arg}]`, "(.+)");
-  });
-  return { regex: new RegExp(`^${str}$`), argNames };
+export function parseArgs(str: string) {
+  str = str.replaceAll(/\[(.+?)\]/g, "(?<$1>.+)");
+  return new RegExp(`^${str}$`);
 }
 
 const validComponentCategories = ["buttons", "modals", "selects"];
@@ -119,6 +107,7 @@ export function parseComponents(componentFiles: WalkEntry[]) {
       const component: BuildComponent = {
         name: file.name,
         category: category as BuildComponent["category"],
+        regex: parseArgs(file.name).source,
         path: file.path,
       };
 
