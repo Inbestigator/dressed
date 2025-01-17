@@ -2,17 +2,17 @@ import { assertEquals } from "@std/assert";
 import { build } from "@dressed/dressed/server";
 
 const withoutInstance =
-  `const commandData = [{"name":"ping","import": ()=>import("./src/commands/ping.ts")}];
-const componentData = [{"name":"button","category":"buttons","import": ()=>import("./src/components/buttons/button.ts")}];
-const config = {};`;
+  `export const commandData = [{"name":"ping","import": ()=>import("./src/commands/ping.ts")}];
+export const componentData = [{"name":"button_[arg]","category":"buttons","regex":"^button_(?<arg>.+)$","import": ()=>import("./src/components/buttons/button_[arg].ts")}];
+export const config = {};`;
 
 const withInstance =
   `import { createHandlers, createServer } from "@dressed/dressed/server";
 import { env } from "node:process";
 
-const commandData = [{"name":"ping","import": ()=>import("./src/commands/ping.ts")}];
-const componentData = [{"name":"button","category":"buttons","import": ()=>import("./src/components/buttons/button.ts")}];
-const config = {};
+export const commandData = [{"name":"ping","import": ()=>import("./src/commands/ping.ts")}];
+export const componentData = [{"name":"button_[arg]","category":"buttons","regex":"^button_(?<arg>.+)$","import": ()=>import("./src/components/buttons/button_[arg].ts")}];
+export const config = {};
 
 env.REGISTER_COMMANDS = "true";
 
