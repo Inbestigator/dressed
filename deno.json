@@ -1,6 +1,6 @@
 {
   "name": "@dressed/dressed",
-  "version": "1.0.10",
+  "version": "1.1.0-rc-1",
   "publish": {
     "include": [
       "lib",
@@ -18,7 +18,7 @@
     "@std/fmt": "jsr:@std/fmt@^1.0.3",
     "@svarta/walk-it": "jsr:@svarta/walk-it@^5.0.1",
     "discord-api-types": "npm:discord-api-types@^0.37.104",
-    "express": "npm:express@^5.0.1",
+    "fastify": "npm:fastify@^5.2.1",
     "magic-bytes.js": "npm:magic-bytes.js@^1.10.0",
     "ora": "npm:ora@^8.1.1",
     "std-env": "npm:std-env@^3.8.0",

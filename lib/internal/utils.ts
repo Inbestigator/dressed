@@ -15,15 +15,17 @@ import type { RawFile } from "./types/file.ts";
 /**
  * Verifies the signature of the POST request
  */
-export async function verifySignature(req: Request): Promise<boolean> {
-  const signature = req.headers.get("X-Signature-Ed25519");
-  const timestamp = req.headers.get("X-Signature-Timestamp");
-
-  if (!signature || !timestamp) {
+export function verifySignature(
+  body: string,
+  signature?: string | string[],
+  timestamp?: string | string[],
+): boolean {
+  if (
+    !signature || !timestamp || typeof signature !== "string" ||
+    typeof timestamp !== "string"
+  ) {
     return false;
   }
-
-  const body = await req.text();
 
   return nacl.sign.detached.verify(
     Buffer.from(timestamp + body),
