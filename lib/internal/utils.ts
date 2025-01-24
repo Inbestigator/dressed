@@ -1,4 +1,4 @@
-import { config } from "@dotenvx/dotenvx";
+import { config } from "dotenv";
 config();
 import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";

@@ -1,4 +1,4 @@
-import { config } from "@dotenvx/dotenvx";
+import { config } from "dotenv";
 config();
 import setupCommands from "./bot/commands.ts";
 import setupComponents from "./bot/components.ts";
