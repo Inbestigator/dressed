@@ -26,9 +26,7 @@ export default function createInteraction<T extends APIInteraction>(
           getOption(
             name,
             required,
-            "options" in interaction.data
-              ? interaction.data.options
-              : undefined,
+            "options" in interaction.data ? interaction.data.options ?? [] : [],
             (interaction.data as APIChatInputApplicationCommandInteractionData)
               .resolved,
           ),
