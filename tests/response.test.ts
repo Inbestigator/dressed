@@ -1,12 +1,9 @@
 import { runInteraction } from "@dressed/dressed/server";
-import { generateXSignature } from "./signature.test.ts";
 import { assertEquals, assertExists } from "@std/assert";
 
 Deno.env.set("DISCORD_TOKEN", "bot_token");
 
-Deno.test(async function replying() {
-  const stamp = Date.now().toString();
-
+Deno.test(function replying() {
   const defaultBody = {
     type: 0,
     id: "int_id",
@@ -34,33 +31,19 @@ Deno.test(async function replying() {
       return new Response(null, { status: 204 });
     };
 
-    const res = await runInteraction(
+    const res = runInteraction(
       (i) => {
         i.reply("Command received");
       },
       (i) => {
         i.reply("Component received");
       },
-      new Request("http://localhost:8000", {
-        method: "POST",
-        headers: {
-          "X-Signature-Ed25519": generateXSignature(
-            stamp,
-            JSON.stringify(body),
-          ),
-          "X-Signature-Timestamp": stamp,
-        },
-        body: JSON.stringify(body),
-      }),
+      body,
     );
 
     // Ping test case
     if (n === 1) {
-      assertEquals(res.status, 200);
-      assertEquals(
-        await res.json(),
-        { type: 1 },
-      );
+      assertEquals(res, 200);
       continue;
     }
 

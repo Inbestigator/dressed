@@ -15,33 +15,23 @@ export function generateXSignature(timestamp: string, content: string) {
   return Buffer.from(signature).toString("hex");
 }
 
-Deno.test("Don't verify invalid signature", async () => {
+Deno.test("Don't verify invalid signature", () => {
   const stamp = Date.now().toString();
-  const result = await verifySignature(
-    new Request("http://localhost:8000", {
-      method: "POST",
-      headers: {
-        "X-Signature-Ed25519": generateXSignature(stamp, "test"),
-        "X-Signature-Timestamp": stamp,
-      },
-      body: "different test",
-    }),
+  const result = verifySignature(
+    "different test",
+    generateXSignature(stamp, "test"),
+    stamp,
   );
 
   assertEquals(result, false);
 });
 
-Deno.test("Verify valid signature", async () => {
+Deno.test("Verify valid signature", () => {
   const stamp = Date.now().toString();
-  const result = await verifySignature(
-    new Request("http://localhost:8000", {
-      method: "POST",
-      headers: {
-        "X-Signature-Ed25519": generateXSignature(stamp, "test"),
-        "X-Signature-Timestamp": stamp,
-      },
-      body: "test",
-    }),
+  const result = verifySignature(
+    "test",
+    generateXSignature(stamp, "test"),
+    stamp,
   );
 
   assertEquals(result, true);

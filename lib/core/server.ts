@@ -12,130 +12,95 @@ import type {
   CommandHandler,
   ComponentHandler,
 } from "../internal/types/config.ts";
-import express from "express";
-
-interface ExpressReq {
-  headers: Record<string, string>;
-  body: unknown;
-}
-
-interface ExpressRes {
-  send: (
-    x: unknown,
-  ) => {
-    status: ExpressRes["status"];
-  };
-  json: (x: unknown) => void;
-  status: (
-    arg0: number,
-  ) => {
-    send: ExpressRes["send"];
-  };
-}
+import Fastify from "fastify";
 
 /**
- * Start serving an Express server
+ * Start serving a Fastify server
  */
 export function createServer(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
   config: BotConfig,
 ) {
-  const app = express();
-  app.use(express.json());
+  const fastify = Fastify();
 
-  app.post(
-    config.endpoint ?? "/",
-    // @ts-ignore This works fine
-    async (
-      req: ExpressReq,
-      res: ExpressRes,
-    ) => {
-      const reqLoader = ora("New request").start();
-      const maskedReq = {
-        headers: {
-          get: (name: string) => {
-            return req.headers[name.toLowerCase()];
-          },
-        },
-        text: () => JSON.stringify(req.body),
-        json: () => req.body,
-      };
+  fastify.post(config.endpoint ?? "/", (req, res) => {
+    const reqLoader = ora("Validating new request").start();
 
-      if (!(await verifySignature(maskedReq as unknown as Request))) {
-        reqLoader.fail();
-        console.error(" └ Invalid signature");
-        res.send(null).status(401);
-        return;
+    if (
+      !(verifySignature(
+        JSON.stringify(req.body),
+        req.headers["x-signature-ed25519"],
+        req.headers["x-signature-timestamp"],
+      ))
+    ) {
+      reqLoader.fail();
+      console.error(" └ Invalid signature");
+      res.status(401);
+      return;
+    }
+
+    reqLoader.succeed("Validated request");
+
+    try {
+      const status = runInteraction(
+        runCommand,
+        runComponent,
+        req.body,
+      );
+
+      if (status === 200) {
+        return { type: 1 };
       }
+      res.status(status);
+    } catch (error) {
+      console.error(" └ Error processing request:", error);
+      res.status(500);
+    }
+  });
 
-      reqLoader.stopAndPersist({
-        symbol: "┌",
-      });
-
-      try {
-        const response = await runInteraction(
-          runCommand,
-          runComponent,
-          maskedReq as unknown as Request,
-        );
-
-        const { status } = response;
-        if (status === 200) {
-          res.json({ type: 1 });
-        }
-        res.status(status);
-      } catch (error) {
-        console.error(" └ Error processing request:", error);
-        res.status(500).send("Internal Server Error");
-      }
-    },
-  );
-
-  app.listen(config.port ?? 8000, () => {
-    console.log(`Bot listening on port ${config.port ?? 8000}`);
+  fastify.listen({ port: config.port ?? 8000 }, (_, port) => {
+    console.log(`Bot is now listening on ${port}`);
   });
 }
 
 /**
- * Runs an interaction, takes a function to run commands/components and the entry request
+ * Runs an interaction, takes functions to run commands/components and the request body
  */
-export async function runInteraction(
+export function runInteraction(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
-  req: Request,
-): Promise<Response> {
-  const json = await req.json();
+  json: ReturnType<typeof JSON.parse>,
+): 200 | 202 | 404 {
   switch (json.type) {
     case InteractionType.Ping: {
       console.log("└ Received ping test");
-      return new Response(JSON.stringify({ type: 1 }), { status: 200 });
+      return 200;
     }
     case InteractionType.ApplicationCommand: {
       const command = json as APIApplicationCommandInteraction;
       console.log("└ Received command:", command.data.name);
       const interaction = createInteraction(command);
-
       runCommand(interaction);
-      return new Response(null, { status: 202 });
+      return 202;
     }
     case InteractionType.MessageComponent: {
       const component = json as APIMessageComponentInteraction;
       console.log("└ Received component:", component.data.custom_id);
       const interaction = createInteraction(component);
-
       runComponent(interaction);
-      return new Response(null, { status: 202 });
+      return 202;
     }
     case InteractionType.ModalSubmit: {
       const component = json as APIModalSubmitInteraction;
       console.log("└ Received modal:", component.data.custom_id);
       const interaction = createInteraction(component);
-
       runComponent(interaction);
-      return new Response(null, { status: 202 });
+      return 202;
+    }
+    default: {
+      console.log("└ Received unknown interaction type:", json.type);
+      return 404;
     }
   }
-
-  return new Response(null, { status: 404 });
 }

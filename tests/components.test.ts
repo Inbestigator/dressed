@@ -24,13 +24,10 @@ Deno.test("Button component", () => {
 });
 
 Deno.test("Action row component", () => {
-  assertEquals(
-    ActionRow(),
-    {
-      type: 1,
-      components: [],
-    },
-  );
+  assertEquals(ActionRow(), {
+    type: 1,
+    components: [],
+  });
 });
 
 Deno.test("Command option component", () => {
