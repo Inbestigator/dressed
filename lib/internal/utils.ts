@@ -55,6 +55,9 @@ export async function callDiscord(
 
   if (limits.global) {
     if (limits.global.remaining === 0) {
+      ora(
+        `You have hit the global rate limit!\nWaiting to send again...`,
+      ).warn();
       await delayUntil(limits.global.resetAt);
       delete limits.global;
     } else if (limits.global.remaining < 2) {
@@ -64,9 +67,12 @@ export async function callDiscord(
     limits[endpoint]
   ) {
     if (limits[endpoint].remaining === 0) {
+      ora(
+        `You have hit the rate limit for ${endpoint}!\nWaiting to send again...`,
+      ).warn();
       await delayUntil(limits[endpoint].resetAt);
       delete limits[endpoint];
-    } else if (limits[endpoint].remaining < 2) {
+    } else if (limits[endpoint].remaining < 3) {
       ora(`You are about to hit the rate limit for ${endpoint}!`).warn();
     }
   }
@@ -154,8 +160,8 @@ export async function callDiscord(
     throw new Error(data.message);
   }
 
-  const remaining = res.headers.get("X-RateLimit-Remaining");
-  const resetAt = res.headers.get("X-RateLimit-Reset");
+  const remaining = res.headers.get("x-ratelimit-remaining");
+  const resetAt = res.headers.get("x-ratelimit-reset");
   if (remaining) {
     limits[endpoint] = {
       remaining: Number(remaining),
