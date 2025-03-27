@@ -44,9 +44,11 @@ export async function build(
   const buildLoader = ora("Assembling generated build").start();
 
   if (!config) {
-    buildLoader.warn(
-      "Could not determine bot config\n└ Maybe you didn't add a default export from bot.config.ts",
-    ).start();
+    buildLoader
+      .warn(
+        "Could not determine bot config\n└ Maybe you didn't add a default export from bot.config.ts",
+      )
+      .start();
   }
 
   const outputContent = `
@@ -92,12 +94,9 @@ async function fetchFiles(directory: string): Promise<WalkEntry[]> {
   ) {
     filesArray.push({
       name: file.file.name.split(".")[0],
-      path: file.path
-        .replace(cwd(), "")
-        .replaceAll("\\", "/")
-        .split("/")
-        .slice(1)
-        .join("/"),
+      path: file.path.replace(cwd(), "").replaceAll("\\", "/").split("/").slice(
+        1,
+      ).join("/"),
     });
   }
   return filesArray;
@@ -141,21 +140,58 @@ startServer();
 `.trim();
 }
 
-export function trackParts(title: string, total: number) {
-  const generatedStr: string[][] = [[underline(title)]];
+export function trackParts(
+  total: number,
+  title1: string,
+  title2 = "",
+) {
+  const col1 = [title1];
+  const col2 = [title2];
   let leftN = total;
   return {
     removeN: () => {
       --leftN;
     },
-    addRow: (name: string) => {
-      generatedStr.push([
-        total === 1 ? "-" : leftN === total - 1 ? "┌" : leftN === 0 ? "└" : "├",
-        name,
-      ]);
+    addRow: (name: string, secondaryName?: string) => {
+      col1.push(
+        `${
+          total === 1
+            ? "-"
+            : leftN === total - 1
+            ? "┌"
+            : leftN === 0
+            ? "└"
+            : "├"
+        } ${name}`,
+      );
+      col2.push(secondaryName ?? "");
     },
     log: () => {
-      console.log(`\n${generatedStr.map((row) => row.join(" ")).join("\n")}\n`);
+      const longests = [col1, col2].map((c) =>
+        Math.max(...(c.map((s) => s.length)))
+      );
+      console.log(
+        `\n${
+          new Array(total + 1)
+            .fill(0)
+            .map(
+              (_, i) =>
+                `${
+                  [
+                    [col1, longests[0], "padEnd"] as const,
+                    [col2, longests[1], "padStart"] as const,
+                  ]
+                    .map((p) =>
+                      i === 0
+                        ? underline(p[0][0])[p[2]](p[1] + 9, " ")
+                        : p[0][i][p[2]](p[1], " ")
+                    )
+                    .join("  ")
+                }`,
+            )
+            .join("\n")
+        }\n`,
+      );
     },
   };
 }

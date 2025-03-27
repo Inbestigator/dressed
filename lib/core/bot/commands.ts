@@ -84,7 +84,7 @@ export default async function setupCommands(
 
 export function parseCommands(commandFiles: WalkEntry[]) {
   const generatingLoader = ora("Generating commands").start();
-  const { addRow, removeN, log } = trackParts("Command", commandFiles.length);
+  const { addRow, removeN, log } = trackParts(commandFiles.length, "Command");
 
   try {
     const commandData: BuildCommand[] = [];

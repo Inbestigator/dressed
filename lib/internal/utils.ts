@@ -28,9 +28,9 @@ export function verifySignature(
   }
 
   return nacl.sign.detached.verify(
-    Buffer.from(timestamp + body),
-    Buffer.from(signature, "hex"),
-    Buffer.from(env.DISCORD_PUBLIC_KEY as string, "hex"),
+    new Uint8Array(Buffer.from(timestamp + body)),
+    new Uint8Array(Buffer.from(signature, "hex")),
+    new Uint8Array(Buffer.from(env.DISCORD_PUBLIC_KEY as string, "hex")),
   );
 }
 
@@ -95,7 +95,7 @@ export async function callDiscord(
       if (Buffer.isBuffer(file.data)) {
         let contentType = file.contentType;
         if (!contentType) {
-          const [parsedType] = filetypeinfo(file.data);
+          const [parsedType] = filetypeinfo(new Uint8Array(file.data));
           if (parsedType) {
             contentType = parsedType.mime === "image/apng"
               ? "image/png"
