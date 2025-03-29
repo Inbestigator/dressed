@@ -40,9 +40,14 @@ export default function setupComponents(
     }
 
     const component = components.find(
-      (c) =>
-        c.category === category &&
-        new RegExp(c.regex).test(interaction.data.custom_id),
+      (c) => {
+        if (c.category !== category) return false;
+        if (c.regex.startsWith("^")) {
+          return new RegExp(c.regex).test(interaction.data.custom_id);
+        } else {
+          return c.regex === interaction.data.custom_id;
+        }
+      },
     );
 
     if (!component) {
@@ -77,6 +82,9 @@ export default function setupComponents(
 }
 
 export function parseArgs(str: string) {
+  if (!str.match(/\[(.+?)\]/g)) {
+    return new RegExp(str);
+  }
   str = str.replaceAll(/\[(.+?)\]/g, "(?<$1>.+)");
   return new RegExp(`^${str}$`);
 }
