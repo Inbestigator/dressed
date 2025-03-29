@@ -3,18 +3,17 @@
 Each command can optionally export a `config` object.
 
 ```ts
-import type { CommandConfig } from "@dressed/dressed";
-import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import { type CommandConfig, CommandOption } from "@dressed/dressed";
 
 export const config: CommandConfig = {
   description: "Send a random adorable animal photo",
   options: [
-    {
+    CommandOption({
       name: "animal",
       description: "The type of animal",
-      type: ApplicationCommandOptionType.String,
+      type: "String",
       required: true,
-    },
+    }),
   ],
 };
 ```
