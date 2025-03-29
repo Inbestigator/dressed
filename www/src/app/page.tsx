@@ -9,12 +9,8 @@ export default function Home() {
   return (
     <div className="min-h-dvh flex flex-col gap-8 items-center justify-center py-10 px-4 max-w-5xl mx-auto text-center">
       <h1 className="block font-black leading-tight sm:leading-tight ">
-        <span className="block text-[max(28px,min(4vw,56px))] text-primary">
-          Build Faster
-        </span>
-        <span className="block text-[max(36px,min(5vw,72px))] text-white">
-          Deploy Anywhere
-        </span>
+        <span className="block text-[max(28px,min(4vw,56px))] text-primary">Build Faster</span>
+        <span className="block text-[max(36px,min(5vw,72px))] text-white">Deploy Anywhere</span>
       </h1>
       <p className="text-lg sm:text-xl max-w-2xl mx-auto">
         Dressed is a serverless Discord bot framework with 100% API support.
@@ -23,17 +19,8 @@ export default function Home() {
         <Button className="text-base" asChild size="lg">
           <Link href="/docs">Docs</Link>
         </Button>
-        <Button
-          title="JS Registry entry"
-          className="h-11"
-          variant="outline"
-          asChild
-        >
-          <Link
-            href="https://jsr.io/@dressed/dressed"
-            target="_blank"
-            rel="noreferrer"
-          >
+        <Button title="JS Registry entry" className="h-11" variant="outline" asChild>
+          <Link href="https://jsr.io/@dressed/dressed" target="_blank" rel="noreferrer">
             <JSRLogo className="!size-8" />
           </Link>
         </Button>
@@ -46,7 +33,7 @@ export default function Home() {
             size="icon"
           >
             <Link
-              href="https://github.com/inbestigator/dressed-example"
+              href="https://github.com/inbestigator/dressed-examples"
               target="_blank"
               rel="noreferrer"
             >
@@ -62,7 +49,7 @@ export default function Home() {
             size="icon"
           >
             <Link
-              href="https://github.com/inbestigator/dressed-example/tree/node"
+              href="https://github.com/inbestigator/dressed-examples/tree/main/node/simple"
               target="_blank"
               rel="noreferrer"
             >
@@ -75,9 +62,7 @@ export default function Home() {
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <BookHeart className="h-10 w-10 mb-4 text-primary" />
           <h2 className="text-xl font-semibold mb-2">Anything, Anytime</h2>
-          <p className="text-muted-foreground">
-            Dressed has 100% support for the Discord API.
-          </p>
+          <p className="text-muted-foreground">Dressed has 100% support for the Discord API.</p>
         </div>
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <Cloud className="h-10 w-10 mb-4 text-primary" />

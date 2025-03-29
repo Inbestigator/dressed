@@ -47,11 +47,11 @@ deno -A bot.gen.ts
 By default the builder outputs only boilerplate data, if you want it to
 include an instance creator, add `-i` when running the build command.
 
-In order to register the commands for your bot, also run the build command with `-r` (requires `-i`).
+In order to register the commands for your bot, also run the build command with `-r`.
 
 In addition to Dressed, I'd recommend installing
 [Discord API Types](https://www.npmjs.com/package/discord-api-types) (The type
 lib that Dressed uses internally).
 
-Dressed comes with an Express serve system OOB, if you'd like to make your own,
+Dressed comes with a [Fastify](https://fastify.dev/) server OOB, if you'd like to make your own,
 all the functions needed to do so are available in `@dressed/dressed/server`.
