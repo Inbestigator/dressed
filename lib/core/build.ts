@@ -57,7 +57,7 @@ ${generateImports(addInstance, registerCommands)}
 ${defineExport("commandData", commandData)}
 ${defineExport("componentData", componentData)}
 ${defineExport("config", config ?? {}, false)}
-${registerCommands ? `\nenv.REGISTER_COMMANDS = "true";\n` : ""}
+${registerCommands ? `\ninstallCommands(commandData);\n` : ""}
 ${addInstance ? generateInstanceCreation() : ""}
 `.trim();
 
@@ -117,26 +117,25 @@ function defineExport<T extends BotConfig | BuildCommand[] | BuildComponent[]>(
   };`;
 }
 
-function generateImports(
+const generateImports = (
   addInstance?: boolean,
   registerCommands?: boolean,
-): string {
-  const baseImport = addInstance
-    ? `import { createHandlers, createServer } from "@dressed/dressed/server";`
+) =>
+  (addInstance || registerCommands)
+    ? `import { ${
+      addInstance
+        ? `createHandlers, createServer${
+          registerCommands ? ", installCommands" : ""
+        }`
+        : registerCommands
+        ? "installCommands"
+        : ""
+    } } from "@dressed/dressed/server";`
     : "";
-  const processEnvImport = registerCommands
-    ? `import { env } from "node:process";`
-    : "";
-  return [baseImport, processEnvImport].filter(Boolean).join("\n");
-}
 
 function generateInstanceCreation(): string {
-  return `async function startServer() {
-  const { runCommand, runComponent } = await createHandlers(commandData, componentData);
-  createServer(runCommand, runComponent, config);
-}
-  
-startServer();
+  return `const { runCommand, runComponent } = createHandlers(commandData, componentData);
+createServer(runCommand, runComponent, config);
 `.trim();
 }
 
