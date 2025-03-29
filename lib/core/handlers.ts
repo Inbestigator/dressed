@@ -13,20 +13,20 @@ import type {
 /**
  * Create the command and component handlers.
  */
-export async function createHandlers(
+export function createHandlers(
   commands: Command[],
   components: Component[],
-): Promise<{
+): {
   runCommand: CommandHandler;
   runComponent: ComponentHandler;
-}> {
+} {
   if (!env.DISCORD_TOKEN) {
     throw new Error(
       "No bot token provided, make sure to provide a DISCORD_TOKEN environment variable",
     );
   }
 
-  const runCommand = await setupCommands(commands);
+  const runCommand = setupCommands(commands);
   const runComponent = setupComponents(components);
 
   return {

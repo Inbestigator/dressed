@@ -31,3 +31,6 @@ export { build } from "./core/build.ts";
 // Server
 export { verifySignature } from "./internal/utils.ts";
 export * from "./core/server.ts";
+
+// Utils
+export { installCommands } from "./core/bot/commands.ts";

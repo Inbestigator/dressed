@@ -10,58 +10,63 @@ import { trackParts, type WalkEntry } from "../build.ts";
 import { env } from "node:process";
 
 /**
- * @returns A function that runs a command
+ * Installs commands to the Discord API
  */
-export default async function setupCommands(
-  commands: Command[],
-): Promise<CommandHandler> {
-  if (env.REGISTER_COMMANDS === "true") {
-    const appId = env.DISCORD_APP_ID;
-    const registerLoader = ora("Registering commands").start();
+export async function installCommands(commands: Command[]) {
+  const appId = env.DISCORD_APP_ID;
+  const registerLoader = ora("Registering commands").start();
 
-    if (!appId) {
-      registerLoader.fail();
-      throw new Error("No app id provided");
-    }
-
-    await installGlobalCommands(
-      appId,
-      await Promise.all(commands.map(async (c) => {
-        const commandModule = await c.import();
-        let contexts = [];
-        contexts = commandModule.config?.contexts
-          ? commandModule.config.contexts.reduce<number[]>((acc, c) => {
-            switch (c) {
-              case "Guild":
-                return [...acc, 0];
-              case "Bot DM":
-                return [...acc, 1];
-              case "Private channel":
-                return [...acc, 2];
-              default:
-                return acc;
-            }
-          }, [])
-          : [0, 1, 2];
-        let integration_types = [];
-        integration_types = commandModule.config?.integration_type
-          ? [commandModule.config.integration_type == "Guild" ? 0 : 1]
-          : [0, 1];
-        return {
-          ...commandModule.config,
-          name: c.name,
-          description: commandModule.config?.description ??
-            "No description provided",
-          type: 1,
-          integration_types,
-          contexts,
-        };
-      })),
+  if (!appId) {
+    registerLoader.fail();
+    throw new Error(
+      "No app id provided, make sure to provide a DISCORD_APP_ID environment variable",
     );
-
-    registerLoader.succeed("Registered commands");
   }
 
+  await installGlobalCommands(
+    appId,
+    await Promise.all(commands.map(async (c) => {
+      const commandModule = await c.import();
+      let contexts = [];
+      contexts = commandModule.config?.contexts
+        ? commandModule.config.contexts.reduce<number[]>((acc, c) => {
+          switch (c) {
+            case "Guild":
+              return [...acc, 0];
+            case "Bot DM":
+              return [...acc, 1];
+            case "Private channel":
+              return [...acc, 2];
+            default:
+              return acc;
+          }
+        }, [])
+        : [0, 1, 2];
+      let integration_types = [];
+      integration_types = commandModule.config?.integration_type
+        ? [commandModule.config.integration_type == "Guild" ? 0 : 1]
+        : [0, 1];
+      return {
+        ...commandModule.config,
+        name: c.name,
+        description: commandModule.config?.description ??
+          "No description provided",
+        type: 1,
+        integration_types,
+        contexts,
+      };
+    })),
+  );
+
+  registerLoader.succeed("Registered commands");
+}
+
+/**
+ * @returns A function that runs a command
+ */
+export default function setupCommands(
+  commands: Command[],
+): CommandHandler {
   return async function runCommand(interaction: CommandInteraction) {
     const command = commands.find((c) => c.name === interaction.data.name);
 

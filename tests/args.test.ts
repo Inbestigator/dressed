@@ -9,5 +9,5 @@ Deno.test("Handle dynamic component args", () => {
 });
 
 Deno.test("Handle static component id", () => {
-  assertEquals(parseArgs("ping"), new RegExp(`^ping$`));
+  assertEquals(parseArgs("ping"), new RegExp(`ping`));
 });

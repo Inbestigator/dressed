@@ -12,19 +12,20 @@ import type {
   CommandHandler,
   ComponentHandler,
 } from "../internal/types/config.ts";
-import Fastify from "fastify";
+import fastify, { type FastifyInstance } from "fastify";
 
 /**
- * Start serving a Fastify server
+ * Starts a [Fastify](https://fastify.dev/) server to handle interactions.
+ * @returns The Fastify server instance
  */
 export function createServer(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
   config: BotConfig,
-) {
-  const fastify = Fastify();
+): FastifyInstance {
+  const instance = fastify();
 
-  fastify.post(config.endpoint ?? "/", (req, res) => {
+  instance.post(config.endpoint ?? "/", (req, res) => {
     const reqLoader = ora("Validating new request").start();
 
     if (
@@ -59,9 +60,11 @@ export function createServer(
     }
   });
 
-  fastify.listen({ port: config.port ?? 8000 }, (_, port) => {
+  instance.listen({ port: config.port ?? 8000 }, (_, port) => {
     console.log(`Bot is now listening on ${port}`);
   });
+
+  return instance;
 }
 
 /**

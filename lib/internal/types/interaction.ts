@@ -43,7 +43,7 @@ export type MessageComponentInteraction =
  */
 export type ModalSubmitInteraction =
   & APIModalSubmitInteraction
-  & Omit<BaseInteractionMethods, "showModal" | "update">
+  & Omit<BaseInteractionMethods, "showModal">
   & {
     /**
      * Get a field from the user's submission
