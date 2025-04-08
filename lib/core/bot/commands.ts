@@ -26,10 +26,10 @@ export async function installCommands(commands: Command[]) {
   await installGlobalCommands(
     appId,
     await Promise.all(commands.map(async (c) => {
-      const commandModule = await c.import();
+      const { config } = await c.import();
       let contexts = [];
-      contexts = commandModule.config?.contexts
-        ? commandModule.config.contexts.reduce<number[]>((acc, c) => {
+      contexts = config?.contexts
+        ? config.contexts.reduce<number[]>((acc, c) => {
           switch (c) {
             case "Guild":
               return [...acc, 0];
@@ -43,13 +43,13 @@ export async function installCommands(commands: Command[]) {
         }, [])
         : [0, 1, 2];
       let integration_types = [];
-      integration_types = commandModule.config?.integration_type
-        ? [commandModule.config.integration_type == "Guild" ? 0 : 1]
+      integration_types = config?.integration_type
+        ? [config.integration_type == "Guild" ? 0 : 1]
         : [0, 1];
       return {
-        ...commandModule.config,
+        ...config,
         name: c.name,
-        description: commandModule.config?.description ??
+        description: config?.description ??
           "No description provided",
         type: 1,
         integration_types,
