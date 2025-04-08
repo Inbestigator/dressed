@@ -8,10 +8,10 @@ import type {
 } from "discord-api-types/v10";
 
 /**
- * The configuration for the bot.
+ * The configuration for the server.
  */
-export interface BotConfig {
-  /** The endpoint that Discord will use */
+export interface ServerConfig {
+  /** The endpoint to listen on, defaults to `/` */
   endpoint?: string;
   /** The port to listen on, defaults to `8000` */
   port?: number;

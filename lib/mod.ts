@@ -1,5 +1,5 @@
 // Types
-export type { BotConfig, CommandConfig } from "./internal/types/config.ts";
+export type { CommandConfig } from "./internal/types/config.ts";
 export type {
   CommandInteraction,
   MessageComponentInteraction,

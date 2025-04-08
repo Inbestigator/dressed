@@ -8,9 +8,9 @@ import {
 } from "discord-api-types/v10";
 import createInteraction from "../internal/interaction.ts";
 import type {
-  BotConfig,
   CommandHandler,
   ComponentHandler,
+  ServerConfig,
 } from "../internal/types/config.ts";
 import fastify, { type FastifyInstance } from "fastify";
 
@@ -21,7 +21,7 @@ import fastify, { type FastifyInstance } from "fastify";
 export function createServer(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
-  config: BotConfig,
+  config: ServerConfig,
 ): FastifyInstance {
   const instance = fastify();
 
