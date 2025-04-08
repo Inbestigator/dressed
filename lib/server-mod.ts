@@ -19,6 +19,7 @@
  */
 
 // Types
+export type { ServerConfig } from "./internal/types/config.ts";
 export type {
   CommandHandler,
   ComponentHandler,

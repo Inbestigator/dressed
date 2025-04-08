@@ -1,11 +1,9 @@
 import { walkFiles } from "@svarta/walk-it";
 import { underline } from "@std/fmt/colors";
 import ora from "ora";
-import { join, normalize } from "node:path";
-import type { BotConfig } from "../mod.ts";
+import type { ServerConfig } from "../server-mod.ts";
 import { existsSync } from "node:fs";
 import { cwd } from "node:process";
-import { runtime } from "std-env";
 import { parseCommands } from "./bot/commands.ts";
 import { parseComponents } from "./bot/components.ts";
 import type { BuildCommand, BuildComponent } from "../internal/types/config.ts";
@@ -24,11 +22,11 @@ export type WalkEntry = {
 export async function build(
   addInstance?: boolean,
   registerCommands?: boolean,
+  config: ServerConfig = {},
 ): Promise<string> {
-  const [commandFiles, componentFiles, config] = await Promise.all([
+  const [commandFiles, componentFiles] = await Promise.all([
     fetchFiles("src/commands"),
     fetchFiles("src/components"),
-    fetchConfig(),
   ]);
 
   if (!addInstance && registerCommands) {
@@ -43,38 +41,18 @@ export async function build(
     : [];
   const buildLoader = ora("Assembling generated build").start();
 
-  if (!config) {
-    buildLoader
-      .warn(
-        "Could not determine bot config\n└ Maybe you didn't add a default export from bot.config.ts",
-      )
-      .start();
-  }
-
   const outputContent = `
 ${generateImports(addInstance, registerCommands)}
 
 ${defineExport("commandData", commandData)}
 ${defineExport("componentData", componentData)}
-${defineExport("config", config ?? {}, false)}
+${defineExport("config", config, false)}
 ${registerCommands ? `\ninstallCommands(commandData);\n` : ""}
 ${addInstance ? generateInstanceCreation() : ""}
 `.trim();
 
   buildLoader.succeed("Assembled generated build");
   return outputContent;
-}
-
-async function fetchConfig(): Promise<BotConfig | undefined> {
-  try {
-    const configModule = await import(
-      (runtime !== "bun" ? "file:" : "") +
-        normalize(join(cwd(), "bot.config.ts"))
-    );
-    return configModule.default;
-  } catch {
-    return;
-  }
 }
 
 /**
@@ -102,7 +80,9 @@ async function fetchFiles(directory: string): Promise<WalkEntry[]> {
   return filesArray;
 }
 
-function defineExport<T extends BotConfig | BuildCommand[] | BuildComponent[]>(
+function defineExport<
+  T extends ServerConfig | BuildCommand[] | BuildComponent[],
+>(
   variableName: string,
   content: T,
   pathToImport = true,
