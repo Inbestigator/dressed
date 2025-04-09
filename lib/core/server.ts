@@ -26,38 +26,19 @@ export function createServer(
   const instance = fastify();
 
   instance.post(config.endpoint ?? "/", (req, res) => {
-    const reqLoader = ora("Validating new request").start();
+    const handlerRes = handleRequest(
+      {
+        text: JSON.stringify(req.body),
+        headers: {
+          "x-signature-ed25519": req.headers["x-signature-ed25519"],
+          "x-signature-timestamp": req.headers["x-signature-timestamp"],
+        },
+      },
+      runCommand,
+      runComponent,
+    );
 
-    if (
-      !(verifySignature(
-        JSON.stringify(req.body),
-        req.headers["x-signature-ed25519"],
-        req.headers["x-signature-timestamp"],
-      ))
-    ) {
-      reqLoader.fail();
-      console.error(" └ Invalid signature");
-      res.status(401);
-      return;
-    }
-
-    reqLoader.succeed("Validated request");
-
-    try {
-      const status = runInteraction(
-        runCommand,
-        runComponent,
-        req.body,
-      );
-
-      if (status === 200) {
-        return { type: 1 };
-      }
-      res.status(status);
-    } catch (error) {
-      console.error(" └ Error processing request:", error);
-      res.status(500);
-    }
+    res.status(handlerRes.status).send(handlerRes.body);
   });
 
   instance.listen({ port: config.port ?? 8000 }, (_, port) => {
@@ -65,6 +46,55 @@ export function createServer(
   });
 
   return instance;
+}
+
+/**
+ * Handles a request from Discord.
+ * @param req The request from Discord
+ * @param runCommand The function to run a command
+ * @param runComponent The function to run a component
+ * @returns The response to send back to Discord
+ */
+export function handleRequest(
+  req: {
+    text: string;
+    headers: {
+      "x-signature-ed25519"?: string | string[] | null;
+      "x-signature-timestamp"?: string | string[] | null;
+    };
+  },
+  runCommand: CommandHandler,
+  runComponent: ComponentHandler,
+): Response {
+  const reqLoader = ora("Validating new request").start();
+
+  if (
+    !(verifySignature(
+      req.text,
+      req.headers["x-signature-ed25519"],
+      req.headers["x-signature-timestamp"],
+    ))
+  ) {
+    reqLoader.fail();
+    console.error(" └ Invalid signature");
+    return new Response(null, { status: 401 });
+  }
+
+  reqLoader.succeed("Validated request");
+
+  try {
+    const status = runInteraction(
+      runCommand,
+      runComponent,
+      JSON.parse(req.text),
+    );
+    return new Response(status === 200 ? '{"type":1}' : null, {
+      status,
+    });
+  } catch (error) {
+    console.error(" └ Error processing request:", error);
+    return new Response(null, { status: 500 });
+  }
 }
 
 /**
