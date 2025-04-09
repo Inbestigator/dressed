@@ -1,6 +1,7 @@
-name: Deno
+name: Tests
 
 on:
+  workflow_call:
   push:
     branches: ["main"]
   pull_request:
