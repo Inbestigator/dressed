@@ -24,24 +24,17 @@ type SelectMap = {
 export function SelectMenu<K extends keyof typeof SelectType>(
   data:
     & Omit<
-      SelectMap[
-        K extends "Channel" ? "ChannelSelect"
-          : K extends "Mentionable" ? "MentionableSelect"
-          : K extends "Role" ? "RoleSelect"
-          : K extends "String" ? "StringSelect"
-          : K extends "User" ? "UserSelect"
-          : never
-      ],
+      SelectMap[`${K}Select`],
       "type"
     >
     & {
       type: K;
     },
-): APISelectMenuComponent {
+): SelectMap[`${K}Select`] {
   const select = {
     ...data,
     type: SelectType[data.type],
   };
 
-  return select as unknown as APISelectMenuComponent;
+  return select as unknown as SelectMap[`${K}Select`];
 }
