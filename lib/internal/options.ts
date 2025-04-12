@@ -60,16 +60,16 @@ export interface OptionReaders {
   attachment: () => APIAttachment;
 }
 
-export function getOption<Required extends boolean>(
+export function getOption<R extends boolean>(
   name: string,
-  required: Required,
+  required: R,
   options: APIApplicationCommandInteractionDataOption[],
   resolved?: APIInteractionDataResolved,
-): Required extends true ? NonNullable<OptionReaders> : OptionReaders | null {
+): R extends true ? NonNullable<OptionReaders> : OptionReaders | null {
   const option = options.find((o) => o.name === name);
   if (!option) {
     if (required) throw new Error(`Required option ${name} not found`);
-    return null as Required extends true ? never : null;
+    return null as R extends true ? never : null;
   }
 
   return {
@@ -136,5 +136,5 @@ export function getOption<Required extends boolean>(
       if (!resolved?.attachments) throw new Error("No attachments found");
       return resolved.attachments[option.value];
     },
-  };
+  } as ReturnType<typeof getOption<R>>;
 }

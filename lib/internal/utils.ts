@@ -17,8 +17,8 @@ import type { RawFile } from "./types/file.ts";
  */
 export function verifySignature(
   body: string,
-  signature?: string | string[],
-  timestamp?: string | string[],
+  signature?: string | string[] | null,
+  timestamp?: string | string[] | null,
 ): boolean {
   if (
     !signature || !timestamp || typeof signature !== "string" ||
