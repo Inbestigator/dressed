@@ -1,20 +1,20 @@
-import { assertEquals } from "@std/assert";
-import type { APIApplicationCommandInteraction } from "discord-api-types/v10";
-import createInteraction from "../lib/internal/interaction.ts";
+// import { assertEquals } from "@std/assert";
+// import type { APIApplicationCommandInteraction } from "discord-api-types/v10";
+// import createInteraction from "../lib/internal/interaction.ts";
 
-const command = {
-  type: 2,
-  data: {
-    options: [
-      {
-        name: "option1",
-        type: 5,
-        value: true,
-      },
-    ],
-  },
-} as APIApplicationCommandInteraction;
-const interaction = createInteraction(command);
+// const command = {
+//   type: 2,
+//   data: {
+//     options: [
+//       {
+//         name: "option1",
+//         type: 5,
+//         value: true,
+//       },
+//     ],
+//   },
+// } as APIApplicationCommandInteraction;
+// const interaction = createInteraction(command);
 
 // Deno.test("Check for existing option", () => {
 //   assertEquals(
