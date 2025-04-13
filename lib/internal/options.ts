@@ -136,5 +136,5 @@ export function getOption<R extends boolean>(
       if (!resolved?.attachments) throw new Error("No attachments found");
       return resolved.attachments[option.value];
     },
-  };
+  } as ReturnType<typeof getOption<R>>;
 }
