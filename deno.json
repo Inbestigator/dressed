@@ -16,9 +16,9 @@
     "@std/assert": "jsr:@std/assert@^1.0.12",
     "@std/fmt": "jsr:@std/fmt@^1.0.6",
     "@svarta/walk-it": "jsr:@svarta/walk-it@^5.0.1",
-    "discord-api-types": "npm:discord-api-types@^0.37.119",
-    "dotenv": "npm:dotenv@^16.4.7",
-    "fastify": "npm:fastify@^5.2.2",
+    "discord-api-types": "npm:discord-api-types@^0.37.120",
+    "dotenv": "npm:dotenv@^16.5.0",
+    "fastify": "npm:fastify@^5.3.0",
     "magic-bytes.js": "npm:magic-bytes.js@^1.10.0",
     "ora": "npm:ora@^8.2.0",
     "tweetnacl": "npm:tweetnacl@^1.0.3"
