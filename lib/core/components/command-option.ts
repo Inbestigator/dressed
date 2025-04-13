@@ -19,11 +19,11 @@ export function CommandOption<
   data: Omit<CommandOptionMap[K], "type"> & {
     type: K;
   },
-): APIApplicationCommandOption {
+): CommandOptionMap[K] {
   const input = {
     ...data,
     type: ApplicationCommandOptionType[data.type],
   };
 
-  return input as unknown as APIApplicationCommandOption;
+  return input as unknown as CommandOptionMap[K];
 }
