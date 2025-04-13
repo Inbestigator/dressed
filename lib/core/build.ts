@@ -4,6 +4,7 @@ import ora from "ora";
 import type { ServerConfig } from "../server-mod.ts";
 import { existsSync } from "node:fs";
 import { cwd } from "node:process";
+import { normalize } from "node:path";
 import { parseCommands } from "./bot/commands.ts";
 import { parseComponents } from "./bot/components.ts";
 import type { BuildCommand, BuildComponent } from "../internal/types/config.ts";
@@ -25,8 +26,8 @@ export async function build(
   config: ServerConfig = {},
 ): Promise<string> {
   const [commandFiles, componentFiles] = await Promise.all([
-    fetchFiles("src/commands"),
-    fetchFiles("src/components"),
+    fetchFiles(`${config.root ?? "src"}/commands`),
+    fetchFiles(`${config.root ?? "src"}/components`),
   ]);
 
   if (!addInstance && registerCommands) {
@@ -59,14 +60,15 @@ ${addInstance ? generateInstanceCreation() : ""}
  * Fetches the files from a directory and formats paths for import.
  */
 async function fetchFiles(directory: string): Promise<WalkEntry[]> {
-  if (!existsSync(`./${directory}`)) {
+  directory = normalize(directory);
+  if (!existsSync(directory)) {
     ora(`${directory} directory not found`).warn();
     return [];
   }
 
   const filesArray = [];
   for await (
-    const file of walkFiles(`./${directory}`, {
+    const file of walkFiles(directory, {
       filterFile: (f) => /.+\.(js|ts|mjs|cjs)$/.test(f.name),
     })
   ) {

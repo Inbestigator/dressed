@@ -15,6 +15,8 @@ export interface ServerConfig {
   endpoint?: string;
   /** The port to listen on, defaults to `8000` */
   port?: number;
+  /** Source root for the bot, defaults to `src` */
+  root?: string;
 }
 
 /**
