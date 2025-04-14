@@ -1,3 +1,4 @@
+import { normalize } from "node:path";
 import type {
   BuildComponent,
   Component,
@@ -11,9 +12,10 @@ import { trackParts, type WalkEntry } from "../build.ts";
 import ora from "ora";
 
 /**
+ * Creates the component handler
  * @returns A function that runs a component
  */
-export default function setupComponents(
+export function setupComponents(
   components: Component[],
 ): ComponentHandler {
   return async function runComponent(
@@ -55,7 +57,9 @@ export default function setupComponents(
       return;
     }
 
-    const match = new RegExp(component.regex).exec(interaction.data.custom_id);
+    const match = component.regex.startsWith("^")
+      ? new RegExp(component.regex).exec(interaction.data.custom_id)
+      : null;
     const args = match?.groups ?? {};
 
     const componentLoader = ora(
@@ -91,7 +95,7 @@ export function parseArgs(str: string) {
 
 const validComponentCategories = ["buttons", "modals", "selects"];
 
-export function parseComponents(componentFiles: WalkEntry[]) {
+export function parseComponents(componentFiles: WalkEntry[], root: string) {
   const generatingLoader = ora("Generating components").start();
   const { addRow, removeN, log } = trackParts(
     componentFiles.length,
@@ -104,7 +108,8 @@ export function parseComponents(componentFiles: WalkEntry[]) {
     for (const file of componentFiles) {
       removeN();
 
-      const category = file.path.split(/[\\\/]/)[2];
+      const category =
+        file.path.split(/[\\\/]/)[normalize(root).split(/[\\\/]/).length + 1];
 
       if (!validComponentCategories.includes(category)) {
         ora(

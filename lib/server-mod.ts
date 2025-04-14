@@ -26,12 +26,10 @@ export type {
 } from "./internal/types/config.ts";
 
 // Core
-export * from "./core/handlers.ts";
 export { build } from "./core/build.ts";
+export { installCommands, setupCommands } from "./core/bot/commands.ts";
+export { setupComponents } from "./core/bot/components.ts";
 
 // Server
 export { verifySignature } from "./internal/utils.ts";
 export * from "./core/server.ts";
-
-// Utils
-export { installCommands } from "./core/bot/commands.ts";
