@@ -38,7 +38,7 @@ export async function build(
     ? parseCommands(commandFiles)
     : [];
   const componentData = componentFiles.length > 0
-    ? parseComponents(componentFiles)
+    ? parseComponents(componentFiles, config.root ?? "src")
     : [];
   const buildLoader = ora("Assembling generated build").start();
 
@@ -106,9 +106,9 @@ const generateImports = (
   (addInstance || registerCommands)
     ? `import { ${
       addInstance
-        ? `createHandlers, createServer${
+        ? `createServer${
           registerCommands ? ", installCommands" : ""
-        }`
+        }, setupCommands, setupComponents`
         : registerCommands
         ? "installCommands"
         : ""
@@ -116,8 +116,7 @@ const generateImports = (
     : "";
 
 function generateInstanceCreation(): string {
-  return `const { runCommand, runComponent } = createHandlers(commandData, componentData);
-createServer(runCommand, runComponent, config);
+  return `createServer(setupCommands(commandData), setupComponents(componentData), config);
 `.trim();
 }
 

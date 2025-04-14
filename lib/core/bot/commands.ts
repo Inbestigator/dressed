@@ -62,9 +62,10 @@ export async function installCommands(commands: Command[]) {
 }
 
 /**
+ * Creates the command handler
  * @returns A function that runs a command
  */
-export default function setupCommands(
+export function setupCommands(
   commands: Command[],
 ): CommandHandler {
   return async function runCommand(interaction: CommandInteraction) {
