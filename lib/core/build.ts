@@ -1,5 +1,4 @@
 import { walkFiles } from "@svarta/walk-it";
-import { underline } from "@std/fmt/colors";
 import ora from "ora";
 import type { ServerConfig } from "../server-mod.ts";
 import { existsSync } from "node:fs";
@@ -162,7 +161,7 @@ export function trackParts(
                   ]
                     .map((p) =>
                       i === 0
-                        ? underline(p[0][0])[p[2]](p[1] + 9, " ")
+                        ? `\x1b[4m${p[0][0]}\x1b[24m`[p[2]](p[1] + 9, " ")
                         : p[0][i][p[2]](p[1], " ")
                     )
                     .join("  ")
