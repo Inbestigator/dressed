@@ -7,14 +7,15 @@ import ora from "ora";
 import { installGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
-import { env } from "node:process";
+import { env, stdout } from "node:process";
 
 /**
  * Installs commands to the Discord API
  */
 export async function installCommands(commands: Command[]) {
   const appId = env.DISCORD_APP_ID;
-  const registerLoader = ora("Registering commands").start();
+  const registerLoader = ora({ stream: stdout, text: "Registering commands" })
+    .start();
 
   if (!appId) {
     registerLoader.fail();
@@ -76,7 +77,10 @@ export function setupCommands(
       return;
     }
 
-    const commandLoader = ora(`Running command "${command?.name}"`).start();
+    const commandLoader = ora({
+      stream: stdout,
+      text: `Running command "${command?.name}"`,
+    }).start();
 
     try {
       await Promise.resolve((await command.import()).default(interaction));
@@ -89,7 +93,8 @@ export function setupCommands(
 }
 
 export function parseCommands(commandFiles: WalkEntry[]) {
-  const generatingLoader = ora("Generating commands").start();
+  const generatingLoader = ora({ stream: stdout, text: "Generating commands" })
+    .start();
   const { addRow, removeN, log } = trackParts(commandFiles.length, "Command");
 
   try {
@@ -103,9 +108,8 @@ export function parseCommands(commandFiles: WalkEntry[]) {
       };
 
       if (commandData.find((c) => c.name === command.name)) {
-        ora(
-          `Command "${command.name}" already exists, skipping the duplicate`,
-        ).warn();
+        ora(`Command "${command.name}" already exists, skipping the duplicate`)
+          .warn();
         continue;
       }
 

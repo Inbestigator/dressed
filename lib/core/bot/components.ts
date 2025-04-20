@@ -10,6 +10,7 @@ import type {
 } from "../../internal/types/interaction.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
 import ora from "ora";
+import { stdout } from "node:process";
 
 /**
  * Creates the component handler
@@ -96,7 +97,10 @@ export function parseArgs(str: string) {
 const validComponentCategories = ["buttons", "modals", "selects"];
 
 export function parseComponents(componentFiles: WalkEntry[], root: string) {
-  const generatingLoader = ora("Generating components").start();
+  const generatingLoader = ora({
+    stream: stdout,
+    text: "Generating components",
+  }).start();
   const { addRow, removeN, log } = trackParts(
     componentFiles.length,
     "Component",
@@ -112,9 +116,8 @@ export function parseComponents(componentFiles: WalkEntry[], root: string) {
         file.path.split(/[\\\/]/)[normalize(root).split(/[\\\/]/).length + 1];
 
       if (!validComponentCategories.includes(category)) {
-        ora(
-          `Category for "${file.name}" could not be determined, skipping`,
-        ).warn();
+        ora(`Category for "${file.name}" could not be determined, skipping`)
+          .warn();
         continue;
       }
 
@@ -130,12 +133,11 @@ export function parseComponents(componentFiles: WalkEntry[], root: string) {
           (c) => c.name === component.name && c.category === category,
         )
       ) {
-        ora(
-          `${
-            component.category.slice(0, 1).toUpperCase() +
-            component.category.split("s")[0].slice(1)
-          } component "${component.name}" already exists, skipping the duplicate`,
-        ).warn();
+        ora(`${
+          component.category.slice(0, 1).toUpperCase() +
+          component.category.split("s")[0].slice(1)
+        } component "${component.name}" already exists, skipping the duplicate`)
+          .warn();
         continue;
       }
 
