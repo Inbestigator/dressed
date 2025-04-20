@@ -47,7 +47,22 @@ Deno.test("Command option component", () => {
   );
 });
 
-Deno.test("Select menu component", () => {
+Deno.test("String select menu component", () => {
+  assertEquals(
+    SelectMenu({
+      custom_id: "select_id",
+      type: "String",
+      options: [{ label: "test", value: "test" }],
+    }),
+    {
+      type: 3,
+      custom_id: "select_id",
+      options: [{ label: "test", value: "test" }],
+    },
+  );
+});
+
+Deno.test("Channel select menu component", () => {
   assertEquals(
     SelectMenu({
       custom_id: "select_id",
@@ -55,6 +70,45 @@ Deno.test("Select menu component", () => {
     }),
     {
       type: 8,
+      custom_id: "select_id",
+    },
+  );
+});
+
+Deno.test("User select menu component", () => {
+  assertEquals(
+    SelectMenu({
+      custom_id: "select_id",
+      type: "User",
+    }),
+    {
+      type: 5,
+      custom_id: "select_id",
+    },
+  );
+});
+
+Deno.test("Role select menu component", () => {
+  assertEquals(
+    SelectMenu({
+      custom_id: "select_id",
+      type: "Role",
+    }),
+    {
+      type: 6,
+      custom_id: "select_id",
+    },
+  );
+});
+
+Deno.test("Mentionable select menu component", () => {
+  assertEquals(
+    SelectMenu({
+      custom_id: "select_id",
+      type: "Mentionable",
+    }),
+    {
+      type: 7,
       custom_id: "select_id",
     },
   );
