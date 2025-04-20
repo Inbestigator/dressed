@@ -2,7 +2,7 @@ import { config } from "dotenv";
 config();
 import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";
-import { env } from "node:process";
+import { env, stdout } from "node:process";
 import ora from "ora";
 import {
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
@@ -55,9 +55,8 @@ export async function callDiscord(
 
   if (limits.global) {
     if (limits.global.remaining === 0) {
-      ora(
-        `You have hit the global rate limit!\nWaiting to send again...`,
-      ).warn();
+      ora(`You have hit the global rate limit!\nWaiting to send again...`)
+        .warn();
       await delayUntil(limits.global.resetAt);
       delete limits.global;
     } else if (limits.global.remaining < 2) {
@@ -142,7 +141,10 @@ export async function callDiscord(
   });
   if (!res.ok) {
     const data = await res.json();
-    ora(`Failed to ${options.method} ${endpoint} (${res.status})`).fail();
+    ora({
+      stream: stdout,
+      text: `Failed to ${options.method} ${endpoint} (${res.status} })`,
+    }).fail();
     console.error(`└ ${data.message}`);
     if (res.status === 429) {
       if (data.global) {

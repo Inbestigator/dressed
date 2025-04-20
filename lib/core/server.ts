@@ -14,40 +14,56 @@ import type {
   ComponentHandler,
   ServerConfig,
 } from "../internal/types/config.ts";
-import fastify, { type FastifyInstance } from "fastify";
+import { createServer as createHttpServer, type Server } from "node:http";
+import { stdout } from "node:process";
 
 /**
- * Starts a [Fastify](https://fastify.dev/) server to handle interactions.
- * @returns The Fastify server instance
+ * Starts a server to handle interactions.
+ * @returns The server instance
  */
 export function createServer(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
   config: ServerConfig,
-): FastifyInstance {
-  const instance = fastify();
+): Server {
+  const server = createHttpServer((req, res) => {
+    if (req.url !== (config.endpoint ?? "/")) {
+      res.statusCode = 404;
+      res.end();
+      return;
+    } else if (req.method !== "POST") {
+      res.statusCode = 405;
+      res.end();
+      return;
+    }
 
-  instance.post(config.endpoint ?? "/", (req, res) => {
-    const handlerRes = handleRequest(
-      {
-        text: JSON.stringify(req.body),
-        headers: {
-          "x-signature-ed25519": req.headers["x-signature-ed25519"],
-          "x-signature-timestamp": req.headers["x-signature-timestamp"],
-        },
-      },
-      runCommand,
-      runComponent,
-    );
+    const body: Uint8Array<ArrayBufferLike>[] = [];
+    req
+      .on("data", (c) => body.push(c))
+      .on("end", async () => {
+        const handlerRes = await handleRequest(
+          new Request("http://localhost", {
+            method: "POST",
+            body,
+            headers: req.headers as unknown as Headers,
+          }),
+          runCommand,
+          runComponent,
+        );
 
-    res.status(handlerRes.status).send(handlerRes.body);
+        res.statusCode = handlerRes.status;
+        res.setHeader("Content-Type", "application/json");
+        res.end(handlerRes.status === 200 ? '{"type":1}' : null);
+      });
   });
 
-  instance.listen({ port: config.port ?? 8000 }, (_, port) => {
-    console.log(`Bot is now listening on ${port}`);
+  const port = config.port ?? 8000;
+
+  server.listen(port, "localhost", () => {
+    console.log(`Bot is now listening on http://localhost:${port}`);
   });
 
-  return instance;
+  return server;
 }
 
 /**
@@ -57,28 +73,27 @@ export function createServer(
  * @param runComponent The function to run a component
  * @returns The response to send back to Discord
  */
-export function handleRequest(
-  req: {
-    text: string;
-    headers: {
-      "x-signature-ed25519"?: string | string[] | null;
-      "x-signature-timestamp"?: string | string[] | null;
-    };
-  },
+export async function handleRequest(
+  req: Request,
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
-): Response {
-  const reqLoader = ora("Validating new request").start();
+): Promise<Response> {
+  const reqLoader = ora({
+    stream: stdout,
+    text: "Validating new request",
+  })
+    .start();
+  const body = await req.text();
 
   if (
     !(verifySignature(
-      req.text,
-      req.headers["x-signature-ed25519"],
-      req.headers["x-signature-timestamp"],
+      body,
+      req.headers.get("x-signature-ed25519"),
+      req.headers.get("x-signature-timestamp"),
     ))
   ) {
     reqLoader.fail();
-    console.error(" └ Invalid signature");
+    console.error("└ Invalid signature");
     return new Response(null, { status: 401 });
   }
 
@@ -88,13 +103,13 @@ export function handleRequest(
     const status = runInteraction(
       runCommand,
       runComponent,
-      JSON.parse(req.text),
+      JSON.parse(body),
     );
     return new Response(status === 200 ? '{"type":1}' : null, {
       status,
     });
   } catch (error) {
-    console.error(" └ Error processing request:", error);
+    console.error("└ Error processing request:", error);
     return new Response(null, { status: 500 });
   }
 }

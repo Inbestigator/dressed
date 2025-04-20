@@ -3,7 +3,7 @@ import { underline } from "@std/fmt/colors";
 import ora from "ora";
 import type { ServerConfig } from "../server-mod.ts";
 import { existsSync } from "node:fs";
-import { cwd } from "node:process";
+import { cwd, stdout } from "node:process";
 import { normalize } from "node:path";
 import { parseCommands } from "./bot/commands.ts";
 import { parseComponents } from "./bot/components.ts";
@@ -30,17 +30,16 @@ export async function build(
     fetchFiles(`${config.root ?? "src"}/components`),
   ]);
 
-  if (!addInstance && registerCommands) {
-    ora("Commands will not be registered without an instance").warn();
-  }
-
   const commandData = commandFiles.length > 0
     ? parseCommands(commandFiles)
     : [];
   const componentData = componentFiles.length > 0
     ? parseComponents(componentFiles, config.root ?? "src")
     : [];
-  const buildLoader = ora("Assembling generated build").start();
+  const buildLoader = ora({
+    stream: stdout,
+    text: "Assembling generated build",
+  }).start();
 
   const outputContent = `
 ${generateImports(addInstance, registerCommands)}
