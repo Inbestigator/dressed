@@ -32,10 +32,12 @@ Deno.test(function replying() {
     };
 
     const res = runInteraction(
-      (i) => {
+      // deno-lint-ignore require-await
+      async (i) => {
         i.reply("Command received");
       },
-      (i) => {
+      // deno-lint-ignore require-await
+      async (i) => {
         i.reply("Component received");
       },
       body,

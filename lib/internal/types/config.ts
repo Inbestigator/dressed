@@ -64,8 +64,8 @@ export interface BuildComponent {
 
 export type CommandHandler = (
   interaction: CommandInteraction,
-) => Promise<unknown> | unknown;
+) => Promise<void>;
 export type ComponentHandler = (
   interaction: MessageComponentInteraction | ModalSubmitInteraction,
   args?: Record<string, string>,
-) => Promise<unknown> | unknown;
+) => Promise<void>;
