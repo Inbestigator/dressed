@@ -13,7 +13,7 @@ export default function Home() {
         <span className="block text-[max(36px,min(5vw,72px))] text-white">Deploy Anywhere</span>
       </h1>
       <p className="text-lg sm:text-xl max-w-2xl mx-auto">
-        Dressed is a serverless Discord bot framework with 100% API support.
+        A sleek, serverless-ready Discord bot framework.
       </p>
       <div className="flex flex-wrap justify-center gap-4">
         <Button className="text-base" asChild size="lg">
@@ -33,7 +33,7 @@ export default function Home() {
             size="icon"
           >
             <Link
-              href="https://github.com/inbestigator/dressed-examples"
+              href="https://github.com/inbestigator/dressed-examples/tree/main/deno/simple"
               target="_blank"
               rel="noreferrer"
             >
@@ -49,7 +49,7 @@ export default function Home() {
             size="icon"
           >
             <Link
-              href="https://github.com/inbestigator/dressed-examples/tree/main/node/simple"
+              href="https://github.com/inbestigator/dressed-examples/tree/main/node"
               target="_blank"
               rel="noreferrer"
             >
@@ -67,23 +67,13 @@ export default function Home() {
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <Cloud className="h-10 w-10 mb-4 text-primary" />
           <h2 className="text-xl font-semibold mb-2">Serverless Ready</h2>
-          <p className="text-muted-foreground">
-            Deploy effortlessly to serverless environments like{" "}
-            <Link
-              className="hover:underline underline-offset-2"
-              href="https://deno.com/deploy"
-              target="_blank"
-            >
-              Deno Deploy
-            </Link>
-            .
-          </p>
+          <p className="text-muted-foreground">Deploy effortlessly to serverless environments.</p>
         </div>
         <div className="bg-card p-6 rounded-lg shadow-lg">
           <Code className="h-10 w-10 mb-4 text-primary" />
           <h2 className="text-xl font-semibold mb-2">Developer Friendly</h2>
           <p className="text-muted-foreground">
-            Simple API design, making bot development a breeze.
+            Smart and simple API design, making bot development a breeze.
           </p>
         </div>
       </div>

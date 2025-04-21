@@ -3,7 +3,6 @@ import typography from "@tailwindcss/typography";
 import animate from "tailwindcss-animate";
 
 const config: Config = {
-  darkMode: ["class"],
   content: ["./src/**/*.{tsx,mdx}"],
   plugins: [typography, animate],
   theme: {

@@ -20,4 +20,4 @@ export const config: CommandConfig = {
 
 ## Config type
 
-Dressed supports all of the [Discord application command object](https://discord.com/developers/docs/interactions/application-commands#application-command-object)
+The config object supports all of the [Discord application command option type](https://discord.com/developers/docs/interactions/application-commands#application-command-object).
