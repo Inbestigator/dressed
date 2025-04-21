@@ -62,6 +62,8 @@ import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../../internal/utils.ts";
 
 /**
+ * @deprecated Discord is removing the ability for applications to create guilds after 2025-07-15
+ *
  * Create a new guild.
  * @param guild The guild data
  */
