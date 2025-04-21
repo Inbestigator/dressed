@@ -5,9 +5,9 @@ structure:
 
 ```ts
 src
-├── commands
-│   ├── greet.ts // Will become /greet
-│   └── trivia.ts // Will become /trivia
+└ commands
+  ├ greet.ts // Will become /greet
+  └ trivia.ts // Will become /trivia
 ```
 
 This means that command file names must be globally unique.

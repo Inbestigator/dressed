@@ -1,9 +1,7 @@
 @import "./hljs.css";
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+@config "../../tailwind.config.ts";
 @layer base {
   :root {
     --background: 240 9% 13%;
