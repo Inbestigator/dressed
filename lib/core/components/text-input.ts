@@ -13,11 +13,9 @@ export function TextInput(
   },
 ): APITextInputComponent {
   if (!data.style) data.style = "Short";
-  const input = {
+  return {
     ...data,
     style: TextInputStyle[data.style],
     type: ComponentType.TextInput,
   };
-
-  return input as APITextInputComponent;
 }

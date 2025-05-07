@@ -1,7 +1,7 @@
 import {
   type APIActionRowComponent,
-  type APIActionRowComponentTypes,
   type APIButtonComponent,
+  type APIComponentInActionRow,
   ComponentType,
 } from "discord-api-types/v10";
 
@@ -11,10 +11,10 @@ import {
  * Provide a list of buttons, a select menu, or a text input
  */
 export function ActionRow<
-  T extends APIActionRowComponentTypes,
+  T extends APIComponentInActionRow,
 >(
   ...components: T extends APIButtonComponent ? APIButtonComponent[]
-    : [APIActionRowComponentTypes]
+    : [T]
 ): APIActionRowComponent<T> {
   return {
     components: components as T[],

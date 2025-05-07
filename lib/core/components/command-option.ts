@@ -20,10 +20,8 @@ export function CommandOption<
     type: K;
   },
 ): CommandOptionMap[K] {
-  const input = {
+  return {
     ...data,
     type: ApplicationCommandOptionType[data.type],
-  };
-
-  return input as unknown as CommandOptionMap[K];
+  } as CommandOptionMap[K];
 }

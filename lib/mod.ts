@@ -7,11 +7,11 @@ export type {
 } from "./internal/types/interaction.ts";
 
 // Components
-export * from "./core/components/actionrow.ts";
+export * from "./core/components/action-row.ts";
 export * from "./core/components/button.ts";
 export * from "./core/components/command-option.ts";
-export * from "./core/components/selectmenu.ts";
-export * from "./core/components/textinput.ts";
+export * from "./core/components/select-menu.ts";
+export * from "./core/components/text-input.ts";
 
 // API interactions
 export * from "./core/bot/application.ts";

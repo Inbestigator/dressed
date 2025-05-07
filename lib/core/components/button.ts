@@ -44,3 +44,12 @@ export function Button(
   button.style = ButtonStyle[data.style];
   return button as APIButtonComponent;
 }
+
+// TODO: Componentsv2
+// ✅ Section
+// ✅ Text display
+// Thumbnail
+// Media gallery
+// File
+// ✅ Separator
+// ✅ Container

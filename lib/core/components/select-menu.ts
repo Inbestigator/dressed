@@ -31,10 +31,8 @@ export function SelectMenu<K extends keyof typeof SelectType>(
       type: K;
     },
 ): SelectMap[`${K}Select`] {
-  const select = {
+  return {
     ...data,
     type: SelectType[data.type],
-  };
-
-  return select as unknown as SelectMap[`${K}Select`];
+  } as unknown as SelectMap[`${K}Select`];
 }
