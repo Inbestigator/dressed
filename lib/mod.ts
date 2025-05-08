@@ -7,11 +7,18 @@ export type {
 } from "./internal/types/interaction.ts";
 
 // Components
-export * from "./core/components/actionrow.ts";
+export * from "./core/components/action-row.ts";
 export * from "./core/components/button.ts";
 export * from "./core/components/command-option.ts";
-export * from "./core/components/selectmenu.ts";
-export * from "./core/components/textinput.ts";
+export * from "./core/components/container.ts";
+export * from "./core/components/file.ts";
+export * from "./core/components/media-gallery.ts";
+export * from "./core/components/section.ts";
+export * from "./core/components/select-menu.ts";
+export * from "./core/components/separator.ts";
+export * from "./core/components/text-display.ts";
+export * from "./core/components/text-input.ts";
+export * from "./core/components/thumbnail.ts";
 
 // API interactions
 export * from "./core/bot/application.ts";

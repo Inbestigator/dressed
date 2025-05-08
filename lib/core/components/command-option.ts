@@ -16,14 +16,12 @@ type CommandOptionMap = {
 export function CommandOption<
   K extends keyof typeof ApplicationCommandOptionType,
 >(
-  data: Omit<CommandOptionMap[K], "type"> & {
+  config: Omit<CommandOptionMap[K], "type"> & {
     type: K;
   },
 ): CommandOptionMap[K] {
-  const input = {
-    ...data,
-    type: ApplicationCommandOptionType[data.type],
-  };
-
-  return input as unknown as CommandOptionMap[K];
+  return {
+    ...config,
+    type: ApplicationCommandOptionType[config.type],
+  } as CommandOptionMap[K];
 }

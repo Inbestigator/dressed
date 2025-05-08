@@ -6,18 +6,18 @@ import {
 
 /**
  * Creates a text input component
+ *
+ * Text input object (modals)
  */
 export function TextInput(
-  data: Omit<APITextInputComponent, "type" | "style"> & {
+  config: Omit<APITextInputComponent, "type" | "style"> & {
     style?: keyof typeof TextInputStyle;
   },
 ): APITextInputComponent {
-  if (!data.style) data.style = "Short";
-  const input = {
-    ...data,
-    style: TextInputStyle[data.style],
+  if (!config.style) config.style = "Short";
+  return {
+    ...config,
+    style: TextInputStyle[config.style],
     type: ComponentType.TextInput,
   };
-
-  return input as APITextInputComponent;
 }

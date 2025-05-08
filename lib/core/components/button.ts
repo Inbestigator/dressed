@@ -32,15 +32,17 @@ interface Button {
 
 /**
  * Creates a button component
+ *
+ * Button object
  */
 export function Button(
-  data: (ButtonWithCustomId | ButtonWithSKUId | ButtonWithURL) & {
+  config: (ButtonWithCustomId | ButtonWithSKUId | ButtonWithURL) & {
     style?: keyof typeof ButtonStyle;
   },
 ): APIButtonComponent {
-  const button = data as Button;
+  const button = config as Button;
   button.type = ComponentType.Button;
-  if (!data.style) data.style = "Primary";
-  button.style = ButtonStyle[data.style];
+  if (!config.style) config.style = "Primary";
+  button.style = ButtonStyle[config.style];
   return button as APIButtonComponent;
 }
