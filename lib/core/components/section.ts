@@ -8,15 +8,17 @@ import { TextDisplay } from "./text-display.ts";
 /**
  * Creates a section component
  *
- * Provide a list of texts to display and an accessory component
+ * Container to display text alongside an accessory component
  */
 export function Section(
   components: string[],
   accessory: APISectionAccessoryComponent,
+  id?: APISectionComponent["id"],
 ): APISectionComponent {
   return {
     components: components.map(TextDisplay),
     accessory,
+    id,
     type: ComponentType.Section,
   };
 }

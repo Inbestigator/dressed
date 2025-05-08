@@ -3,10 +3,6 @@ import {
   type APIContainerComponent,
   ComponentType,
 } from "discord-api-types/v10";
-import { ActionRow } from "./action-row.ts";
-import { Button } from "../../mod.ts";
-import { Section } from "./section.ts";
-import { Separator } from "./separator.ts";
 
 export function Container(
   components: APIComponentInContainer[],
@@ -20,7 +16,7 @@ export function Container(
 /**
  * Creates a container component
  *
- * Provide a list of components to put in the container
+ * Container that visually groups a set of components
  */
 export function Container(
   ...args: [
@@ -46,19 +42,3 @@ export function Container(
     };
   }
 }
-
-console.log(
-  Container(
-    [ActionRow(Button({ custom_id: "test", label: "test" }))],
-    { id: 23, accent_color: 0xff0000 },
-  ),
-);
-
-console.log(
-  Container(
-    ActionRow(Button({ custom_id: "test", label: "test" })),
-    ActionRow(Button({ custom_id: "test", label: "test" })),
-    Section(["a", "b,c"], Button({ custom_id: "test", label: "test" })),
-    Separator(),
-  ),
-);

@@ -6,6 +6,8 @@ import {
 
 /**
  * Creates a separator component
+ *
+ * Component to add vertical padding between other components
  */
 export function Separator(
   divider = true,

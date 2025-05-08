@@ -6,6 +6,8 @@ import {
 
 /**
  * Creates a text input component
+ *
+ * Text input object (modals)
  */
 export function TextInput(
   data: Omit<APITextInputComponent, "type" | "style"> & {

@@ -8,7 +8,7 @@ import {
 /**
  * Creates an action row component
  *
- * Provide a list of buttons, a select menu, or a text input
+ * Container to display a row of interactive components
  */
 export function ActionRow<
   T extends APIComponentInActionRow,

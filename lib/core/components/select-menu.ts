@@ -20,6 +20,8 @@ type SelectMap = {
 
 /**
  * Creates a select menu component
+ *
+ * Select menu for picking from defined text options, or a user, role, channel, or mentionable
  */
 export function SelectMenu<K extends keyof typeof SelectType>(
   data:

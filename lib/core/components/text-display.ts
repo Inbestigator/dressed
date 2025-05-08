@@ -5,6 +5,8 @@ import {
 
 /**
  * Creates a text display component
+ *
+ * Markdown text
  */
 export function TextDisplay(
   content: string,
