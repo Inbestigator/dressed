@@ -5,6 +5,14 @@ import {
 } from "discord-api-types/v10";
 import { Thumbnail } from "./thumbnail.ts";
 
+/**
+ * Creates a media gallery component
+ *
+ * Display images and other media
+ *
+ * **IMPORTANT**:
+ * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message
+ */
 export function MediaGallery(
   items: APIMediaGalleryItem[],
   config: Omit<APIMediaGalleryComponent, "items" | "type">,
@@ -14,11 +22,6 @@ export function MediaGallery(
   ...items: APIMediaGalleryItem[]
 ): APIMediaGalleryComponent;
 
-/**
- * Creates a media gallery component
- *
- * Display images and other media
- */
 export function MediaGallery(
   ...args: [
     APIMediaGalleryItem[],

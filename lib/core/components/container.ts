@@ -4,6 +4,14 @@ import {
   ComponentType,
 } from "discord-api-types/v10";
 
+/**
+ * Creates a container component
+ *
+ * Container that visually groups a set of components
+ *
+ * **IMPORTANT**:
+ * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message
+ */
 export function Container(
   components: APIComponentInContainer[],
   config: Omit<APIContainerComponent, "components" | "type">,
@@ -13,11 +21,6 @@ export function Container(
   ...components: APIComponentInContainer[]
 ): APIContainerComponent;
 
-/**
- * Creates a container component
- *
- * Container that visually groups a set of components
- */
 export function Container(
   ...args: [
     APIComponentInContainer[],

@@ -8,6 +8,9 @@ import {
  * Creates a separator component
  *
  * Component to add vertical padding between other components
+ *
+ * **IMPORTANT**:
+ * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message
  */
 export function Separator(
   divider = true,

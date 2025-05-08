@@ -7,6 +7,9 @@ import {
  * Creates a thumbnail component
  *
  * Small image that can be used as an accessory
+ *
+ * **IMPORTANT**:
+ * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message
  */
 export function Thumbnail(
   media: APIThumbnailComponent["media"] | string,
