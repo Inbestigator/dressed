@@ -13,15 +13,11 @@ import {
  */
 export function Thumbnail(
   media: APIThumbnailComponent["media"] | string,
-  description?: string,
-  spoiler?: boolean,
-  id?: number,
+  config?: Omit<APIThumbnailComponent, "file" | "type">,
 ): APIThumbnailComponent {
   return {
+    ...config,
     media: typeof media === "string" ? { url: media } : media,
-    description,
-    spoiler,
-    id,
     type: ComponentType.Thumbnail,
   };
 }

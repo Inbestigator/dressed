@@ -13,12 +13,14 @@ import {
  * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message
  */
 export function Separator(
-  divider = true,
-  spacing: keyof typeof SeparatorSpacingSize = "Small",
+  config: Omit<APISeparatorComponent, "type" | "spacing"> & {
+    spacing?: keyof typeof SeparatorSpacingSize;
+  } = {},
 ): APISeparatorComponent {
+  if (!config?.spacing) config.spacing = "Small";
   return {
-    divider,
-    spacing: SeparatorSpacingSize[spacing],
+    ...config,
+    spacing: SeparatorSpacingSize[config.spacing],
     type: ComponentType.Separator,
   };
 }

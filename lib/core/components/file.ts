@@ -10,13 +10,11 @@ import { type APIFileComponent, ComponentType } from "discord-api-types/v10";
  */
 export function File(
   file: APIFileComponent["file"] | string,
-  spoiler?: boolean,
-  id?: number,
+  config?: Omit<APIFileComponent, "file" | "type">,
 ): APIFileComponent {
   return {
+    ...config,
     file: typeof file === "string" ? { url: file } : file,
-    spoiler,
-    id,
     type: ComponentType.File,
   };
 }

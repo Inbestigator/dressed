@@ -10,14 +10,14 @@ import {
  * Text input object (modals)
  */
 export function TextInput(
-  data: Omit<APITextInputComponent, "type" | "style"> & {
+  config: Omit<APITextInputComponent, "type" | "style"> & {
     style?: keyof typeof TextInputStyle;
   },
 ): APITextInputComponent {
-  if (!data.style) data.style = "Short";
+  if (!config.style) config.style = "Short";
   return {
-    ...data,
-    style: TextInputStyle[data.style],
+    ...config,
+    style: TextInputStyle[config.style],
     type: ComponentType.TextInput,
   };
 }

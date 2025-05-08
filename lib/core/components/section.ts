@@ -16,10 +16,10 @@ import { TextDisplay } from "./text-display.ts";
 export function Section(
   components: string[],
   accessory: APISectionAccessoryComponent,
-  id?: APISectionComponent["id"],
+  id?: number,
 ): APISectionComponent {
   return {
-    components: components.map(TextDisplay),
+    components: components.map((c) => TextDisplay(c)),
     accessory,
     id,
     type: ComponentType.Section,

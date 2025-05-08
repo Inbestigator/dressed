@@ -24,7 +24,7 @@ type SelectMap = {
  * Select menu for picking from defined text options, or a user, role, channel, or mentionable
  */
 export function SelectMenu<K extends keyof typeof SelectType>(
-  data:
+  config:
     & Omit<
       SelectMap[`${K}Select`],
       "type"
@@ -34,7 +34,7 @@ export function SelectMenu<K extends keyof typeof SelectType>(
     },
 ): SelectMap[`${K}Select`] {
   return {
-    ...data,
-    type: SelectType[data.type],
+    ...config,
+    type: SelectType[config.type],
   } as unknown as SelectMap[`${K}Select`];
 }

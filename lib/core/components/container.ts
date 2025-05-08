@@ -13,19 +13,21 @@ import {
  * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message
  */
 export function Container(
+  ...components: APIComponentInContainer[]
+): APIContainerComponent;
+
+export function Container(
   components: APIComponentInContainer[],
   config: Omit<APIContainerComponent, "components" | "type">,
 ): APIContainerComponent;
 
 export function Container(
-  ...components: APIComponentInContainer[]
-): APIContainerComponent;
-
-export function Container(
-  ...args: [
-    APIComponentInContainer[],
-    Omit<APIContainerComponent, "components" | "type">,
-  ] | APIComponentInContainer[]
+  ...args:
+    | [
+      APIComponentInContainer[],
+      Omit<APIContainerComponent, "components" | "type">,
+    ]
+    | APIComponentInContainer[]
 ): APIContainerComponent {
   if (Array.isArray(args[0]) && args.length === 2) {
     const [components, config] = args as [

@@ -1,6 +1,5 @@
 import {
   type APIActionRowComponent,
-  type APIButtonComponent,
   type APIComponentInActionRow,
   ComponentType,
 } from "discord-api-types/v10";
@@ -13,8 +12,7 @@ import {
 export function ActionRow<
   T extends APIComponentInActionRow,
 >(
-  ...components: T extends APIButtonComponent ? APIButtonComponent[]
-    : [T]
+  ...components: T[]
 ): APIActionRowComponent<T> {
   return {
     components: components as T[],
