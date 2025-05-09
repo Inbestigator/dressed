@@ -1,3 +1,5 @@
+import { config } from "dotenv";
+config();
 import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";
 import { env, stdout } from "node:process";
