@@ -51,8 +51,8 @@ export function MediaGallery(
  * Creates a media item to be used in a media gallery
  */
 export function MediaGalleryItem(
-  ...args: Parameters<typeof Thumbnail>
+  ...config: Parameters<typeof Thumbnail>
 ): APIMediaGalleryItem {
-  const { type: _type, id: _id, ...item } = Thumbnail(...args);
+  const { type: _type, id: _id, ...item } = Thumbnail(...config);
   return item;
 }

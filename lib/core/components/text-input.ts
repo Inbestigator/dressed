@@ -14,10 +14,10 @@ export function TextInput(
     style?: keyof typeof TextInputStyle;
   },
 ): APITextInputComponent {
-  if (!config.style) config.style = "Short";
+  const style = config?.style ?? "Short";
   return {
     ...config,
-    style: TextInputStyle[config.style],
+    style: TextInputStyle[style],
     type: ComponentType.TextInput,
   };
 }
