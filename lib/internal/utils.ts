@@ -11,6 +11,7 @@ import {
 } from "discord-api-types/v10";
 import { filetypeinfo } from "magic-bytes.js";
 import type { RawFile } from "./types/file.ts";
+import { headerUpdateLimit, updateLimit } from "./ratelimit.ts";
 
 /**
  * Verifies the signature of the POST request
@@ -34,11 +35,6 @@ export function verifySignature(
   );
 }
 
-const limits: Record<string, {
-  remaining: number;
-  resetAt: number;
-}> = {};
-
 export async function callDiscord(
   endpoint: string,
   options: Omit<RequestInit, "body"> & {
@@ -48,34 +44,6 @@ export async function callDiscord(
     flattenBodyInForm?: boolean;
   },
 ) {
-  async function delayUntil(time: number) {
-    const delayDuration = Math.max(0, time - Date.now());
-    await new Promise((resolve) => setTimeout(resolve, delayDuration));
-  }
-
-  if (limits.global) {
-    if (limits.global.remaining === 0) {
-      ora(`You have hit the global rate limit!\nWaiting to send again...`)
-        .warn();
-      await delayUntil(limits.global.resetAt);
-      delete limits.global;
-    } else if (limits.global.remaining < 2) {
-      ora("You are about to hit the global rate limit!").warn();
-    }
-  } else if (
-    limits[endpoint]
-  ) {
-    if (limits[endpoint].remaining === 0) {
-      ora(
-        `You have hit the rate limit for ${endpoint}!\nWaiting to send again...`,
-      ).warn();
-      await delayUntil(limits[endpoint].resetAt);
-      delete limits[endpoint];
-    } else if (limits[endpoint].remaining < 3) {
-      ora(`You are about to hit the rate limit for ${endpoint}!`).warn();
-    }
-  }
-
   const url = new URL(RouteBases.api + endpoint);
   if (options.params) {
     Object.entries(options.params).forEach(([key, value]) => {
@@ -143,29 +111,16 @@ export async function callDiscord(
     }).fail();
     console.error(`└ ${data.message}`);
     if (res.status === 429) {
-      if (data.global) {
-        limits.global = {
-          remaining: 0,
-          resetAt: Date.now() + data.retry_after * 1000,
-        };
-      } else {
-        limits[endpoint] = {
-          remaining: 0,
-          resetAt: Date.now() + data.retry_after * 1000,
-        };
-      }
+      updateLimit(
+        data.global ? "global" : endpoint,
+        0,
+        Date.now() + data.retry_after * 1000,
+      );
     }
     throw new Error(data.message);
   }
 
-  const remaining = res.headers.get("x-ratelimit-remaining");
-  const resetAt = res.headers.get("x-ratelimit-reset");
-  if (remaining) {
-    limits[endpoint] = {
-      remaining: Number(remaining),
-      resetAt: Number(resetAt) * 1000,
-    };
-  }
+  headerUpdateLimit(endpoint, res);
 
   return res;
 }
