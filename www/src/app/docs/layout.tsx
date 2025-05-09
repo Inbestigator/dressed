@@ -8,15 +8,11 @@ export const metadata: Metadata = {
   description: "",
 };
 
-export default function DocsLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <DocsSidebar />
-      <SidebarInset>{children}</SidebarInset>
+      <SidebarInset className="overflow-x-hidden">{children}</SidebarInset>
       <UpdateBackground color="var(--sidebar-background)" />
     </SidebarProvider>
   );
