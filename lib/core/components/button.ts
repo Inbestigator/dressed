@@ -9,25 +9,7 @@ import {
 
 interface ButtonWithCustomId
   extends Omit<APIButtonComponentWithCustomId, "type" | "style"> {
-  sku_id?: never;
-  url?: never;
-}
-
-interface ButtonWithSKUId
-  extends Omit<APIButtonComponentWithSKUId, "type" | "style"> {
-  custom_id?: never;
-  url?: never;
-}
-
-interface ButtonWithURL
-  extends Omit<(APIButtonComponentWithURL), "type" | "style"> {
-  custom_id?: never;
-  sku_id?: never;
-}
-
-interface Button {
-  style?: ButtonStyle;
-  type?: ComponentType.Button;
+  style?: Exclude<keyof typeof ButtonStyle, "Link" | "Premium">;
 }
 
 /**
@@ -35,14 +17,31 @@ interface Button {
  *
  * Button object
  */
+export function Button(config: ButtonWithCustomId): APIButtonComponent;
 export function Button(
-  config: (ButtonWithCustomId | ButtonWithSKUId | ButtonWithURL) & {
-    style?: keyof typeof ButtonStyle;
-  },
+  config: Omit<APIButtonComponentWithSKUId, "type" | "style">,
+): APIButtonComponent;
+export function Button(
+  config: Omit<APIButtonComponentWithURL, "type" | "style">,
+): APIButtonComponent;
+
+export function Button(
+  config:
+    | ButtonWithCustomId
+    | Omit<APIButtonComponentWithSKUId, "type" | "style">
+    | Omit<APIButtonComponentWithURL, "type" | "style">,
 ): APIButtonComponent {
-  const button = config as Button;
-  button.type = ComponentType.Button;
-  if (!config.style) config.style = "Primary";
-  button.style = ButtonStyle[config.style];
-  return button as APIButtonComponent;
+  const style: keyof typeof ButtonStyle = "style" in config && config.style
+    ? config.style
+    : "sku_id" in config
+    ? "Premium"
+    : "url" in config
+    ? "Link"
+    : "Primary";
+
+  return {
+    ...config,
+    style: ButtonStyle[style],
+    type: ComponentType.Button,
+  } as APIButtonComponent;
 }

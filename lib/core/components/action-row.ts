@@ -9,9 +9,7 @@ import {
  *
  * Container to display a row of interactive components
  */
-export function ActionRow<
-  T extends APIComponentInActionRow,
->(
+export function ActionRow<T extends APIComponentInActionRow>(
   ...components: T[]
 ): APIActionRowComponent<T> {
   return {

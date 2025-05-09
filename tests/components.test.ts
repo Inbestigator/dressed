@@ -170,7 +170,6 @@ Deno.test("Section component", () => {
         custom_id: "button_id",
         style: 1,
       },
-      id: undefined,
       type: 9,
     },
   );
