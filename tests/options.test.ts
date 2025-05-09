@@ -28,11 +28,14 @@ Deno.test("Check for existing option", () => {
 });
 
 Deno.test("Check for non existing option", () => {
+  let fail = false;
   try {
     interaction.getOption("option2", true);
-    throw new Error("Should have thrown");
+    fail = true;
   } catch {
-    // pass
+    if (fail) {
+      throw new Error("Should have thrown");
+    }
   }
   assertEquals(
     interaction.getOption("option2")?.boolean(),
