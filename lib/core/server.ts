@@ -1,5 +1,4 @@
-import { config } from "dotenv";
-config();
+import { config as loadEnv } from "dotenv";
 import ora from "ora";
 import { verifySignature } from "../internal/utils.ts";
 import {
@@ -26,6 +25,7 @@ export function createServer(
   runComponent: ComponentHandler,
   config: ServerConfig,
 ): Server {
+  loadEnv();
   const server = createHttpServer((req, res) => {
     if (req.url !== (config.endpoint ?? "/")) {
       res.statusCode = 404;

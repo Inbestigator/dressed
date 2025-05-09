@@ -15,7 +15,7 @@
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.13",
     "@svarta/walk-it": "jsr:@svarta/walk-it@^5.0.1",
-    "discord-api-types": "npm:discord-api-types@^0.38.3",
+    "discord-api-types": "npm:discord-api-types@^0.38.4",
     "dotenv": "npm:dotenv@^16.5.0",
     "magic-bytes.js": "npm:magic-bytes.js@^1.12.1",
     "ora": "npm:ora@^8.2.0",

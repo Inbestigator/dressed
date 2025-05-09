@@ -12,10 +12,9 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../../internal/utils.ts";
-import { env } from "node:process";
+import { botEnv, callDiscord } from "../../internal/utils.ts";
 
-const appId = env.DISCORD_APP_ID;
+const appId = botEnv().DISCORD_APP_ID;
 
 /**
  * Returns a user object for a given user ID.
