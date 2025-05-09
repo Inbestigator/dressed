@@ -92,7 +92,7 @@ export default async function DocsPage({ params }: { params: Promise<{ slug: str
           </Breadcrumb>
         </div>
       </header>
-      <div className="p-4 pt-0 max-w-[100vw]">
+      <div className="p-4 pt-0 max-w-screen">
         <DocsMD content={doc.content} />
       </div>
     </>
