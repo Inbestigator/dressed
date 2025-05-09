@@ -4,16 +4,16 @@ import type {
   CommandHandler,
 } from "../../internal/types/config.ts";
 import ora from "ora";
-import { installGlobalCommands } from "../../internal/utils.ts";
+import { botEnv, installGlobalCommands } from "../../internal/utils.ts";
 import type { CommandInteraction } from "../../internal/types/interaction.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
-import { env, stdout } from "node:process";
+import { stdout } from "node:process";
 
 /**
  * Installs commands to the Discord API
  */
 export async function installCommands(commands: Command[]) {
-  const appId = env.DISCORD_APP_ID;
+  const appId = botEnv().DISCORD_APP_ID;
   const registerLoader = ora({ stream: stdout, text: "Registering commands" })
     .start();
 

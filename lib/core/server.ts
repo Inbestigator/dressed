@@ -1,5 +1,3 @@
-import { config } from "dotenv";
-config();
 import ora from "ora";
 import { verifySignature } from "../internal/utils.ts";
 import {

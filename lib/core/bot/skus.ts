@@ -6,17 +6,16 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../../internal/utils.ts";
-import process from "node:process";
+import { botEnv, callDiscord } from "../../internal/utils.ts";
 
-const appId = process.env.APP_ID;
+const appId = botEnv().DISCORD_APP_ID;
 
 /**
  * Returns all SKUs for the application.
  */
 export async function listSKUs(): Promise<RESTGetAPISKUsResult> {
   const res = await callDiscord(
-    Routes.skus(appId as string),
+    Routes.skus(appId),
     {
       method: "GET",
     },

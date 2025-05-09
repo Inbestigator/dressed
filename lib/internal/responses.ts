@@ -6,12 +6,11 @@ import {
   MessageFlags,
   Routes,
 } from "discord-api-types/v10";
-import { callDiscord } from "./utils.ts";
-import { env } from "node:process";
+import { botEnv, callDiscord } from "./utils.ts";
 import type { RawFile } from "./types/file.ts";
 import type { BaseInteractionMethods } from "./types/interaction.ts";
 
-const appId = env.DISCORD_APP_ID;
+const appId = botEnv().DISCORD_APP_ID;
 
 export const baseInteractionMethods = (
   interaction: APIInteraction,

@@ -5,7 +5,7 @@
     "jsr:@std/internal@^1.0.6": "1.0.6",
     "jsr:@svarta/walk-it@^5.0.1": "5.0.1",
     "npm:@types/node@*": "22.12.0",
-    "npm:discord-api-types@~0.38.3": "0.38.3",
+    "npm:discord-api-types@~0.38.4": "0.38.4",
     "npm:dotenv@^16.5.0": "16.5.0",
     "npm:magic-bytes.js@^1.12.1": "1.12.1",
     "npm:ora@^8.2.0": "8.2.0",
@@ -47,8 +47,8 @@
     "cli-spinners@2.9.2": {
       "integrity": "sha512-ywqV+5MmyL4E7ybXgKys4DugZbX0FC6LnwrhjuykIjnK9k8OQacQ7axGKnjDXWNhns0xot3bZI5h55H8yo9cJg=="
     },
-    "discord-api-types@0.38.3": {
-      "integrity": "sha512-vijevLh06Gtmex6BQzc9jRrGce6La0qnsF4bKwKM2L1ou0/sbJIOAkg7wz6YLLaodnUwQLljIhtrGxnkMjc1Ew=="
+    "discord-api-types@0.38.4": {
+      "integrity": "sha512-EgxEQ4vrJUjXaTjif4ItOGoD6TH87nfESJ6XBSqoVgqkZrcmdLPjkciCzuIMdHxLjY2al3BcIcElqnpOoaqxHg=="
     },
     "dotenv@16.5.0": {
       "integrity": "sha512-m/C+AwOAr9/W1UOIZUo232ejMNnJAJtYQjUbHoNTBNTJSvqzzDh7vnrei3o3r3m9blf6ZoDkvcw0VmozNRFJxg=="
@@ -139,7 +139,7 @@
     "dependencies": [
       "jsr:@std/assert@^1.0.13",
       "jsr:@svarta/walk-it@^5.0.1",
-      "npm:discord-api-types@~0.38.3",
+      "npm:discord-api-types@~0.38.4",
       "npm:dotenv@^16.5.0",
       "npm:magic-bytes.js@^1.12.1",
       "npm:ora@^8.2.0",

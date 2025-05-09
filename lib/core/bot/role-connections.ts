@@ -4,10 +4,9 @@ import {
   type RESTPutAPIApplicationRoleConnectionMetadataResult,
   Routes,
 } from "discord-api-types/v10";
-import { callDiscord } from "../../internal/utils.ts";
-import process from "node:process";
+import { botEnv, callDiscord } from "../../internal/utils.ts";
 
-const appId = process.env.APP_ID;
+const appId = botEnv().DISCORD_APP_ID;
 
 /**
  * Get a list of application role connection metadata records
@@ -16,7 +15,7 @@ export async function listAppRoleConnectionMetadata(): Promise<
   RESTGetAPIApplicationRoleConnectionMetadataResult
 > {
   const res = await callDiscord(
-    Routes.applicationRoleConnectionMetadata(appId as string),
+    Routes.applicationRoleConnectionMetadata(appId),
     {
       method: "GET",
     },
@@ -34,7 +33,7 @@ export async function modifyAppRoleConnectionMetadata(
   RESTPutAPIApplicationRoleConnectionMetadataResult
 > {
   const res = await callDiscord(
-    Routes.applicationRoleConnectionMetadata(appId as string),
+    Routes.applicationRoleConnectionMetadata(appId),
     {
       method: "PUT",
       body: data,

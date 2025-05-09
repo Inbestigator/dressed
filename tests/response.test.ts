@@ -1,8 +1,6 @@
 import { runInteraction } from "@dressed/dressed/server";
 import { assertEquals, assertExists } from "@std/assert";
 
-Deno.env.set("DISCORD_TOKEN", "bot_token");
-
 Deno.test(function replying() {
   const defaultBody = {
     type: 0,

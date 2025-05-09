@@ -30,7 +30,7 @@ export function verifySignature(
   return nacl.sign.detached.verify(
     new Uint8Array(Buffer.from(timestamp + body)),
     new Uint8Array(Buffer.from(signature, "hex")),
-    new Uint8Array(Buffer.from(env.DISCORD_PUBLIC_KEY as string, "hex")),
+    new Uint8Array(Buffer.from(botEnv().DISCORD_PUBLIC_KEY as string, "hex")),
   );
 }
 
@@ -129,14 +129,10 @@ export async function callDiscord(
     options.body = JSON.stringify(options.body);
   }
   const res = await fetch(url, {
-    headers: options.files?.length
-      ? {
-        Authorization: `Bot ${env.DISCORD_TOKEN}`,
-      }
-      : {
-        Authorization: `Bot ${env.DISCORD_TOKEN}`,
-        "Content-Type": "application/json",
-      },
+    headers: {
+      Authorization: `Bot ${botEnv().DISCORD_TOKEN}`,
+      ...(!options.files?.length ? { "Content-Type": "application/json" } : {}),
+    },
     ...options as unknown as RequestInit,
   });
   if (!res.ok) {
@@ -182,4 +178,32 @@ export async function installGlobalCommands(
     method: "PUT",
     body: commands,
   });
+}
+
+export function botEnv() {
+  const { DISCORD_APP_ID, DISCORD_PUBLIC_KEY, DISCORD_TOKEN } = env;
+
+  if (!DISCORD_APP_ID) {
+    throw new Error(
+      "Missing DISCORD_APP_ID: please set it in your environment variables.",
+    );
+  }
+
+  if (!DISCORD_PUBLIC_KEY) {
+    throw new Error(
+      "Missing DISCORD_PUBLIC_KEY: please set it in your environment variables.",
+    );
+  }
+
+  if (!DISCORD_TOKEN) {
+    throw new Error(
+      "Missing DISCORD_TOKEN: please set it in your environment variables.",
+    );
+  }
+
+  return {
+    DISCORD_APP_ID,
+    DISCORD_PUBLIC_KEY,
+    DISCORD_TOKEN,
+  };
 }
