@@ -4,7 +4,7 @@ import { build } from "@dressed/dressed/server";
 const withoutBoth =
   `export const commandData = [{"name":"ping","import": ()=>import("./tests/src/commands/ping.ts")}];
 export const componentData = [{"name":"button_[arg]","category":"buttons","regex":"^button_(?<arg>.+)$","import": ()=>import("./tests/src/components/buttons/button_[arg].ts")}];
-export const eventData = [{"name":"ApplicationAuthorized","category":"APPLICATION_AUTHORIZED","import": ()=>import("./tests/src/events/ApplicationAuthorized.ts")}];
+export const eventData = [{"name":"ApplicationAuthorized","type":"APPLICATION_AUTHORIZED","import": ()=>import("./tests/src/events/ApplicationAuthorized.ts")}];
 export const config = {"root":"tests/src"};`;
 
 const withInstance =
@@ -12,7 +12,7 @@ const withInstance =
 
 export const commandData = [{"name":"ping","import": ()=>import("./tests/src/commands/ping.ts")}];
 export const componentData = [{"name":"button_[arg]","category":"buttons","regex":"^button_(?<arg>.+)$","import": ()=>import("./tests/src/components/buttons/button_[arg].ts")}];
-export const eventData = [{"name":"ApplicationAuthorized","category":"APPLICATION_AUTHORIZED","import": ()=>import("./tests/src/events/ApplicationAuthorized.ts")}];
+export const eventData = [{"name":"ApplicationAuthorized","type":"APPLICATION_AUTHORIZED","import": ()=>import("./tests/src/events/ApplicationAuthorized.ts")}];
 export const config = {"root":"tests/src"};
 
 createServer(setupCommands(commandData), setupComponents(componentData), setupEvents(eventData), config);`;
@@ -21,7 +21,7 @@ const withRegister = `import { installCommands } from "@dressed/dressed/server";
 
 export const commandData = [{"name":"ping","import": ()=>import("./tests/src/commands/ping.ts")}];
 export const componentData = [{"name":"button_[arg]","category":"buttons","regex":"^button_(?<arg>.+)$","import": ()=>import("./tests/src/components/buttons/button_[arg].ts")}];
-export const eventData = [{"name":"ApplicationAuthorized","category":"APPLICATION_AUTHORIZED","import": ()=>import("./tests/src/events/ApplicationAuthorized.ts")}];
+export const eventData = [{"name":"ApplicationAuthorized","type":"APPLICATION_AUTHORIZED","import": ()=>import("./tests/src/events/ApplicationAuthorized.ts")}];
 export const config = {"root":"tests/src"};
 
 installCommands(commandData);`;
@@ -31,7 +31,7 @@ const withBoth =
 
 export const commandData = [{"name":"ping","import": ()=>import("./tests/src/commands/ping.ts")}];
 export const componentData = [{"name":"button_[arg]","category":"buttons","regex":"^button_(?<arg>.+)$","import": ()=>import("./tests/src/components/buttons/button_[arg].ts")}];
-export const eventData = [{"name":"ApplicationAuthorized","category":"APPLICATION_AUTHORIZED","import": ()=>import("./tests/src/events/ApplicationAuthorized.ts")}];
+export const eventData = [{"name":"ApplicationAuthorized","type":"APPLICATION_AUTHORIZED","import": ()=>import("./tests/src/events/ApplicationAuthorized.ts")}];
 export const config = {"root":"tests/src"};
 
 installCommands(commandData);

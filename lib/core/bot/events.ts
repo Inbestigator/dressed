@@ -14,7 +14,7 @@ import { ApplicationWebhookEventType } from "discord-api-types/v10";
  */
 export function setupEvents(events: Event[]): EventHandler {
   return async function runEvent(event) {
-    const handler = events.find((c) => c.category === event.type);
+    const handler = events.find((c) => c.type === event.type);
 
     if (!handler) {
       ora(`No event handler for "${event.type}"`).warn();
@@ -48,27 +48,27 @@ export function parseEvents(eventFiles: WalkEntry[]) {
     const eventData: BuildEvent[] = [];
 
     for (const file of eventFiles) {
-      const category = ApplicationWebhookEventType[
+      const type = ApplicationWebhookEventType[
         file.name as keyof typeof ApplicationWebhookEventType
       ];
 
-      if (!category) {
-        ora(`Category for "${file.name}" could not be determined, skipping`)
+      if (!type) {
+        ora(`Event type of "${file.name}" could not be determined, skipping`)
           .warn();
         continue;
       }
 
       const event: BuildEvent = {
         name: file.name,
-        category,
+        type,
         path: file.path,
       };
 
       if (
-        eventData.find((c) => c.name === event.name && c.category === category)
+        eventData.find((c) => c.name === event.name && c.type === type)
       ) {
         ora(
-          `${event.category} event "${event.name}" already exists, skipping the duplicate`,
+          `${event.type} event "${event.name}" already exists, skipping the duplicate`,
         ).warn();
         continue;
       }

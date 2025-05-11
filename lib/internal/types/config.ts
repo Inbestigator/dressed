@@ -66,7 +66,7 @@ export interface BuildComponent {
 
 export interface Event {
   name: string;
-  category: string;
+  type: string;
   import: () => Promise<{
     default: unknown;
   }>;
@@ -74,7 +74,7 @@ export interface Event {
 
 export interface BuildEvent {
   name: string;
-  category: ApplicationWebhookEventType;
+  type: ApplicationWebhookEventType;
   path: string;
 }
 
