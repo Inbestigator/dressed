@@ -4,12 +4,15 @@ import {
   type APIApplicationCommandInteraction,
   type APIMessageComponentInteraction,
   type APIModalSubmitInteraction,
+  type APIWebhookEventBody,
+  ApplicationWebhookType,
   InteractionType,
 } from "discord-api-types/v10";
 import createInteraction from "../internal/interaction.ts";
 import type {
   CommandHandler,
   ComponentHandler,
+  EventHandler,
   ServerConfig,
 } from "../internal/types/config.ts";
 import { createServer as createHttpServer, type Server } from "node:http";
@@ -22,6 +25,7 @@ import { stdout } from "node:process";
 export function createServer(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
+  runEvent: EventHandler,
   config: ServerConfig,
 ): Server {
   const server = createHttpServer((req, res) => {
@@ -47,6 +51,7 @@ export function createServer(
           }),
           runCommand,
           runComponent,
+          runEvent,
         );
 
         res.statusCode = handlerRes.status;
@@ -75,6 +80,7 @@ export async function handleRequest(
   req: Request,
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
+  runEvent: EventHandler,
 ): Promise<Response> {
   const reqLoader = ora({
     stream: stdout,
@@ -98,11 +104,13 @@ export async function handleRequest(
   reqLoader.succeed("Validated request");
 
   try {
-    const status = runInteraction(
-      runCommand,
-      runComponent,
-      JSON.parse(body),
-    );
+    const json = JSON.parse(body);
+    let status = 500;
+    if ("token" in json) {
+      status = handleInteraction(runCommand, runComponent, json);
+    } else {
+      status = handleEvent(runEvent, json);
+    }
     return new Response(status === 200 ? '{"type":1}' : null, {
       status,
     });
@@ -115,7 +123,7 @@ export async function handleRequest(
 /**
  * Runs an interaction, takes functions to run commands/components and the request body
  */
-export function runInteraction(
+export function handleInteraction(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
   json: ReturnType<typeof JSON.parse>,
@@ -148,6 +156,31 @@ export function runInteraction(
     }
     default: {
       console.log("└ Received unknown interaction type:", json.type);
+      return 404;
+    }
+  }
+}
+
+/**
+ * Runs an event, takes a function to run events and the request body
+ */
+export function handleEvent(
+  runEvent: EventHandler,
+  json: ReturnType<typeof JSON.parse>,
+): 200 | 202 | 404 {
+  switch (json.type) {
+    case ApplicationWebhookType.Ping: {
+      console.log("└ Received ping test");
+      return 200;
+    }
+    case ApplicationWebhookType.Event: {
+      const event = json.event as APIWebhookEventBody;
+      console.log("└ Received event:", event.type);
+      runEvent(event);
+      return 202;
+    }
+    default: {
+      console.log("└ Received unknown event type:", json.type);
       return 404;
     }
   }

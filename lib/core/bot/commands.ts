@@ -5,7 +5,6 @@ import type {
 } from "../../internal/types/config.ts";
 import ora from "ora";
 import { botEnv, installGlobalCommands } from "../../internal/utils.ts";
-import type { CommandInteraction } from "../../internal/types/interaction.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
 import { stdout } from "node:process";
 
@@ -16,13 +15,6 @@ export async function installCommands(commands: Command[]) {
   const appId = botEnv().DISCORD_APP_ID;
   const registerLoader = ora({ stream: stdout, text: "Registering commands" })
     .start();
-
-  if (!appId) {
-    registerLoader.fail();
-    throw new Error(
-      "No app id provided, make sure to provide a DISCORD_APP_ID environment variable",
-    );
-  }
 
   await installGlobalCommands(
     appId,
@@ -69,21 +61,21 @@ export async function installCommands(commands: Command[]) {
 export function setupCommands(
   commands: Command[],
 ): CommandHandler {
-  return async function runCommand(interaction: CommandInteraction) {
-    const command = commands.find((c) => c.name === interaction.data.name);
+  return async function runCommand(interaction) {
+    const handler = commands.find((c) => c.name === interaction.data.name);
 
-    if (!command) {
-      ora(`Command "${interaction.data.name}" not found`).warn();
+    if (!handler) {
+      ora(`No command handler for "${interaction.data.name}"`).warn();
       return;
     }
 
     const commandLoader = ora({
       stream: stdout,
-      text: `Running command "${command?.name}"`,
+      text: `Running command "${handler.name}"`,
     }).start();
 
     try {
-      await Promise.resolve((await command.import()).default(interaction));
+      await Promise.resolve((await handler.import()).default(interaction));
       commandLoader.succeed();
     } catch (error) {
       commandLoader.fail();
@@ -95,13 +87,12 @@ export function setupCommands(
 export function parseCommands(commandFiles: WalkEntry[]) {
   const generatingLoader = ora({ stream: stdout, text: "Generating commands" })
     .start();
-  const { addRow, removeN, log } = trackParts(commandFiles.length, "Command");
+  const { addRow, log } = trackParts(commandFiles.length, "Command");
 
   try {
     const commandData: BuildCommand[] = [];
 
     for (const file of commandFiles) {
-      removeN();
       const command: BuildCommand = {
         name: file.name,
         path: file.path,

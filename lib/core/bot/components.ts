@@ -4,10 +4,6 @@ import type {
   Component,
   ComponentHandler,
 } from "../../internal/types/config.ts";
-import type {
-  MessageComponentInteraction,
-  ModalSubmitInteraction,
-} from "../../internal/types/interaction.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
 import ora from "ora";
 import { stdout } from "node:process";
@@ -19,9 +15,7 @@ import { stdout } from "node:process";
 export function setupComponents(
   components: Component[],
 ): ComponentHandler {
-  return async function runComponent(
-    interaction: MessageComponentInteraction | ModalSubmitInteraction,
-  ) {
+  return async function runComponent(interaction) {
     const category = getCategory();
 
     function getCategory() {
@@ -42,7 +36,7 @@ export function setupComponents(
       }
     }
 
-    const component = components.find(
+    const handler = components.find(
       (c) => {
         if (c.category !== category) return false;
         if (c.regex.startsWith("^")) {
@@ -53,27 +47,29 @@ export function setupComponents(
       },
     );
 
-    if (!component) {
-      ora(`Component "${interaction.data.custom_id}" not found`).warn();
+    if (!handler) {
+      ora(`No component handler for "${interaction.data.custom_id}"`)
+        .warn();
       return;
     }
 
-    const match = component.regex.startsWith("^")
-      ? new RegExp(component.regex).exec(interaction.data.custom_id)
+    const match = handler.regex.startsWith("^")
+      ? new RegExp(handler.regex).exec(interaction.data.custom_id)
       : null;
     const args = match?.groups ?? {};
 
-    const componentLoader = ora(
-      `Running component "${component.name}"${
+    const componentLoader = ora({
+      stream: stdout,
+      text: `Running component "${handler.name}"${
         Object.keys(args).length > 0
           ? " with args: " + JSON.stringify(args)
           : ""
       }`,
-    ).start();
+    }).start();
 
     try {
       await Promise.resolve(
-        ((await component.import()).default as ComponentHandler)(
+        ((await handler.import()).default as ComponentHandler)(
           interaction,
           args,
         ),
@@ -101,7 +97,7 @@ export function parseComponents(componentFiles: WalkEntry[], root: string) {
     stream: stdout,
     text: "Generating components",
   }).start();
-  const { addRow, removeN, log } = trackParts(
+  const { addRow, log } = trackParts(
     componentFiles.length,
     "Component",
     "Category",
@@ -110,8 +106,6 @@ export function parseComponents(componentFiles: WalkEntry[], root: string) {
     const componentData: BuildComponent[] = [];
 
     for (const file of componentFiles) {
-      removeN();
-
       const category =
         file.path.split(/[\\\/]/)[normalize(root).split(/[\\\/]/).length + 1];
 

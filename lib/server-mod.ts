@@ -29,6 +29,7 @@ export type {
 export { build } from "./core/build.ts";
 export { installCommands, setupCommands } from "./core/bot/commands.ts";
 export { setupComponents } from "./core/bot/components.ts";
+export { setupEvents } from "./core/bot/events.ts";
 
 // Server
 export { verifySignature } from "./internal/utils.ts";

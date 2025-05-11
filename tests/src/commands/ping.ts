@@ -4,7 +4,6 @@ export const config: CommandConfig = {
   description: "Replies with Pong!",
 };
 
-export default async function ping(interaction: CommandInteraction) {
-  await interaction.deferReply({ ephemeral: true });
-  await interaction.editReply("Pong!");
+export default async function (interaction: CommandInteraction) {
+  await interaction.reply("Pong!");
 }

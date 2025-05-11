@@ -1,6 +1,6 @@
 import type { MessageComponentInteraction } from "@dressed/dressed";
 
-export default async function button(
+export default async function (
   interaction: MessageComponentInteraction,
   { arg }: { arg: string },
 ) {
