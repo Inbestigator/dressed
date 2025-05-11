@@ -32,5 +32,5 @@ export { setupComponents } from "./core/bot/components.ts";
 export { setupEvents } from "./core/bot/events.ts";
 
 // Server
-export { verifySignature } from "./internal/utils.ts";
+export { botEnv, verifySignature } from "./internal/utils.ts";
 export * from "./core/server.ts";

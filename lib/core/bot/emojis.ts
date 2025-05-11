@@ -10,8 +10,6 @@ import type {
 import { Routes } from "discord-api-types/v10";
 import { botEnv, callDiscord } from "../../internal/utils.ts";
 
-const appId = botEnv().DISCORD_APP_ID;
-
 /**
  * Returns a list of emoji objects for the given guild.
  * @param guild The guild to get the emojis from. If not provided, the bot's emojis are returned.
@@ -20,7 +18,9 @@ export async function listEmojis(
   guild?: Snowflake,
 ): Promise<RESTGetAPIGuildEmojisResult> {
   const res = await callDiscord(
-    guild ? Routes.guildEmojis(guild) : Routes.applicationEmojis(appId),
+    guild
+      ? Routes.guildEmojis(guild)
+      : Routes.applicationEmojis(botEnv.DISCORD_APP_ID),
     {
       method: "GET",
     },
@@ -45,7 +45,7 @@ export async function getEmoji(
   const res = await callDiscord(
     guild
       ? Routes.guildEmoji(guild, emoji)
-      : Routes.applicationEmoji(appId, emoji),
+      : Routes.applicationEmoji(botEnv.DISCORD_APP_ID, emoji),
     {
       method: "GET",
     },
@@ -64,7 +64,9 @@ export async function createEmoji(
   guild?: Snowflake,
 ): Promise<RESTPostAPIGuildEmojiResult> {
   const res = await callDiscord(
-    guild ? Routes.guildEmojis(guild) : Routes.applicationEmojis(appId),
+    guild
+      ? Routes.guildEmojis(guild)
+      : Routes.applicationEmojis(botEnv.DISCORD_APP_ID),
     {
       method: "POST",
       body: data,
@@ -88,7 +90,7 @@ export async function modifyEmoji(
   const res = await callDiscord(
     guild
       ? Routes.guildEmoji(guild, emoji)
-      : Routes.applicationEmoji(appId, emoji),
+      : Routes.applicationEmoji(botEnv.DISCORD_APP_ID, emoji),
     {
       method: "PATCH",
       body: data,
@@ -110,7 +112,7 @@ export async function deleteEmoji(
   await callDiscord(
     guild
       ? Routes.guildEmoji(guild, emoji)
-      : Routes.applicationEmoji(appId, emoji),
+      : Routes.applicationEmoji(botEnv.DISCORD_APP_ID, emoji),
     {
       method: "DELETE",
     },

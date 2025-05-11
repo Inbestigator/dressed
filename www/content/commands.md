@@ -20,7 +20,7 @@ command will be handled.
 ```ts
 import type { CommandInteraction } from "@dressed/dressed";
 
-export default async function greet(interaction: CommandInteraction) {
+export default async function (interaction: CommandInteraction) {
   await interaction.reply("Hi there!");
 }
 ```
