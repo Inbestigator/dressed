@@ -10,8 +10,6 @@ import { botEnv, callDiscord } from "./utils.ts";
 import type { RawFile } from "./types/file.ts";
 import type { BaseInteractionMethods } from "./types/interaction.ts";
 
-const appId = botEnv().DISCORD_APP_ID;
-
 export const baseInteractionMethods = (
   interaction: APIInteraction,
 ): BaseInteractionMethods => ({
@@ -115,7 +113,7 @@ export const baseInteractionMethods = (
     delete data.files;
 
     await callDiscord(
-      Routes.webhookMessage(appId!, interaction.token),
+      Routes.webhookMessage(botEnv.DISCORD_APP_ID!, interaction.token),
       {
         method: "PATCH",
         body: data,
@@ -143,11 +141,14 @@ export const baseInteractionMethods = (
     const files = data.files;
     delete data.files;
 
-    await callDiscord(Routes.webhook(appId!, interaction.token), {
-      method: "POST",
-      body: data,
-      files,
-    });
+    await callDiscord(
+      Routes.webhook(botEnv.DISCORD_APP_ID!, interaction.token),
+      {
+        method: "POST",
+        body: data,
+        files,
+      },
+    );
   },
   showModal: async function (
     data: APIModalInteractionResponseCallbackData,

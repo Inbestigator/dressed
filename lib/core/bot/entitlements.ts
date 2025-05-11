@@ -9,8 +9,6 @@ import type {
 import { Routes } from "discord-api-types/v10";
 import { botEnv, callDiscord } from "../../internal/utils.ts";
 
-const appId = botEnv().DISCORD_APP_ID;
-
 /**
  * Returns all entitlements for the app, active and expired.
  * @param options Optional parameters for the request
@@ -19,7 +17,7 @@ export async function listEntitlements(
   options?: RESTGetAPIEntitlementsQuery,
 ): Promise<RESTGetAPIEntitlementsResult> {
   const res = await callDiscord(
-    Routes.entitlements(appId),
+    Routes.entitlements(botEnv.DISCORD_APP_ID),
     {
       method: "GET",
       params: options as Record<string, unknown>,
@@ -37,7 +35,7 @@ export async function getEntitlement(
   entitlement: Snowflake,
 ): Promise<RESTGetAPIEntitlementResult> {
   const res = await callDiscord(
-    Routes.entitlement(appId, entitlement),
+    Routes.entitlement(botEnv.DISCORD_APP_ID, entitlement),
     {
       method: "GET",
     },
@@ -54,7 +52,7 @@ export async function consumeEntitlement(
   entitlement: Snowflake,
 ): Promise<void> {
   await callDiscord(
-    Routes.consumeEntitlement(appId, entitlement),
+    Routes.consumeEntitlement(botEnv.DISCORD_APP_ID, entitlement),
     {
       method: "POST",
     },
@@ -69,7 +67,7 @@ export async function createTestEntitlement(
   data: RESTPostAPIEntitlementJSONBody,
 ): Promise<RESTPostAPIEntitlementResult> {
   const res = await callDiscord(
-    Routes.entitlements(appId),
+    Routes.entitlements(botEnv.DISCORD_APP_ID),
     {
       method: "POST",
       body: data,
@@ -87,7 +85,7 @@ export async function deleteTestEntitlement(
   entitlement: Snowflake,
 ): Promise<void> {
   await callDiscord(
-    Routes.entitlement(appId, entitlement),
+    Routes.entitlement(botEnv.DISCORD_APP_ID, entitlement),
     {
       method: "DELETE",
     },

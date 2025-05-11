@@ -14,8 +14,6 @@ import type {
 import { Routes } from "discord-api-types/v10";
 import { botEnv, callDiscord } from "../../internal/utils.ts";
 
-const appId = botEnv().DISCORD_APP_ID;
-
 /**
  * Returns a user object for a given user ID.
  * @param user The user to fetch (defaults to self)
@@ -106,9 +104,12 @@ export async function listConnections(): Promise<
 export async function getRoleConnection(): Promise<
   RESTGetAPICurrentUserApplicationRoleConnectionResult
 > {
-  const res = await callDiscord(Routes.userApplicationRoleConnection(appId!), {
-    method: "GET",
-  });
+  const res = await callDiscord(
+    Routes.userApplicationRoleConnection(botEnv.DISCORD_APP_ID!),
+    {
+      method: "GET",
+    },
+  );
 
   return res.json();
 }
@@ -122,10 +123,13 @@ export async function modifyRoleConnection(
 ): Promise<
   RESTPutAPICurrentUserApplicationRoleConnectionResult
 > {
-  const res = await callDiscord(Routes.userApplicationRoleConnection(appId!), {
-    method: "PUT",
-    body: data,
-  });
+  const res = await callDiscord(
+    Routes.userApplicationRoleConnection(botEnv.DISCORD_APP_ID!),
+    {
+      method: "PUT",
+      body: data,
+    },
+  );
 
   return res.json();
 }

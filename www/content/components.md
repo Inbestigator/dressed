@@ -27,7 +27,7 @@ component will be handled.
 ```ts
 import type { ComponentInteraction } from "@dressed/dressed";
 
-export default async function triviaGuess(
+export default async function (
   interaction: ComponentInteraction,
   args: { answer: string }
 ) {

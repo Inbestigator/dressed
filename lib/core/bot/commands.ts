@@ -12,12 +12,11 @@ import { stdout } from "node:process";
  * Installs commands to the Discord API
  */
 export async function installCommands(commands: Command[]) {
-  const appId = botEnv().DISCORD_APP_ID;
   const registerLoader = ora({ stream: stdout, text: "Registering commands" })
     .start();
 
   await installGlobalCommands(
-    appId,
+    botEnv.DISCORD_APP_ID,
     await Promise.all(commands.map(async (c) => {
       const { config } = await c.import();
       let contexts = [];

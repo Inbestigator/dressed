@@ -8,14 +8,12 @@ import type {
 import { Routes } from "discord-api-types/v10";
 import { botEnv, callDiscord } from "../../internal/utils.ts";
 
-const appId = botEnv().DISCORD_APP_ID;
-
 /**
  * Returns all SKUs for the application.
  */
 export async function listSKUs(): Promise<RESTGetAPISKUsResult> {
   const res = await callDiscord(
-    Routes.skus(appId),
+    Routes.skus(botEnv.DISCORD_APP_ID),
     {
       method: "GET",
     },
