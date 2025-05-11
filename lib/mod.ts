@@ -1,5 +1,6 @@
 // Types
 export type { CommandConfig } from "./internal/types/config.ts";
+export type { Event } from "./internal/types/event.ts";
 export type {
   CommandInteraction,
   MessageComponentInteraction,

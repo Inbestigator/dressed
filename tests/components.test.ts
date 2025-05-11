@@ -2,20 +2,19 @@ import {
   ActionRow,
   Button,
   CommandOption,
-  SelectMenu,
-  TextInput,
-} from "@dressed/dressed";
-import { assertEquals } from "@std/assert/equals";
-import { Container } from "../lib/core/components/container.ts";
-import { Section } from "../lib/core/components/section.ts";
-import { TextDisplay } from "../lib/core/components/text-display.ts";
-import { Thumbnail } from "../lib/core/components/thumbnail.ts";
-import {
+  Container,
+  File,
   MediaGallery,
   MediaGalleryItem,
-} from "../lib/core/components/media-gallery.ts";
-import { File } from "../lib/core/components/file.ts";
-import { Separator } from "../lib/core/components/separator.ts";
+  Section,
+  SelectMenu,
+  SelectMenuOption,
+  Separator,
+  TextDisplay,
+  TextInput,
+  Thumbnail,
+} from "@dressed/dressed";
+import { assertEquals } from "@std/assert/equals";
 
 Deno.test("Button component", () => {
   assertEquals(
@@ -62,7 +61,7 @@ Deno.test("String select menu component", () => {
     SelectMenu({
       custom_id: "select_id",
       type: "String",
-      options: [{ label: "test", value: "test" }],
+      options: [SelectMenuOption("test", "test")],
     }),
     {
       type: 3,

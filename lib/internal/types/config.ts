@@ -4,6 +4,8 @@ import type {
   ModalSubmitInteraction,
 } from "./interaction.ts";
 import type {
+  APIWebhookEventBody,
+  ApplicationWebhookEventType,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
 
@@ -48,17 +50,31 @@ export interface BuildCommand {
 
 export interface Component {
   name: string;
+  regex: string;
+  category: string;
   import: () => Promise<{
     default: unknown;
   }>;
-  regex: string;
-  category: string;
 }
 
 export interface BuildComponent {
   name: string;
-  category: "buttons" | "modals" | "selects";
   regex: string;
+  category: "buttons" | "modals" | "selects";
+  path: string;
+}
+
+export interface Event {
+  name: string;
+  type: string;
+  import: () => Promise<{
+    default: unknown;
+  }>;
+}
+
+export interface BuildEvent {
+  name: string;
+  type: ApplicationWebhookEventType;
   path: string;
 }
 
@@ -68,4 +84,7 @@ export type CommandHandler = (
 export type ComponentHandler = (
   interaction: MessageComponentInteraction | ModalSubmitInteraction,
   args?: Record<string, string>,
+) => Promise<void>;
+export type EventHandler = (
+  event: APIWebhookEventBody,
 ) => Promise<void>;

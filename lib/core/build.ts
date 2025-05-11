@@ -6,6 +6,7 @@ import { cwd, stdout } from "node:process";
 import { normalize } from "node:path";
 import { parseCommands } from "./bot/commands.ts";
 import { parseComponents } from "./bot/components.ts";
+import { parseEvents } from "./bot/events.ts";
 import type { BuildCommand, BuildComponent } from "../internal/types/config.ts";
 
 export type WalkEntry = {
@@ -24,9 +25,10 @@ export async function build(
   registerCommands?: boolean,
   config: ServerConfig = {},
 ): Promise<string> {
-  const [commandFiles, componentFiles] = await Promise.all([
+  const [commandFiles, componentFiles, eventFiles] = await Promise.all([
     fetchFiles(`${config.root ?? "src"}/commands`),
     fetchFiles(`${config.root ?? "src"}/components`),
+    fetchFiles(`${config.root ?? "src"}/events`),
   ]);
 
   const commandData = commandFiles.length > 0
@@ -35,6 +37,7 @@ export async function build(
   const componentData = componentFiles.length > 0
     ? parseComponents(componentFiles, config.root ?? "src")
     : [];
+  const eventData = eventFiles.length > 0 ? parseEvents(eventFiles) : [];
   const buildLoader = ora({
     stream: stdout,
     text: "Assembling generated build",
@@ -45,6 +48,7 @@ ${generateImports(addInstance, registerCommands)}
 
 ${defineExport("commandData", commandData)}
 ${defineExport("componentData", componentData)}
+${defineExport("eventData", eventData)}
 ${defineExport("config", config, false)}
 ${registerCommands ? `\ninstallCommands(commandData);\n` : ""}
 ${addInstance ? generateInstanceCreation() : ""}
@@ -106,7 +110,7 @@ const generateImports = (
       addInstance
         ? `createServer${
           registerCommands ? ", installCommands" : ""
-        }, setupCommands, setupComponents`
+        }, setupCommands, setupComponents, setupEvents`
         : registerCommands
         ? "installCommands"
         : ""
@@ -114,7 +118,7 @@ const generateImports = (
     : "";
 
 function generateInstanceCreation(): string {
-  return `createServer(setupCommands(commandData), setupComponents(componentData), config);
+  return `createServer(setupCommands(commandData), setupComponents(componentData), setupEvents(eventData), config);
 `.trim();
 }
 
@@ -127,10 +131,8 @@ export function trackParts(
   const col2 = [title2];
   let leftN = total;
   return {
-    removeN: () => {
-      --leftN;
-    },
     addRow: (name: string, secondaryName?: string) => {
+      --leftN;
       col1.push(
         `${
           total === 1

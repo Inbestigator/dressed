@@ -29,7 +29,7 @@ export const config: CommandConfig = {
   description: "Returns pong",
 };
 
-export default async function ping(interaction: CommandInteraction) {
+export default async function (interaction: CommandInteraction) {
   await interaction.reply({
     content: "Pong!",
     ephemeral: true,
