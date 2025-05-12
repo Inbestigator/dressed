@@ -1,13 +1,18 @@
 import { walkFiles } from "@svarta/walk-it";
 import ora from "ora";
-import type { ServerConfig } from "../server-mod.ts";
-import { existsSync } from "node:fs";
+import { appendFileSync, existsSync } from "node:fs";
 import { cwd, stdout } from "node:process";
 import { normalize } from "node:path";
 import { parseCommands } from "./bot/commands.ts";
 import { parseComponents } from "./bot/components.ts";
 import { parseEvents } from "./bot/events.ts";
-import type { BuildCommand, BuildComponent } from "../internal/types/config.ts";
+import type {
+  BuildCommand,
+  BuildComponent,
+  ServerConfig,
+} from "../internal/types/config.ts";
+import { botEnv } from "../internal/utils.ts";
+import { getApp } from "./bot/application.ts";
 
 export type WalkEntry = {
   name: string;
@@ -25,6 +30,7 @@ export async function build(
   registerCommands?: boolean,
   config: ServerConfig = {},
 ): Promise<string> {
+  await fetchMissingVars();
   const [commandFiles, componentFiles, eventFiles] = await Promise.all([
     fetchFiles(`${config.root ?? "src"}/commands`),
     fetchFiles(`${config.root ?? "src"}/components`),
@@ -120,6 +126,49 @@ const generateImports = (
 function generateInstanceCreation(): string {
   return `createServer(setupCommands(commandData), setupComponents(componentData), setupEvents(eventData), config);
 `.trim();
+}
+
+async function fetchMissingVars() {
+  try {
+    botEnv.DISCORD_TOKEN;
+    const missingVars: string[] = [];
+
+    try {
+      botEnv.DISCORD_APP_ID;
+    } catch {
+      missingVars.push("DISCORD_APP_ID");
+    }
+    try {
+      botEnv.DISCORD_PUBLIC_KEY;
+    } catch {
+      missingVars.push("DISCORD_PUBLIC_KEY");
+    }
+
+    if (missingVars.length) {
+      const varLoader = ora({
+        stream: stdout,
+        text: `Fetching missing variables (${missingVars.join(", ")})`,
+      }).start();
+
+      const app = await getApp();
+
+      const envLines: string[] = ["# Missing required bot variable(s)"];
+      if (missingVars.includes("DISCORD_APP_ID")) {
+        envLines.push(`DISCORD_APP_ID="${app.id}"`);
+      }
+      if (missingVars.includes("DISCORD_PUBLIC_KEY")) {
+        envLines.push(`DISCORD_PUBLIC_KEY="${app.verify_key}"`);
+      }
+
+      appendFileSync(".env", `\n${envLines.join("\n")}`);
+
+      varLoader.succeed(
+        `Fetched missing variables (${missingVars.join(", ")})`,
+      );
+    }
+  } catch {
+    //
+  }
 }
 
 export function trackParts(
