@@ -18,12 +18,12 @@ You can find an example of some bots ready to deploy on
 ## Installation
 
 ```bash
-deno add jsr:@dressed/dressed
+bun add dressed
 ```
 
 ```ts
 // src/commands/ping.ts
-import type { CommandConfig, CommandInteraction } from "@dressed/dressed";
+import type { CommandConfig, CommandInteraction } from "dressed";
 
 export const config: CommandConfig = {
   description: "Returns pong",
@@ -40,8 +40,8 @@ export default async function (interaction: CommandInteraction) {
 You can then build and run the bot with this command
 
 ```bash
-deno -A jsr:@dressed/cmd build -ir
-deno -A bot.gen.ts
+bun dressed build -ir
+bun bot.gen.th
 ```
 
 By default the builder outputs only boilerplate data, if you want it to
@@ -54,4 +54,4 @@ In addition to Dressed, I'd recommend installing
 lib that Dressed uses internally).
 
 Dressed comes with a [Node HTTP](https://nodejs.org/api/http.html) server OOB, if you'd like to make your own,
-all the functions needed to do so are available in `@dressed/dressed/server`.
+all the functions needed to do so are available in `dressed/server`.

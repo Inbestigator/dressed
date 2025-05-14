@@ -1,4 +1,5 @@
 name: Publish
+
 on:
   release:
     types: [published]
@@ -6,22 +7,25 @@ on:
 jobs:
   test:
     uses: ./.github/workflows/test.yml
-
   publish:
+    name: Build and Publish
     needs: test
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
 
-      - name: Publish package
-        run: deno publish
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build Package
+        run: bun dist
+
+      - name: Publish to NPM
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
