@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { build, ServerConfig } from "dressed/server";
+import { build, ServerConfig } from "../src/server";
 
 const withoutBoth = `export const commandData = [{"name":"ping","import": ()=>import("./tests/src/commands/ping.ts")}];
 export const componentData = [{"name":"button_[arg]","category":"buttons","regex":"^button_(?<arg>.+)$","import": ()=>import("./tests/src/components/buttons/button_[arg].ts")}];
