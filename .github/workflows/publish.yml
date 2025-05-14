@@ -26,6 +26,7 @@ jobs:
         run: bun dist
 
       - name: Publish to NPM
-        run: npm publish
+        working-directory: packages/dressed
+        run: bun publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
