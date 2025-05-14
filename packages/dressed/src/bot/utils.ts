@@ -9,6 +9,7 @@ import {
   Routes,
 } from "discord-api-types/v10";
 import { botEnv } from "../env.ts";
+import { Buffer } from "node:buffer";
 
 export async function callDiscord(
   endpoint: string,

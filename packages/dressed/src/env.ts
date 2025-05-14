@@ -7,7 +7,7 @@ interface BotEnvs {
   DISCORD_TOKEN: string;
 }
 
-export const botEnv = new Proxy({} as BotEnvs, {
+export const botEnv: BotEnvs = new Proxy({} as BotEnvs, {
   get(_, key: string) {
     const value = env[key];
     if (!value) {
