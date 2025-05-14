@@ -19,6 +19,9 @@ jobs:
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
 
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
@@ -27,6 +30,15 @@ jobs:
 
       - name: Publish to NPM
         working-directory: packages/dressed
-        run: bun publish
+        run: |
+          if ${{ github.event.release.prerelease }}; then
+            bun publish --tag rc
+          else
+            bun publish
+          fi
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to JSR
+        working-directory: packages/dressed
+        run: deno publish

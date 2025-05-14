@@ -25,7 +25,9 @@
   "type": "module",
   "bin": "./dist/bin/dressed.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "homepage": "https://dressed.vercel.app",
   "keywords": [
     "bot",
