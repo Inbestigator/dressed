@@ -19,7 +19,6 @@
       "version": "1.5.0-rc.1.1",
       "bin": "./dist/bin/dressed.js",
       "dependencies": {
-        "@svarta/walk-it": "npm:@jsr/svarta__walk-it",
         "commander": "^13.1.0",
         "discord-api-types": "^0.38.4",
         "dotenv": "^16.5.0",
@@ -28,6 +27,7 @@
         "ora": "^8.2.0",
         "path-scurry": "^2.0.0",
         "tweetnacl": "^1.0.3",
+        "walk-it": "^5.0.1",
       },
     },
     "www": {
@@ -308,8 +308,6 @@
     "@shikijs/types": ["@shikijs/types@3.4.0", "", { "dependencies": { "@shikijs/vscode-textmate": "^10.0.2", "@types/hast": "^3.0.4" } }, "sha512-EUT/0lGiE//7j5N/yTMNMT3eCWNcHJLrRKxT0NDXWIfdfSmFJKfPX7nMmRBrQnWboAzIsUziCThrYMMhjbMS1A=="],
 
     "@shikijs/vscode-textmate": ["@shikijs/vscode-textmate@10.0.2", "", {}, "sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg=="],
-
-    "@svarta/walk-it": ["@jsr/svarta__walk-it@5.0.1", "https://npm.jsr.io/~/11/@jsr/svarta__walk-it/5.0.1.tgz", {}, "sha512-nGtYSxT6MF5N0PZq0BnBk0rgFHTw04XIu3HqJrBAaDo68I1Vk1JECExmj0i6gcO0VSkveq+s3UTk4YLdqHATRg=="],
 
     "@swc/counter": ["@swc/counter@0.1.3", "", {}, "sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ=="],
 
@@ -1418,6 +1416,8 @@
     "vfile-location": ["vfile-location@5.0.3", "", { "dependencies": { "@types/unist": "^3.0.0", "vfile": "^6.0.0" } }, "sha512-5yXvWDEgqeiYiBe1lbxYF7UMAIm/IcopxMHrMQDq3nvKcjPKIhZklUKL+AE7J7uApI4kwe2snsK+eI6UTj9EHg=="],
 
     "vfile-message": ["vfile-message@4.0.2", "", { "dependencies": { "@types/unist": "^3.0.0", "unist-util-stringify-position": "^4.0.0" } }, "sha512-jRDZ1IMLttGj41KcZvlrYAaI3CfqpLpfpf+Mfig13viT6NKvRzWZ+lXz0Y5D60w6uJIBAOGq9mSHf0gktF0duw=="],
+
+    "walk-it": ["walk-it@5.0.1", "", {}, "sha512-kci6AJedTdYC5AlJ2PMRSxwZzfe/0jzmmH1J/xcVWSglR8+fSOcYAzMiMiXc+BqX+PcxSg+UI0J3pcSIAQUptQ=="],
 
     "web-namespaces": ["web-namespaces@2.0.1", "", {}, "sha512-bKr1DkiNa2krS7qxNtdrtHAmzuYGFQLiQ13TsorsdT6ULTkPLKuu5+GsFpDlg6JFjUTwX2DyhMPG2be8uPrqsQ=="],
 

@@ -1,4 +1,4 @@
-import { walkFiles } from "@svarta/walk-it";
+import { walkFiles } from "walk-it";
 import ora from "ora";
 import { appendFileSync, existsSync } from "node:fs";
 import { cwd, stdout } from "node:process";

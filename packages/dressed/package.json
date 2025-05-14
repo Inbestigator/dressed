@@ -8,7 +8,6 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@svarta/walk-it": "npm:@jsr/svarta__walk-it",
     "commander": "^13.1.0",
     "discord-api-types": "^0.38.4",
     "dotenv": "^16.5.0",
@@ -16,7 +15,8 @@
     "magic-bytes.js": "^1.12.1",
     "ora": "^8.2.0",
     "path-scurry": "^2.0.0",
-    "tweetnacl": "^1.0.3"
+    "tweetnacl": "^1.0.3",
+    "walk-it": "^5.0.1"
   },
   "exports": {
     ".": "./dist/index.js",
