@@ -1,16 +1,14 @@
-import { basename, dirname } from "node:path";
+import { basename, dirname, join } from "node:path";
 import type { ComponentData, ComponentHandler } from "../types/config.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
 import ora from "ora";
-import { stdout } from "node:process";
+import { cwd, stdout } from "node:process";
 
 /**
  * Creates the component handler
  * @returns A function that runs a component
  */
-export function setupComponents(
-  components: ComponentData<"ext">[],
-): ComponentHandler {
+export function setupComponents(components: ComponentData[]): ComponentHandler {
   return async function runComponent(interaction) {
     const category = getCategory();
 
@@ -60,10 +58,7 @@ export function setupComponents(
 
     try {
       await Promise.resolve(
-        ((await handler.import()).default as ComponentHandler)(
-          interaction,
-          args,
-        ),
+        (await import(join(cwd(), handler.path))).default(interaction, args),
       );
       componentLoader.succeed();
     } catch (error) {
@@ -83,9 +78,7 @@ export function parseArgs(str: string) {
 
 const validComponentCategories = ["buttons", "modals", "selects"];
 
-export function parseComponents(
-  componentFiles: WalkEntry[],
-): ComponentData<"int">[] {
+export function parseComponents(componentFiles: WalkEntry[]): ComponentData[] {
   if (componentFiles.length === 0) return [];
   const generatingLoader = ora({
     stream: stdout,
@@ -97,7 +90,7 @@ export function parseComponents(
     "Category",
   );
   try {
-    const componentData: ComponentData<"int">[] = [];
+    const componentData: ComponentData[] = [];
 
     for (const file of componentFiles) {
       const category = basename(dirname(file.path));
@@ -129,7 +122,7 @@ export function parseComponents(
         continue;
       }
 
-      componentData.push(component as ComponentData<"int">);
+      componentData.push(component as ComponentData);
       addRow(component.name, category.slice(0, -1));
     }
 

@@ -5,5 +5,6 @@ export const config: CommandConfig = {
 };
 
 export default async function (interaction: CommandInteraction) {
+  console.log("a");
   await interaction.reply("Pong!");
 }

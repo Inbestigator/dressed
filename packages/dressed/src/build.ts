@@ -6,7 +6,12 @@ import { basename, extname, relative, resolve } from "node:path";
 import { parseCommands } from "./bot/commands.ts";
 import { parseComponents } from "./bot/components.ts";
 import { parseEvents } from "./bot/events.ts";
-import type { ServerConfig } from "./types/config.ts";
+import type {
+  CommandData,
+  ComponentData,
+  EventData,
+  ServerConfig,
+} from "./types/config.ts";
 import { botEnv } from "./env.ts";
 import { getApp } from "./bot/resources/application.ts";
 
@@ -21,11 +26,12 @@ export type WalkEntry = {
  * @param addInstance - Whether to add the instance creation code.
  * @param registerCommands - Whether to register slash commands.
  */
-export async function build(
-  addInstance?: boolean,
-  registerCommands?: boolean,
-  config: ServerConfig = {},
-): Promise<string> {
+export async function build(config: ServerConfig = {}): Promise<{
+  commands: CommandData[];
+  components: ComponentData[];
+  events: EventData[];
+  config: ServerConfig;
+}> {
   await fetchMissingVars();
   const [commandFiles, componentFiles, eventFiles] = await Promise.all([
     fetchFiles(config.root ?? "src", "commands"),
@@ -36,24 +42,8 @@ export async function build(
   const commands = parseCommands(commandFiles);
   const components = parseComponents(componentFiles);
   const events = parseEvents(eventFiles);
-  const buildLoader = ora({
-    stream: stdout,
-    text: "Assembling generated build",
-  }).start();
 
-  const outputContent = `
-${generateImports(addInstance, registerCommands)}
-
-${defineExport("commands", commands)}
-${defineExport("components", components)}
-${defineExport("events", events)}
-${defineExport("config", config, false)}
-${registerCommands ? `\ninstallCommands(commands);\n` : ""}
-${addInstance ? generateInstanceCreation() : ""}
-`.trim();
-
-  buildLoader.succeed("Assembled generated build");
-  return outputContent;
+  return { commands, components, events, config };
 }
 
 /**
@@ -82,39 +72,6 @@ async function fetchFiles(root: string, dirName: string): Promise<WalkEntry[]> {
   }
 
   return filesArray;
-}
-
-function defineExport(
-  variableName: string,
-  content: unknown,
-  pathToImport = true,
-): string {
-  return `export const ${variableName} = ${
-    pathToImport
-      ? JSON.stringify(content).replace(
-          /"path":"(.+?)"/g,
-          '"import": ()=>import("./$1")',
-        )
-      : JSON.stringify(content)
-  };`;
-}
-
-const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>
-  addInstance || registerCommands
-    ? `import { ${
-        addInstance
-          ? `createServer${
-              registerCommands ? ", installCommands" : ""
-            }, setupCommands, setupComponents, setupEvents`
-          : registerCommands
-            ? "installCommands"
-            : ""
-      } } from "dressed/server";`
-    : "";
-
-function generateInstanceCreation(): string {
-  return `createServer(setupCommands(commands), setupComponents(components), setupEvents(events), config);
-`.trim();
 }
 
 async function fetchMissingVars() {
