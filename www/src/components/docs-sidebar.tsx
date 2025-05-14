@@ -54,7 +54,9 @@ const data = {
   ],
 };
 
-export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function DocsSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>

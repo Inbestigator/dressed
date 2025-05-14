@@ -3,7 +3,7 @@
 Each command can optionally export a `config` object.
 
 ```ts
-import { type CommandConfig, CommandOption } from "@dressed/dressed";
+import { type CommandConfig, CommandOption } from "dressed";
 
 export const config: CommandConfig = {
   description: "Send a random adorable animal photo",

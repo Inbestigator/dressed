@@ -25,11 +25,11 @@ All components are required to have a default export, this function is how your
 component will be handled.
 
 ```ts
-import type { ComponentInteraction } from "@dressed/dressed";
+import type { ComponentInteraction } from "dressed";
 
 export default async function (
   interaction: ComponentInteraction,
-  args: { answer: string }
+  args: { answer: string },
 ) {
   if (args.answer === correctAnswer) {
     await interaction.reply("Good job!");

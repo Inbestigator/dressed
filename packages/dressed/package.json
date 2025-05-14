@@ -1,0 +1,42 @@
+{
+  "name": "dressed",
+  "version": "1.5.0-rc.1.1",
+  "description": "A sleek, serverless-ready Discord bot framework.",
+  "scripts": {
+    "dist": "rm -fr dist && bun tsc",
+    "check-types": "bun tsc --noEmit",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@svarta/walk-it": "npm:@jsr/svarta__walk-it",
+    "commander": "^13.1.0",
+    "discord-api-types": "^0.38.4",
+    "dotenv": "^16.5.0",
+    "inquirer": "^12.6.1",
+    "magic-bytes.js": "^1.12.1",
+    "ora": "^8.2.0",
+    "path-scurry": "^2.0.0",
+    "tweetnacl": "^1.0.3"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./server": "./dist/server/index.js"
+  },
+  "type": "module",
+  "bin": "./dist/bin/dressed.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "homepage": "https://dressed.vercel.app",
+  "keywords": [
+    "bot",
+    "serverless",
+    "discord",
+    "discord-bot"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/inbestigator/dressed.git",
+    "directory": "packages/dressed"
+  }
+}
