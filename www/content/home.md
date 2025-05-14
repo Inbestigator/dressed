@@ -41,7 +41,7 @@ You can then build and run the bot with this command
 
 ```bash
 bun dressed build -ir
-bun bot.gen.th
+bun bot.gen.ts
 ```
 
 By default the builder outputs only boilerplate data, if you want it to
