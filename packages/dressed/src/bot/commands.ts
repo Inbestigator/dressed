@@ -1,4 +1,4 @@
-import type { BuildCommand, Command, CommandHandler } from "../types/config.ts";
+import type { CommandData, CommandHandler } from "../types/config.ts";
 import ora from "ora";
 import { trackParts, type WalkEntry } from "../build.ts";
 import { stdout } from "node:process";
@@ -8,7 +8,7 @@ import { botEnv } from "../env.ts";
 /**
  * Installs commands to the Discord API
  */
-export async function installCommands(commands: Command[]) {
+export async function installCommands(commands: CommandData<"ext">[]) {
   const registerLoader = ora({
     stream: stdout,
     text: "Registering commands",
@@ -57,7 +57,7 @@ export async function installCommands(commands: Command[]) {
  * Creates the command handler
  * @returns A function that runs a command
  */
-export function setupCommands(commands: Command[]): CommandHandler {
+export function setupCommands(commands: CommandData<"ext">[]): CommandHandler {
   return async function runCommand(interaction) {
     const handler = commands.find((c) => c.name === interaction.data.name);
 
@@ -81,7 +81,8 @@ export function setupCommands(commands: Command[]): CommandHandler {
   };
 }
 
-export function parseCommands(commandFiles: WalkEntry[]) {
+export function parseCommands(commandFiles: WalkEntry[]): CommandData<"int">[] {
+  if (commandFiles.length === 0) return [];
   const generatingLoader = ora({
     stream: stdout,
     text: "Generating commands",
@@ -89,10 +90,10 @@ export function parseCommands(commandFiles: WalkEntry[]) {
   const { addRow, log } = trackParts(commandFiles.length, "Command");
 
   try {
-    const commandData: BuildCommand[] = [];
+    const commandData: CommandData<"int">[] = [];
 
     for (const file of commandFiles) {
-      const command: BuildCommand = {
+      const command = {
         name: file.name,
         path: file.path,
       };

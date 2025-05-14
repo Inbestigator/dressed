@@ -1,4 +1,4 @@
-import type { BuildEvent, Event, EventHandler } from "../types/config.ts";
+import type { EventData, EventHandler } from "../types/config.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
 import ora from "ora";
 import { stdout } from "node:process";
@@ -8,7 +8,7 @@ import { ApplicationWebhookEventType } from "discord-api-types/v10";
  * Creates the event handler
  * @returns A function that runs an event
  */
-export function setupEvents(events: Event[]): EventHandler {
+export function setupEvents(events: EventData<"ext">[]): EventHandler {
   return async function runEvent(event) {
     const handler = events.find((c) => c.type === event.type);
 
@@ -38,14 +38,15 @@ export function setupEvents(events: Event[]): EventHandler {
   };
 }
 
-export function parseEvents(eventFiles: WalkEntry[]) {
+export function parseEvents(eventFiles: WalkEntry[]): EventData<"int">[] {
+  if (eventFiles.length === 0) return [];
   const generatingLoader = ora({
     stream: stdout,
     text: "Generating events",
   }).start();
   const { addRow, log } = trackParts(eventFiles.length, "Event");
   try {
-    const eventData: BuildEvent[] = [];
+    const eventData: EventData<"int">[] = [];
 
     for (const file of eventFiles) {
       const type =
@@ -60,7 +61,7 @@ export function parseEvents(eventFiles: WalkEntry[]) {
         continue;
       }
 
-      const event: BuildEvent = {
+      const event = {
         name: file.name,
         type,
         path: file.path,

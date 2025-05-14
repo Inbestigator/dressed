@@ -3,14 +3,15 @@
     "allowImportingTsExtensions": true,
     "declaration": true,
     "erasableSyntaxOnly": true,
-    "module": "nodenext",
+    "module": "NodeNext",
     "outDir": "dist",
     "rewriteRelativeImportExtensions": true,
     "rootDir": "src",
     "sourceMap": true,
-    // Why not ESNext? Because with ES2022 we know which version of runtime(s) we are supporting
-    "target": "ES2015",
-    "verbatimModuleSyntax": true
+    "target": "ES2018",
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
+    "stripInternal": true
   },
   "include": ["src/**/*.ts"]
 }

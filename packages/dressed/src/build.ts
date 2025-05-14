@@ -6,11 +6,7 @@ import { basename, extname, relative, resolve } from "node:path";
 import { parseCommands } from "./bot/commands.ts";
 import { parseComponents } from "./bot/components.ts";
 import { parseEvents } from "./bot/events.ts";
-import type {
-  BuildCommand,
-  BuildComponent,
-  ServerConfig,
-} from "./types/config.ts";
+import type { ServerConfig } from "./types/config.ts";
 import { botEnv } from "./env.ts";
 import { getApp } from "./bot/resources/application.ts";
 
@@ -37,11 +33,9 @@ export async function build(
     fetchFiles(config.root ?? "src", "events"),
   ]);
 
-  const commandData =
-    commandFiles.length > 0 ? parseCommands(commandFiles) : [];
-  const componentData =
-    componentFiles.length > 0 ? parseComponents(componentFiles) : [];
-  const eventData = eventFiles.length > 0 ? parseEvents(eventFiles) : [];
+  const commands = parseCommands(commandFiles);
+  const components = parseComponents(componentFiles);
+  const events = parseEvents(eventFiles);
   const buildLoader = ora({
     stream: stdout,
     text: "Assembling generated build",
@@ -50,11 +44,11 @@ export async function build(
   const outputContent = `
 ${generateImports(addInstance, registerCommands)}
 
-${defineExport("commandData", commandData)}
-${defineExport("componentData", componentData)}
-${defineExport("eventData", eventData)}
+${defineExport("commands", commands)}
+${defineExport("components", components)}
+${defineExport("events", events)}
 ${defineExport("config", config, false)}
-${registerCommands ? `\ninstallCommands(commandData);\n` : ""}
+${registerCommands ? `\ninstallCommands(commands);\n` : ""}
 ${addInstance ? generateInstanceCreation() : ""}
 `.trim();
 
@@ -90,9 +84,11 @@ async function fetchFiles(root: string, dirName: string): Promise<WalkEntry[]> {
   return filesArray;
 }
 
-function defineExport<
-  T extends ServerConfig | BuildCommand[] | BuildComponent[],
->(variableName: string, content: T, pathToImport = true): string {
+function defineExport(
+  variableName: string,
+  content: unknown,
+  pathToImport = true,
+): string {
   return `export const ${variableName} = ${
     pathToImport
       ? JSON.stringify(content).replace(
@@ -117,7 +113,7 @@ const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>
     : "";
 
 function generateInstanceCreation(): string {
-  return `createServer(setupCommands(commandData), setupComponents(componentData), setupEvents(eventData), config);
+  return `createServer(setupCommands(commands), setupComponents(components), setupEvents(events), config);
 `.trim();
 }
 
