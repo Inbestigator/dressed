@@ -1,14 +1,16 @@
-import { basename, dirname, join } from "node:path";
+import { basename, dirname } from "node:path";
 import type { ComponentData, ComponentHandler } from "../types/config.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
 import ora from "ora";
-import { cwd, stdout } from "node:process";
+import { stdout } from "node:process";
 
 /**
  * Creates the component handler
  * @returns A function that runs a component
  */
-export function setupComponents(components: ComponentData[]): ComponentHandler {
+export function setupComponents(
+  components: ComponentData<"ext">[],
+): ComponentHandler {
   return async function runComponent(interaction) {
     const category = getCategory();
 
@@ -57,9 +59,7 @@ export function setupComponents(components: ComponentData[]): ComponentHandler {
     }).start();
 
     try {
-      await Promise.resolve(
-        (await import(join(cwd(), handler.path))).default(interaction, args),
-      );
+      await Promise.resolve(handler.do(interaction, args));
       componentLoader.succeed();
     } catch (error) {
       componentLoader.fail();
@@ -104,9 +104,9 @@ export function parseComponents(componentFiles: WalkEntry[]): ComponentData[] {
 
       const component = {
         name: file.name,
+        path: file.path,
         category,
         regex: parseArgs(file.name).source,
-        path: file.path,
       };
 
       if (
@@ -122,7 +122,7 @@ export function parseComponents(componentFiles: WalkEntry[]): ComponentData[] {
         continue;
       }
 
-      componentData.push(component as ComponentData);
+      componentData.push(component);
       addRow(component.name, category.slice(0, -1));
     }
 

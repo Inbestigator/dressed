@@ -2,7 +2,12 @@
 
 import ora from "ora";
 import { Command } from "commander";
-import { build } from "../server/index.ts";
+import {
+  build,
+  type CommandData,
+  type ComponentData,
+  type EventData,
+} from "../server/index.ts";
 import { dirname, join } from "node:path";
 import { cwd, exit, stdout } from "node:process";
 import inquirer from "inquirer";
@@ -46,10 +51,10 @@ program
     const outputContent = `
 ${generateImports(instance, register)}
 
-${defineExport("commands", commands)}
-${defineExport("components", components)}
-${defineExport("events", events)}
-${defineExport("config", config)}
+${exportDataArray("commands", commands)}
+${exportDataArray("components", components)}
+${exportDataArray("events", events)}
+export const config = ${JSON.stringify(config)};
 ${register ? `\ninstallCommands(commands);\n` : ""}
 ${instance ? generateInstanceCreation() : ""}
     `.trim();
@@ -61,8 +66,23 @@ ${instance ? generateInstanceCreation() : ""}
     exit();
   });
 
-function defineExport(variableName: string, content: unknown): string {
-  return `export const ${variableName} = ${JSON.stringify(content)};`;
+function exportDataArray(
+  variableName: "commands" | "components" | "events",
+  content: (CommandData | ComponentData | EventData)[],
+): string {
+  let importString = "";
+  switch (variableName) {
+    case "commands":
+      importString =
+        '"config":async ()=>(await import("./$1")).config,"do":async (i)=>(await import("./$1")).default(i)';
+      break;
+    case "components":
+      importString = '"do":async (i,a)=>(await import("./$1")).default(i,a)';
+      break;
+    case "events":
+      importString = '"do":async (e)=>(await import("./$1")).default(e)';
+  }
+  return `export const ${variableName} = ${JSON.stringify(content.map((c) => ({ ...c, import: c.path }))).replace(/"import":"(.+)"/g, importString)};`;
 }
 
 const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>

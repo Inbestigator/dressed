@@ -1,17 +1,16 @@
 import type { EventData, EventHandler } from "../types/config.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
 import ora from "ora";
-import { cwd, stdout } from "node:process";
+import { stdout } from "node:process";
 import { ApplicationWebhookEventType } from "discord-api-types/v10";
-import { join } from "node:path";
 
 /**
  * Creates the event handler
  * @returns A function that runs an event
  */
-export function setupEvents(events: EventData[]): EventHandler {
+export function setupEvents(events: EventData<"ext">[]): EventHandler {
   return async function runEvent(event) {
-    const handler = events.find((c) => c.type === event.type);
+    const handler = events.find((e) => e.type === event.type);
 
     if (!handler) {
       ora(`No event handler for "${event.type}"`).warn();
@@ -24,9 +23,7 @@ export function setupEvents(events: EventData[]): EventHandler {
     }).start();
 
     try {
-      await Promise.resolve(
-        (await import(join(cwd(), handler.path))).default(event.data),
-      );
+      await Promise.resolve(handler.do(event));
       eventLoader.succeed();
     } catch (error) {
       eventLoader.fail();
@@ -60,8 +57,8 @@ export function parseEvents(eventFiles: WalkEntry[]): EventData[] {
 
       const event = {
         name: file.name,
-        type,
         path: file.path,
+        type,
       };
 
       if (eventData.find((c) => c.name === event.name && c.type === type)) {
