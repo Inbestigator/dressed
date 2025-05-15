@@ -27,7 +27,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Build Package
-        run: bun dist
+        run: bun turbo dist
 
       - name: Authenticate with NPM
         run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
