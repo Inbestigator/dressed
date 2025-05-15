@@ -3,23 +3,20 @@
   <h1>Dressed</h1>
 </div>
 
-Dressed is a Discord bot framework with 100% API support. It allows you to host
-a bot using the
+Dressed is a Discord bot framework with 100% API support. It allows you to host a bot using the
 [interactions endpoint](https://discord.com/developers/docs/interactions/overview#configuring-an-interactions-endpoint-url)
 system for Discord.
 
-Discord will send POST requests to your bot, instead of the websocket system
-that Discord.js utilizes.
+Discord will send `POST` requests to your bot, instead of using the WebSocket system that libraries like Discord.js rely on.
 
-One cool feature of Dressed is that you can make dynamic component IDs, so that
-you only need to write one component handler for many different scenarios.
-[See more](https://dressed.vercel.app/docs/components#dynamic-component-ids)
+One cool feature of Dressed is support for **dynamic component IDs**, so you only need to write one component handler for many different scenarios.
+👉 [See more](https://dressed.vercel.app/docs/components#dynamic-component-ids)
 
-You can find an example of some bots ready to deploy on
-[Vercel](https://vercel.com) and [Deno deploy](https://deno.com/deploy) in
+You can find examples of bots ready to deploy on
+[Vercel](https://vercel.com) and [Deno Deploy](https://deno.com/deploy) in
 [this repo](https://github.com/Inbestigator/dressed-examples).
 
-## Usage
+## 🚀 Usage
 
 ```bash
 bun add dressed
@@ -43,7 +40,7 @@ export default async function (interaction: CommandInteraction) {
 }
 ```
 
-You can then build and run the bot with this command
+You can then build and run the bot with:
 
 ```bash
 bun dressed build -ir
@@ -53,16 +50,12 @@ deno -A jsr:@dressed/cmd build -ir
 deno -A bot.gen.ts
 ```
 
-By default the builder outputs only boilerplate data, if you want it to include
-an instance creator, add `-i` when running the build command.
+- By default, the builder outputs only boilerplate data.
+- To include an instance creator, add the `-i` flag.
+- To register your bot's commands, add the `-r` flag.
 
-In order to register the commands for your bot, you can run the build command
-with `-r`.
+> [!TIP]
+> For a better development experience, install [Discord API Types](https://www.npmjs.com/package/discord-api-types).
 
-In addition to Dressed, I'd recommend installing
-[Discord API Types](https://www.npmjs.com/package/discord-api-types) (The type
-lib that Dressed uses internally).
-
-Dressed comes with a [Node HTTP](https://nodejs.org/api/http.html) server OOB,
-if you'd like to make your own, all the functions needed to do so are available
-in `dressed/server`.
+Dressed includes a [Node HTTP](https://nodejs.org/api/http.html) server out of the box.
+If you'd prefer to create your own, all the functions you need are available via `dressed/server`.
