@@ -3,15 +3,16 @@
     "allowImportingTsExtensions": true,
     "declaration": true,
     "erasableSyntaxOnly": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "module": "NodeNext",
     "outDir": "dist",
     "rewriteRelativeImportExtensions": true,
-    "rootDir": "src",
     "sourceMap": true,
+    "strict": true,
+    "stripInternal": true,
     "target": "ES2018",
-    "esModuleInterop": true,
-    "verbatimModuleSyntax": true,
-    "stripInternal": true
+    "verbatimModuleSyntax": true
   },
   "include": ["src/**/*.ts"]
 }
