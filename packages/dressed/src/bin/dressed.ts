@@ -26,63 +26,58 @@ program
   .option("-i, --instance", "Include an instance create in the generated file")
   .option("-r, --register", "Register slash commands")
   .option(
+    "--ei, --emit-imports",
+    "REQUIRED FOR NEXTJS - Include imports for the bot's files in your bot.gen.ts",
+  )
+  .option(
     "-e, --endpoint <endpoint>",
     "The endpoint to listen on, defaults to `/`",
   )
   .option("-p, --port <port>", "The port to listen on, defaults to `8000`")
   .option("-R, --root <root>", "Source root for the bot, defaults to `src`")
   .option("-D, --dest <dest>", "Output file, defaults to `bot.gen.ts`")
-  .action(async ({ instance, register, endpoint, port, root, dest }) => {
-    if (port && isNaN(Number(port))) {
-      ora("Port must be a valid number").fail();
-      exit();
-    }
-    port = port ? Number(port) : undefined;
-    const { commands, components, events, config } = await build({
-      endpoint,
-      port,
-      root,
-    });
-    const buildLoader = ora({
-      stream: stdout,
-      text: "Assembling generated build",
-    }).start();
+  .action(
+    async ({ instance, register, emitImports, endpoint, port, root, dest }) => {
+      if (port && isNaN(Number(port))) {
+        ora("Port must be a valid number").fail();
+        exit();
+      }
+      port = port ? Number(port) : undefined;
+      const { commands, components, events, config } = await build({
+        endpoint,
+        port,
+        root,
+      });
+      const buildLoader = ora({
+        stream: stdout,
+        text: "Assembling generated build",
+      }).start();
 
-    const outputContent = `
+      const outputContent = `
 ${generateImports(instance, register)}
 
-${exportDataArray("commands", commands)}
-${exportDataArray("components", components)}
-${exportDataArray("events", events)}
+${exportDataArray("commands", commands, emitImports)}
+${exportDataArray("components", components, emitImports)}
+${exportDataArray("events", events, emitImports)}
 export const config = ${JSON.stringify(config)};
 ${register ? `\ninstallCommands(commands);\n` : ""}
 ${instance ? generateInstanceCreation() : ""}
     `.trim();
 
-    buildLoader.succeed("Assembled generated build");
-    const writing = ora("Writing to bot.gen.ts");
-    writeFileSync(dest ?? "bot.gen.ts", outputContent);
-    writing.succeed("Wrote to bot.gen.ts");
-    exit();
-  });
+      buildLoader.succeed("Assembled generated build");
+      const writing = ora("Writing to bot.gen.ts");
+      writeFileSync(dest ?? "bot.gen.ts", outputContent);
+      writing.succeed("Wrote to bot.gen.ts");
+      exit();
+    },
+  );
 
 function exportDataArray(
   variableName: "commands" | "components" | "events",
   content: (CommandData | ComponentData | EventData)[],
+  emitImports: boolean,
 ): string {
-  let importString = "";
-  switch (variableName) {
-    case "commands":
-      importString =
-        '"config":async ()=>(await import("./$1")).config,"do":async (i)=>(await import("./$1")).default(i)';
-      break;
-    case "components":
-      importString = '"do":async (i,a)=>(await import("./$1")).default(i,a)';
-      break;
-    case "events":
-      importString = '"do":async (e)=>(await import("./$1")).default(e)';
-  }
-  return `export const ${variableName} = ${JSON.stringify(content.map((c) => ({ ...c, import: c.path }))).replace(/"import":"(.+?)"/g, importString)};`;
+  return `export const ${variableName} = ${emitImports ? JSON.stringify(content).replace(/"path":"(.+?)"/g, '$&,"import":()=>import("./$1")') : JSON.stringify(content)};`;
 }
 
 const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>

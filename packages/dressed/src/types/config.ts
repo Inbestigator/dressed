@@ -36,42 +36,38 @@ export type CommandConfig = Omit<
 /**
  * Command data object in the `commands` array outputted from `build()`
  */
-export type CommandData<T extends "int" | "ext" = "int"> = {
+export type CommandData = {
   name: string;
   path: string;
-} & (T extends "ext"
-  ? {
-      config: () => Promise<CommandConfig | undefined>;
-      do: CommandHandler;
-    }
-  : object);
+  /** Externally provided only! */
+  import?: () => Promise<{
+    config?: CommandConfig;
+    default: CommandHandler;
+  }>;
+};
 
 /**
  * Component data object in the `components` array outputted from `build()`
  */
-export type ComponentData<T extends "int" | "ext" = "int"> = {
+export type ComponentData = {
   name: string;
   regex: string;
   category: string;
   path: string;
-} & (T extends "ext"
-  ? {
-      do: ComponentHandler;
-    }
-  : object);
+  /** Externally provided only! */
+  import?: () => Promise<{ default: unknown }>;
+};
 
 /**
  * Event data object in the `events` array outputted from `build()`
  */
-export type EventData<T extends "int" | "ext" = "int"> = {
+export type EventData = {
   name: string;
   type: string;
   path: string;
-} & (T extends "ext"
-  ? {
-      do: EventHandler;
-    }
-  : object);
+  /** Externally provided only! */
+  import?: () => Promise<{ default: unknown }>;
+};
 
 export type CommandHandler = (interaction: CommandInteraction) => Promise<void>;
 export type ComponentHandler = (
