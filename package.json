@@ -1,5 +1,5 @@
 {
-  "name": "dressed-pkgs",
+  "name": "dressed",
   "private": true,
   "workspaces": [
     "packages/*",
