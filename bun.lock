@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "dressed",
+      "name": "dressed-pkgs",
       "devDependencies": {
         "@eslint/js": "^9.26.0",
         "@types/bun": "latest",
