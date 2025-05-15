@@ -29,16 +29,15 @@ jobs:
       - name: Build Package
         run: bun dist
 
+      - name: Authenticate with NPM
+        run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+
       - name: Publish to NPM
         working-directory: packages/dressed
-        run: |
-          if ${{ github.event.release.prerelease }}; then
-            bunx npm publish --provenance --tag rc
-          else
-            bunx npm publish --provenance --tag latest
-          fi
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          TAG: ${{ github.event.release.prerelease && 'rc' || 'latest' }}
+        run: |
+          bunx npm publish --provenance --access public --tag "$TAG"
 
       - name: Publish to JSR
         working-directory: packages/dressed
