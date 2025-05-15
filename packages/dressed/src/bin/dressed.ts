@@ -82,7 +82,7 @@ function exportDataArray(
     case "events":
       importString = '"do":async (e)=>(await import("./$1")).default(e)';
   }
-  return `export const ${variableName} = ${JSON.stringify(content.map((c) => ({ ...c, import: c.path }))).replace(/"import":"(.+)"/g, importString)};`;
+  return `export const ${variableName} = ${JSON.stringify(content.map((c) => ({ ...c, import: c.path }))).replace(/"import":"(.+?)"/g, importString)};`;
 }
 
 const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>
