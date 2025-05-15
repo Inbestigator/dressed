@@ -1463,8 +1463,6 @@
 
     "zwitch": ["zwitch@2.0.4", "", {}, "sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A=="],
 
-    "@dressed/next/dressed": ["dressed@1.6.2", "", { "dependencies": { "commander": "^13.1.0", "discord-api-types": "^0.38.4", "dotenv": "^16.5.0", "inquirer": "^12.6.1", "magic-bytes.js": "^1.12.1", "ora": "^8.2.0", "path-scurry": "^2.0.0", "tweetnacl": "^1.0.3", "walk-it": "^5.0.1" }, "bin": { "dressed": "dist/bin/dressed.js" } }, "sha512-lC6LBmBDgbh+KmPp/iC6NPzYz8E4+hWl+H0XkD1le6YslELbXE/RGvoY1cWr8AWnanrTdK8OeRCDvK/jA4idFw=="],
-
     "@eslint-community/eslint-utils/eslint-visitor-keys": ["eslint-visitor-keys@3.4.3", "", {}, "sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag=="],
 
     "@eslint/eslintrc/globals": ["globals@14.0.0", "", {}, "sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ=="],
