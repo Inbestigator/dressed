@@ -17,6 +17,7 @@ import type {
 } from "../types/config.ts";
 import { createServer as createHttpServer, type Server } from "node:http";
 import { stdout } from "node:process";
+import { Buffer } from "node:buffer";
 
 /**
  * Starts a server to handle interactions.
@@ -39,14 +40,14 @@ export function createServer(
       return;
     }
 
-    const body = new Uint8Array();
+    const chunks: Uint8Array[] = [];
     req
-      .on("data", (c) => body.set(c))
+      .on("data", (c) => chunks.push(c))
       .on("end", async () => {
         const handlerRes = await handleRequest(
           new Request("http://localhost", {
             method: "POST",
-            body,
+            body: Buffer.concat(chunks),
             headers: req.headers as unknown as Headers,
           }),
           runCommand,
@@ -63,7 +64,9 @@ export function createServer(
   const port = config.port ?? 8000;
 
   server.listen(port, "localhost", () => {
-    console.log(`Bot is now listening on http://localhost:${port}`);
+    console.log(
+      `Bot is now listening on ${new URL(config.endpoint ?? "", `http://localhost:${port}`).href}`,
+    );
   });
 
   return server;

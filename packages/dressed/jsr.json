@@ -3,10 +3,10 @@
   "name": "@dressed/dressed",
   "version": "1.6.0",
   "exports": {
-    ".": "./dist/index.js",
-    "./server": "./dist/server/index.js"
+    ".": "./src/index.ts",
+    "./server": "./src/server/index.ts"
   },
   "publish": {
-    "include": ["README.md", "dist"]
+    "include": ["README.md", "src"]
   }
 }

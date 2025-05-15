@@ -5,7 +5,8 @@
   "scripts": {
     "dist": "rm -fr dist && bun tsc",
     "check-types": "bun tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "dry-publish": "bun publish --dry-run && deno publish --dry-run --allow-dirty"
   },
   "dependencies": {
     "commander": "^13.1.0",
