@@ -12,15 +12,16 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      id-token: write
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
-
-      - name: Install Deno
-        uses: denoland/setup-deno@v2
 
       - name: Install Dependencies
         run: bun install --frozen-lockfile
@@ -32,13 +33,13 @@ jobs:
         working-directory: packages/dressed
         run: |
           if ${{ github.event.release.prerelease }}; then
-            bun publish --tag rc
+            bunx npm publish --provenance --tag rc
           else
-            bun publish
+            bunx npm publish --provenance --tag latest
           fi
         env:
-          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish to JSR
         working-directory: packages/dressed
-        run: deno publish
+        run: bunx jsr publish
