@@ -3,14 +3,13 @@ import type { ComponentData, ComponentHandler } from "../types/config.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
 import ora from "ora";
 import { stdout } from "node:process";
+import importUserFile from "../server/import.ts";
 
 /**
  * Creates the component handler
  * @returns A function that runs a component
  */
-export function setupComponents(
-  components: ComponentData<"ext">[],
-): ComponentHandler {
+export function setupComponents(components: ComponentData[]): ComponentHandler {
   return async function runComponent(interaction) {
     const category = getCategory();
 
@@ -59,7 +58,11 @@ export function setupComponents(
     }).start();
 
     try {
-      await Promise.resolve(handler.do(interaction, args));
+      await Promise.resolve(
+        (
+          (await importUserFile(handler)) as { default: ComponentHandler }
+        ).default(interaction, args),
+      );
       componentLoader.succeed();
     } catch (error) {
       componentLoader.fail();

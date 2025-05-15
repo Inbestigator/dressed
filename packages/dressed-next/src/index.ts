@@ -16,9 +16,9 @@ import { waitUntil } from "@vercel/functions";
  * @returns A request handler function compatible with Next.js API routes
  */
 export default function createHandler(
-  commands: CommandData<"ext">[],
-  components: ComponentData<"ext">[],
-  events: EventData<"ext">[],
+  commands: CommandData[],
+  components: ComponentData[],
+  events: EventData[],
 ): (req: Request) => Promise<Response> {
   const [runCommand, runComponent, runEvent] = [
     setupCommands(commands),

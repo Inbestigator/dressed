@@ -4,11 +4,12 @@ import { trackParts, type WalkEntry } from "../build.ts";
 import { stdout } from "node:process";
 import { installGlobalCommands } from "./utils.ts";
 import { botEnv } from "../env.ts";
+import importUserFile from "../server/import.ts";
 
 /**
  * Installs commands to the Discord API
  */
-export async function installCommands(commands: CommandData<"ext">[]) {
+export async function installCommands(commands: CommandData[]) {
   const registerLoader = ora({
     stream: stdout,
     text: "Registering commands",
@@ -18,7 +19,7 @@ export async function installCommands(commands: CommandData<"ext">[]) {
     botEnv.DISCORD_APP_ID,
     await Promise.all(
       commands.map(async (c) => {
-        const config = await c.config();
+        const { config } = await importUserFile(c);
         let contexts = [];
         contexts = config?.contexts
           ? config.contexts.reduce<number[]>((acc, c) => {
@@ -57,7 +58,7 @@ export async function installCommands(commands: CommandData<"ext">[]) {
  * Creates the command handler
  * @returns A function that runs a command
  */
-export function setupCommands(commands: CommandData<"ext">[]): CommandHandler {
+export function setupCommands(commands: CommandData[]): CommandHandler {
   return async function runCommand(interaction) {
     const handler = commands.find((c) => c.name === interaction.data.name);
 
@@ -72,7 +73,9 @@ export function setupCommands(commands: CommandData<"ext">[]): CommandHandler {
     }).start();
 
     try {
-      await Promise.resolve(handler.do(interaction));
+      await Promise.resolve(
+        (await importUserFile(handler)).default(interaction),
+      );
       commandLoader.succeed();
     } catch (error) {
       commandLoader.fail();

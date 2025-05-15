@@ -70,19 +70,7 @@ function exportDataArray(
   variableName: "commands" | "components" | "events",
   content: (CommandData | ComponentData | EventData)[],
 ): string {
-  let importString = "";
-  switch (variableName) {
-    case "commands":
-      importString =
-        '"config":async ()=>(await import("./$1")).config,"do":async (i)=>(await import("./$1")).default(i)';
-      break;
-    case "components":
-      importString = '"do":async (i,a)=>(await import("./$1")).default(i,a)';
-      break;
-    case "events":
-      importString = '"do":async (e)=>(await import("./$1")).default(e)';
-  }
-  return `export const ${variableName} = ${JSON.stringify(content.map((c) => ({ ...c, import: c.path }))).replace(/"import":"(.+?)"/g, importString)};`;
+  return `export const ${variableName} = ${JSON.stringify(content).replace(/"path":"(.+?)"/g, '$&,"import":()=>import("./$1")')};`;
 }
 
 const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>

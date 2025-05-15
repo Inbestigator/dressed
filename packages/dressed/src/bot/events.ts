@@ -3,12 +3,13 @@ import { trackParts, type WalkEntry } from "../build.ts";
 import ora from "ora";
 import { stdout } from "node:process";
 import { ApplicationWebhookEventType } from "discord-api-types/v10";
+import importUserFile from "../server/import.ts";
 
 /**
  * Creates the event handler
  * @returns A function that runs an event
  */
-export function setupEvents(events: EventData<"ext">[]): EventHandler {
+export function setupEvents(events: EventData[]): EventHandler {
   return async function runEvent(event) {
     const handler = events.find((e) => e.type === event.type);
 
@@ -23,7 +24,11 @@ export function setupEvents(events: EventData<"ext">[]): EventHandler {
     }).start();
 
     try {
-      await Promise.resolve(handler.do(event));
+      await Promise.resolve(
+        ((await importUserFile(handler)) as { default: EventHandler }).default(
+          event,
+        ),
+      );
       eventLoader.succeed();
     } catch (error) {
       eventLoader.fail();
