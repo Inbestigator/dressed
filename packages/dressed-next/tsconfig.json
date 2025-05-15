@@ -8,6 +8,7 @@
     "module": "NodeNext",
     "outDir": "dist",
     "rewriteRelativeImportExtensions": true,
+    "sourceMap": true,
     "strict": true,
     "stripInternal": true,
     "target": "ES2018",
