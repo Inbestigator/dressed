@@ -1,4 +1,5 @@
 {
+  "name": "dressed",
   "workspaces": [
     "packages/*",
     "www"
