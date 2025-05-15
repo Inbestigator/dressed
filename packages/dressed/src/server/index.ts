@@ -19,7 +19,12 @@
  */
 
 // Types
-export type { ServerConfig } from "../types/config.ts";
+export type {
+  CommandData,
+  ComponentData,
+  EventData,
+  ServerConfig,
+} from "../types/config.ts";
 export type { CommandHandler, ComponentHandler } from "../types/config.ts";
 
 // Core

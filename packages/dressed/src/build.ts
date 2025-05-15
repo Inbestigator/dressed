@@ -7,8 +7,9 @@ import { parseCommands } from "./bot/commands.ts";
 import { parseComponents } from "./bot/components.ts";
 import { parseEvents } from "./bot/events.ts";
 import type {
-  BuildCommand,
-  BuildComponent,
+  CommandData,
+  ComponentData,
+  EventData,
   ServerConfig,
 } from "./types/config.ts";
 import { botEnv } from "./env.ts";
@@ -25,11 +26,12 @@ export type WalkEntry = {
  * @param addInstance - Whether to add the instance creation code.
  * @param registerCommands - Whether to register slash commands.
  */
-export async function build(
-  addInstance?: boolean,
-  registerCommands?: boolean,
-  config: ServerConfig = {},
-): Promise<string> {
+export async function build(config: ServerConfig = {}): Promise<{
+  commands: CommandData[];
+  components: ComponentData[];
+  events: EventData[];
+  config: ServerConfig;
+}> {
   await fetchMissingVars();
   const [commandFiles, componentFiles, eventFiles] = await Promise.all([
     fetchFiles(config.root ?? "src", "commands"),
@@ -37,29 +39,11 @@ export async function build(
     fetchFiles(config.root ?? "src", "events"),
   ]);
 
-  const commandData =
-    commandFiles.length > 0 ? parseCommands(commandFiles) : [];
-  const componentData =
-    componentFiles.length > 0 ? parseComponents(componentFiles) : [];
-  const eventData = eventFiles.length > 0 ? parseEvents(eventFiles) : [];
-  const buildLoader = ora({
-    stream: stdout,
-    text: "Assembling generated build",
-  }).start();
+  const commands = parseCommands(commandFiles);
+  const components = parseComponents(componentFiles);
+  const events = parseEvents(eventFiles);
 
-  const outputContent = `
-${generateImports(addInstance, registerCommands)}
-
-${defineExport("commandData", commandData)}
-${defineExport("componentData", componentData)}
-${defineExport("eventData", eventData)}
-${defineExport("config", config, false)}
-${registerCommands ? `\ninstallCommands(commandData);\n` : ""}
-${addInstance ? generateInstanceCreation() : ""}
-`.trim();
-
-  buildLoader.succeed("Assembled generated build");
-  return outputContent;
+  return { commands, components, events, config };
 }
 
 /**
@@ -88,37 +72,6 @@ async function fetchFiles(root: string, dirName: string): Promise<WalkEntry[]> {
   }
 
   return filesArray;
-}
-
-function defineExport<
-  T extends ServerConfig | BuildCommand[] | BuildComponent[],
->(variableName: string, content: T, pathToImport = true): string {
-  return `export const ${variableName} = ${
-    pathToImport
-      ? JSON.stringify(content).replace(
-          /"path":"(.+?)"/g,
-          '"import": ()=>import("./$1")',
-        )
-      : JSON.stringify(content)
-  };`;
-}
-
-const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>
-  addInstance || registerCommands
-    ? `import { ${
-        addInstance
-          ? `createServer${
-              registerCommands ? ", installCommands" : ""
-            }, setupCommands, setupComponents, setupEvents`
-          : registerCommands
-            ? "installCommands"
-            : ""
-      } } from "dressed/server";`
-    : "";
-
-function generateInstanceCreation(): string {
-  return `createServer(setupCommands(commandData), setupComponents(componentData), setupEvents(eventData), config);
-`.trim();
 }
 
 async function fetchMissingVars() {

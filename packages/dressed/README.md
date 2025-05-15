@@ -19,10 +19,11 @@ You can find an example of some bots ready to deploy on
 [Vercel](https://vercel.com) and [Deno deploy](https://deno.com/deploy) in
 [this repo](https://github.com/Inbestigator/dressed-examples).
 
-## Installation
+## Usage
 
 ```bash
 bun add dressed
+# or
 deno add jsr:@dressed/dressed
 ```
 
@@ -47,9 +48,7 @@ You can then build and run the bot with this command
 ```bash
 bun dressed build -ir
 bun bot.gen.ts
-```
-
-```bash
+# or
 deno -A jsr:@dressed/cmd build -ir
 deno -A bot.gen.ts
 ```

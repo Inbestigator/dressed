@@ -1,18 +1,14 @@
-import { basename, dirname } from "node:path";
-import type {
-  BuildComponent,
-  Component,
-  ComponentHandler,
-} from "../types/config.ts";
+import { basename, dirname, join } from "node:path";
+import type { ComponentData, ComponentHandler } from "../types/config.ts";
 import { trackParts, type WalkEntry } from "../build.ts";
 import ora from "ora";
-import { stdout } from "node:process";
+import { cwd, stdout } from "node:process";
 
 /**
  * Creates the component handler
  * @returns A function that runs a component
  */
-export function setupComponents(components: Component[]): ComponentHandler {
+export function setupComponents(components: ComponentData[]): ComponentHandler {
   return async function runComponent(interaction) {
     const category = getCategory();
 
@@ -62,10 +58,7 @@ export function setupComponents(components: Component[]): ComponentHandler {
 
     try {
       await Promise.resolve(
-        ((await handler.import()).default as ComponentHandler)(
-          interaction,
-          args,
-        ),
+        (await import(join(cwd(), handler.path))).default(interaction, args),
       );
       componentLoader.succeed();
     } catch (error) {
@@ -85,7 +78,8 @@ export function parseArgs(str: string) {
 
 const validComponentCategories = ["buttons", "modals", "selects"];
 
-export function parseComponents(componentFiles: WalkEntry[]) {
+export function parseComponents(componentFiles: WalkEntry[]): ComponentData[] {
+  if (componentFiles.length === 0) return [];
   const generatingLoader = ora({
     stream: stdout,
     text: "Generating components",
@@ -96,7 +90,7 @@ export function parseComponents(componentFiles: WalkEntry[]) {
     "Category",
   );
   try {
-    const componentData: BuildComponent[] = [];
+    const componentData: ComponentData[] = [];
 
     for (const file of componentFiles) {
       const category = basename(dirname(file.path));
@@ -108,9 +102,9 @@ export function parseComponents(componentFiles: WalkEntry[]) {
         continue;
       }
 
-      const component: BuildComponent = {
+      const component = {
         name: file.name,
-        category: category as BuildComponent["category"],
+        category,
         regex: parseArgs(file.name).source,
         path: file.path,
       };
@@ -128,7 +122,7 @@ export function parseComponents(componentFiles: WalkEntry[]) {
         continue;
       }
 
-      componentData.push(component);
+      componentData.push(component as ComponentData);
       addRow(component.name, category.slice(0, -1));
     }
 

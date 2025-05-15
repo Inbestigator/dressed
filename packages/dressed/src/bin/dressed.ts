@@ -3,8 +3,8 @@
 import ora from "ora";
 import { Command } from "commander";
 import { build } from "../server/index.ts";
-import { dirname, join } from "path";
-import { cwd, exit } from "process";
+import { dirname, join } from "node:path";
+import { cwd, exit, stdout } from "node:process";
 import inquirer from "inquirer";
 import { parse } from "dotenv";
 import { mkdirSync, writeFileSync } from "fs";
@@ -33,16 +33,55 @@ program
       exit();
     }
     port = port ? Number(port) : undefined;
-    const outputContent = await build(instance, register, {
+    const { commands, components, events, config } = await build({
       endpoint,
       port,
       root,
     });
+    const buildLoader = ora({
+      stream: stdout,
+      text: "Assembling generated build",
+    }).start();
+
+    const outputContent = `
+${generateImports(instance, register)}
+
+${defineExport("commands", commands)}
+${defineExport("components", components)}
+${defineExport("events", events)}
+${defineExport("config", config)}
+${register ? `\ninstallCommands(commands);\n` : ""}
+${instance ? generateInstanceCreation() : ""}
+    `.trim();
+
+    buildLoader.succeed("Assembled generated build");
     const writing = ora("Writing to bot.gen.ts");
     writeFileSync(dest ?? "bot.gen.ts", outputContent);
     writing.succeed("Wrote to bot.gen.ts");
     exit();
   });
+
+function defineExport(variableName: string, content: unknown): string {
+  return `export const ${variableName} = ${JSON.stringify(content)};`;
+}
+
+const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>
+  addInstance || registerCommands
+    ? `import { ${
+        addInstance
+          ? `createServer${
+              registerCommands ? ", installCommands" : ""
+            }, setupCommands, setupComponents, setupEvents`
+          : registerCommands
+            ? "installCommands"
+            : ""
+      } } from "dressed/server";`
+    : "";
+
+function generateInstanceCreation(): string {
+  return `createServer(setupCommands(commands), setupComponents(components), setupEvents(events), config);
+  `.trim();
+}
 
 program
   .command("create")

@@ -5,7 +5,6 @@ import type {
 } from "./interaction.ts";
 import type {
   APIWebhookEventBody,
-  ApplicationWebhookEventType,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
 
@@ -33,48 +32,33 @@ export type CommandConfig = Omit<
   /** Where a command can be installed, also called its supported installation context. Defaults to both */
   integration_type?: "Guild" | "User";
 };
-export interface Command {
-  name: string;
-  import: () => Promise<{
-    config?: CommandConfig;
-    default: CommandHandler;
-  }>;
-}
 
-export interface BuildCommand {
+/**
+ * Command data object in the `commandData` array outputted from `build()`
+ */
+export type CommandData = {
   name: string;
   path: string;
-}
+};
 
-export interface Component {
+/**
+ * Component data object in the `componentData` array outputted from `build()`
+ */
+export type ComponentData = {
   name: string;
   regex: string;
   category: string;
-  import: () => Promise<{
-    default: unknown;
-  }>;
-}
-
-export interface BuildComponent {
-  name: string;
-  regex: string;
-  category: "buttons" | "modals" | "selects";
   path: string;
-}
+};
 
-export interface Event {
+/**
+ * Event data object in the `eventData` array outputted from `build()`
+ */
+export type EventData = {
   name: string;
   type: string;
-  import: () => Promise<{
-    default: unknown;
-  }>;
-}
-
-export interface BuildEvent {
-  name: string;
-  type: ApplicationWebhookEventType;
   path: string;
-}
+};
 
 export type CommandHandler = (interaction: CommandInteraction) => Promise<void>;
 export type ComponentHandler = (
