@@ -1,0 +1,31 @@
+{
+  "name": "@dressed/next",
+  "version": "1.0.0",
+  "description": "Request handler for Next.js routes.",
+  "scripts": {
+    "dist": "rm -fr dist && bun tsc",
+    "check-types": "bun tsc --noEmit"
+  },
+  "dependencies": {
+    "@vercel/functions": "^2.0.3",
+    "dressed": "workspace:dressed"
+  },
+  "exports": "./dist/index.js",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://dressed.vercel.app",
+  "keywords": [
+    "dressed",
+    "nextjs",
+    "discord"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/inbestigator/dressed.git",
+    "directory": "packages/dressed-next"
+  }
+}
