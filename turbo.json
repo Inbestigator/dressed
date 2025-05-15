@@ -11,6 +11,10 @@
     },
     "check-types": {
       "dependsOn": ["^check-types"]
+    },
+    "dry-publish": {
+      "dependsOn": ["^dry-publish"],
+      "cache": false
     }
   }
 }

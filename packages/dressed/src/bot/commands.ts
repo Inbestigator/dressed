@@ -1,19 +1,14 @@
-import type {
-  CommandConfig,
-  CommandData,
-  CommandHandler,
-} from "../types/config.ts";
+import type { CommandData, CommandHandler } from "../types/config.ts";
 import ora from "ora";
 import { trackParts, type WalkEntry } from "../build.ts";
-import { cwd, stdout } from "node:process";
+import { stdout } from "node:process";
 import { installGlobalCommands } from "./utils.ts";
 import { botEnv } from "../env.ts";
-import { join } from "node:path";
 
 /**
  * Installs commands to the Discord API
  */
-export async function installCommands(commands: CommandData[]) {
+export async function installCommands(commands: CommandData<"ext">[]) {
   const registerLoader = ora({
     stream: stdout,
     text: "Registering commands",
@@ -23,9 +18,7 @@ export async function installCommands(commands: CommandData[]) {
     botEnv.DISCORD_APP_ID,
     await Promise.all(
       commands.map(async (c) => {
-        const { config } = (await import(join(cwd(), c.path))) as {
-          config?: CommandConfig;
-        };
+        const config = await c.config();
         let contexts = [];
         contexts = config?.contexts
           ? config.contexts.reduce<number[]>((acc, c) => {
@@ -64,7 +57,7 @@ export async function installCommands(commands: CommandData[]) {
  * Creates the command handler
  * @returns A function that runs a command
  */
-export function setupCommands(commands: CommandData[]): CommandHandler {
+export function setupCommands(commands: CommandData<"ext">[]): CommandHandler {
   return async function runCommand(interaction) {
     const handler = commands.find((c) => c.name === interaction.data.name);
 
@@ -79,9 +72,7 @@ export function setupCommands(commands: CommandData[]): CommandHandler {
     }).start();
 
     try {
-      await Promise.resolve(
-        (await import(join(cwd(), handler.path))).default(interaction),
-      );
+      await Promise.resolve(handler.do(interaction));
       commandLoader.succeed();
     } catch (error) {
       commandLoader.fail();
@@ -102,20 +93,15 @@ export function parseCommands(commandFiles: WalkEntry[]): CommandData[] {
     const commandData: CommandData[] = [];
 
     for (const file of commandFiles) {
-      const command = {
-        name: file.name,
-        path: file.path,
-      };
-
-      if (commandData.find((c) => c.name === command.name)) {
+      if (commandData.find((c) => c.name === file.name)) {
         ora(
-          `Command "${command.name}" already exists, skipping the duplicate`,
+          `Command "${file.name}" already exists, skipping the duplicate`,
         ).warn();
         continue;
       }
 
-      commandData.push(command);
-      addRow(command.name);
+      commandData.push(file);
+      addRow(file.name);
     }
 
     generatingLoader.succeed(

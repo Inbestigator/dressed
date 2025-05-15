@@ -6,7 +6,12 @@ const config: ServerConfig = { root: "tests/src" };
 test("Build bot", async () => {
   const result = await build(config);
   expect(result).toEqual({
-    commands: [{ name: "ping", path: "tests/src/commands/ping.ts" }],
+    commands: [
+      {
+        name: "ping",
+        path: "tests/src/commands/ping.ts",
+      },
+    ],
     components: [
       {
         name: "button_[arg]",
