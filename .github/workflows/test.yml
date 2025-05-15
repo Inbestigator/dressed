@@ -27,7 +27,7 @@ jobs:
         run: bun format:check
 
       - name: Run TSC
-        run: bun turbo check-types
+        run: bun turbo dist
 
       - name: Run ESLint
         run: bun eslint
