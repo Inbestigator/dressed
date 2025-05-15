@@ -1,6 +1,6 @@
 {
   "name": "dressed",
-  "version": "1.5.0-rc.1.2",
+  "version": "1.6.0",
   "description": "A sleek, serverless-ready Discord bot framework.",
   "scripts": {
     "dist": "rm -fr dist && bun tsc",
