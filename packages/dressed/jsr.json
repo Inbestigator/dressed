@@ -1,12 +1,12 @@
 {
-    "$schema": "https://jsr.io/schema/config-file.v1.json",
-    "name": "@dressed/dressed",
-    "version": "1.6.0",
-    "exports": {
-        ".": "./dist/index.js",
-        "./server": "./dist/server/index.js"
-    },
-    "publish": {
-        "include": ["README.md", "dist"]
-    }
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@dressed/dressed",
+  "version": "1.6.0",
+  "exports": {
+    ".": "./dist/index.js",
+    "./server": "./dist/server/index.js"
+  },
+  "publish": {
+    "include": ["README.md", "dist"]
+  }
 }
