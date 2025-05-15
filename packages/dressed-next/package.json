@@ -1,6 +1,6 @@
 {
   "name": "@dressed/next",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Request handler for Next.js routes.",
   "scripts": {
     "dist": "rm -fr dist && bun tsc",
