@@ -4,11 +4,12 @@
   "description": "Request handler for Next.js routes.",
   "scripts": {
     "dist": "rm -fr dist && bun tsc",
-    "check-types": "bun tsc --noEmit"
+    "check-types": "bun tsc --noEmit",
+    "dry-publish": "bun publish --dry-run"
   },
   "dependencies": {
     "@vercel/functions": "^2.0.3",
-    "dressed": "workspace:dressed"
+    "dressed": "^1.6.2"
   },
   "exports": "./dist/index.js",
   "type": "module",
