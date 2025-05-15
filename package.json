@@ -1,4 +1,6 @@
 {
+  "name": "dressed",
+  "private": true,
   "workspaces": [
     "packages/*",
     "www"
