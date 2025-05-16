@@ -34,7 +34,7 @@
     },
     "packages/dressed-next": {
       "name": "@dressed/next",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "dependencies": {
         "@vercel/functions": "^2.0.3",
         "dressed": "^1.6.3",
@@ -1462,8 +1462,6 @@
     "zod-to-json-schema": ["zod-to-json-schema@3.24.5", "", { "peerDependencies": { "zod": "^3.24.1" } }, "sha512-/AuWwMP+YqiPbsJx5D6TfgRTc4kTLjsh5SOcd4bLsfUg2RcEXrFMJl1DGgdHy2aCfsIA/cr/1JM0xcB2GZji8g=="],
 
     "zwitch": ["zwitch@2.0.4", "", {}, "sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A=="],
-
-    "@dressed/next/dressed": ["dressed@1.6.3", "", { "dependencies": { "commander": "^13.1.0", "discord-api-types": "^0.38.4", "dotenv": "^16.5.0", "inquirer": "^12.6.1", "magic-bytes.js": "^1.12.1", "ora": "^8.2.0", "path-scurry": "^2.0.0", "tweetnacl": "^1.0.3", "walk-it": "^5.0.1" }, "bin": { "dressed": "dist/bin/dressed.js" } }, "sha512-YbDHwnylsKeUWRqoiaYnGtgxzFWusfE8qzEoXgM5enJ+ZdXZrhp6Z+CZ8LnT72o3rr2lFeAFAGx0CQYP6LwCPw=="],
 
     "@eslint-community/eslint-utils/eslint-visitor-keys": ["eslint-visitor-keys@3.4.3", "", {}, "sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag=="],
 
