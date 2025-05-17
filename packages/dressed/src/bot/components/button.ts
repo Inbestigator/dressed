@@ -1,5 +1,4 @@
 import {
-  type APIButtonComponent,
   type APIButtonComponentWithCustomId,
   type APIButtonComponentWithSKUId,
   type APIButtonComponentWithURL,
@@ -17,20 +16,22 @@ interface ButtonWithCustomId
  *
  * Button object
  */
-export function Button(config: ButtonWithCustomId): APIButtonComponent;
+export function Button(
+  config: ButtonWithCustomId,
+): APIButtonComponentWithCustomId;
 export function Button(
   config: Omit<APIButtonComponentWithSKUId, "type" | "style">,
-): APIButtonComponent;
+): APIButtonComponentWithSKUId;
 export function Button(
   config: Omit<APIButtonComponentWithURL, "type" | "style">,
-): APIButtonComponent;
+): APIButtonComponentWithURL;
 
 export function Button(
   config:
     | ButtonWithCustomId
     | Omit<APIButtonComponentWithSKUId, "type" | "style">
     | Omit<APIButtonComponentWithURL, "type" | "style">,
-): APIButtonComponent {
+) {
   const style: keyof typeof ButtonStyle =
     "style" in config && config.style
       ? config.style
@@ -44,5 +45,5 @@ export function Button(
     ...config,
     style: ButtonStyle[style],
     type: ComponentType.Button,
-  } as APIButtonComponent;
+  };
 }
