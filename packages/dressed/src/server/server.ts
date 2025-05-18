@@ -16,7 +16,7 @@ import type {
   ServerConfig,
 } from "../types/config.ts";
 import { createServer as createHttpServer, type Server } from "node:http";
-import { on, stdout } from "node:process";
+import { stdout } from "node:process";
 import { Buffer } from "node:buffer";
 
 /**
@@ -81,8 +81,8 @@ export function createServer(
     });
   }
 
-  on("SIGTERM", shutdown);
-  on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
+  process.on("SIGINT", shutdown);
 
   return server;
 }
