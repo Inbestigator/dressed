@@ -24,11 +24,9 @@ export function setupEvents(events: EventData[]): EventHandler {
     }).start();
 
     try {
-      await Promise.resolve(
-        ((await importUserFile(handler)) as { default: EventHandler }).default(
-          event,
-        ),
-      );
+      await (
+        (await importUserFile(handler)) as { default: EventHandler }
+      ).default(event);
       eventLoader.succeed();
     } catch (error) {
       if (error instanceof Error) {

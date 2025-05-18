@@ -58,11 +58,9 @@ export function setupComponents(components: ComponentData[]): ComponentHandler {
     }).start();
 
     try {
-      await Promise.resolve(
-        (
-          (await importUserFile(handler)) as { default: ComponentHandler }
-        ).default(interaction, args),
-      );
+      await (
+        (await importUserFile(handler)) as { default: ComponentHandler }
+      ).default(interaction, args);
       componentLoader.succeed();
     } catch (error) {
       if (error instanceof Error) {

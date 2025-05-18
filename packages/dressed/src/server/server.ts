@@ -16,7 +16,7 @@ import type {
   ServerConfig,
 } from "../types/config.ts";
 import { createServer as createHttpServer, type Server } from "node:http";
-import { stdout } from "node:process";
+import { on, stdout } from "node:process";
 import { Buffer } from "node:buffer";
 
 /**
@@ -65,9 +65,24 @@ export function createServer(
 
   server.listen(port, "localhost", () => {
     console.log(
-      `Bot is now listening on ${new URL(config.endpoint ?? "", `http://localhost:${port}`).href}`,
+      "Bot is now listening on",
+      new URL(config.endpoint ?? "", `http://localhost:${port}`).href,
     );
   });
+
+  function shutdown() {
+    const closeLoader = ora({
+      stream: stdout,
+      text: "Closing bot server",
+    }).start();
+    server.close(() => {
+      closeLoader.succeed("Bot server closed");
+      process.exit(0);
+    });
+  }
+
+  on("SIGTERM", shutdown);
+  on("SIGINT", shutdown);
 
   return server;
 }
@@ -107,8 +122,8 @@ export async function handleRequest(
   try {
     const json = JSON.parse(body);
     let status = 500;
+    // The interaction response token
     if ("token" in json) {
-      // The interaction response token
       status = handleInteraction(runCommand, runComponent, json);
     } else {
       status = handleEvent(runEvent, json);
