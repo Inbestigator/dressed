@@ -1,0 +1,30 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Build bot 1`] = `
+{
+  "commands": [
+    {
+      "name": "ping",
+      "path": "tests/src/commands/ping.ts",
+    },
+  ],
+  "components": [
+    {
+      "category": "buttons",
+      "name": "button_[arg]",
+      "path": "tests/src/components/buttons/button_[arg].ts",
+      "regex": "^button_(?<arg>.+)$",
+    },
+  ],
+  "config": {
+    "root": "tests/src",
+  },
+  "events": [
+    {
+      "name": "ApplicationAuthorized",
+      "path": "tests/src/events/ApplicationAuthorized.ts",
+      "type": "APPLICATION_AUTHORIZED",
+    },
+  ],
+}
+`;

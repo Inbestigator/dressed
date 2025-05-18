@@ -22,14 +22,9 @@ test("Check for existing option", () => {
 });
 
 test("Check for non existing option", () => {
-  let fail = false;
-  try {
-    interaction.getOption("option2", true);
-    fail = true;
-  } catch {
-    if (fail) {
-      throw new Error("Should have thrown");
-    }
-  }
-  expect(interaction.getOption("option2")?.boolean()).toBeUndefined();
+  expect(() => interaction.getOption("option2", true)).toThrowError(
+    new Error(`Required option "option2" not found`),
+  );
+  const option = interaction.getOption("option3");
+  expect(option).toBeNull();
 });
