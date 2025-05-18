@@ -27,7 +27,7 @@ export function createServer(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
   runEvent: EventHandler,
-  config: ServerConfig
+  config: ServerConfig,
 ): Server {
   const server = createHttpServer((req, res) => {
     if (req.url !== (config.endpoint ?? "/")) {
@@ -52,7 +52,7 @@ export function createServer(
           }),
           runCommand,
           runComponent,
-          runEvent
+          runEvent,
         );
 
         res.statusCode = handlerRes.status;
@@ -66,7 +66,7 @@ export function createServer(
   server.listen(port, "localhost", () => {
     console.log(
       "Bot is now listening on",
-      new URL(config.endpoint ?? "", `http://localhost:${port}`).href
+      new URL(config.endpoint ?? "", `http://localhost:${port}`).href,
     );
   });
 
@@ -98,7 +98,7 @@ export async function handleRequest(
   req: Request,
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
-  runEvent: EventHandler
+  runEvent: EventHandler,
 ): Promise<Response> {
   const reqLoader = ora({
     stream: stdout,
@@ -110,7 +110,7 @@ export async function handleRequest(
     !verifySignature(
       body,
       req.headers.get("x-signature-ed25519"),
-      req.headers.get("x-signature-timestamp")
+      req.headers.get("x-signature-timestamp"),
     )
   ) {
     reqLoader.fail("Invalid signature");
@@ -143,7 +143,7 @@ export async function handleRequest(
 export function handleInteraction(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
-  json: ReturnType<typeof JSON.parse>
+  json: ReturnType<typeof JSON.parse>,
 ): 200 | 202 | 404 {
   switch (json.type) {
     case InteractionType.Ping: {
@@ -158,7 +158,9 @@ export function handleInteraction(
     }
     case InteractionType.MessageComponent:
     case InteractionType.ModalSubmit: {
-      const component = json as APIMessageComponentInteraction | APIModalSubmitInteraction;
+      const component = json as
+        | APIMessageComponentInteraction
+        | APIModalSubmitInteraction;
       const interaction = createInteraction(component);
       runComponent(interaction);
       return 202;
@@ -175,7 +177,7 @@ export function handleInteraction(
  */
 export function handleEvent(
   runEvent: EventHandler,
-  json: ReturnType<typeof JSON.parse>
+  json: ReturnType<typeof JSON.parse>,
 ): 200 | 202 | 404 {
   switch (json.type) {
     case ApplicationWebhookType.Ping: {
