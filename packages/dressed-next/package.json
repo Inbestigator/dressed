@@ -8,7 +8,7 @@
     "dry-publish": "bun publish --dry-run"
   },
   "dependencies": {
-    "@vercel/functions": "^2.0.3"
+    "@vercel/functions": "^2.1.0"
   },
   "peerDependencies": {
     "dressed": "^1.6.3"

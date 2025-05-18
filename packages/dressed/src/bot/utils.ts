@@ -1,4 +1,3 @@
-import { stdout } from "node:process";
 import ora from "ora";
 import { filetypeinfo } from "magic-bytes.js";
 import type { RawFile } from "../types/file.ts";
@@ -84,10 +83,7 @@ export async function callDiscord(
   });
   if (!res.ok) {
     const data = await res.json();
-    ora({
-      stream: stdout,
-      text: `Failed to ${options.method} ${endpoint} (${res.status} })`,
-    }).fail();
+    ora(`Failed to ${options.method} ${endpoint} (${res.status} })`).fail();
     console.error(`└ ${data.message}`);
     if (res.status === 429) {
       updateLimit(

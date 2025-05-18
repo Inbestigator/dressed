@@ -65,8 +65,11 @@ export function setupComponents(components: ComponentData[]): ComponentHandler {
       );
       componentLoader.succeed();
     } catch (error) {
-      componentLoader.fail();
-      console.error("└", error);
+      if (error instanceof Error) {
+        componentLoader.fail(error.message);
+      } else {
+        console.error(error);
+      }
     }
   };
 }

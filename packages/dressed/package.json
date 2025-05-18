@@ -9,13 +9,12 @@
     "dry-publish": "bun publish --dry-run && deno publish --dry-run --allow-dirty"
   },
   "dependencies": {
+    "@inquirer/prompts": "^7.5.1",
     "commander": "^13.1.0",
-    "discord-api-types": "^0.38.4",
+    "discord-api-types": "^0.38.8",
     "dotenv": "^16.5.0",
-    "inquirer": "^12.6.1",
     "magic-bytes.js": "^1.12.1",
     "ora": "^8.2.0",
-    "path-scurry": "^2.0.0",
     "tweetnacl": "^1.0.3",
     "walk-it": "^5.0.1"
   },

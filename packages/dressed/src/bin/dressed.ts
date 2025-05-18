@@ -9,8 +9,8 @@ import {
   type EventData,
 } from "../server/index.ts";
 import { dirname, join } from "node:path";
-import { cwd, exit, stdout } from "node:process";
-import inquirer from "inquirer";
+import { cwd, stdout } from "node:process";
+import { select, input, confirm } from "@inquirer/prompts";
 import { parse } from "dotenv";
 import { mkdirSync, writeFileSync } from "fs";
 
@@ -35,7 +35,7 @@ program
   .action(async ({ instance, register, endpoint, port, root, dest }) => {
     if (port && isNaN(Number(port))) {
       ora("Port must be a valid number").fail();
-      exit();
+      return;
     }
     port = port ? Number(port) : undefined;
     const { commands, components, events, config } = await build({
@@ -63,7 +63,6 @@ ${instance ? generateInstanceCreation() : ""}
     const writing = ora("Writing to bot.gen.ts");
     writeFileSync(dest ?? "bot.gen.ts", outputContent);
     writing.succeed("Wrote to bot.gen.ts");
-    exit();
   });
 
 function exportDataArray(
@@ -98,27 +97,19 @@ program
   .argument("[name]", "Project name")
   .action(async (name, template) => {
     if (!name) {
-      ({ name } = await inquirer.prompt([
-        {
-          message: "Project name:",
-          type: "input",
-          name: "name",
-          required: true,
-        },
-      ]));
+      name = await input({
+        message: "Project name:",
+        required: true,
+      });
     }
     if (
       !template ||
       (!template.startsWith("node/") && !template.startsWith("deno/"))
     ) {
-      const { isDeno } = await inquirer.prompt([
-        {
-          message: "Would you like to use a Deno specific template?",
-          type: "confirm",
-          default: false,
-          name: "isDeno",
-        },
-      ]);
+      const isDeno = await confirm({
+        message: "Would you like to use a Deno specific template?",
+        default: false,
+      });
       const res = await fetch(
         `https://api.github.com/repos/inbestigator/dressed-examples/contents/${
           isDeno ? "deno" : "node"
@@ -130,17 +121,13 @@ program
       const files = (
         (await res.json()) as { name: string; path: string; type: string }[]
       ).filter((f) => f.type === "dir");
-      ({ template } = await inquirer.prompt([
-        {
-          message: "Select the template to use",
-          type: "select",
-          name: "template",
-          choices: files.map((f) => ({
-            name: f.name,
-            value: f.path,
-          })),
-        },
-      ]));
+      template = await select({
+        message: "Select the template to use",
+        choices: files.map((f) => ({
+          name: f.name,
+          value: f.path,
+        })),
+      });
     }
     const res = await fetch(
       `https://raw.githubusercontent.com/inbestigator/dressed-examples/main/${template}/.env.example`,
@@ -149,14 +136,11 @@ program
       throw new Error("Failed to fetch template.");
     }
     const parsed = parse(await res.text());
-    const envVars = await inquirer.prompt(
-      Object.entries(parsed).map(([k, v]) => ({
-        message: k,
-        name: k,
-        type: "input",
-        default: v,
-      })),
-    );
+    const envVars: Record<string, string> = {};
+
+    for (const [k, v] of Object.entries(parsed)) {
+      envVars[k] = await input({ message: k, default: v });
+    }
 
     const mkdirLoader = ora(`Creating files for project: ${name}`).start();
 
@@ -203,12 +187,11 @@ program
       await createFiles(path, join(cwd(), name));
     } catch {
       mkdirLoader.fail();
-      exit(1);
+      return;
     }
     mkdirLoader.succeed();
 
     console.log("\x1b[32m%s", "Project created successfully.");
-    exit();
   });
 
 program.parse();
