@@ -13,8 +13,9 @@ export function generateXSignature(timestamp: string, content: string) {
   return Buffer.from(signature).toString("hex");
 }
 
+const stamp = Date.now().toString();
+
 test("Don't verify invalid signature", () => {
-  const stamp = Date.now().toString();
   const result = verifySignature(
     "different test",
     generateXSignature(stamp, "test"),
@@ -25,7 +26,6 @@ test("Don't verify invalid signature", () => {
 });
 
 test("Verify valid signature", () => {
-  const stamp = Date.now().toString();
   const result = verifySignature(
     "test",
     generateXSignature(stamp, "test"),

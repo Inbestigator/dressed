@@ -23,19 +23,11 @@ test("Button component", () => {
       custom_id: "button_id",
       style: "Primary",
     }),
-  ).toEqual({
-    type: 2,
-    custom_id: "button_id",
-    style: 1,
-    label: "Click me",
-  });
+  ).toMatchSnapshot();
 });
 
 test("Action row component", () => {
-  expect(ActionRow()).toEqual({
-    type: 1,
-    components: [],
-  });
+  expect(ActionRow()).toMatchSnapshot();
 });
 
 test("Command option component", () => {
@@ -46,12 +38,7 @@ test("Command option component", () => {
       type: "String",
       max_length: 10,
     }),
-  ).toEqual({
-    name: "test",
-    description: "test",
-    type: 3,
-    max_length: 10,
-  });
+  ).toMatchSnapshot();
 });
 
 test("String select menu component", () => {
@@ -61,11 +48,7 @@ test("String select menu component", () => {
       type: "String",
       options: [SelectMenuOption("test", "test")],
     }),
-  ).toEqual({
-    type: 3,
-    custom_id: "select_id",
-    options: [{ label: "test", value: "test" }],
-  });
+  ).toMatchSnapshot();
 });
 
 test("Channel select menu component", () => {
@@ -74,10 +57,7 @@ test("Channel select menu component", () => {
       custom_id: "select_id",
       type: "Channel",
     }),
-  ).toEqual({
-    type: 8,
-    custom_id: "select_id",
-  });
+  ).toMatchSnapshot();
 });
 
 test("User select menu component", () => {
@@ -86,10 +66,7 @@ test("User select menu component", () => {
       custom_id: "select_id",
       type: "User",
     }),
-  ).toEqual({
-    type: 5,
-    custom_id: "select_id",
-  });
+  ).toMatchSnapshot();
 });
 
 test("Role select menu component", () => {
@@ -98,10 +75,7 @@ test("Role select menu component", () => {
       custom_id: "select_id",
       type: "Role",
     }),
-  ).toEqual({
-    type: 6,
-    custom_id: "select_id",
-  });
+  ).toMatchSnapshot();
 });
 
 test("Mentionable select menu component", () => {
@@ -110,10 +84,7 @@ test("Mentionable select menu component", () => {
       custom_id: "select_id",
       type: "Mentionable",
     }),
-  ).toEqual({
-    type: 7,
-    custom_id: "select_id",
-  });
+  ).toMatchSnapshot();
 });
 
 test("Text input component", () => {
@@ -123,7 +94,7 @@ test("Text input component", () => {
       custom_id: "input_id",
       style: "Short",
     }),
-  ).toEqual({ label: "test", type: 4, custom_id: "input_id", style: 1 });
+  ).toMatchSnapshot();
 });
 
 test("Text input component", () => {
@@ -133,74 +104,35 @@ test("Text input component", () => {
       custom_id: "input_id",
       style: "Paragraph",
     }),
-  ).toEqual({
-    label: "test",
-    type: 4,
-    custom_id: "input_id",
-    style: 2,
-  });
+  ).toMatchSnapshot();
 });
 
 test("Section component", () => {
   expect(
     Section(["test"], Button({ label: "Click me", custom_id: "button_id" })),
-  ).toEqual({
-    components: [
-      {
-        content: "test",
-        type: 10,
-      },
-    ],
-    accessory: {
-      type: 2,
-      label: "Click me",
-      custom_id: "button_id",
-      style: 1,
-    },
-    type: 9,
-  });
+  ).toMatchSnapshot();
 });
 
 test("Text display component", () => {
-  expect(TextDisplay("test")).toEqual({
-    content: "test",
-    type: 10,
-  });
+  expect(TextDisplay("test")).toMatchSnapshot();
 });
 
 test("Thumbnail component", () => {
-  expect(Thumbnail("https://example.com")).toEqual({
-    media: { url: "https://example.com" },
-    type: 11,
-  });
+  expect(Thumbnail("https://example.com")).toMatchSnapshot();
 });
 
 test("Media gallery component", () => {
   expect(
     MediaGallery([MediaGalleryItem("https://example.com")], { id: 1 }),
-  ).toEqual({
-    items: [
-      {
-        media: { url: "https://example.com" },
-      },
-    ],
-    id: 1,
-    type: 12,
-  });
+  ).toMatchSnapshot();
 });
 
 test("File component", () => {
-  expect(File("https://example.com")).toEqual({
-    file: { url: "https://example.com" },
-    type: 13,
-  });
+  expect(File("https://example.com")).toMatchSnapshot();
 });
 
 test("Separator component", () => {
-  expect(Separator()).toEqual({
-    spacing: 1,
-    type: 14,
-  });
+  expect(Separator()).toMatchSnapshot();
 });
 
 test("Container component", () => {
@@ -212,30 +144,5 @@ test("Container component", () => {
       ),
       Separator(),
     ),
-  ).toEqual({
-    components: [
-      {
-        components: [
-          {
-            type: 2,
-            label: "Click me",
-            custom_id: "1",
-            style: 1,
-          },
-          {
-            type: 2,
-            label: "Click me",
-            custom_id: "2",
-            style: 1,
-          },
-        ],
-        type: 1,
-      },
-      {
-        spacing: 1,
-        type: 14,
-      },
-    ],
-    type: 17,
-  });
+  ).toMatchSnapshot();
 });

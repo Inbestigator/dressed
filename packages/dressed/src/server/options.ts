@@ -68,7 +68,7 @@ export function getOption<R extends boolean>(
 ): R extends true ? NonNullable<OptionReaders> : OptionReaders | null {
   const option = options.find((o) => o.name === name);
   if (!option) {
-    if (required) throw new Error(`Required option ${name} not found`);
+    if (required) throw new Error(`Required option "${name}" not found`);
     return null as R extends true ? never : null;
   }
 
@@ -85,7 +85,7 @@ export function getOption<R extends boolean>(
       return {
         getSubcommand: (name: string) => {
           const subcommand = option.options.find((o) => o.name === name);
-          if (!subcommand) throw new Error(`Subcommand ${name} not found`);
+          if (!subcommand) throw new Error(`Subcommand "${name}" not found`);
           return {
             ...subcommand,
             getOption: (name: string, required = false) =>

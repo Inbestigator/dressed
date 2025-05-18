@@ -44,10 +44,7 @@ export default function createInteraction<T extends APIInteraction>(
       return {
         ...interaction,
         ...baseInteractionMethods(interaction),
-        getField: <Required extends boolean>(
-          name: string,
-          required: Required,
-        ) => {
+        getField: <R extends boolean>(name: string, required: R) => {
           const field = interaction.data.components
             .map((c) => c.components)
             .flat()
@@ -63,7 +60,7 @@ export default function createInteraction<T extends APIInteraction>(
       } as unknown as Interaction<T>;
     }
     default: {
-      return null as unknown as Interaction<T>;
+      return null as Interaction<T>;
     }
   }
 }
