@@ -31,8 +31,11 @@ export function setupEvents(events: EventData[]): EventHandler {
       );
       eventLoader.succeed();
     } catch (error) {
-      eventLoader.fail();
-      console.error("└", error);
+      if (error instanceof Error) {
+        eventLoader.fail(error.message);
+      } else {
+        console.error(error);
+      }
     }
   };
 }

@@ -78,8 +78,11 @@ export function setupCommands(commands: CommandData[]): CommandHandler {
       );
       commandLoader.succeed();
     } catch (error) {
-      commandLoader.fail();
-      console.error("└", error);
+      if (error instanceof Error) {
+        commandLoader.fail(error.message);
+      } else {
+        console.error(error);
+      }
     }
   };
 }

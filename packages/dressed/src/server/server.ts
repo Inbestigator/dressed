@@ -98,8 +98,7 @@ export async function handleRequest(
       req.headers.get("x-signature-timestamp"),
     )
   ) {
-    reqLoader.fail();
-    console.error("└ Invalid signature");
+    reqLoader.fail("Invalid signature");
     return new Response(null, { status: 401 });
   }
 
@@ -109,6 +108,7 @@ export async function handleRequest(
     const json = JSON.parse(body);
     let status = 500;
     if ("token" in json) {
+      // The interaction response token
       status = handleInteraction(runCommand, runComponent, json);
     } else {
       status = handleEvent(runEvent, json);
@@ -132,32 +132,26 @@ export function handleInteraction(
 ): 200 | 202 | 404 {
   switch (json.type) {
     case InteractionType.Ping: {
-      console.log("└ Received ping test");
+      console.log("Received ping test");
       return 200;
     }
     case InteractionType.ApplicationCommand: {
       const command = json as APIApplicationCommandInteraction;
-      console.log("└ Received command:", command.data.name);
       const interaction = createInteraction(command);
       runCommand(interaction);
       return 202;
     }
-    case InteractionType.MessageComponent: {
-      const component = json as APIMessageComponentInteraction;
-      console.log("└ Received component:", component.data.custom_id);
-      const interaction = createInteraction(component);
-      runComponent(interaction);
-      return 202;
-    }
+    case InteractionType.MessageComponent:
     case InteractionType.ModalSubmit: {
-      const component = json as APIModalSubmitInteraction;
-      console.log("└ Received modal:", component.data.custom_id);
+      const component = json as
+        | APIMessageComponentInteraction
+        | APIModalSubmitInteraction;
       const interaction = createInteraction(component);
       runComponent(interaction);
       return 202;
     }
     default: {
-      console.log("└ Received unknown interaction type:", json.type);
+      console.error("Received unknown interaction type:", json.type);
       return 404;
     }
   }
@@ -172,17 +166,16 @@ export function handleEvent(
 ): 200 | 202 | 404 {
   switch (json.type) {
     case ApplicationWebhookType.Ping: {
-      console.log("└ Received ping test");
+      console.log("Received ping test");
       return 200;
     }
     case ApplicationWebhookType.Event: {
       const event = json.event as APIWebhookEventBody;
-      console.log("└ Received event:", event.type);
       runEvent(event);
       return 202;
     }
     default: {
-      console.log("└ Received unknown event type:", json.type);
+      console.log("Received unknown event type:", json.type);
       return 404;
     }
   }
