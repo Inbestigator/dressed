@@ -16,7 +16,7 @@ import type {
   ServerConfig,
 } from "../types/config.ts";
 import { createServer as createHttpServer, type Server } from "node:http";
-import { stdout } from "node:process";
+import { on, stdout } from "node:process";
 import { Buffer } from "node:buffer";
 
 /**
@@ -27,7 +27,7 @@ export function createServer(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
   runEvent: EventHandler,
-  config: ServerConfig,
+  config: ServerConfig
 ): Server {
   const server = createHttpServer((req, res) => {
     if (req.url !== (config.endpoint ?? "/")) {
@@ -52,7 +52,7 @@ export function createServer(
           }),
           runCommand,
           runComponent,
-          runEvent,
+          runEvent
         );
 
         res.statusCode = handlerRes.status;
@@ -65,9 +65,24 @@ export function createServer(
 
   server.listen(port, "localhost", () => {
     console.log(
-      `Bot is now listening on ${new URL(config.endpoint ?? "", `http://localhost:${port}`).href}`,
+      "Bot is now listening on",
+      new URL(config.endpoint ?? "", `http://localhost:${port}`).href
     );
   });
+
+  function shutdown() {
+    const closeLoader = ora({
+      stream: stdout,
+      text: "Closing bot server",
+    }).start();
+    server.close(() => {
+      closeLoader.succeed("Bot server closed");
+      process.exit(0);
+    });
+  }
+
+  on("SIGTERM", shutdown);
+  on("SIGINT", shutdown);
 
   return server;
 }
@@ -83,7 +98,7 @@ export async function handleRequest(
   req: Request,
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
-  runEvent: EventHandler,
+  runEvent: EventHandler
 ): Promise<Response> {
   const reqLoader = ora({
     stream: stdout,
@@ -95,7 +110,7 @@ export async function handleRequest(
     !verifySignature(
       body,
       req.headers.get("x-signature-ed25519"),
-      req.headers.get("x-signature-timestamp"),
+      req.headers.get("x-signature-timestamp")
     )
   ) {
     reqLoader.fail("Invalid signature");
@@ -107,8 +122,8 @@ export async function handleRequest(
   try {
     const json = JSON.parse(body);
     let status = 500;
+    // The interaction response token
     if ("token" in json) {
-      // The interaction response token
       status = handleInteraction(runCommand, runComponent, json);
     } else {
       status = handleEvent(runEvent, json);
@@ -128,7 +143,7 @@ export async function handleRequest(
 export function handleInteraction(
   runCommand: CommandHandler,
   runComponent: ComponentHandler,
-  json: ReturnType<typeof JSON.parse>,
+  json: ReturnType<typeof JSON.parse>
 ): 200 | 202 | 404 {
   switch (json.type) {
     case InteractionType.Ping: {
@@ -143,9 +158,7 @@ export function handleInteraction(
     }
     case InteractionType.MessageComponent:
     case InteractionType.ModalSubmit: {
-      const component = json as
-        | APIMessageComponentInteraction
-        | APIModalSubmitInteraction;
+      const component = json as APIMessageComponentInteraction | APIModalSubmitInteraction;
       const interaction = createInteraction(component);
       runComponent(interaction);
       return 202;
@@ -162,7 +175,7 @@ export function handleInteraction(
  */
 export function handleEvent(
   runEvent: EventHandler,
-  json: ReturnType<typeof JSON.parse>,
+  json: ReturnType<typeof JSON.parse>
 ): 200 | 202 | 404 {
   switch (json.type) {
     case ApplicationWebhookType.Ping: {

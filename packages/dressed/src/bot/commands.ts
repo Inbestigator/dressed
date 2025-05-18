@@ -73,9 +73,7 @@ export function setupCommands(commands: CommandData[]): CommandHandler {
     }).start();
 
     try {
-      await Promise.resolve(
-        (await importUserFile(handler)).default(interaction),
-      );
+      await (await importUserFile(handler)).default(interaction);
       commandLoader.succeed();
     } catch (error) {
       if (error instanceof Error) {
