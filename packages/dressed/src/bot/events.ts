@@ -4,6 +4,7 @@ import ora from "ora";
 import { stdout } from "node:process";
 import { ApplicationWebhookEventType } from "discord-api-types/v10";
 import importUserFile from "../server/import.ts";
+import { logRunnerError } from "./utils.ts";
 
 /**
  * Creates the event handler
@@ -28,12 +29,8 @@ export function setupEvents(events: EventData[]): EventHandler {
         (await importUserFile(handler)) as { default: EventHandler }
       ).default(event);
       eventLoader.succeed();
-    } catch (error) {
-      if (error instanceof Error) {
-        eventLoader.fail(error.message);
-      } else {
-        console.error(error);
-      }
+    } catch (e) {
+      logRunnerError(e, eventLoader);
     }
   };
 }

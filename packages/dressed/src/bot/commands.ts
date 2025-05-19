@@ -2,7 +2,7 @@ import type { CommandData, CommandHandler } from "../types/config.ts";
 import ora from "ora";
 import { trackParts, type WalkEntry } from "../build.ts";
 import { stdout } from "node:process";
-import { installGlobalCommands } from "./utils.ts";
+import { installGlobalCommands, logRunnerError } from "./utils.ts";
 import { botEnv } from "../env.ts";
 import importUserFile from "../server/import.ts";
 
@@ -75,12 +75,8 @@ export function setupCommands(commands: CommandData[]): CommandHandler {
     try {
       await (await importUserFile(handler)).default(interaction);
       commandLoader.succeed();
-    } catch (error) {
-      if (error instanceof Error) {
-        commandLoader.fail(error.message);
-      } else {
-        console.error(error);
-      }
+    } catch (e) {
+      logRunnerError(e, commandLoader);
     }
   };
 }

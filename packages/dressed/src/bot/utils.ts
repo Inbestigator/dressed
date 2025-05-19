@@ -1,11 +1,14 @@
-import ora from "ora";
+import ora, { type Ora } from "ora";
 import { filetypeinfo } from "magic-bytes.js";
 import type { RawFile } from "../types/file.ts";
 import { checkLimit, headerUpdateLimit, updateLimit } from "./ratelimit.ts";
 import {
-  type RESTPostAPIChatInputApplicationCommandsJSONBody,
   RouteBases,
   Routes,
+  type RESTPostAPIChatInputApplicationCommandsJSONBody,
+  type RESTError,
+  type RESTRateLimit,
+  type RESTErrorData,
 } from "discord-api-types/v10";
 import { botEnv } from "../env.ts";
 import { Buffer } from "node:buffer";
@@ -81,18 +84,25 @@ export async function callDiscord(
     },
     ...(options as unknown as RequestInit),
   });
+
   if (!res.ok) {
-    const data = await res.json();
-    ora(`Failed to ${options.method} ${endpoint} (${res.status} })`).fail();
-    console.error(`└ ${data.message}`);
+    const error = (await res.json()) as RESTError;
+    ora(`${error.message} (${error.code})`).fail();
+
+    if (error.errors) {
+      logErrorData(error.errors);
+    }
+
     if (res.status === 429) {
+      const ratelimit = error as RESTRateLimit;
       updateLimit(
-        data.global ? "global" : endpoint,
+        ratelimit.global ? "global" : endpoint,
         0,
-        Date.now() + data.retry_after * 1000,
+        Date.now() + ratelimit.retry_after * 1000,
       );
     }
-    throw new Error(data.message);
+
+    throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`);
   }
 
   headerUpdateLimit(endpoint, res);
@@ -108,4 +118,28 @@ export async function installGlobalCommands(
     method: "PUT",
     body: commands,
   });
+}
+
+export function logRunnerError(error: unknown, loader: Ora) {
+  const text = loader.text.replace("Running", "Failed to run");
+  if (error instanceof Error) {
+    loader.fail(`${text} - ${error.message}`);
+  } else {
+    loader.fail(text);
+    console.error(error);
+  }
+}
+
+function logErrorData(data: RESTErrorData, path: string[] = []) {
+  if (typeof data === "string") {
+    console.error(`${path.join(".")}: ${data}`);
+  } else if ("_errors" in data && Array.isArray(data._errors)) {
+    for (const err of data._errors) {
+      logErrorData(err, path);
+    }
+  } else if (typeof data === "object" && data !== null) {
+    for (const [key, value] of Object.entries(data)) {
+      logErrorData(value, [...path, key]);
+    }
+  }
 }
