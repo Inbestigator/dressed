@@ -4,6 +4,7 @@ import { trackParts, type WalkEntry } from "../build.ts";
 import ora from "ora";
 import { stdout } from "node:process";
 import importUserFile from "../server/import.ts";
+import { logRunnerError } from "./utils.ts";
 
 /**
  * Creates the component handler
@@ -62,12 +63,8 @@ export function setupComponents(components: ComponentData[]): ComponentHandler {
         (await importUserFile(handler)) as { default: ComponentHandler }
       ).default(interaction, args);
       componentLoader.succeed();
-    } catch (error) {
-      if (error instanceof Error) {
-        componentLoader.fail(error.message);
-      } else {
-        console.error(error);
-      }
+    } catch (e) {
+      logRunnerError(e, componentLoader);
     }
   };
 }

@@ -71,14 +71,7 @@ export function createServer(
   });
 
   function shutdown() {
-    const closeLoader = ora({
-      stream: stdout,
-      text: "Closing bot server",
-    }).start();
-    server.close(() => {
-      closeLoader.succeed("Bot server closed");
-      process.exit(0);
-    });
+    server.close(() => process.exit(0));
   }
 
   process.on("SIGTERM", shutdown);
@@ -117,7 +110,7 @@ export async function handleRequest(
     return new Response(null, { status: 401 });
   }
 
-  reqLoader.succeed("Validated request");
+  reqLoader.stop();
 
   try {
     const json = JSON.parse(body);
@@ -132,7 +125,7 @@ export async function handleRequest(
       status,
     });
   } catch (error) {
-    console.error("└ Error processing request:", error);
+    console.error("Failed to process request:", error);
     return new Response(null, { status: 500 });
   }
 }
