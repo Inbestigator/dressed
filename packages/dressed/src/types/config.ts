@@ -5,7 +5,11 @@ import type {
 } from "./interaction.ts";
 import type {
   APIWebhookEventBody,
+  ApplicationCommandType,
+  InteractionContextType,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
+  RESTPostAPIContextMenuApplicationCommandsJSONBody,
+  RESTPostAPIPrimaryEntryPointApplicationCommandJSONBody,
 } from "discord-api-types/v10";
 
 /**
@@ -20,18 +24,51 @@ export interface ServerConfig {
   root?: string;
 }
 
-/**
- * Configuration for a specific command.
- */
-export type CommandConfig = Omit<
-  RESTPostAPIChatInputApplicationCommandsJSONBody,
-  "name" | "type" | "contexts" | "integration_types"
-> & {
+type BaseCommandConfig = {
+  /** Type of the command, defaults to `ChatInput` */
+  type?: keyof typeof ApplicationCommandType;
   /** Interaction context(s) where the command can be used, only for globally-scoped commands. Defaults to all */
-  contexts?: ("Guild" | "Bot DM" | "Private channel")[];
+  contexts?: (keyof typeof InteractionContextType)[];
   /** Where a command can be installed, also called its supported installation context. Defaults to both */
   integration_type?: "Guild" | "User";
 };
+
+type CommandTypeConfig<T, K extends PropertyKey, A> = Omit<
+  T,
+  keyof BaseCommandConfig | "name" | K
+> &
+  A &
+  BaseCommandConfig;
+
+type ChatInputConfig = CommandTypeConfig<
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
+  0,
+  { type?: "ChatInput" }
+>;
+
+type ContextMenuConfig = CommandTypeConfig<
+  RESTPostAPIContextMenuApplicationCommandsJSONBody,
+  "options",
+  {
+    type: "Message" | "User";
+  }
+>;
+
+type PrimaryEntryPointConfig = CommandTypeConfig<
+  RESTPostAPIPrimaryEntryPointApplicationCommandJSONBody,
+  "options",
+  {
+    type: "PrimaryEntryPoint";
+  }
+>;
+
+/**
+ * Configuration for a specific command.
+ */
+export type CommandConfig =
+  | ChatInputConfig
+  | ContextMenuConfig
+  | PrimaryEntryPointConfig;
 
 /**
  * Command data object in the `commands` array outputted from `build()`

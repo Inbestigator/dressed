@@ -1,10 +1,19 @@
-import type { CommandData, CommandHandler } from "../types/config.ts";
+import type {
+  CommandConfig,
+  CommandData,
+  CommandHandler,
+} from "../types/config.ts";
 import ora from "ora";
 import { trackParts, type WalkEntry } from "../build.ts";
 import { stdout } from "node:process";
 import { installGlobalCommands, logRunnerError } from "./utils.ts";
 import { botEnv } from "../env.ts";
 import importUserFile from "../server/import.ts";
+import {
+  ApplicationCommandType,
+  ApplicationIntegrationType,
+  InteractionContextType,
+} from "discord-api-types/v10";
 
 /**
  * Installs commands to the Discord API
@@ -19,33 +28,32 @@ export async function installCommands(commands: CommandData[]) {
     botEnv.DISCORD_APP_ID,
     await Promise.all(
       commands.map(async (c) => {
-        const { config } = await importUserFile(c);
-        let contexts = [];
-        contexts = config?.contexts
-          ? config.contexts.reduce<number[]>((acc, c) => {
-              switch (c) {
-                case "Guild":
-                  return [...acc, 0];
-                case "Bot DM":
-                  return [...acc, 1];
-                case "Private channel":
-                  return [...acc, 2];
-                default:
-                  return acc;
-              }
-            }, [])
-          : [0, 1, 2];
-        let integration_types = [];
-        integration_types = config?.integration_type
-          ? [config.integration_type == "Guild" ? 0 : 1]
-          : [0, 1];
+        const config =
+          (await importUserFile(c)).config ?? ({} as CommandConfig);
+        if (!config.type) {
+          config.type = "ChatInput";
+        }
         return {
           ...config,
           name: c.name,
-          description: config?.description ?? "No description provided",
-          type: 1,
-          integration_types,
-          contexts,
+          type: ApplicationCommandType[config.type],
+          integration_types: config.integration_type
+            ? [ApplicationIntegrationType[`${config.integration_type}Install`]]
+            : [0, 1],
+          contexts: config.contexts
+            ? config.contexts.reduce<number[]>(
+                (p, c) =>
+                  !p.includes(InteractionContextType[c])
+                    ? [...p, InteractionContextType[c]]
+                    : p,
+                [],
+              )
+            : [0, 1, 2],
+          ...(config.type === "ChatInput"
+            ? {
+                description: config.description ?? "No description provided",
+              }
+            : {}),
         };
       }),
     ),
