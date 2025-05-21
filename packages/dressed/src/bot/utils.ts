@@ -5,7 +5,7 @@ import { checkLimit, headerUpdateLimit, updateLimit } from "./ratelimit.ts";
 import {
   RouteBases,
   Routes,
-  type RESTPostAPIChatInputApplicationCommandsJSONBody,
+  type RESTPostAPIBaseApplicationCommandsJSONBody,
   type RESTError,
   type RESTRateLimit,
   type RESTErrorData,
@@ -112,7 +112,7 @@ export async function callDiscord(
 
 export async function installGlobalCommands(
   appId: string,
-  commands: RESTPostAPIChatInputApplicationCommandsJSONBody[],
+  commands: RESTPostAPIBaseApplicationCommandsJSONBody[],
 ) {
   await callDiscord(Routes.applicationCommands(appId), {
     method: "PUT",

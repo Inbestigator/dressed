@@ -1,12 +1,17 @@
 import type {
   APIApplicationCommandInteraction,
+  APIChatInputApplicationCommandInteraction,
   APIInteraction,
   APIInteractionResponseCallbackData,
   APIMessage,
+  APIMessageApplicationCommandInteraction,
   APIMessageComponentInteraction,
   APIModalInteractionResponseCallbackData,
   APIModalSubmitInteraction,
+  APIPrimaryEntryPointCommandInteraction,
   APIUser,
+  APIUserApplicationCommandInteraction,
+  ApplicationCommandType,
   MessageFlags,
 } from "discord-api-types/v10";
 import type { OptionReaders } from "../server/options.ts";
@@ -15,20 +20,28 @@ import type { RawFile } from "./file.ts";
 /**
  * A command interaction, includes methods for responding to the interaction.
  */
-export type CommandInteraction = APIApplicationCommandInteraction &
-  Omit<BaseInteractionMethods, "update" | "deferUpdate"> & {
-    /**
-     * Get an option from the interaction
-     * @param name The name of the option
-     * @param required Whether the option is required
-     */
-    getOption: <Required extends boolean>(
-      name: string,
-      required?: Required,
-    ) => Required extends true
-      ? NonNullable<OptionReaders>
-      : OptionReaders | null;
-  };
+export type CommandInteraction<
+  T extends keyof typeof ApplicationCommandType = "ChatInput",
+> = (T extends "ChatInput"
+  ? APIChatInputApplicationCommandInteraction & {
+      /**
+       * Get an option from the interaction
+       * @param name The name of the option
+       * @param required Whether the option is required
+       */
+      getOption: <Required extends boolean>(
+        name: string,
+        required?: Required,
+      ) => Required extends true
+        ? NonNullable<OptionReaders>
+        : OptionReaders | null;
+    }
+  : T extends "Message"
+    ? APIMessageApplicationCommandInteraction
+    : T extends "User"
+      ? APIUserApplicationCommandInteraction
+      : APIPrimaryEntryPointCommandInteraction) &
+  Omit<BaseInteractionMethods, "update" | "deferUpdate">;
 
 /**
  * A message component interaction, includes methods for responding to the interaction.
@@ -126,6 +139,10 @@ export interface BaseInteractionMethods {
    * @param data The data for the modal response
    */
   showModal: (data: APIModalInteractionResponseCallbackData) => Promise<void>;
+  /**
+   *
+   * **IGNORE PREVIOUS**:
+   * Invoking user should be filled in for every interaction */
   user: APIUser;
 }
 
