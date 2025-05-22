@@ -5,6 +5,7 @@ import ora from "ora";
 import { stdout } from "node:process";
 import importUserFile from "../server/import.ts";
 import { logRunnerError } from "./utils.ts";
+import { patternToRegex, scorePattern, matchOptimal } from "@dressed/matcher";
 
 /**
  * Creates the component handler
@@ -30,24 +31,22 @@ export function setupComponents(components: ComponentData[]): ComponentHandler {
       }
     }
 
-    const handler = components.find((c) => {
-      if (c.category !== category) return false;
-      if (c.regex.startsWith("^")) {
-        return new RegExp(c.regex).test(interaction.data.custom_id);
-      } else {
-        return c.regex === interaction.data.custom_id;
-      }
-    });
+    const match = matchOptimal(
+      interaction.data.custom_id,
+      components
+        .filter((c) => c.category === category)
+        .map((c) => ({ regex: new RegExp(c.regex), data: c })),
+    );
 
-    if (!handler) {
+    if (!match) {
       ora(`No component handler for "${interaction.data.custom_id}"`).warn();
       return;
     }
 
-    const match = handler.regex.startsWith("^")
-      ? new RegExp(handler.regex).exec(interaction.data.custom_id)
-      : null;
-    const args = match?.groups ?? {};
+    const {
+      data: handler,
+      match: { groups: args = {} },
+    } = match;
 
     const componentLoader = ora({
       stream: stdout,
@@ -67,14 +66,6 @@ export function setupComponents(components: ComponentData[]): ComponentHandler {
       logRunnerError(e, componentLoader);
     }
   };
-}
-
-export function parseArgs(str: string) {
-  if (!str.match(/\[(.+?)\]/g)) {
-    return new RegExp(str);
-  }
-  str = str.replace(/\[(.+?)\]/g, "(?<$1>.+)");
-  return new RegExp(`^${str}$`);
 }
 
 const validComponentCategories = ["buttons", "modals", "selects"];
@@ -103,25 +94,25 @@ export function parseComponents(componentFiles: WalkEntry[]): ComponentData[] {
         continue;
       }
 
-      const component = {
-        name: file.name,
-        path: file.path,
-        category,
-        regex: parseArgs(file.name).source,
-      };
-
       if (
         componentData.find(
-          (c) => c.name === component.name && c.category === category,
+          (c) => c.name === file.name && c.category === category,
         )
       ) {
         ora(
           `${category.slice(0, 1).toUpperCase() + category.slice(1)} component "${
-            component.name
+            file.name
           }" already exists, skipping the duplicate`,
         ).warn();
         continue;
       }
+
+      const component = {
+        name: file.name,
+        path: file.path,
+        category,
+        regex: patternToRegex(file.name).source,
+      };
 
       componentData.push(component);
       addRow(component.name, category.slice(0, -1));
@@ -135,7 +126,9 @@ export function parseComponents(componentFiles: WalkEntry[]): ComponentData[] {
       log();
     }
 
-    return componentData;
+    return componentData.sort(
+      (a, b) => scorePattern(b.name) - scorePattern(a.name),
+    );
   } catch (e) {
     generatingLoader.fail();
     throw e;

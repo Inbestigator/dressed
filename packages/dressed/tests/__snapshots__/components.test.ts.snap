@@ -1,34 +1,5 @@
 // Bun Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Container component 1`] = `
-{
-  "components": [
-    {
-      "components": [
-        {
-          "custom_id": "1",
-          "label": "Click me",
-          "style": 1,
-          "type": 2,
-        },
-        {
-          "custom_id": "2",
-          "label": "Click me",
-          "style": 1,
-          "type": 2,
-        },
-      ],
-      "type": 1,
-    },
-    {
-      "spacing": 1,
-      "type": 14,
-    },
-  ],
-  "type": 17,
-}
-`;
-
 exports[`Button component 1`] = `
 {
   "custom_id": "button_id",
@@ -174,5 +145,34 @@ exports[`Separator component 1`] = `
 {
   "spacing": 1,
   "type": 14,
+}
+`;
+
+exports[`Container component 1`] = `
+{
+  "components": [
+    {
+      "components": [
+        {
+          "custom_id": "1",
+          "label": "Click me",
+          "style": 1,
+          "type": 2,
+        },
+        {
+          "custom_id": "2",
+          "label": "Click me",
+          "style": 1,
+          "type": 2,
+        },
+      ],
+      "type": 1,
+    },
+    {
+      "spacing": 1,
+      "type": 14,
+    },
+  ],
+  "type": 17,
 }
 `;

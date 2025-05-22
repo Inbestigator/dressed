@@ -11,9 +11,9 @@ exports[`Build bot 1`] = `
   "components": [
     {
       "category": "buttons",
-      "name": "button_[arg]",
-      "path": "tests/src/components/buttons/button_[arg].ts",
-      "regex": "^button_(?<arg>.+)$",
+      "name": "button_:arg",
+      "path": "tests/src/components/buttons/button_:arg.ts",
+      "regex": "^button_(?<arg>.+?)$",
     },
   ],
   "config": {
