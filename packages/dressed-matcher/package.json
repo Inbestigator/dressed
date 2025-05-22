@@ -1,0 +1,28 @@
+{
+  "name": "@dressed/matcher",
+  "version": "1.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inbestigator/dressed.git",
+    "directory": "packages/dressed-matcher"
+  },
+  "exports": "./dist/index.js",
+  "description": "Match ID regexes based on custom patterns.",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://dressed.vercel.app",
+  "keywords": [
+    "dressed",
+    "glob",
+    "matcher"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "dist": "rm -fr dist && bun tsc",
+    "check-types": "bun tsc --noEmit",
+    "dry-publish": "bun publish --dry-run"
+  },
+  "type": "module",
+  "types": "./dist/index.d.ts"
+}

@@ -10,6 +10,15 @@ import { waitUntil } from "@vercel/functions";
 /**
  * Creates a request handler for Next.js routes that processes commands, components, and events.
  *
+ * @example
+ * ```ts
+ * // app/bot/route.ts
+ * import createHandler from "@dressed/next";
+ * import { commands, components, events } from "@/bot.gen";
+ *
+ * export const POST = createHandler(commands, components, events);
+ * ```
+ *
  * @param commands - Array of command datas to use
  * @param components - Array of component datas to use
  * @param events - Array of event datas to use
@@ -31,6 +40,6 @@ export default function createHandler(
       req,
       async (i) => waitUntil(runCommand(i)),
       async (i) => waitUntil(runComponent(i)),
-      async (i) => waitUntil(runEvent(i)),
+      async (e) => waitUntil(runEvent(e)),
     );
 }

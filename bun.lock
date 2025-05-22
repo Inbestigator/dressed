@@ -16,11 +16,12 @@
     },
     "packages/dressed": {
       "name": "dressed",
-      "version": "1.6.3",
+      "version": "1.6.4",
       "bin": {
         "dressed": "dist/bin/dressed.js",
       },
       "dependencies": {
+        "@dressed/matcher": "^1.0.0",
         "@inquirer/prompts": "^7.5.1",
         "commander": "^13.1.0",
         "discord-api-types": "^0.38.8",
@@ -30,6 +31,10 @@
         "tweetnacl": "^1.0.3",
         "walk-it": "^5.0.1",
       },
+    },
+    "packages/dressed-matcher": {
+      "name": "@dressed/matcher",
+      "version": "1.0.0",
     },
     "packages/dressed-next": {
       "name": "@dressed/next",
@@ -93,6 +98,8 @@
     "@babel/helper-validator-identifier": ["@babel/helper-validator-identifier@7.27.1", "", {}, "sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ36nodYqJwyEIhPSdMNd7lOm/4io72luTPWH20Yda0xOuUow=="],
 
     "@babel/types": ["@babel/types@7.27.1", "", { "dependencies": { "@babel/helper-string-parser": "^7.27.1", "@babel/helper-validator-identifier": "^7.27.1" } }, "sha512-+EzkxvLNfiUeKMgy/3luqfsCWFRXLb7U6wNQTk60tovuckwB15B191tJWvpp4HjiQWdJkCxO3Wbvc6jlk3Xb2Q=="],
+
+    "@dressed/matcher": ["@dressed/matcher@workspace:packages/dressed-matcher"],
 
     "@dressed/next": ["@dressed/next@workspace:packages/dressed-next"],
 
