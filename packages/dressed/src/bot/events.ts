@@ -58,18 +58,18 @@ export function parseEvents(eventFiles: WalkEntry[]): EventData[] {
         continue;
       }
 
+      if (eventData.find((c) => c.name === file.name && c.type === type)) {
+        ora(
+          `${type} event "${file.name}" already exists, skipping the duplicate`,
+        ).warn();
+        continue;
+      }
+
       const event = {
         name: file.name,
         path: file.path,
         type,
       };
-
-      if (eventData.find((c) => c.name === event.name && c.type === type)) {
-        ora(
-          `${event.type} event "${event.name}" already exists, skipping the duplicate`,
-        ).warn();
-        continue;
-      }
 
       eventData.push(event);
       addRow(event.name);

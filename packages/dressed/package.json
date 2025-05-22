@@ -9,6 +9,7 @@
     "dry-publish": "bun publish --dry-run && deno publish --dry-run --allow-dirty"
   },
   "dependencies": {
+    "@dressed/matcher": "^1.0.1",
     "@inquirer/prompts": "^7.5.1",
     "commander": "^13.1.0",
     "discord-api-types": "^0.38.8",
