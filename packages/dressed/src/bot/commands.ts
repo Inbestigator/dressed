@@ -103,7 +103,7 @@ export function parseCommands(commandFiles: WalkEntry[]): CommandData[] {
     for (const file of commandFiles) {
       if (commandData.find((c) => c.name === file.name)) {
         ora(
-          `Command "${file.name}" already exists, skipping the duplicate`,
+          `"${file.name}" conflicts with another command, skipping the duplicate`,
         ).warn();
         continue;
       }
