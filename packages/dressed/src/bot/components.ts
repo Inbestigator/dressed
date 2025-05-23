@@ -31,22 +31,22 @@ export function setupComponents(components: ComponentData[]): ComponentHandler {
       }
     }
 
-    const match = matchOptimal(
-      interaction.data.custom_id,
-      components
-        .filter((c) => c.category === category)
-        .map((c) => ({ regex: new RegExp(c.regex), data: c })),
+    const categoryComponents = components.filter(
+      (c) => c.category === category,
     );
 
-    if (!match) {
+    const { index, match } = matchOptimal(
+      interaction.data.custom_id,
+      categoryComponents.map((c) => new RegExp(c.regex)),
+    );
+
+    if (index === -1 || !match) {
       ora(`No component handler for "${interaction.data.custom_id}"`).warn();
       return;
     }
 
-    const {
-      data: handler,
-      match: { groups: args = {} },
-    } = match;
+    const handler = categoryComponents[index];
+    const { groups: args = {} } = match;
 
     const componentLoader = ora({
       stream: stdout,
