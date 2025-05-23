@@ -60,7 +60,7 @@ export function parseEvents(eventFiles: WalkEntry[]): EventData[] {
 
       if (eventData.find((c) => c.name === file.name && c.type === type)) {
         ora(
-          `"${file.name}" conflicts with another ${type}, skipping the duplicate`,
+          `"${file.name}" conflicts with another event, skipping the duplicate`,
         ).warn();
         continue;
       }
