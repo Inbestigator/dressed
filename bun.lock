@@ -16,14 +16,14 @@
     },
     "packages/dressed": {
       "name": "dressed",
-      "version": "1.6.4",
+      "version": "1.7.0-rc.1.1",
       "bin": {
         "dressed": "dist/bin/dressed.js",
       },
       "dependencies": {
-        "@dressed/matcher": "^1.0.1",
+        "@dressed/matcher": "^1.1.0",
         "@inquirer/prompts": "^7.5.1",
-        "commander": "^13.1.0",
+        "commander": "^14.0.0",
         "discord-api-types": "^0.38.8",
         "dotenv": "^16.5.0",
         "magic-bytes.js": "^1.12.1",
@@ -34,7 +34,7 @@
     },
     "packages/dressed-matcher": {
       "name": "@dressed/matcher",
-      "version": "1.0.1",
+      "version": "1.1.0",
     },
     "packages/dressed-next": {
       "name": "@dressed/next",
@@ -551,7 +551,7 @@
 
     "comma-separated-tokens": ["comma-separated-tokens@2.0.3", "", {}, "sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg=="],
 
-    "commander": ["commander@13.1.0", "", {}, "sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw=="],
+    "commander": ["commander@14.0.0", "", {}, "sha512-2uM9rYjPvyq39NwLRqaiLtWHyDC1FvryJDa2ATTVims5YAS4PupsEQsDvP14FqhFr0P49CYDugi59xaxJlTXRA=="],
 
     "concat-map": ["concat-map@0.0.1", "", {}, "sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg=="],
 

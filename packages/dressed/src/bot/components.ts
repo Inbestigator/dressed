@@ -22,35 +22,31 @@ export function setupComponents(components: ComponentData[]): ComponentHandler {
       switch (interaction.data.component_type) {
         case 2:
           return "buttons";
-        case 8:
-        case 7:
-        case 6:
-        case 5:
-        case 3:
+        default:
           return "selects";
       }
     }
 
-    const match = matchOptimal(
-      interaction.data.custom_id,
-      components
-        .filter((c) => c.category === category)
-        .map((c) => ({ regex: new RegExp(c.regex), data: c })),
+    const categoryComponents = components.filter(
+      (c) => c.category === category,
     );
 
-    if (!match) {
+    const { index, match } = matchOptimal(
+      interaction.data.custom_id,
+      categoryComponents.map((c) => new RegExp(c.regex)),
+    );
+
+    if (index === -1 || !match) {
       ora(`No component handler for "${interaction.data.custom_id}"`).warn();
       return;
     }
 
-    const {
-      data: handler,
-      match: { groups: args = {} },
-    } = match;
+    const handler = categoryComponents[index];
+    const { groups: args = {} } = match;
 
     const componentLoader = ora({
       stream: stdout,
-      text: `Running component "${handler.name}"${
+      text: `Running ${category?.slice(0, -1)} "${handler.name}"${
         Object.keys(args).length > 0
           ? " with args: " + JSON.stringify(args)
           : ""
@@ -100,9 +96,7 @@ export function parseComponents(componentFiles: WalkEntry[]): ComponentData[] {
         )
       ) {
         ora(
-          `${category.slice(0, 1).toUpperCase() + category.slice(1)} component "${
-            file.name
-          }" already exists, skipping the duplicate`,
+          `"${file.name}" conflicts with another ${category.slice(0, -1)}, skipping the duplicate`,
         ).warn();
         continue;
       }
