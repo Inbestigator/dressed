@@ -52,31 +52,34 @@ If a filename contains `:<argname>`, it becomes dynamic, so it will match any co
 
 You can also make parts of the pattern **optional** using `{...}`. This allows components to handle multiple ID variations with a single file.
 
+If you'd like to add some regex syntax, you can simply do `(...)`. This can be paired with an argument to ensure the argument value is correct.
+
 ### Examples
 
-| Filename                    | Matches                  | Extracted Args    |
-| --------------------------- | ------------------------ | ----------------- |
-| `print_:value.ts`           | `print_<...>`            | `{ value: ... }`  |
-| `action_:action_execute.ts` | `action_<...>_execute`   | `{ action: ... }` |
-| `ticket{-:state}.ts`        | `dialog`, `dialog-<...>` | `{ state?: ... }` |
+| Filename                        | Matches                      | Arg types                            |
+| ------------------------------- | ---------------------------- | ------------------------------------ |
+| `print-:value.ts`               | `print-<...>`                | `{ value: string }`                  |
+| `ticket{-:state}.ts`            | `dialog`, `dialog-<...>`     | `{ state?: string }`                 |
+| `wait{-:length}.ts`             | `wait-<[0-9]+>`              | `{ length: string (string number) }` |
+| `i-love-:animal(dogs\|cats).ts` | `i-love-dogs`, `i-love-cats` | `{ animal: "dogs" \| "cats" }`       |
 
 ```ts
-// src/components/buttons/print_:value.ts
+// src/components/buttons/print-:value.ts
 export default async function print(_, args: { value: string }) {
   console.log(args.value);
 }
 ```
 
-Will be invoked for IDs like `print_hello` or `print_test`.
+Will be invoked for IDs like `print-Hello world` or `print-wowie`.
 
 ```ts
-// src/components/buttons/ticket{-:state}.ts
-export default async function ticket(_, args: { state?: string }) {
-  console.log("State:", args.state ?? "default");
+// src/components/buttons/ticket{-:action(open|close)}.ts
+export default async function ticket(_, args: { action?: "open" | "close" }) {
+  console.log("Action:", args.action ?? "none");
 }
 ```
 
-Will handle both `ticket` (no `state` argument) and IDs like `ticket-open`.
+Will handle either `ticket` (no `action` argument) or `ticket-open`/`ticket-close`.
 
 ### Learn More
 
