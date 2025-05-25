@@ -1,13 +1,13 @@
 {
   "name": "@dressed/matcher",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Inbestigator/dressed.git",
     "directory": "packages/dressed-matcher"
   },
   "exports": "./dist/index.js",
-  "description": "Tiny regexer from custom patterns.",
+  "description": "Tiny regex composition and matching utility.",
   "files": [
     "dist"
   ],
