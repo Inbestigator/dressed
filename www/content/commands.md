@@ -3,11 +3,11 @@
 The command names are determined by their file name, here's a typical command
 structure:
 
-```ts
+```sh
 src
 └ commands
-  ├ greet.ts // Will become /greet
-  └ trivia.ts // Will become /trivia
+  ├ greet.ts # Will become /greet
+  └ trivia.ts # Will become /trivia
 ```
 
 This means that command file names must be globally unique.
