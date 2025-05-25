@@ -21,6 +21,7 @@
   "scripts": {
     "dist": "rm -fr dist && bun tsc",
     "check-types": "bun tsc --noEmit",
+    "test": "bun test",
     "dry-publish": "bun publish --dry-run"
   },
   "type": "module",
