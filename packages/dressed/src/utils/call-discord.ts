@@ -1,16 +1,18 @@
-import ora, { type Ora } from "ora";
+import ora from "ora";
 import { filetypeinfo } from "magic-bytes.js";
 import type { RawFile } from "../types/file.ts";
-import { checkLimit, headerUpdateLimit, updateLimit } from "./ratelimit.ts";
+import {
+  checkLimit,
+  headerUpdateLimit,
+  updateLimit,
+} from "../bot/ratelimit.ts";
 import {
   RouteBases,
-  Routes,
-  type RESTPostAPIBaseApplicationCommandsJSONBody,
   type RESTError,
   type RESTRateLimit,
   type RESTErrorData,
 } from "discord-api-types/v10";
-import { botEnv } from "../env.ts";
+import { botEnv } from "./env.ts";
 import { Buffer } from "node:buffer";
 
 export async function callDiscord(
@@ -108,26 +110,6 @@ export async function callDiscord(
   headerUpdateLimit(endpoint, res);
 
   return res;
-}
-
-export async function installGlobalCommands(
-  appId: string,
-  commands: RESTPostAPIBaseApplicationCommandsJSONBody[],
-) {
-  await callDiscord(Routes.applicationCommands(appId), {
-    method: "PUT",
-    body: commands,
-  });
-}
-
-export function logRunnerError(error: unknown, loader: Ora) {
-  const text = loader.text.replace("Running", "Failed to run");
-  if (error instanceof Error) {
-    loader.fail(`${text} - ${error.message}`);
-  } else {
-    loader.fail(text);
-    console.error(error);
-  }
 }
 
 function logErrorData(data: RESTErrorData, path: string[] = []) {

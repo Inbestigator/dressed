@@ -7,8 +7,8 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../utils.ts";
-import { botEnv } from "../../env.ts";
+import { callDiscord } from "../../utils/call-discord.ts";
+import { botEnv } from "../../utils/env.ts";
 
 /**
  * Returns all entitlements for the app, active and expired.

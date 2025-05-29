@@ -3,15 +3,15 @@
   "version": "1.0.4",
   "description": "Request handler for Next.js routes.",
   "scripts": {
-    "dist": "rm -fr dist && bun tsc",
-    "check-types": "bun tsc --noEmit",
+    "dist": "rm -fr dist && tsc",
+    "check-types": "tsc --noEmit",
     "dry-publish": "bun publish --dry-run"
   },
   "dependencies": {
     "@vercel/functions": "^2.1.0"
   },
   "peerDependencies": {
-    "dressed": "^1.6.3"
+    "dressed": "^1.7.0"
   },
   "exports": "./dist/index.js",
   "type": "module",

@@ -1,0 +1,59 @@
+import type { ComponentData } from "../../types/config.ts";
+import { matchOptimal } from "@dressed/matcher";
+import { createHandlerSetup } from "./index.ts";
+import type {
+  MessageComponentInteraction,
+  ModalSubmitInteraction,
+} from "dressed";
+
+type Data = MessageComponentInteraction | ModalSubmitInteraction;
+
+/**
+ * Creates the component handler
+ * @returns A function that runs a component
+ */
+export const setupComponents = createHandlerSetup<
+  ComponentData,
+  Data,
+  [Data, Record<string, string>]
+>({
+  itemMessages: (interaction) => ({
+    noItem: `No component handler for "${interaction.data.custom_id}"`,
+    pending: (item, props) =>
+      `Running ${item.data.category.slice(0, -1)} "${item.name}"${
+        Object.keys(props[1]).length > 0
+          ? " with args: " + JSON.stringify(props[1])
+          : ""
+      }`,
+  }),
+  findItem(interaction, items) {
+    const category = getCategory();
+
+    function getCategory() {
+      if (interaction.type === 5) {
+        return "modals";
+      }
+      switch (interaction.data.component_type) {
+        case 2:
+          return "buttons";
+        default:
+          return "selects";
+      }
+    }
+
+    const categoryItems = items.filter((i) => i.data.category === category);
+
+    const { index, match } = matchOptimal(
+      interaction.data.custom_id,
+      categoryItems.map((c) => new RegExp(c.data.regex)),
+    );
+
+    if (index === -1 || !match) {
+      return;
+    }
+
+    const item = categoryItems[index];
+    const { groups: args = {} } = match;
+    return [item, [interaction, args]];
+  },
+});

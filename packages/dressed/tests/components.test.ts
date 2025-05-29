@@ -13,7 +13,7 @@ import {
   TextDisplay,
   TextInput,
   Thumbnail,
-} from "../src";
+} from "dressed";
 import { expect, test } from "bun:test";
 
 test("Button component", () => {

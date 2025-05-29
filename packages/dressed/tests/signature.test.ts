@@ -1,5 +1,5 @@
 import nacl from "tweetnacl";
-import { verifySignature } from "../src/server";
+import { verifySignature } from "dressed/server";
 import { Buffer } from "node:buffer";
 import { test, expect } from "bun:test";
 import { env } from "node:process";

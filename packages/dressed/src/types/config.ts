@@ -2,7 +2,7 @@ import type {
   CommandInteraction,
   MessageComponentInteraction,
   ModalSubmitInteraction,
-} from "./interaction.ts";
+} from "dressed";
 import type {
   APIWebhookEventBody,
   ApplicationCommandType,
@@ -70,41 +70,37 @@ export type CommandConfig =
   | ContextMenuConfig
   | PrimaryEntryPointConfig;
 
+export interface BaseData<T> {
+  name: string;
+  path: string;
+  uid: string;
+  data: T;
+  /** Externally provided only! */
+  run?: (...args: unknown[]) => Promise<unknown>;
+}
+
 /**
  * Command data object in the `commands` array outputted from `build()`
  */
-export type CommandData = {
-  name: string;
-  path: string;
-  /** Externally provided only! */
-  import?: () => Promise<{
-    config?: CommandConfig;
-    default: CommandHandler;
-  }>;
-};
+export interface CommandData {
+  config?: CommandConfig;
+}
 
 /**
  * Component data object in the `components` array outputted from `build()`
  */
-export type ComponentData = {
-  name: string;
+export interface ComponentData {
   regex: string;
   category: string;
-  path: string;
-  /** Externally provided only! */
-  import?: () => Promise<{ default: unknown }>;
-};
+  score: number;
+}
 
 /**
  * Event data object in the `events` array outputted from `build()`
  */
-export type EventData = {
-  name: string;
+export interface EventData {
   type: string;
-  path: string;
-  /** Externally provided only! */
-  import?: () => Promise<{ default: unknown }>;
-};
+}
 
 export type CommandHandler = (interaction: CommandInteraction) => Promise<void>;
 export type ComponentHandler = (

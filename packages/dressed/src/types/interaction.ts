@@ -14,8 +14,30 @@ import type {
   ApplicationCommandType,
   MessageFlags,
 } from "discord-api-types/v10";
-import type { OptionReaders } from "../server/options.ts";
-import type { RawFile } from "./file.ts";
+import type { OptionReaders } from "../utils/options.ts";
+import type { Buffer } from "node:buffer";
+
+/** Type ripped from Discord.js (tysm) */
+interface RawFile {
+  /**
+   * Content-Type of the file
+   */
+  contentType?: string;
+  /**
+   * The actual data for the file
+   */
+  data: Buffer | Uint8Array | boolean | number | string;
+  /**
+   * An explicit key to use for key of the formdata field for this file.
+   * When not provided, the index of the file in the files array is used in the form `files[${index}]`.
+   * If you wish to alter the placeholder snowflake, you must provide this property in the same form (`files[${placeholder}]`)
+   */
+  key?: string;
+  /**
+   * The name of the file
+   */
+  name: string;
+}
 
 /**
  * A command interaction, includes methods for responding to the interaction.

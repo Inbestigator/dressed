@@ -1,13 +1,13 @@
 import { baseInteractionMethods } from "./responses.ts";
-import type { Interaction } from "../types/interaction.ts";
 import type {
   APIChatInputApplicationCommandInteractionData,
   APIInteraction,
 } from "discord-api-types/v10";
+import type { Interaction } from "../types/interaction.ts";
 import { InteractionType } from "discord-api-types/v10";
 import { getOption } from "./options.ts";
 
-export default function createInteraction<T extends APIInteraction>(
+export function createInteraction<T extends APIInteraction>(
   interaction: T,
 ): Interaction<T> {
   if (!interaction.user && interaction.member) {

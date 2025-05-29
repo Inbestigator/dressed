@@ -41,7 +41,7 @@ You can then build and run the bot with this command
 
 ```bash
 bun dressed build -ir
-bun bot.gen.ts
+bun .dressed
 ```
 
 By default the builder outputs only boilerplate data, if you want it to
@@ -53,5 +53,5 @@ In addition to Dressed, I'd recommend installing
 [Discord API Types](https://www.npmjs.com/package/discord-api-types) (The type
 lib that Dressed uses internally).
 
-Dressed comes with a [Node HTTP](https://nodejs.org/api/http.html) server OOB, if you'd like to make your own,
-all the functions needed to do so are available in `dressed/server`.
+Dressed includes a [Node HTTP](https://nodejs.org/api/http.html) server out of the box.
+If you'd prefer to create your own, all the functions you need are available within `dressed/server`.

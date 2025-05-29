@@ -1,6 +1,6 @@
 import { test, expect } from "bun:test";
 import type { APIApplicationCommandInteraction } from "discord-api-types/v10";
-import createInteraction from "../src/server/interaction";
+import { createInteraction } from "dressed/utils";
 
 const command = {
   type: 2,

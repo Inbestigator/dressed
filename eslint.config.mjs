@@ -14,5 +14,5 @@ export default defineConfig([
     languageOptions: { globals: globals.node },
   },
   tseslint.configs.recommended,
-  { ignores: ["**/dist", "node_modules", "www"] },
+  { ignores: ["**/dist", "**/.dressed", "node_modules", "www"] },
 ]);

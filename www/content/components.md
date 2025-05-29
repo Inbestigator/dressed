@@ -54,6 +54,12 @@ You can also make parts of the pattern **optional** using `{...}`. This allows c
 
 If you'd like to add some regex syntax, you can simply do `(...)`. This can be paired with an argument to ensure the argument value is correct.
 
+Alternatively, if your pattern is too long/complex for a filename, you can export it instead.
+
+```ts
+export const pattern = "...";
+```
+
 ### Examples
 
 | Filename                        | Matches                      | Arg types                            |
