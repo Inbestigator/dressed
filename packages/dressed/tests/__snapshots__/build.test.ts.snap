@@ -4,16 +4,26 @@ exports[`Build bot 1`] = `
 {
   "commands": [
     {
+      "data": {
+        "config": {
+          "description": "Replies with Pong!",
+        },
+      },
       "name": "ping",
-      "path": "tests/src/commands/ping.ts",
+      "path": "../../../../.dressed/commands/ping.mjs",
+      "uid": "XXXXXX",
     },
   ],
   "components": [
     {
-      "category": "buttons",
-      "name": "button_:arg",
-      "path": "tests/src/components/buttons/button_:arg.ts",
-      "regex": "^button_(?<arg>.+?)$",
+      "data": {
+        "category": "buttons",
+        "regex": "^button_(?<arg>.+?)$",
+        "score": 0.3888888888888889,
+      },
+      "name": "button",
+      "path": "../../../../.dressed/components/buttons/button.mjs",
+      "uid": "XXXXXX",
     },
   ],
   "config": {
@@ -21,9 +31,12 @@ exports[`Build bot 1`] = `
   },
   "events": [
     {
+      "data": {
+        "type": "APPLICATION_AUTHORIZED",
+      },
       "name": "ApplicationAuthorized",
-      "path": "tests/src/events/ApplicationAuthorized.ts",
-      "type": "APPLICATION_AUTHORIZED",
+      "path": "../../../../.dressed/events/ApplicationAuthorized.mjs",
+      "uid": "XXXXXX",
     },
   ],
 }

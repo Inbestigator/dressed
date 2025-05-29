@@ -4,7 +4,12 @@ import {
   setupComponents,
   setupEvents,
 } from "dressed/server";
-import type { CommandData, ComponentData, EventData } from "dressed/server";
+import type {
+  BaseData,
+  CommandData,
+  ComponentData,
+  EventData,
+} from "dressed/server";
 import { waitUntil } from "@vercel/functions";
 
 /**
@@ -14,7 +19,7 @@ import { waitUntil } from "@vercel/functions";
  * ```ts
  * // app/bot/route.ts
  * import createHandler from "@dressed/next";
- * import { commands, components, events } from "@/bot.gen";
+ * import { commands, components, events } from "@/.dressed";
  *
  * export const POST = createHandler(commands, components, events);
  * ```
@@ -25,9 +30,9 @@ import { waitUntil } from "@vercel/functions";
  * @returns A request handler function compatible with Next.js API routes
  */
 export default function createHandler(
-  commands: CommandData[],
-  components: ComponentData[],
-  events: EventData[],
+  commands: BaseData<CommandData>[],
+  components: BaseData<ComponentData>[],
+  events: BaseData<EventData>[],
 ): (req: Request) => Promise<Response> {
   const [runCommand, runComponent, runEvent] = [
     setupCommands(commands),

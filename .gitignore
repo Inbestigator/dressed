@@ -38,3 +38,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Turbo
 .turbo
+
+# Dressed
+bot.gen.ts
+.dressed

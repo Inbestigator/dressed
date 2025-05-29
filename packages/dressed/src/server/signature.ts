@@ -1,6 +1,6 @@
 import nacl from "tweetnacl";
-import { botEnv } from "../env.ts";
 import { Buffer } from "node:buffer";
+import { botEnv } from "../utils/env.ts";
 
 /**
  * Verifies the signature of the POST request

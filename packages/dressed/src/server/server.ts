@@ -8,7 +8,6 @@ import {
   ApplicationWebhookType,
   InteractionType,
 } from "discord-api-types/v10";
-import createInteraction from "./interaction.ts";
 import type {
   CommandHandler,
   ComponentHandler,
@@ -18,6 +17,7 @@ import type {
 import { createServer as createHttpServer, type Server } from "node:http";
 import { stdout } from "node:process";
 import { Buffer } from "node:buffer";
+import { createInteraction } from "../utils/interaction.ts";
 
 /**
  * Starts a server to handle interactions.

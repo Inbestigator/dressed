@@ -2,27 +2,21 @@
 
 import ora from "ora";
 import { Command } from "commander";
-import {
-  build,
-  type CommandData,
-  type ComponentData,
-  type EventData,
-} from "../server/index.ts";
 import { dirname, join } from "node:path";
-import { cwd, stdout } from "node:process";
+import { cwd, exit, stdout } from "node:process";
 import { select, input, confirm } from "@inquirer/prompts";
 import { parse } from "dotenv";
 import { mkdirSync, writeFileSync } from "fs";
+import build from "../server/build/build.ts";
+import { writeFile } from "node:fs/promises";
 
-const program = new Command();
-
-program
+const program = new Command()
   .name("dressed")
   .description("A sleek, serverless-ready Discord bot framework.");
 
 program
   .command("build")
-  .description("Builds the bot and writes to a bot.gen.ts")
+  .description("Builds the bot and writes to .dressed")
   .option("-i, --instance", "Include an instance create in the generated file")
   .option("-r, --register", "Register slash commands")
   .option(
@@ -31,8 +25,7 @@ program
   )
   .option("-p, --port <port>", "The port to listen on, defaults to `8000`")
   .option("-R, --root <root>", "Source root for the bot, defaults to `src`")
-  .option("-D, --dest <dest>", "Output file, defaults to `bot.gen.ts`")
-  .action(async ({ instance, register, endpoint, port, root, dest }) => {
+  .action(async ({ instance, register, endpoint, port, root }) => {
     if (port && isNaN(Number(port))) {
       ora("Port must be a valid number").fail();
       return;
@@ -50,27 +43,44 @@ program
 
     const outputContent = `
 ${generateImports(instance, register)}
+import commandList from "./commands.json" with { type: "json" }
+import componentList from "./components.json" with { type: "json" }
+import eventList from "./events.json" with { type: "json" }
 
-${exportDataArray("commands", commands)}
-${exportDataArray("components", components)}
-${exportDataArray("events", events)}
-export const config = ${JSON.stringify(config)};
+${[...commands, ...components, ...events]
+  .map((v) => `import h${v.uid} from "${v.path}"`)
+  .join("\n")}
+
+const handlers = { ${[...commands, ...components, ...events].map((v) => `h${v.uid}`).join(", ")} }
+
+const config = ${JSON.stringify(config)};
+
+const commands = commandList.map(c=>({...c,run:handlers[\`h\${c.uid}\`]}));
+const components = componentList.map(c=>({...c,run:handlers[\`h\${c.uid}\`]}));
+const events = eventList.map(e=>({...e,run:handlers[\`h\${c.uid}\`]}));
+
+export { commands, components, events, config }
 ${register ? `\ninstallCommands(commands);\n` : ""}
-${instance ? generateInstanceCreation() : ""}
-    `.trim();
+${instance ? generateInstanceCreation() : ""}`.trim();
+    const typeContent = `
+import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";
+
+export declare const commands: CommandData[];
+export declare const components: ComponentData[];
+export declare const events: EventData[];
+export declare const config: ServerConfig;`;
+
+    await Promise.all([
+      writeFile(".dressed/index.mjs", outputContent),
+      writeFile(".dressed/index.d.ts", typeContent),
+      writeFile(".dressed/commands.json", JSON.stringify(commands)),
+      writeFile(".dressed/components.json", JSON.stringify(components)),
+      writeFile(".dressed/events.json", JSON.stringify(events)),
+    ]);
 
     buildLoader.succeed("Assembled generated build");
-    const writing = ora("Writing to bot.gen.ts");
-    writeFileSync(dest ?? "bot.gen.ts", outputContent);
-    writing.succeed("Wrote to bot.gen.ts");
+    exit(0);
   });
-
-function exportDataArray(
-  variableName: "commands" | "components" | "events",
-  content: (CommandData | ComponentData | EventData)[],
-): string {
-  return `export const ${variableName} = ${JSON.stringify(content).replace(/"path":"(.+?)"/g, '$&,"import":()=>import("./$1")')};`;
-}
 
 const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>
   addInstance || registerCommands
@@ -192,6 +202,7 @@ program
     mkdirLoader.succeed();
 
     console.log("\x1b[32m%s", "Project created successfully.");
+    exit(0);
   });
 
 program.parse();

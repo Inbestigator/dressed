@@ -7,7 +7,7 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../utils.ts";
+import { callDiscord } from "../../utils/call-discord.ts";
 
 /**
  * Creates a new Stage instance associated to a Stage channel.

@@ -59,7 +59,7 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../utils.ts";
+import { callDiscord } from "../../utils/call-discord.ts";
 
 /**
  * @deprecated Discord is removing the ability for applications to create guilds after 2025-07-15

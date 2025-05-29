@@ -44,10 +44,10 @@ You can then build and run the bot with:
 
 ```bash
 bun dressed build -ir
-bun bot.gen.ts
+bun .dressed
 # or
-deno -A jsr:@dressed/cmd build -ir
-deno -A bot.gen.ts
+deno -A npm:dressed build -ir
+deno -A .dressed/index.mjs
 ```
 
 - By default, the builder outputs only boilerplate data.
@@ -58,4 +58,4 @@ deno -A bot.gen.ts
 > For a better development experience, install [Discord API Types](https://www.npmjs.com/package/discord-api-types).
 
 Dressed includes a [Node HTTP](https://nodejs.org/api/http.html) server out of the box.
-If you'd prefer to create your own, all the functions you need are available via `dressed/server`.
+If you'd prefer to create your own, all the functions you need are available within `dressed/server`.

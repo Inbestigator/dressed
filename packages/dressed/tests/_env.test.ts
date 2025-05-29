@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { env } from "node:process";
-import { botEnv } from "../src/server";
+import { botEnv } from "dressed/utils";
 
 test("Environment variables", () => {
   expect(() => {
