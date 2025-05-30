@@ -22,7 +22,7 @@ export default function logTree(total: number, title1: string, title2 = "") {
       const lines = col1.map((name, i) => {
         let prefix;
 
-        if (total === 1) {
+        if (total === 1 && i === 1) {
           prefix = "-";
         } else {
           switch (i) {
