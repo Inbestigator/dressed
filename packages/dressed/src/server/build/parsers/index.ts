@@ -1,4 +1,4 @@
-import logTree from "../parts.ts";
+import logTree from "../log-tree.ts";
 import type { WalkEntry } from "../../../types/walk.ts";
 import type { BaseData } from "../../../types/config.ts";
 import ora from "ora";
