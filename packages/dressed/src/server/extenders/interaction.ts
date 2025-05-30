@@ -3,7 +3,7 @@ import type {
   APIChatInputApplicationCommandInteractionData,
   APIInteraction,
 } from "discord-api-types/v10";
-import type { Interaction } from "../types/interaction.ts";
+import type { Interaction } from "../../types/interaction.ts";
 import { InteractionType } from "discord-api-types/v10";
 import { getOption } from "./options.ts";
 

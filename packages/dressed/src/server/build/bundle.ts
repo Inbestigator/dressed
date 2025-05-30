@@ -1,23 +1,28 @@
 import { join, relative } from "node:path";
 import { build } from "esbuild";
 import { readFileSync } from "node:fs";
-import { pathToFileURL } from "node:url";
 import { env } from "node:process";
 
-export default async function bundleFile(file: { path: string }) {
+const pkgJson = JSON.parse(readFileSync("tsconfig.json", "utf8") ?? "{}");
+const paths = Object.keys(pkgJson.compilerOptions.paths ?? {}).map(
+  (p) => p.split("*")[0],
+);
+
+export default async function bundleFile(file: {
+  path: string;
+  outPath?: string;
+}) {
   const root = env.DRESSED_ROOT ?? "src";
-  const outfile = join(
-    ".dressed",
-    relative(root, file.path).replace(/ts$/, "mjs"),
-  );
-  const pkgJson = JSON.parse(readFileSync("tsconfig.json", "utf8") ?? "{}");
-  const paths = Object.keys(pkgJson.compilerOptions.paths ?? {}).map(
-    (p) => p.split("*")[0],
-  );
+  if (!file.outPath) {
+    file.outPath = join(
+      ".dressed",
+      relative(root, file.path).replace(/ts$/, "mjs"),
+    );
+  }
 
   await build({
     entryPoints: [file.path],
-    outfile,
+    outfile: file.outPath,
     bundle: true,
     minify: true,
     platform: "node",
@@ -41,5 +46,5 @@ export default async function bundleFile(file: { path: string }) {
     ],
   });
 
-  file.path = pathToFileURL(outfile).href;
+  return file.outPath;
 }

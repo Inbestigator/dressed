@@ -2,7 +2,7 @@ import type {
   CommandInteraction,
   MessageComponentInteraction,
   ModalSubmitInteraction,
-} from "dressed";
+} from "./interaction.ts";
 import type {
   APIWebhookEventBody,
   ApplicationCommandType,

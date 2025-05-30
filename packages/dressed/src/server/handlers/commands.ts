@@ -12,7 +12,7 @@ import {
   InteractionContextType,
 } from "discord-api-types/v10";
 import { createHandlerSetup } from "./index.ts";
-import type { CommandInteraction } from "dressed";
+import type { CommandInteraction } from "../../types/interaction.ts";
 import { botEnv } from "../../utils/env.ts";
 
 /**
@@ -65,10 +65,9 @@ export async function installCommands(commands: BaseData<CommandData>[]) {
  * Creates the command handler
  * @returns A function that runs a command
  */
-export const setupCommands = createHandlerSetup<
-  CommandData,
-  CommandInteraction
->({
+export const setupCommands: ReturnType<
+  typeof createHandlerSetup<CommandData, CommandInteraction>
+> = createHandlerSetup({
   itemMessages: (interaction) => ({
     noItem: `No command handler for "${interaction.data.name}"`,
     pending: (item) => `Running command "${item.name}"`,

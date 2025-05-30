@@ -4,7 +4,7 @@ import { createHandlerSetup } from "./index.ts";
 import type {
   MessageComponentInteraction,
   ModalSubmitInteraction,
-} from "dressed";
+} from "../../types/interaction.ts";
 
 type Data = MessageComponentInteraction | ModalSubmitInteraction;
 
@@ -12,11 +12,9 @@ type Data = MessageComponentInteraction | ModalSubmitInteraction;
  * Creates the component handler
  * @returns A function that runs a component
  */
-export const setupComponents = createHandlerSetup<
-  ComponentData,
-  Data,
-  [Data, Record<string, string>]
->({
+export const setupComponents: ReturnType<
+  typeof createHandlerSetup<ComponentData, Data, [Data, Record<string, string>]>
+> = createHandlerSetup<ComponentData, Data, [Data, Record<string, string>]>({
   itemMessages: (interaction) => ({
     noItem: `No component handler for "${interaction.data.custom_id}"`,
     pending: (item, props) =>

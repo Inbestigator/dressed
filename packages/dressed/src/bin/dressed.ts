@@ -2,7 +2,7 @@
 
 import ora from "ora";
 import { Command } from "commander";
-import { dirname, join } from "node:path";
+import { dirname, join, relative } from "node:path";
 import { cwd, exit, stdout } from "node:process";
 import { select, input, confirm } from "@inquirer/prompts";
 import { parse } from "dotenv";
@@ -48,7 +48,7 @@ import componentList from "./components.json" with { type: "json" }
 import eventList from "./events.json" with { type: "json" }
 
 ${[...commands, ...components, ...events]
-  .map((v) => `import h${v.uid} from "${v.path}"`)
+  .map((v) => `import h${v.uid} from "./${relative(".dressed", v.path)}"`)
   .join("\n")}
 
 const handlers = { ${[...commands, ...components, ...events].map((v) => `h${v.uid}`).join(", ")} }
@@ -57,7 +57,7 @@ const config = ${JSON.stringify(config)};
 
 const commands = commandList.map(c=>({...c,run:handlers[\`h\${c.uid}\`]}));
 const components = componentList.map(c=>({...c,run:handlers[\`h\${c.uid}\`]}));
-const events = eventList.map(e=>({...e,run:handlers[\`h\${c.uid}\`]}));
+const events = eventList.map(e=>({...e,run:handlers[\`h\${e.uid}\`]}));
 
 export { commands, components, events, config }
 ${register ? `\ninstallCommands(commands);\n` : ""}
