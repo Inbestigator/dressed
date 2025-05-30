@@ -1,9 +1,11 @@
-import { trackParts } from "../parts.ts";
+import logTree from "../log-tree.ts";
 import type { WalkEntry } from "../../../types/walk.ts";
 import type { BaseData } from "../../../types/config.ts";
 import ora from "ora";
-import { stdout } from "node:process";
+import { cwd, stdout } from "node:process";
 import bundleFile from "../bundle.ts";
+import { createHash } from "node:crypto";
+import { join, relative } from "node:path";
 
 interface ParserMessages {
   pending: string;
@@ -22,7 +24,7 @@ export function createHandlerParser<T>(options: {
   uniqueKeys?: (keyof T)[];
   messages: ParserMessages;
   itemMessages: ((file: WalkEntry) => ParserItemMessages) | ParserItemMessages;
-  createData: (file: WalkEntry) => Promise<T> | T;
+  createData: (file: WalkEntry & { originalPath: string }) => Promise<T> | T;
 }): (files: WalkEntry[]) => Promise<BaseData<T>[]> {
   return async (files: WalkEntry[]) => {
     if (files.length === 0) return [];
@@ -30,33 +32,46 @@ export function createHandlerParser<T>(options: {
       stream: stdout,
       text: options.messages.pending,
     }).start();
-    const { addRow, log } = trackParts(
-      files.length,
-      options.col1Name,
-      options.col2Name,
-    );
+    const tree = logTree(files.length, options.col1Name, options.col2Name);
 
     try {
       const items: BaseData<T>[] = [];
 
       for (const file of files) {
         let data: T;
+        let itemMessages = options.itemMessages;
+        const uid = createHash("sha1").update(file.path).digest("hex");
 
         try {
-          if (typeof options.itemMessages === "function") {
-            options.itemMessages = options.itemMessages(file);
+          if (typeof itemMessages === "function") {
+            itemMessages = itemMessages(file);
           }
-          await bundleFile(file);
-          data = await options.createData(file);
+          const originalPath = file.path;
+          file.path = await bundleFile({
+            path: file.path,
+            outPath: join(".dressed/cache", `${uid}.mjs`),
+          });
+          data = await options.createData({
+            ...file,
+            path: relative(
+              import.meta.dirname ?? __dirname,
+              join(cwd(), file.path),
+            ),
+            originalPath,
+          });
           const hasConflict = items.some((c) => {
             if (c.name !== file.name) return false;
             return options.uniqueKeys?.every((k) => data[k] === c.data[k]);
           });
           if (hasConflict) {
-            ora(options.itemMessages.confict).warn();
+            ora(itemMessages.confict).warn();
             throw null;
           }
-        } catch {
+        } catch (e) {
+          if (e && e instanceof Error) {
+            ora(`Failed to parse ${file.path}:`).fail();
+            console.error(e);
+          }
           continue;
         }
 
@@ -64,11 +79,11 @@ export function createHandlerParser<T>(options: {
           name: file.name,
           path: file.path,
           data,
-          uid: crypto.randomUUID().split("-")[0],
+          uid,
         };
 
         items.push(item);
-        addRow(file.name, options.itemMessages.col2);
+        tree.push(file.name, itemMessages.col2);
       }
 
       generatingLoader.succeed(
@@ -78,7 +93,7 @@ export function createHandlerParser<T>(options: {
       );
 
       if (items.length > 0) {
-        log();
+        tree.log();
       }
 
       return items;

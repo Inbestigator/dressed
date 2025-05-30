@@ -17,7 +17,7 @@ import type {
 import { createServer as createHttpServer, type Server } from "node:http";
 import { stdout } from "node:process";
 import { Buffer } from "node:buffer";
-import { createInteraction } from "../utils/interaction.ts";
+import { createInteraction } from "./extenders/interaction.ts";
 
 /**
  * Starts a server to handle interactions.

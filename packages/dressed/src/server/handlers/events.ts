@@ -6,7 +6,9 @@ import { createHandlerSetup } from "./index.ts";
  * Creates the event handler
  * @returns A function that runs an event
  */
-export const setupEvents = createHandlerSetup<EventData, APIWebhookEventBody>({
+export const setupEvents: ReturnType<
+  typeof createHandlerSetup<EventData, APIWebhookEventBody>
+> = createHandlerSetup({
   itemMessages: (event) => ({
     noItem: `No event handler for "${event.type}"`,
     pending: (item) => `Running event "${item.name}"`,

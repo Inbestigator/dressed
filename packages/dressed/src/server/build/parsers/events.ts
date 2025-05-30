@@ -11,19 +11,17 @@ export const parseEvents = createHandlerParser<EventData>({
     noItems: "No events found",
   },
   uniqueKeys: ["type"],
-  itemMessages: (file) => ({
-    confict: `"${file.name}" conflicts with another event, skipping the duplicate`,
+  itemMessages: ({ name }) => ({
+    confict: `"${name}" conflicts with another event, skipping the duplicate`,
   }),
-  async createData(file) {
+  async createData({ name }) {
     const type =
       ApplicationWebhookEventType[
-        file.name as keyof typeof ApplicationWebhookEventType
+        name as keyof typeof ApplicationWebhookEventType
       ];
 
     if (!type) {
-      ora(
-        `Event type of "${file.name}" could not be determined, skipping`,
-      ).warn();
+      ora(`Event type of "${name}" could not be determined, skipping`).warn();
       throw null;
     }
 

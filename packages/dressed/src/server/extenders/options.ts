@@ -7,7 +7,7 @@ import type {
   APIUser,
 } from "discord-api-types/v10";
 
-export interface OptionReaders {
+export interface OptionValueGetters {
   /**
    * Get the option as a subcommand
    */
@@ -65,7 +65,9 @@ export function getOption<R extends boolean>(
   required: R,
   options: APIApplicationCommandInteractionDataOption[],
   resolved?: APIInteractionDataResolved,
-): R extends true ? NonNullable<OptionReaders> : OptionReaders | null {
+): R extends true
+  ? NonNullable<OptionValueGetters>
+  : OptionValueGetters | null {
   const option = options.find((o) => o.name === name);
   if (!option) {
     if (required) throw new Error(`Required option "${name}" not found`);

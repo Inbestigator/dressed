@@ -1,4 +1,4 @@
-import { basename, dirname } from "node:path";
+import { sep } from "node:path";
 import type { ComponentData } from "../../../types/config.ts";
 import ora from "ora";
 import { patternToRegex, scorePattern } from "@dressed/matcher";
@@ -15,21 +15,19 @@ export const parseComponents = createHandlerParser<ComponentData>({
     noItems: "No components found",
   },
   uniqueKeys: ["category"],
-  itemMessages(file) {
-    const category = basename(dirname(file.path)).slice(0, -1);
+  itemMessages({ name, path }) {
+    const category = getCategory(path);
     return {
-      confict: `"${file.name}" conflicts with another ${category}, skipping the duplicate`,
-      col2: category,
+      confict: `"${name}" conflicts with another ${category?.slice(0, -1)}, skipping the duplicate`,
+      col2: category ?? "unknown",
     };
   },
-  async createData(file) {
-    const { pattern = file.name } = await import(file.path);
-    const category = basename(dirname(file.path));
+  async createData({ name, path, originalPath }) {
+    const { pattern = name } = await import(path);
+    const category = getCategory(originalPath);
 
-    if (!validComponentCategories.includes(category)) {
-      ora(
-        `Category for "${file.name}" could not be determined, skipping`,
-      ).warn();
+    if (!category) {
+      ora(`Category for "${name}" could not be determined, skipping`).warn();
       throw null;
     }
 
@@ -40,3 +38,18 @@ export const parseComponents = createHandlerParser<ComponentData>({
     };
   },
 });
+
+function getCategory(path: string) {
+  const parts = path.split(sep);
+
+  const compIndex = parts.lastIndexOf("components");
+  if (compIndex === -1) return null;
+
+  for (let i = parts.length - 2; i > compIndex; i--) {
+    if (validComponentCategories.includes(parts[i])) {
+      return parts[i];
+    }
+  }
+
+  return null;
+}

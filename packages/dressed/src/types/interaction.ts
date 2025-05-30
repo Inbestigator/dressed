@@ -14,7 +14,7 @@ import type {
   ApplicationCommandType,
   MessageFlags,
 } from "discord-api-types/v10";
-import type { OptionReaders } from "../utils/options.ts";
+import type { OptionValueGetters } from "../server/extenders/options.ts";
 import type { Buffer } from "node:buffer";
 
 /** Type ripped from Discord.js (tysm) */
@@ -55,8 +55,8 @@ export type CommandInteraction<
         name: string,
         required?: Required,
       ) => Required extends true
-        ? NonNullable<OptionReaders>
-        : OptionReaders | null;
+        ? NonNullable<OptionValueGetters>
+        : OptionValueGetters | null;
     }
   : T extends "Message"
     ? APIMessageApplicationCommandInteraction

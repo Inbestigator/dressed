@@ -8,11 +8,11 @@ export const parseCommands = createHandlerParser<CommandData>({
     generated: "Generated commands",
     noItems: "No commands found",
   },
-  itemMessages: (file) => ({
-    confict: `"${file.name}" conflicts with another command, skipping the duplicate`,
+  itemMessages: ({ name }) => ({
+    confict: `"${name}" conflicts with another command, skipping the duplicate`,
   }),
-  async createData(file) {
-    const { config } = await import(file.path);
+  async createData({ path }) {
+    const { config } = await import(path);
     return { config };
   },
 });
