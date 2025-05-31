@@ -1,0 +1,49 @@
+name: Publish Scoped Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Which package to publish (@dressed/...)"
+        required: true
+        type: "choice"
+        options:
+          - "matcher"
+          - "next"
+      prerelease:
+        description: "Mark as a release candidate"
+        required: false
+        default: false
+        type: "boolean"
+
+jobs:
+  publish:
+    name: Build and Publish
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build Package
+        run: bun turbo dist
+
+      - name: Authenticate with NPM
+        run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to NPM
+        working-directory: packages/dressed-${{inputs.package}}
+        env:
+          TAG: ${{ inputs.prerelease && 'rc' || 'latest' }}
+        run: |
+          bunx npm publish --provenance --access public --tag "$TAG"
