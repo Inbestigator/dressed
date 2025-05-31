@@ -16,17 +16,19 @@ export function createHandlerSetup<T, D, P extends unknown[] = [D]>(options: {
 }): (items: BaseData<T>[]) => (data: D) => Promise<void> {
   return (items) => async (data) => {
     const [item, props] = options.findItem(data, items) ?? [];
-    if (typeof options.itemMessages === "function") {
-      options.itemMessages = options.itemMessages(data);
+    let itemMessages = options.itemMessages;
+
+    if (typeof itemMessages === "function") {
+      itemMessages = itemMessages(data);
     }
     if (!item || !Array.isArray(props)) {
-      ora(options.itemMessages.noItem).warn();
+      ora(itemMessages.noItem).warn();
       return;
     }
 
     const loader = ora({
       stream: stdout,
-      text: options.itemMessages.pending(item, props),
+      text: itemMessages.pending(item, props),
     }).start();
 
     try {

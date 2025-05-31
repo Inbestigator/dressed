@@ -21,7 +21,7 @@ const defaultTokens: Token[] = [
         while (i < str.length && depth > 0) {
           if (str[i] === "(") depth++;
           else if (str[i] === ")") depth--;
-          i++;
+          ++i;
         }
         if (depth > 0) return null;
 
@@ -134,7 +134,7 @@ function parsePattern(
       } else {
         result += escapeRegex(char);
       }
-      i++;
+      ++i;
     }
   }
 
@@ -154,7 +154,7 @@ export function scorePattern(pattern: string): number {
 }
 
 export function matchOptimal(input: string, regexes: RegExp[]) {
-  for (let i = 0; i < regexes.length; i++) {
+  for (let i = 0; i < regexes.length; ++i) {
     const regex = regexes[i];
     const match = regex.exec(input);
     if (match) {
