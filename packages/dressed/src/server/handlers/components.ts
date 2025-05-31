@@ -8,6 +8,18 @@ import type {
 
 type Data = MessageComponentInteraction | ModalSubmitInteraction;
 
+function getCategory(interaction: Data) {
+  if (interaction.type === 5) {
+    return "modals";
+  }
+  switch (interaction.data.component_type) {
+    case 2:
+      return "buttons";
+    default:
+      return "selects";
+  }
+}
+
 /**
  * Creates the component handler
  * @returns A function that runs a component
@@ -15,29 +27,20 @@ type Data = MessageComponentInteraction | ModalSubmitInteraction;
 export const setupComponents: ReturnType<
   typeof createHandlerSetup<ComponentData, Data, [Data, Record<string, string>]>
 > = createHandlerSetup<ComponentData, Data, [Data, Record<string, string>]>({
-  itemMessages: (interaction) => ({
-    noItem: `No component handler for "${interaction.data.custom_id}"`,
-    pending: (item, props) =>
-      `Running ${item.data.category.slice(0, -1)} "${item.name}"${
-        Object.keys(props[1]).length > 0
-          ? " with args: " + JSON.stringify(props[1])
-          : ""
-      }`,
-  }),
+  itemMessages: (interaction) => {
+    const category = getCategory(interaction).slice(0, -1);
+    return {
+      noItem: `No ${category} component handler for "${interaction.data.custom_id}"`,
+      pending: (item, props) =>
+        `Running ${category} "${item.name}"${
+          Object.keys(props[1]).length > 0
+            ? " with args: " + JSON.stringify(props[1])
+            : ""
+        }`,
+    };
+  },
   findItem(interaction, items) {
-    const category = getCategory();
-
-    function getCategory() {
-      if (interaction.type === 5) {
-        return "modals";
-      }
-      switch (interaction.data.component_type) {
-        case 2:
-          return "buttons";
-        default:
-          return "selects";
-      }
-    }
+    const category = getCategory(interaction);
 
     const categoryItems = items.filter((i) => i.data.category === category);
 
