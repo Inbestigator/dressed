@@ -63,11 +63,11 @@ export { commands, components, events, config }
 ${register ? `\ninstallCommands(commands);\n` : ""}
 ${instance ? generateInstanceCreation() : ""}`.trim();
     const typeContent = `
-import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";
+import type { BaseData, CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";
 
-export declare const commands: CommandData[];
-export declare const components: ComponentData[];
-export declare const events: EventData[];
+export declare const commands: BaseData<CommandData>[];
+export declare const components: BaseData<ComponentData>[];
+export declare const events: BaseData<EventData>[];
 export declare const config: ServerConfig;`;
 
     await Promise.all([
