@@ -42,7 +42,7 @@ jobs:
         run: bun turbo dist
 
       - name: Authenticate with NPM
-        run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+        run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_SCOPE_TOKEN }}
 
       - name: Publish to NPM
         working-directory: packages/dressed-${{inputs.package}}
