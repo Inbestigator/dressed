@@ -1,64 +1,79 @@
-type Token = {
+export interface Token {
   prefix: string;
   suffix?: string;
-  handler: (str: string, pos: number) => string | null;
-};
+  handler: (str: string, pos: number, tokens: Token[]) => [string, number] | null;
+}
 
-const defaultTokens: Token[] = [
+export const defaultTokens: Token[] = [
   {
     prefix: ":",
-    handler: (str, pos) => {
-      const nameMatch = /^[a-zA-Z0-9]+/.exec(str.slice(pos + 1));
+    handler: (str, pos, tokens) => {
+      const nameMatch = /^[a-zA-Z0-9]+/.exec(str);
       if (!nameMatch) return null;
 
       const name = nameMatch[0];
-      const next = pos + 1 + name.length;
+      let next = name.length;
       let innerMatch = ".+?";
 
-      if (str[next] === "(") {
-        let depth = 1;
-        let i = next + 1;
-        while (i < str.length && depth > 0) {
-          if (str[i] === "(") depth++;
-          else if (str[i] === ")") depth--;
-          ++i;
-        }
-        if (depth > 0) return null;
-
-        const inner = str.slice(next, i);
-        innerMatch = parsePattern(inner);
+      if (str[next] === defaultTokens[2].prefix) {
+        const parsed = parseToken(str.slice(next), defaultTokens[2], tokens);
+        if (!parsed) return null;
+        innerMatch = parsed[0];
+        next += pos + parsed[1];
       }
 
-      return `(?<${name}>${innerMatch})`;
+      return [`(?<${name}>${innerMatch})`, pos + 1 + next];
     },
   },
   {
     prefix: "{",
     suffix: "}",
-    handler: (content) => {
+    handler: (content, end) => {
       const innerParsed = parsePattern(content);
-      return `(?:${innerParsed})?`;
+      return [`(?:${innerParsed})?`, end + 1];
     },
   },
   {
     prefix: "(",
     suffix: ")",
-    handler: (content) => {
-      if (content.startsWith("?:")) return `(${content})`;
+    handler: (content, end) => {
       const innerParsed = parsePattern(content, { preservedOperators: true });
-      return `(?:${innerParsed})`;
+      return [`(?:${innerParsed})`, end + 1];
     },
   },
 ];
 
-const escapeRegex = (str: string): string =>
-  str.replace(/[/\\^$*+?.()|[\]{}]/g, "\\$&");
+const escapeRegex = (str: string): string => str.replace(/[/\\^$*+?.()|[\]{}]/g, "\\$&");
 
 const patternCache: Record<string, string> = {};
 
-function parsePattern(
+/** Pattern is expected to already be sliced such that pattern[0] is the token prefix */
+function parseToken(pattern: string, { handler, prefix, suffix }: Token, tokens: Token[]) {
+  if (pattern[0] !== prefix) return null;
+  let end;
+
+  if (suffix) {
+    let depth = 1;
+    for (let j = 1; j < pattern.length; ++j) {
+      if (pattern[j] === prefix) {
+        ++depth;
+      } else if (pattern[j] === suffix) {
+        --depth;
+        if (depth === 0) {
+          end = j;
+          break;
+        }
+      }
+    }
+    if (!end) return null;
+  }
+
+  return handler(pattern.slice(1, end), end ?? 0, tokens);
+}
+
+export function parsePattern(
   pattern: string,
-  config?: { tokens?: Token[]; preservedOperators?: string[] | true },
+  config?: { tokens?: Token[]; preservedOperators?: string[] | true }
 ): string {
   if (patternCache[pattern]) {
     return patternCache[pattern];
@@ -71,65 +86,18 @@ function parsePattern(
     let matched = false;
     const char = pattern[i];
 
-    for (const { handler, prefix, suffix } of tokens) {
-      if (char !== prefix) continue;
-
-      if (!suffix) {
-        const replaced = handler(pattern, i);
-        if (replaced != null) {
-          result += replaced;
-
-          const nameMatch = /^[a-zA-Z0-9_]+/.exec(pattern.slice(i + 1));
-          if (!nameMatch) break;
-
-          const next = i + 1 + nameMatch[0].length;
-
-          if (pattern[next] === "(") {
-            let depth = 1;
-            let j = next + 1;
-            while (j < pattern.length && depth > 0) {
-              if (pattern[j] === "(") depth++;
-              else if (pattern[j] === ")") depth--;
-              j++;
-            }
-            i = j;
-          } else {
-            i = next;
-          }
-
-          matched = true;
-          break;
-        }
-      } else {
-        const end = (() => {
-          let depth = 1;
-          for (let j = i + 1; j < pattern.length; j++) {
-            if (pattern[j] === prefix) depth++;
-            else if (pattern[j] === suffix) depth--;
-            if (depth === 0) return j;
-          }
-          return -1;
-        })();
-
-        if (end === -1) continue;
-
-        const content = pattern.slice(i + 1, end);
-        const replaced = handler(content, i);
-
-        if (replaced != null) {
-          result += replaced;
-          i = end + 1;
-          matched = true;
-          break;
-        }
-      }
+    for (const token of tokens) {
+      if (char !== token.prefix) continue;
+      const parsed = parseToken(pattern.slice(i), token, tokens);
+      if (!parsed) continue;
+      result += parsed[0];
+      i += parsed[1];
+      matched = true;
+      break;
     }
 
     if (!matched) {
-      if (
-        config?.preservedOperators === true ||
-        config?.preservedOperators?.includes(char)
-      ) {
+      if (config?.preservedOperators === true || config?.preservedOperators?.includes(char)) {
         result += char;
       } else {
         result += escapeRegex(char);
@@ -143,8 +111,7 @@ function parsePattern(
   return result;
 }
 
-export const patternToRegex = (pattern: string): RegExp =>
-  new RegExp(`^${parsePattern(pattern)}$`);
+export const patternToRegex = (pattern: string): RegExp => new RegExp(`^${parsePattern(pattern)}$`);
 
 /** Scores dynamic-ness, higher is less dynamic */
 export function scorePattern(pattern: string): number {
