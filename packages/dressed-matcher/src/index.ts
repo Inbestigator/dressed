@@ -1,7 +1,11 @@
 export interface Token {
   prefix: string;
   suffix?: string;
-  handler: (str: string, pos: number, tokens: Token[]) => [string, number] | null;
+  handler: (
+    str: string,
+    pos: number,
+    tokens: Token[],
+  ) => [string, number] | null;
 }
 
 export const defaultTokens: Token[] = [
@@ -43,12 +47,17 @@ export const defaultTokens: Token[] = [
   },
 ];
 
-const escapeRegex = (str: string): string => str.replace(/[/\\^$*+?.()|[\]{}]/g, "\\$&");
+const escapeRegex = (str: string): string =>
+  str.replace(/[/\\^$*+?.()|[\]{}]/g, "\\$&");
 
 const patternCache: Record<string, string> = {};
 
 /** Pattern is expected to already be sliced such that pattern[0] is the token prefix */
-function parseToken(pattern: string, { handler, prefix, suffix }: Token, tokens: Token[]) {
+function parseToken(
+  pattern: string,
+  { handler, prefix, suffix }: Token,
+  tokens: Token[],
+) {
   if (pattern[0] !== prefix) return null;
   let end;
 
@@ -73,7 +82,7 @@ function parseToken(pattern: string, { handler, prefix, suffix }: Token, tokens:
 
 export function parsePattern(
   pattern: string,
-  config?: { tokens?: Token[]; preservedOperators?: string[] | true }
+  config?: { tokens?: Token[]; preservedOperators?: string[] | true },
 ): string {
   if (patternCache[pattern]) {
     return patternCache[pattern];
@@ -97,7 +106,10 @@ export function parsePattern(
     }
 
     if (!matched) {
-      if (config?.preservedOperators === true || config?.preservedOperators?.includes(char)) {
+      if (
+        config?.preservedOperators === true ||
+        config?.preservedOperators?.includes(char)
+      ) {
         result += char;
       } else {
         result += escapeRegex(char);
@@ -111,7 +123,8 @@ export function parsePattern(
   return result;
 }
 
-export const patternToRegex = (pattern: string): RegExp => new RegExp(`^${parsePattern(pattern)}$`);
+export const patternToRegex = (pattern: string): RegExp =>
+  new RegExp(`^${parsePattern(pattern)}$`);
 
 /** Scores dynamic-ness, higher is less dynamic */
 export function scorePattern(pattern: string): number {
