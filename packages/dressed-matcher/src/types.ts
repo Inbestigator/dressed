@@ -88,6 +88,11 @@ type RemoveBraces<S extends string> =
 
 type ExtractRequired<S extends string> = ExtractFrom<RemoveBraces<S>, false>;
 
+/**
+ * Options the parsed pattern regex would return
+ *
+ * Not 100% exhaustive
+ */
 export type PatternParams<S extends string> = Merge<
   ExtractOptional<S>,
   ExtractRequired<S>
