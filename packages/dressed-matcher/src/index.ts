@@ -1,6 +1,4 @@
-import type { PatternParams } from "./types.ts";
-
-export type { PatternParams };
+export type { Params } from "./types.ts";
 
 export interface Token {
   prefix: string;

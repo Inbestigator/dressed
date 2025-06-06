@@ -43,12 +43,12 @@ Score the pattern based on how dynamic it is (higher is less dynamic)
 ":name"; // Open-ended
 ```
 
-## 🔮 `PatternParams<pattern>`
+## 🔮 `Params<pattern>`
 
 Generates the type that a regex returned options would be.
 
 The returned type is not completely exhaustive, but it provides a pretty good representation.
 
 ```ts
-PatternParams<"i love :animal(dogs|cats)">; // { animal: "dogs" | "cats" }
+Params<"i love :animal(dogs|cats)">; // { animal: "dogs" | "cats" }
 ```

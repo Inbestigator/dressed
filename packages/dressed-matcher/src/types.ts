@@ -93,7 +93,7 @@ type ExtractRequired<S extends string> = ExtractFrom<RemoveBraces<S>, false>;
  *
  * Not 100% exhaustive
  */
-export type PatternParams<S extends string> = Merge<
+export type Params<S extends string> = Merge<
   ExtractOptional<S>,
   ExtractRequired<S>
 >;
