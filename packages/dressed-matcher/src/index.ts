@@ -1,3 +1,5 @@
+export type { Params } from "./types.ts";
+
 export interface Token {
   prefix: string;
   suffix?: string;
@@ -8,6 +10,7 @@ export interface Token {
   ) => [string, number] | null;
 }
 
+/** Default tokens used in `parsePattern` */
 export const defaultTokens: Token[] = [
   {
     prefix: ":",
@@ -80,6 +83,7 @@ function parseToken(
   return handler(pattern.slice(1, end), end ?? 0, tokens);
 }
 
+/** Generates the contents of the regex */
 export function parsePattern(
   pattern: string,
   config?: { tokens?: Token[]; preservedOperators?: string[] | true },
@@ -133,6 +137,9 @@ export function scorePattern(pattern: string): number {
   return (rawLength * (regex.match(/\(\?/g)?.length ?? 1)) / regex.length;
 }
 
+/**
+ * Returns the first regex that matches the input, regexes are expected to be sorted using `scorePattern`
+ */
 export function matchOptimal(input: string, regexes: RegExp[]) {
   for (let i = 0; i < regexes.length; ++i) {
     const regex = regexes[i];

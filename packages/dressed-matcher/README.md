@@ -33,12 +33,22 @@ Will match:
 3. `ticket-(open|close)` matches `ticket-open`, `ticket-close`
 4. `ticket-action:(open|close)` is the same as 3, except the action is captured
 
-## 🧮 `matchOptimal()`
+## 🧮 `scorePattern()`
 
-One string may match multiple patterns, `matchOptimal()` selects the **least dynamic** (most specific) pattern:
+Score the pattern based on how dynamic it is (higher is less dynamic)
 
+```ts
+"my-button"; // Granular
+"my-:component"; // Less specific
+":name"; // Open-ended
 ```
-my-button     // Granular
-my-:component // Less specific
-:name         // Open-ended
+
+## 🔮 `Params<pattern>`
+
+Generates the type that a regex returned options would be.
+
+The returned type is not completely exhaustive, but it provides a pretty good representation.
+
+```ts
+Params<"i love :animal(dogs|cats)">; // { animal: "dogs" | "cats" }
 ```
