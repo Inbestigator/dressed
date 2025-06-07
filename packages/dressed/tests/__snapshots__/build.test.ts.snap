@@ -27,7 +27,9 @@ exports[`Build bot 1`] = `
     },
   ],
   "config": {
-    "root": "tests/src",
+    "build": {
+      "root": "tests/src",
+    },
   },
   "events": [
     {
