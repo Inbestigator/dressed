@@ -33,10 +33,18 @@ export const parseComponents = createHandlerParser<ComponentData>({
 
     return {
       category,
-      regex: patternToRegex(pattern).source,
-      score: scorePattern(pattern),
+      ...(pattern instanceof RegExp
+        ? {
+            regex: pattern.source,
+            score: scorePattern(pattern.source),
+          }
+        : {
+            regex: patternToRegex(pattern).source,
+            score: scorePattern(pattern),
+          }),
     };
   },
+  postMortem: (c) => c.sort((a, b) => b.data.score - a.data.score),
 });
 
 function getCategory(path: string) {

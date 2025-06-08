@@ -2,10 +2,11 @@ import logTree from "../log-tree.ts";
 import type { WalkEntry } from "../../../types/walk.ts";
 import type { BaseData } from "../../../types/config.ts";
 import ora from "ora";
-import { cwd, stdout } from "node:process";
+import { stdout } from "node:process";
 import bundleFile from "../bundle.ts";
 import { createHash } from "node:crypto";
-import { join, relative } from "node:path";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 
 interface ParserMessages {
   pending: string;
@@ -25,8 +26,9 @@ export function createHandlerParser<T>(options: {
   messages: ParserMessages;
   itemMessages: ((file: WalkEntry) => ParserItemMessages) | ParserItemMessages;
   createData: (file: WalkEntry & { originalPath: string }) => Promise<T> | T;
+  postMortem?: (items: BaseData<T>[]) => Promise<BaseData<T>[]> | BaseData<T>[];
 }): (files: WalkEntry[]) => Promise<BaseData<T>[]> {
-  return async (files: WalkEntry[]) => {
+  return async (files) => {
     if (files.length === 0) return [];
     const generatingLoader = ora({
       stream: stdout,
@@ -35,7 +37,7 @@ export function createHandlerParser<T>(options: {
     const tree = logTree(files.length, options.col1Name, options.col2Name);
 
     try {
-      const items: BaseData<T>[] = [];
+      let items: BaseData<T>[] = [];
 
       for (const file of files) {
         let data: T;
@@ -48,15 +50,12 @@ export function createHandlerParser<T>(options: {
           }
           const originalPath = file.path;
           file.path = await bundleFile({
-            path: file.path,
+            ...file,
             outPath: join(".dressed/cache", `${uid}.mjs`),
           });
           data = await options.createData({
             ...file,
-            path: relative(
-              import.meta.dirname ?? __dirname,
-              join(cwd(), file.path),
-            ),
+            path: pathToFileURL(file.path).href,
             originalPath,
           });
           const hasConflict = items.some((c) => {
@@ -67,6 +66,16 @@ export function createHandlerParser<T>(options: {
             ora(itemMessages.confict).warn();
             throw null;
           }
+
+          const item: BaseData<T> = {
+            name: file.name,
+            path: file.path,
+            data,
+            uid,
+          };
+
+          items.push(item);
+          tree.push(file.name, itemMessages.col2);
         } catch (e) {
           if (e && e instanceof Error) {
             ora(`Failed to parse ${file.path}:`).fail();
@@ -74,16 +83,10 @@ export function createHandlerParser<T>(options: {
           }
           continue;
         }
+      }
 
-        const item: BaseData<T> = {
-          name: file.name,
-          path: file.path,
-          data,
-          uid,
-        };
-
-        items.push(item);
-        tree.push(file.name, itemMessages.col2);
+      if (options.postMortem) {
+        items = await options.postMortem(items);
       }
 
       generatingLoader.succeed(

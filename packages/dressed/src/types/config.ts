@@ -16,12 +16,25 @@ import type {
  * The configuration for the server.
  */
 export interface ServerConfig {
-  /** The endpoint to listen on, defaults to `/` */
+  /** The endpoint to listen on
+   * @default "/"
+   */
   endpoint?: string;
-  /** The port to listen on, defaults to `8000` */
+  /** The port to listen on
+   * @default 8000
+   */
   port?: number;
-  /** Source root for the bot, defaults to `src` */
-  root?: string;
+  /** Build configuration */
+  build?: {
+    /** Source root for the bot
+     * @default "src"
+     */
+    root?: string;
+    /** File extensions to include when bundling handlers
+     * @default [".js", ".ts", ".mjs"]
+     */
+    extensions?: string[];
+  };
 }
 
 type BaseCommandConfig = {

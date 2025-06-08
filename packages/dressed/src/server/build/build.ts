@@ -13,7 +13,6 @@ import type {
   EventData,
   ServerConfig,
 } from "../../types/config.ts";
-import { env } from "node:process";
 import type { WalkEntry } from "../../types/walk.ts";
 import { botEnv } from "../../utils/env.ts";
 import { getApp } from "../../bot/resources/application.ts";
@@ -27,14 +26,13 @@ export default async function build(config: ServerConfig = {}): Promise<{
   events: BaseData<EventData>[];
   config: ServerConfig;
 }> {
-  env.DRESSED_ROOT = config.root ?? "src";
   await fetchMissingVars();
-  const [commandFiles, componentFiles, eventFiles] = await Promise.all([
-    fetchFiles(config.root ?? "src", "commands"),
-    fetchFiles(config.root ?? "src", "components"),
-    fetchFiles(config.root ?? "src", "events"),
-  ]);
 
+  const [commandFiles, componentFiles, eventFiles] = await Promise.all([
+    fetchFiles(config.build, "commands"),
+    fetchFiles(config.build, "components"),
+    fetchFiles(config.build, "events"),
+  ]);
   const commands = await parseCommands(commandFiles);
   const components = await parseComponents(componentFiles);
   const events = await parseEvents(eventFiles);
@@ -42,12 +40,11 @@ export default async function build(config: ServerConfig = {}): Promise<{
   return { commands, components, events, config };
 }
 
-/**
- * Fetches the files from a directory and formats paths for import.
- */
-async function fetchFiles(root: string, dirName: string): Promise<WalkEntry[]> {
-  const dirPath = resolve(root, dirName);
-  const wd = cwd();
+async function fetchFiles(
+  config: ServerConfig["build"] = {},
+  dirName: string,
+): Promise<WalkEntry[]> {
+  const dirPath = resolve(config.root ?? "src", dirName);
 
   if (!existsSync(dirPath)) {
     ora(
@@ -58,9 +55,12 @@ async function fetchFiles(root: string, dirName: string): Promise<WalkEntry[]> {
 
   const filesArray: WalkEntry[] = [];
   for await (const file of walkFiles(dirPath, {
-    filterFile: (f) => /.+\.(js|ts|mjs|cjs)$/.test(f.name),
+    filterFile: (f) =>
+      (config.extensions ?? ["js", "ts", "mjs"]).includes(
+        extname(f.name).slice(1),
+      ),
   })) {
-    const relativePath = relative(wd, file.path);
+    const relativePath = relative(cwd(), file.path);
     filesArray.push({
       name: basename(file.file.name, extname(file.file.name)),
       path: relativePath,
@@ -94,7 +94,9 @@ async function fetchMissingVars() {
 
       const app = await getApp();
 
-      const envLines: string[] = ["# Missing required bot variable(s)"];
+      const envLines: string[] = [
+        "# Some required bot variables were missing, so they've been filled in automatically",
+      ];
       if (missingVars.includes("DISCORD_APP_ID")) {
         envLines.push(`DISCORD_APP_ID="${app.id}"`);
       }

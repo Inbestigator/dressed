@@ -9,16 +9,16 @@
     "dry-publish": "bun publish --dry-run && deno publish --dry-run --allow-dirty"
   },
   "dependencies": {
-    "@dressed/matcher": "^1.2.0",
+    "@dressed/matcher": "^1.4.0",
     "@inquirer/prompts": "^7.5.3",
     "commander": "^14.0.0",
-    "discord-api-types": "^0.38.8",
+    "discord-api-types": "^0.38.11",
     "dotenv": "^16.5.0",
     "esbuild": "^0.25.5",
     "magic-bytes.js": "^1.12.1",
     "ora": "^8.2.0",
     "tweetnacl": "^1.0.3",
-    "walk-it": "^5.0.1"
+    "walk-it": "^6.0.1"
   },
   "exports": {
     ".": "./dist/index.js",

@@ -25,7 +25,11 @@ program
   )
   .option("-p, --port <port>", "The port to listen on, defaults to `8000`")
   .option("-R, --root <root>", "Source root for the bot, defaults to `src`")
-  .action(async ({ instance, register, endpoint, port, root }) => {
+  .option(
+    "-E, --extensions <extensions>",
+    "Comma separated list of file extensions to include when bundling handlers, defaults to `js, ts, mjs`",
+  )
+  .action(async ({ instance, register, endpoint, port, root, extensions }) => {
     if (port && isNaN(Number(port))) {
       ora("Port must be a valid number").fail();
       return;
@@ -34,7 +38,10 @@ program
     const { commands, components, events, config } = await build({
       endpoint,
       port,
-      root,
+      build: {
+        root,
+        extensions: extensions?.split(",").map((e: string) => e.trim()),
+      },
     });
     const buildLoader = ora({
       stream: stdout,
@@ -43,9 +50,9 @@ program
 
     const outputContent = `
 ${generateImports(instance, register)}
-import commandList from "./commands.json" with { type: "json" }
-import componentList from "./components.json" with { type: "json" }
-import eventList from "./events.json" with { type: "json" }
+import commands from "./commands.json" with { type: "json" };
+import components from "./components.json" with { type: "json" };
+import events from "./events.json" with { type: "json" };
 
 ${[...commands, ...components, ...events]
   .map((v) => `import h${v.uid} from "./${relative(".dressed", v.path)}"`)
@@ -53,11 +60,17 @@ ${[...commands, ...components, ...events]
 
 const handlers = { ${[...commands, ...components, ...events].map((v) => `h${v.uid}`).join(", ")} }
 
-const config = ${JSON.stringify(config)};
+for (const c of commands) {
+  c.run = handlers[\`h\${c.uid}\`];
+}
+for (const c of components) {
+  c.run = handlers[\`h\${c.uid}\`];
+}
+for (const e of events) {
+  e.run = handlers[\`h\${e.uid}\`];
+}
 
-const commands = commandList.map(c=>({...c,run:handlers[\`h\${c.uid}\`]}));
-const components = componentList.map(c=>({...c,run:handlers[\`h\${c.uid}\`]}));
-const events = eventList.map(e=>({...e,run:handlers[\`h\${e.uid}\`]}));
+const config = ${JSON.stringify(config)};
 
 export { commands, components, events, config }
 ${register ? `\ninstallCommands(commands);\n` : ""}
@@ -69,6 +82,8 @@ export declare const commands: BaseData<CommandData>[];
 export declare const components: BaseData<ComponentData>[];
 export declare const events: BaseData<EventData>[];
 export declare const config: ServerConfig;`;
+
+    mkdirSync(".dressed", { recursive: true });
 
     await Promise.all([
       writeFile(".dressed/index.mjs", outputContent),
