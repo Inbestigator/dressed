@@ -1,8 +1,13 @@
 import { build } from "esbuild";
 import { readFileSync } from "node:fs";
 
-const tsconfig = JSON.parse(readFileSync("tsconfig.json", "utf8") ?? "{}");
-const paths = Object.keys(tsconfig.compilerOptions.paths ?? {}).map(
+let tsconfig = { compilerOptions: { paths: {} } };
+try {
+  tsconfig = JSON.parse(readFileSync("tsconfig.json", "utf8"));
+} catch {
+  //pass
+}
+const paths = Object.keys(tsconfig.compilerOptions?.paths ?? {}).map(
   (p) => p.split("*")[0],
 );
 
