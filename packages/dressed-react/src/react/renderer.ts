@@ -6,13 +6,13 @@ import {
   type APISelectMenuOption,
   ComponentType,
 } from "discord-api-types/v10";
-import { parseActionRow } from "../components/action-row.tsx";
-import { parseContainer } from "../components/container.tsx";
 import { TextDisplay } from "dressed";
-import { parseTextDisplay } from "../components/text-display.tsx";
-import { parseSelectMenu } from "../components/select-menu.tsx";
-import { parseMediaGallery } from "../components/media-gallery.tsx";
-import { parseSection } from "../components/section.tsx";
+import { parseActionRow } from "../components/action-row.ts";
+import { parseContainer } from "../components/container.ts";
+import { parseTextDisplay } from "../components/text-display.ts";
+import { parseSelectMenu } from "../components/select-menu.ts";
+import { parseMediaGallery } from "../components/media-gallery.ts";
+import { parseSection } from "../components/section.ts";
 
 export interface Renderer {
   nodes: Node<unknown>[];
