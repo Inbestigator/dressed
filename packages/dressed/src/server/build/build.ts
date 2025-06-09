@@ -16,6 +16,8 @@ import type {
 import type { WalkEntry } from "../../types/walk.ts";
 import { botEnv } from "../../utils/env.ts";
 import { getApp } from "../../bot/resources/application.ts";
+import bundleFile from "./bundle.ts";
+import { pathToFileURL } from "node:url";
 
 /**
  * Builds the bot imports and other variables.
@@ -27,6 +29,21 @@ export default async function build(config: ServerConfig = {}): Promise<{
   config: ServerConfig;
 }> {
   await fetchMissingVars();
+
+  if (existsSync("dressed.config.ts")) {
+    await bundleFile({
+      path: "dressed.config.ts",
+      outPath: ".dressed/cache/config.mjs",
+    });
+    const { default: importedConfig } = await import(
+      pathToFileURL(".dressed/cache/config.mjs").href
+    );
+    config = {
+      ...importedConfig,
+      ...config,
+      build: { ...importedConfig.build, ...config.build },
+    };
+  }
 
   const [commandFiles, componentFiles, eventFiles] = await Promise.all([
     fetchFiles(config.build, "commands"),

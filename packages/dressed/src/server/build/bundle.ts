@@ -12,7 +12,6 @@ const paths = Object.keys(tsconfig.compilerOptions?.paths ?? {}).map(
 );
 
 export default async function bundleFile(file: {
-  name: string;
   path: string;
   outPath: string;
 }) {
@@ -25,6 +24,7 @@ export default async function bundleFile(file: {
     format: "esm",
     write: true,
     treeShaking: true,
+    jsx: "automatic",
     plugins: [
       {
         name: "make-all-packages-external",
