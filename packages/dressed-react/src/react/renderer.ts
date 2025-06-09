@@ -41,7 +41,7 @@ export function createRenderer(): Renderer {
 }
 
 export async function renderNode(
-  node: ComponentNode
+  node: ComponentNode,
 ): Promise<APIMessageComponent | APIModalComponent> {
   switch (node.props.type) {
     case ComponentType.ActionRow: {
@@ -59,7 +59,10 @@ export async function renderNode(
     case ComponentType.RoleSelect:
     case ComponentType.MentionableSelect:
     case ComponentType.ChannelSelect: {
-      return parseSelectMenu(node.props, node.children as Node<APISelectMenuOption>[]);
+      return parseSelectMenu(
+        node.props,
+        node.children as Node<APISelectMenuOption>[],
+      );
     }
     case ComponentType.Section: {
       return parseSection(node.props, node.children);
@@ -68,7 +71,10 @@ export async function renderNode(
       return parseTextDisplay(node.props, node.text());
     }
     case ComponentType.MediaGallery: {
-      return parseMediaGallery(node.props, node.children as Node<APIMediaGalleryItem>[]);
+      return parseMediaGallery(
+        node.props,
+        node.children as Node<APIMediaGalleryItem>[],
+      );
     }
     case ComponentType.Container: {
       return parseContainer(node.props, node.children);
