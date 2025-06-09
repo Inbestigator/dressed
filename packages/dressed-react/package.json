@@ -1,0 +1,41 @@
+{
+  "name": "@dressed/react",
+  "version": "1.0.0-rc.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inbestigator/dressed.git",
+    "directory": "packages/dressed-react"
+  },
+  "peerDependencies": {
+    "dressed": "^1.8.0-rc",
+    "react": "^19.1.0"
+  },
+  "exports": "./dist/index.js",
+  "description": "Render Dressed's components using React",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://dressed.vercel.app",
+  "keywords": [
+    "dressed",
+    "react",
+    "jsx",
+    "discord"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "dist": "rm -fr dist && tsc",
+    "check-types": "tsc --noEmit",
+    "dry-publish": "bun publish --dry-run"
+  },
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "discord-api-types": "^0.38.10",
+    "react-reconciler": "^0.32.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.6",
+    "@types/react-reconciler": "^0.32.0"
+  }
+}
