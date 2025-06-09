@@ -9,7 +9,6 @@ import {
 import { createNode, isNode, type Node } from "./node.ts";
 import type { Renderer } from "./renderer.ts";
 import { createTextNode, type TextNode } from "./text-node.ts";
-import { createContext } from "react";
 
 let currentUpdatePriority: number = NoEventPriority;
 
@@ -89,7 +88,14 @@ const config: HostConfig<
       : DefaultEventPriority,
   maySuspendCommit: () => false,
   NotPendingTransition: null,
-  HostTransitionContext: createContext(null) as unknown as ReactContext<null>,
+  HostTransitionContext: {
+    $$typeof: Symbol.for("react.context"),
+    _currentValue: null,
+    _currentValue2: null,
+    Provider: null,
+    Consumer: null,
+    _threadCount: 0,
+  } as unknown as ReactContext<null>,
   resetFormInstance: () => {},
   requestPostPaintCallback: () => {},
   shouldAttemptEagerTransition: () => false,

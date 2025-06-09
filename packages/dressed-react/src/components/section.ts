@@ -6,7 +6,7 @@ import { Section as DressedComponent } from "dressed";
 import { createElement, isValidElement, type ReactNode } from "react";
 import { renderNode, type ComponentNode } from "../react/renderer.ts";
 import { type Node } from "../react/node.ts";
-import { render } from "../index.tsx";
+import { render } from "../index.ts";
 
 type SectionProps = Omit<
   APISectionComponent,
