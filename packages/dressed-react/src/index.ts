@@ -5,7 +5,7 @@ import {
 } from "discord-api-types/v10";
 import { createRenderer } from "./react/renderer.ts";
 import { reconciler } from "./react/reconciler.ts";
-import { createInteraction, type RawFile } from "dressed/server";
+import type { createInteraction, RawFile } from "dressed/server";
 
 type ReplyProps = [
   components: ReactNode,
@@ -105,14 +105,14 @@ export function patchInteraction<
   return newInteraction as ReactivatedInteraction<T>;
 }
 
-export * from "./components/action-row.tsx";
-export * from "./components/button.tsx";
-export * from "./components/container.tsx";
-export * from "./components/file.tsx";
-export * from "./components/media-gallery.tsx";
-export * from "./components/section.tsx";
-export * from "./components/select-menu.tsx";
-export * from "./components/separator.tsx";
-export * from "./components/text-display.tsx";
-export * from "./components/text-input.tsx";
-export * from "./components/thumbnail.tsx";
+export { ActionRow } from "./components/action-row.ts";
+export { Button } from "./components/button.ts";
+export { Container } from "./components/container.ts";
+export { File } from "./components/file.ts";
+export { MediaGallery, MediaGalleryItem } from "./components/media-gallery.ts";
+export { Section } from "./components/section.ts";
+export { SelectMenu, SelectMenuOption } from "./components/select-menu.ts";
+export { Separator } from "./components/separator.ts";
+export { TextDisplay } from "./components/text-display.ts";
+export { TextInput } from "./components/text-input.ts";
+export { Thumbnail } from "./components/thumbnail.ts";

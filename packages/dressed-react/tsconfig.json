@@ -13,8 +13,7 @@
     "stripInternal": true,
     "target": "ES2018",
     "verbatimModuleSyntax": true,
-    "rootDir": "src",
-    "jsx": "preserve"
+    "rootDir": "src"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

@@ -32,6 +32,7 @@ export function createRenderer(): Renderer {
   return {
     nodes,
     async render() {
+      console.log(nodes);
       for (const node of nodes) {
         components.push(await renderNode(node));
       }
