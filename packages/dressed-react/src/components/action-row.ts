@@ -1,5 +1,5 @@
 import { ActionRow as DressedComponent } from "dressed";
-import { createElement, type ReactElement } from "react";
+import { createElement, type ReactElement, type ReactNode } from "react";
 import type {
   APIActionRowComponent,
   APIComponentInActionRow,
@@ -9,7 +9,7 @@ import { renderNode, type ComponentNode } from "../react/renderer.ts";
 export function ActionRow({
   children,
 }: {
-  children: ReactElement<APIActionRowComponent<APIComponentInActionRow>>;
+  children: ReactNode;
 }): ReactElement<APIActionRowComponent<APIComponentInActionRow>> {
   const props = DressedComponent();
   return createElement("dressed-node", props, children);

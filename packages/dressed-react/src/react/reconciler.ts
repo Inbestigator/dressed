@@ -1,11 +1,11 @@
-import ReactReconciler, {
-  type HostConfig,
-  type ReactContext,
-} from "react-reconciler";
+import RR from "../build/react-reconciler/index.cjs";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ReactReconciler = RR as any;
 import {
   DefaultEventPriority,
   NoEventPriority,
-} from "react-reconciler/constants.js";
+} from "../build/react-reconciler/constants.ts";
+import type { HostConfig, ReactContext } from "react-reconciler";
 import { createNode, isNode, type Node } from "./node.ts";
 import type { Renderer } from "./renderer.ts";
 import { createTextNode, type TextNode } from "./text-node.ts";
@@ -54,9 +54,9 @@ const config: HostConfig<
   },
   createTextInstance: (text) => createTextNode(text),
   shouldSetTextContent: () => false,
-  detachDeletedInstance: () => {},
-  beforeActiveInstanceBlur: () => {},
-  afterActiveInstanceBlur: () => {},
+  detachDeletedInstance() {},
+  beforeActiveInstanceBlur() {},
+  afterActiveInstanceBlur() {},
   getInstanceFromNode: () => null,
   getInstanceFromScope: () => null,
   clearContainer: (renderer) => {
@@ -65,12 +65,35 @@ const config: HostConfig<
   appendChildToContainer: (renderer, child) => {
     renderer.nodes.push(child);
   },
+  removeChildFromContainer: (renderer, child) => {
+    renderer.nodes.filter((n) => n !== child);
+  },
+  insertInContainerBefore: (renderer, child, before) => {
+    let index = renderer.nodes.indexOf(before);
+    if (index === -1) {
+      index = renderer.nodes.length;
+    }
+    renderer.nodes.splice(index, 0, child);
+  },
   appendInitialChild: (parent, child) => {
     parent.children.push(child);
   },
+  appendChild: (parent, child) => {
+    parent.children.push(child);
+  },
+  removeChild: (parent, child) => {
+    parent.children.filter((n) => n !== child);
+  },
+  insertBefore: (parent, child, before) => {
+    let index = parent.children.indexOf(before);
+    if (index === -1) {
+      index = parent.children.length;
+    }
+    parent.children.splice(index, 0, child);
+  },
   prepareForCommit: () => null,
   resetAfterCommit: () => null,
-  prepareScopeUpdate: () => {},
+  prepareScopeUpdate() {},
   preparePortalMount: () => {
     throw new Error("Portals are not supported");
   },
@@ -78,7 +101,7 @@ const config: HostConfig<
     throw new Error("Refs are currently not supported");
   },
   finalizeInitialChildren: () => false,
-  setCurrentUpdatePriority: (newPriority: number) => {
+  setCurrentUpdatePriority: (newPriority) => {
     currentUpdatePriority = newPriority;
   },
   getCurrentUpdatePriority: () => currentUpdatePriority,
@@ -96,15 +119,15 @@ const config: HostConfig<
     Consumer: null,
     _threadCount: 0,
   } as unknown as ReactContext<null>,
-  resetFormInstance: () => {},
-  requestPostPaintCallback: () => {},
+  resetFormInstance() {},
+  requestPostPaintCallback() {},
   shouldAttemptEagerTransition: () => false,
-  trackSchedulerEvent: () => {},
+  trackSchedulerEvent() {},
   resolveEventType: () => null,
   resolveEventTimeStamp: () => -1,
   preloadInstance: () => false,
-  startSuspendingCommit: () => {},
-  suspendInstance: () => {},
+  startSuspendingCommit() {},
+  suspendInstance() {},
   waitForCommitToBeReady: () => null,
 };
 
