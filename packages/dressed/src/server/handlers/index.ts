@@ -1,10 +1,11 @@
 import ora from "ora";
 import { stdout } from "node:process";
-import type { BaseData } from "../../types/config.ts";
+import type { BaseData, ServerConfig } from "../../types/config.ts";
 import { logRunnerError } from "../utils.ts";
 
 interface SetupItemMessages<T, P> {
   noItem: string;
+  middlewareKey: keyof NonNullable<ServerConfig["middleware"]>;
   pending: (data: BaseData<T>, props: P) => string;
 }
 
@@ -13,29 +14,39 @@ export function createHandlerSetup<T, D, P extends unknown[] = [D]>(options: {
     | ((data: D) => SetupItemMessages<T, P>)
     | SetupItemMessages<T, P>;
   findItem: (data: D, items: BaseData<T>[]) => [BaseData<T>, P] | undefined;
-}): (items: BaseData<T>[]) => (data: D) => Promise<void> {
-  return (items) => async (data) => {
-    const [item, props] = options.findItem(data, items) ?? [];
-    let itemMessages = options.itemMessages;
+}): (
+  items: BaseData<T>[],
+) => (data: D, middleware?: ServerConfig["middleware"]) => Promise<void> {
+  return (items) =>
+    async (data, middleware = {}) => {
+      const [item, props] = options.findItem(data, items) ?? [];
+      let itemMessages = options.itemMessages;
 
-    if (typeof itemMessages === "function") {
-      itemMessages = itemMessages(data);
-    }
-    if (!item || !Array.isArray(props)) {
-      ora(itemMessages.noItem).warn();
-      return;
-    }
+      if (typeof itemMessages === "function") {
+        itemMessages = itemMessages(data);
+      }
+      if (!item || !Array.isArray(props)) {
+        ora(itemMessages.noItem).warn();
+        return;
+      }
 
-    const loader = ora({
-      stream: stdout,
-      text: itemMessages.pending(item, props),
-    }).start();
+      const loader = ora({
+        stream: stdout,
+        text: itemMessages.pending(item, props),
+      }).start();
 
-    try {
-      await item.run?.(...props);
-      loader.succeed();
-    } catch (e) {
-      logRunnerError(e, loader);
-    }
-  };
+      try {
+        const middlewareHandler = middleware[itemMessages.middlewareKey] as
+          | ((...props: unknown[]) => Promise<unknown[]>)
+          | undefined;
+        if (middlewareHandler) {
+          await item.run?.(...(await middlewareHandler(...props)));
+        } else {
+          await item.run?.(...props);
+        }
+        loader.succeed();
+      } catch (e) {
+        logRunnerError(e, loader);
+      }
+    };
 }

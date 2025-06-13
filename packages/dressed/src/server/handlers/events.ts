@@ -11,6 +11,7 @@ export const setupEvents: ReturnType<
 > = createHandlerSetup({
   itemMessages: (event) => ({
     noItem: `No event handler for "${event.type}"`,
+    middlewareKey: "events",
     pending: (item) => `Running event "${item.name}"`,
   }),
   findItem(event, items) {

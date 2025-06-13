@@ -1,41 +1,72 @@
 import type {
-  CommandInteraction,
-  MessageComponentInteraction,
-  ModalSubmitInteraction,
-} from "./interaction.ts";
-import type {
   APIWebhookEventBody,
   ApplicationCommandType,
+  ApplicationWebhookEventType,
   InteractionContextType,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
   RESTPostAPIContextMenuApplicationCommandsJSONBody,
   RESTPostAPIPrimaryEntryPointApplicationCommandJSONBody,
 } from "discord-api-types/v10";
+import type {
+  CommandInteraction,
+  MessageComponentInteraction,
+  ModalSubmitInteraction,
+} from "./interaction.ts";
+import type { Event } from "./event.ts";
 
 /**
  * The configuration for the server.
  */
-export interface ServerConfig {
+export type ServerConfig = Partial<{
   /** The endpoint to listen on
    * @default "/"
    */
-  endpoint?: string;
+  endpoint: string;
   /** The port to listen on
    * @default 8000
    */
-  port?: number;
+  port: number;
   /** Build configuration */
-  build?: {
+  build: Partial<{
     /** Source root for the bot
      * @default "src"
      */
-    root?: string;
+    root: string;
     /** File extensions to include when bundling handlers
      * @default [".js", ".ts", ".mjs"]
      */
-    extensions?: string[];
-  };
-}
+    extensions: string[];
+  }>;
+  /** A layer before your individual handlers are executed.
+   * The return values are the props passed to your handler.
+   *
+   * If you want to passthrough instead of modifying the handler's props, return the middleware's props
+   * ```ts
+   * {
+   *   middleware: {
+   *     // Passthroughed props
+   *     commands(...props) {
+   *       console.log("Middleware!")
+   *       return props
+   *     },
+   *     // Modified props
+   *     components: (interaction, args) => [patchInteraction(interaction), args]
+   *   }
+   * }
+   * ``` */
+  middleware: Partial<{
+    commands: (
+      interaction: CommandInteraction,
+    ) => Promise<unknown[]> | unknown[];
+    components: (
+      interaction: MessageComponentInteraction | ModalSubmitInteraction,
+      args: Record<string, string>,
+    ) => Promise<unknown[]> | unknown[];
+    events: (
+      event: Event<keyof typeof ApplicationWebhookEventType>,
+    ) => Promise<unknown[]> | unknown[];
+  }>;
+}>;
 
 type BaseCommandConfig = {
   /** Type of the command, defaults to `ChatInput` */
