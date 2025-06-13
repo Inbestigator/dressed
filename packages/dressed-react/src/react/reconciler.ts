@@ -1,10 +1,8 @@
-import RR from "../build/react-reconciler/index.cjs";
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ReactReconciler = RR as any;
+import ReactReconciler from "react-reconciler";
 import {
   DefaultEventPriority,
   NoEventPriority,
-} from "../build/react-reconciler/constants.ts";
+} from "react-reconciler/constants.js";
 import type { HostConfig, ReactContext } from "react-reconciler";
 import { createNode, isNode, type Node } from "./node.ts";
 import type { Renderer } from "./renderer.ts";
