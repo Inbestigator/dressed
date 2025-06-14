@@ -45,23 +45,23 @@ export type ServerConfig = Partial<{
      */
     extensions: string[];
   }>;
-  /** A layer before your individual handlers are executed.
+  /**
+   * A layer before your individual handlers are executed.
    * The return values are the props passed to your handler.
    *
-   * If you want to passthrough instead of modifying the handler's props, return the middleware's props
-   * ```ts
+   * If you don't want to modify the handler's props, directly return the middleware's props.
+   *
+   * @example
    * {
-   *   middleware: {
-   *     // Passthroughed props
-   *     commands(...props) {
-   *       console.log("Middleware!")
-   *       return props
-   *     },
-   *     // Modified props
-   *     components: (interaction, args) => [patchInteraction(interaction), args]
-   *   }
+   *   // Passthroughed props
+   *   commands(...props) {
+   *     console.log("Middleware!")
+   *     return props
+   *   },
+   *   // Modified props
+   *   components: (interaction, args) => [patchInteraction(interaction), args]
    * }
-   * ``` */
+   */
   middleware: Partial<{
     commands: CommandMiddleware;
     components: ComponentMiddleware;
