@@ -14,6 +14,7 @@ import type {
 export type CommandHandler = (interaction: CommandInteraction) => Promise<void>;
 export type ComponentHandler = (
   interaction: MessageComponentInteraction | ModalSubmitInteraction,
+  args?: Record<string, string>,
 ) => Promise<void>;
 export type EventHandler = (event: AnyEvent) => Promise<void>;
 
