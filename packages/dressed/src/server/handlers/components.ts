@@ -26,7 +26,7 @@ function getCategory(interaction: Data) {
  */
 export const setupComponents: ReturnType<
   typeof createHandlerSetup<ComponentData, Data, [Data, Record<string, string>]>
-> = createHandlerSetup<ComponentData, Data, [Data, Record<string, string>]>({
+> = createHandlerSetup({
   itemMessages: (interaction) => {
     const category = getCategory(interaction).slice(0, -1);
     return {
@@ -42,9 +42,7 @@ export const setupComponents: ReturnType<
   },
   findItem(interaction, items) {
     const category = getCategory(interaction);
-
     const categoryItems = items.filter((i) => i.data.category === category);
-
     const { index, match } = matchOptimal(
       interaction.data.custom_id,
       categoryItems.map((c) => new RegExp(c.data.regex)),

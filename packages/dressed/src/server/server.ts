@@ -9,11 +9,11 @@ import {
   InteractionType,
 } from "discord-api-types/v10";
 import type {
-  CommandHandler,
-  ComponentHandler,
-  EventHandler,
-  ServerConfig,
-} from "../types/config.ts";
+  CommandRunner,
+  ComponentRunner,
+  EventRunner,
+} from "../types/handlers.ts";
+import type { ServerConfig } from "../types/config.ts";
 import { createServer as createHttpServer, type Server } from "node:http";
 import { stdout } from "node:process";
 import { Buffer } from "node:buffer";
@@ -24,9 +24,9 @@ import { createInteraction } from "./extenders/interaction.ts";
  * @returns The server instance
  */
 export function createServer(
-  runCommand: CommandHandler,
-  runComponent: ComponentHandler,
-  runEvent: EventHandler,
+  runCommand: CommandRunner,
+  runComponent: ComponentRunner,
+  runEvent: EventRunner,
   config: ServerConfig,
 ): Server {
   const server = createHttpServer((req, res) => {
@@ -53,6 +53,7 @@ export function createServer(
           runCommand,
           runComponent,
           runEvent,
+          config,
         );
 
         res.statusCode = handlerRes.status;
@@ -85,13 +86,15 @@ export function createServer(
  * @param req The request from Discord
  * @param runCommand The function to run a command
  * @param runComponent The function to run a component
+ * @param config Configuration for your server
  * @returns The response to send back to Discord
  */
 export async function handleRequest(
   req: Request,
-  runCommand: CommandHandler,
-  runComponent: ComponentHandler,
-  runEvent: EventHandler,
+  runCommand: CommandRunner,
+  runComponent: ComponentRunner,
+  runEvent: EventRunner,
+  config?: ServerConfig,
 ): Promise<Response> {
   const reqLoader = ora({
     stream: stdout,
@@ -117,9 +120,14 @@ export async function handleRequest(
     let status = 500;
     // The interaction response token
     if ("token" in json) {
-      status = handleInteraction(runCommand, runComponent, json);
+      status = handleInteraction(
+        runCommand,
+        runComponent,
+        json,
+        config?.middleware,
+      );
     } else {
-      status = handleEvent(runEvent, json);
+      status = handleEvent(runEvent, json, config?.middleware);
     }
     return new Response(status === 200 ? '{"type":1}' : null, {
       status,
@@ -131,12 +139,13 @@ export async function handleRequest(
 }
 
 /**
- * Runs an interaction, takes functions to run commands/components and the request body
+ * Runs an interaction, takes functions to run commands/components/middleware and the request body
  */
 export function handleInteraction(
-  runCommand: CommandHandler,
-  runComponent: ComponentHandler,
+  runCommand: CommandRunner,
+  runComponent: ComponentRunner,
   json: ReturnType<typeof JSON.parse>,
+  middleware: ServerConfig["middleware"],
 ): 200 | 202 | 404 {
   switch (json.type) {
     case InteractionType.Ping: {
@@ -146,7 +155,7 @@ export function handleInteraction(
     case InteractionType.ApplicationCommand: {
       const command = json as APIApplicationCommandInteraction;
       const interaction = createInteraction(command);
-      runCommand(interaction);
+      runCommand(interaction, middleware?.commands);
       return 202;
     }
     case InteractionType.MessageComponent:
@@ -155,7 +164,7 @@ export function handleInteraction(
         | APIMessageComponentInteraction
         | APIModalSubmitInteraction;
       const interaction = createInteraction(component);
-      runComponent(interaction);
+      runComponent(interaction, middleware?.components);
       return 202;
     }
     default: {
@@ -166,11 +175,12 @@ export function handleInteraction(
 }
 
 /**
- * Runs an event, takes a function to run events and the request body
+ * Runs an event, takes a function to run events/middleware and the request body
  */
 export function handleEvent(
-  runEvent: EventHandler,
+  runEvent: EventRunner,
   json: ReturnType<typeof JSON.parse>,
+  middleware: ServerConfig["middleware"],
 ): 200 | 202 | 404 {
   switch (json.type) {
     case ApplicationWebhookType.Ping: {
@@ -179,7 +189,7 @@ export function handleEvent(
     }
     case ApplicationWebhookType.Event: {
       const event = json.event as APIWebhookEventBody;
-      runEvent(event);
+      runEvent(event, middleware?.events);
       return 202;
     }
     default: {

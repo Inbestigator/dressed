@@ -11,10 +11,12 @@ export type {
   ComponentData,
   EventData,
   ServerConfig,
+} from "../types/config.ts";
+export type {
   CommandHandler,
   ComponentHandler,
   EventHandler,
-} from "../types/config.ts";
+} from "../types/handlers.ts";
 export type { RawFile } from "../types/file.ts";
 
 // Core

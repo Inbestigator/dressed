@@ -1,6 +1,6 @@
 {
   "name": "@dressed/react",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Inbestigator/dressed.git",
@@ -31,11 +31,11 @@
   "type": "module",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "discord-api-types": "^0.38.10",
+    "discord-api-types": "^0.38.11",
     "react-reconciler": "github:inbestigator/dressed-rr"
   },
   "devDependencies": {
-    "@types/react": "^19.1.6",
+    "@types/react": "^19.1.8",
     "@types/react-reconciler": "^0.32.0"
   }
 }

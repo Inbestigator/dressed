@@ -1,18 +1,26 @@
 import type {
-  APIWebhookEventBody,
   ApplicationCommandType,
-  ApplicationWebhookEventType,
   InteractionContextType,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
   RESTPostAPIContextMenuApplicationCommandsJSONBody,
   RESTPostAPIPrimaryEntryPointApplicationCommandJSONBody,
 } from "discord-api-types/v10";
+import type { Promisable } from "./possible-promise.ts";
 import type {
-  CommandInteraction,
-  MessageComponentInteraction,
-  ModalSubmitInteraction,
-} from "./interaction.ts";
-import type { Event } from "./event.ts";
+  CommandHandler,
+  ComponentHandler,
+  EventHandler,
+} from "./handlers.ts";
+
+export type CommandMiddleware = (
+  ...p: Parameters<CommandHandler>
+) => Promisable<unknown[]>;
+export type ComponentMiddleware = (
+  ...p: Parameters<ComponentHandler>
+) => Promisable<unknown[]>;
+export type EventMiddleware = (
+  ...p: Parameters<EventHandler>
+) => Promisable<unknown[]>;
 
 /**
  * The configuration for the server.
@@ -55,16 +63,9 @@ export type ServerConfig = Partial<{
    * }
    * ``` */
   middleware: Partial<{
-    commands: (
-      interaction: CommandInteraction,
-    ) => Promise<unknown[]> | unknown[];
-    components: (
-      interaction: MessageComponentInteraction | ModalSubmitInteraction,
-      args: Record<string, string>,
-    ) => Promise<unknown[]> | unknown[];
-    events: (
-      event: Event<keyof typeof ApplicationWebhookEventType>,
-    ) => Promise<unknown[]> | unknown[];
+    commands: CommandMiddleware;
+    components: ComponentMiddleware;
+    events: EventMiddleware;
   }>;
 }>;
 
@@ -145,10 +146,3 @@ export interface ComponentData {
 export interface EventData {
   type: string;
 }
-
-export type CommandHandler = (interaction: CommandInteraction) => Promise<void>;
-export type ComponentHandler = (
-  interaction: MessageComponentInteraction | ModalSubmitInteraction,
-  args?: Record<string, string>,
-) => Promise<void>;
-export type EventHandler = (event: APIWebhookEventBody) => Promise<void>;
