@@ -1,10 +1,12 @@
 import ora from "ora";
 import { stdout } from "node:process";
-import type { BaseData } from "../../types/config.ts";
+import type { BaseData, ServerConfig } from "../../types/config.ts";
 import { logRunnerError } from "../utils.ts";
+import type { Promisable } from "../../types/possible-promise.ts";
 
 interface SetupItemMessages<T, P> {
   noItem: string;
+  middlewareKey: keyof NonNullable<ServerConfig["middleware"]>;
   pending: (data: BaseData<T>, props: P) => string;
 }
 
@@ -13,8 +15,13 @@ export function createHandlerSetup<T, D, P extends unknown[] = [D]>(options: {
     | ((data: D) => SetupItemMessages<T, P>)
     | SetupItemMessages<T, P>;
   findItem: (data: D, items: BaseData<T>[]) => [BaseData<T>, P] | undefined;
-}): (items: BaseData<T>[]) => (data: D) => Promise<void> {
-  return (items) => async (data) => {
+}): (
+  items: BaseData<T>[],
+) => (
+  data: D,
+  middleware?: (...props: P) => Promisable<unknown[]>,
+) => Promise<void> {
+  return (items) => async (data, middleware) => {
     const [item, props] = options.findItem(data, items) ?? [];
     let itemMessages = options.itemMessages;
 
@@ -32,7 +39,11 @@ export function createHandlerSetup<T, D, P extends unknown[] = [D]>(options: {
     }).start();
 
     try {
-      await item.run?.(...props);
+      if (middleware) {
+        await item.run?.(...(await middleware(...props)));
+      } else {
+        await item.run?.(...props);
+      }
       loader.succeed();
     } catch (e) {
       logRunnerError(e, loader);

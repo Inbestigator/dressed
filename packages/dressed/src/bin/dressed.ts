@@ -35,7 +35,7 @@ program
       return;
     }
     port = port ? Number(port) : undefined;
-    const { commands, components, events, config } = await build({
+    const { commands, components, events } = await build({
       endpoint,
       port,
       build: {
@@ -53,12 +53,13 @@ ${generateImports(instance, register)}
 import commands from "./commands.json" with { type: "json" };
 import components from "./components.json" with { type: "json" };
 import events from "./events.json" with { type: "json" };
+import config from "./cache/config.mjs";
 
 ${[...commands, ...components, ...events]
-  .map((v) => `import h${v.uid} from "./${relative(".dressed", v.path)}"`)
+  .map((v) => `import h${v.uid} from "./${relative(".dressed", v.path)}";`)
   .join("\n")}
 
-const handlers = { ${[...commands, ...components, ...events].map((v) => `h${v.uid}`).join(", ")} }
+const handlers = { ${[...commands, ...components, ...events].map((v) => `h${v.uid}`).join(", ")} };
 
 for (const c of commands) {
   c.run = handlers[\`h\${c.uid}\`];
@@ -69,8 +70,6 @@ for (const c of components) {
 for (const e of events) {
   e.run = handlers[\`h\${e.uid}\`];
 }
-
-const config = ${JSON.stringify(config)};
 
 export { commands, components, events, config }
 ${register ? `\ninstallCommands(commands);\n` : ""}

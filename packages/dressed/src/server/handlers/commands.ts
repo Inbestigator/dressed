@@ -70,6 +70,7 @@ export const setupCommands: ReturnType<
 > = createHandlerSetup({
   itemMessages: (interaction) => ({
     noItem: `No command handler for "${interaction.data.name}"`,
+    middlewareKey: "commands",
     pending: (item) => `Running command "${item.name}"`,
   }),
   findItem(interaction, items) {

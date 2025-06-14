@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import {
   MessageFlags,
   type APIInteractionResponseCallbackData,
+  type APIModalInteractionResponseCallbackData,
 } from "discord-api-types/v10";
 import { createRenderer } from "./react/renderer.ts";
 import { reconciler } from "./react/reconciler.ts";
@@ -34,6 +35,10 @@ type FollowUpProps = [
     ephemeral?: boolean;
   },
 ];
+type ShowModalProps = [
+  components: ReactNode,
+  data?: Omit<APIModalInteractionResponseCallbackData, "components">,
+];
 
 type ReactivatedInteraction<
   T extends NonNullable<ReturnType<typeof createInteraction>>,
@@ -44,6 +49,7 @@ type ReactivatedInteraction<
     editReply: EditReplyProps;
     update: EditReplyProps;
     followUp: FollowUpProps;
+    showModal: ShowModalProps;
   }
 >;
 

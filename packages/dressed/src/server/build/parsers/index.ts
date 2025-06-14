@@ -7,6 +7,7 @@ import bundleFile from "../bundle.ts";
 import { createHash } from "node:crypto";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
+import type { Promisable } from "../../../types/possible-promise.ts";
 
 interface ParserMessages {
   pending: string;
@@ -25,8 +26,8 @@ export function createHandlerParser<T>(options: {
   uniqueKeys?: (keyof T)[];
   messages: ParserMessages;
   itemMessages: ((file: WalkEntry) => ParserItemMessages) | ParserItemMessages;
-  createData: (file: WalkEntry & { originalPath: string }) => Promise<T> | T;
-  postMortem?: (items: BaseData<T>[]) => Promise<BaseData<T>[]> | BaseData<T>[];
+  createData: (file: WalkEntry & { originalPath: string }) => Promisable<T>;
+  postMortem?: (items: BaseData<T>[]) => Promisable<BaseData<T>[]>;
 }): (files: WalkEntry[]) => Promise<BaseData<T>[]> {
   return async (files) => {
     if (files.length === 0) return [];
