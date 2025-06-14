@@ -7,6 +7,11 @@ import {
 import { createRenderer } from "./react/renderer.ts";
 import { reconciler } from "./react/reconciler.ts";
 import type { createInteraction, RawFile } from "dressed/server";
+import type {
+  CommandInteraction as DressedCommandInteraction,
+  MessageComponentInteraction as DressedMessageComponentInteraction,
+  ModalSubmitInteraction as DressedModalSubmitInteraction,
+} from "dressed";
 
 type ReplyProps = [
   components: ReactNode,
@@ -62,6 +67,13 @@ type OverrideMethodParams<T, Overrides extends Record<string, unknown[]>> = {
     : T[K];
 };
 
+export type CommandInteraction =
+  ReactivatedInteraction<DressedCommandInteraction>;
+export type MessageComponentInteraction =
+  ReactivatedInteraction<DressedMessageComponentInteraction>;
+export type ModalSubmitInteraction =
+  ReactivatedInteraction<DressedModalSubmitInteraction>;
+
 export async function render(component: ReactNode) {
   const container = createRenderer();
   const root = reconciler.createContainer(
@@ -108,7 +120,7 @@ export function patchInteraction<
       return original(data);
     };
   }
-  return newInteraction as ReactivatedInteraction<T>;
+  return newInteraction;
 }
 
 export { ActionRow } from "./components/action-row.ts";
