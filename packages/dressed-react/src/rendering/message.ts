@@ -24,7 +24,7 @@ export async function createMessage(
   components: ReactNode,
   data: Omit<RESTPostAPIChannelMessageJSONBody, "content"> & {
     files?: RawFile[];
-  },
+  } = {},
 ) {
   const flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
   data.flags = flags;
@@ -45,7 +45,7 @@ export async function editMessage(
   components: ReactNode,
   data: Omit<RESTPatchAPIChannelMessageJSONBody, "content"> & {
     files?: RawFile[];
-  },
+  } = {},
 ) {
   const flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
   data.flags = flags;
