@@ -13,6 +13,7 @@ import { parseTextDisplay } from "../components/text-display.ts";
 import { parseSelectMenu } from "../components/select-menu.ts";
 import { parseMediaGallery } from "../components/media-gallery.ts";
 import { parseSection } from "../components/section.ts";
+import { createTextNode } from "./text-node.ts";
 
 export interface Renderer {
   nodes: Node<unknown>[];
@@ -25,6 +26,31 @@ export type ComponentNode = Node<
   APIMessageComponent | APIModalComponent
 >;
 
+function mergeTextNodes<T>(nodes: Node<T>[]) {
+  const merged = [];
+  let content = "";
+
+  function pushText() {
+    if (content.length) {
+      merged.push(createTextNode(content));
+      content = "";
+    }
+  }
+
+  for (const node of nodes) {
+    if (typeof node.props === "string") {
+      content += node.props;
+    } else {
+      pushText();
+      node.children = mergeTextNodes(node.children);
+      merged.push(node);
+    }
+  }
+
+  pushText();
+  return merged;
+}
+
 export function createRenderer(): Renderer {
   const components: (APIMessageComponent | APIModalComponent)[] = [];
   const nodes: Node<APIMessageComponent | APIModalComponent>[] = [];
@@ -32,7 +58,7 @@ export function createRenderer(): Renderer {
   return {
     nodes,
     async render() {
-      for (const node of nodes) {
+      for (const node of mergeTextNodes(nodes)) {
         components.push(await renderNode(node));
       }
     },
