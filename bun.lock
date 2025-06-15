@@ -49,7 +49,7 @@
     },
     "packages/dressed-react": {
       "name": "@dressed/react",
-      "version": "1.3.1",
+      "version": "1.4.0",
       "dependencies": {
         "discord-api-types": "^0.38.11",
         "react-reconciler": "github:inbestigator/dressed-rr",
