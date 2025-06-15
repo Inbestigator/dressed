@@ -57,15 +57,10 @@ const config: HostConfig<
   afterActiveInstanceBlur() {},
   getInstanceFromNode: () => null,
   getInstanceFromScope: () => null,
-  clearContainer: (renderer) => {
-    renderer.nodes.length = 0;
-  },
-  appendChildToContainer: (renderer, child) => {
-    renderer.nodes.push(child);
-  },
-  removeChildFromContainer: (renderer, child) => {
-    renderer.nodes.filter((n) => n !== child);
-  },
+  clearContainer: (renderer) => (renderer.nodes.length = 0),
+  appendChildToContainer: (renderer, child) => renderer.nodes.push(child),
+  removeChildFromContainer: (renderer, child) =>
+    renderer.nodes.filter((n) => n !== child),
   insertInContainerBefore: (renderer, child, before) => {
     let index = renderer.nodes.indexOf(before);
     if (index === -1) {
@@ -73,15 +68,9 @@ const config: HostConfig<
     }
     renderer.nodes.splice(index, 0, child);
   },
-  appendInitialChild: (parent, child) => {
-    parent.children.push(child);
-  },
-  appendChild: (parent, child) => {
-    parent.children.push(child);
-  },
-  removeChild: (parent, child) => {
-    parent.children.filter((n) => n !== child);
-  },
+  appendInitialChild: (parent, child) => parent.children.push(child),
+  appendChild: (parent, child) => parent.children.push(child),
+  removeChild: (parent, child) => parent.children.filter((n) => n !== child),
   insertBefore: (parent, child, before) => {
     let index = parent.children.indexOf(before);
     if (index === -1) {
