@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import {
   MessageFlags,
   type APIInteractionResponseCallbackData,
+  type APIMessageTopLevelComponent,
   type APIModalInteractionResponseCallbackData,
 } from "discord-api-types/v10";
 import { createRenderer } from "./react/renderer.ts";
@@ -42,7 +43,7 @@ type FollowUpProps = [
 ];
 type ShowModalProps = [
   components: ReactNode,
-  data?: Omit<APIModalInteractionResponseCallbackData, "components">,
+  data: Omit<APIModalInteractionResponseCallbackData, "components">,
 ];
 
 type ReactivatedInteraction<
@@ -96,6 +97,19 @@ export async function render(component: ReactNode) {
   return container;
 }
 
+/**
+ * Renders the provided children and returns a skeleton message object with the `IsComponentsV2` flag
+ * @example
+ * createMessage(channelId, await renderMessage(<Button label="Hello world" />))
+ */
+export async function renderMessage(children: ReactNode) {
+  return {
+    flags: MessageFlags.IsComponentsV2,
+    components: (await render(children))
+      .components as APIMessageTopLevelComponent[],
+  };
+}
+
 export function patchInteraction<
   T extends NonNullable<ReturnType<typeof createInteraction>>,
 >(interaction: T): ReactivatedInteraction<T> {
@@ -107,6 +121,7 @@ export function patchInteraction<
     "editReply",
     "update",
     "followUp",
+    "showModal",
   ] as (keyof T)[]) {
     if (!(method in interaction)) continue;
     const original = interaction[method] as (d: unknown) => unknown;
