@@ -32,6 +32,24 @@ export default async function ping(interaction: CommandInteraction) {
 }
 ```
 
+If you don't want to manually patch every interaction, you can use middleware:
+
+```ts
+// dressed.config.ts
+import { patchInteraction } from "@dressed/react";
+import type { ServerConfig } from "dressed/server";
+
+const config: ServerConfig = {
+  build: { extensions: ["tsx", "ts"] },
+  middleware: {
+    commands: (i) => [patchInteraction(i)],
+    components: (i, a) => [patchInteraction(i), a],
+  },
+};
+
+export default config;
+```
+
 > [!IMPORTANT]
 > In order for Dressed to bundle your tsx/jsx files, the extension must be added to the build config's extensions array\
 > e.g. `dressed build -E tsx,ts`
