@@ -1,27 +1,13 @@
 import { defaultLogic } from "./default.ts";
+import type { CachedFunctions, CacheLogic } from "./types.ts";
 
-export type CachedFunctions = Record<
-  string,
-  (...args: never[]) => Promise<unknown>
->;
-export type CacheResponse =
-  | { value: unknown; state: "hit" | "stale" }
-  | { state: "miss" };
-
-export interface CacheLogic<F extends CachedFunctions> {
-  /** Used to get a value from the cache */
-  get: (key: string) => CacheResponse | Promise<CacheResponse>;
-  /** Used to set a new value in the cache */
-  set: (key: string, value: unknown) => void;
-  /** Return a key to be used in the cache */
-  resolveKey: <K extends keyof F>(key: K, args: Parameters<F[K]>) => string;
-}
 export function createCache<F extends CachedFunctions>(
   /** The functions to cache */
   functions: F,
   /** Functions for creating a custom cache implementation */
   logic: CacheLogic<F> = defaultLogic({}),
 ): F {
+  const revalidating = new Set<string>();
   return Object.fromEntries(
     Object.entries(functions).map(([k, v]) => [
       k,
@@ -34,8 +20,15 @@ export function createCache<F extends CachedFunctions>(
             logic.set(key, value);
             return value;
           }
-          case "stale":
-            v(...args).then((v) => logic.set(key, v));
+          case "stale": {
+            if (!revalidating.has(key)) {
+              revalidating.add(key);
+              v(...args).then((v) => {
+                logic.set(key, v);
+                revalidating.delete(key);
+              });
+            }
+          }
           // eslint-disable-next-line no-fallthrough
           case "hit":
             return res.value;

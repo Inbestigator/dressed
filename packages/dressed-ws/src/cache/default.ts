@@ -1,5 +1,5 @@
 import { hash } from "node:crypto";
-import type { CachedFunctions, CacheLogic } from "./index.ts";
+import type { CachedFunctions, CacheLogic } from "./types.ts";
 
 interface Config {
   /**

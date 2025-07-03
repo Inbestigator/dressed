@@ -12,6 +12,8 @@ import {
 } from "discord-api-types/v10";
 import { botEnv, callDiscord } from "dressed/utils";
 import { platform } from "node:process";
+import { createCache, getters } from "./cache/index.ts";
+import type { CacheLogic } from "./cache/types.ts";
 
 async function getGatewayBot(): Promise<APIGatewayBotInfo> {
   const res = await callDiscord(Routes.gatewayBot(), { method: "GET" });
@@ -20,19 +22,7 @@ async function getGatewayBot(): Promise<APIGatewayBotInfo> {
 
 type EventKeys = keyof typeof GatewayDispatchEvents;
 
-export function createConnection(
-  config: Omit<
-    Partial<GatewayIdentifyData>,
-    "intents" | "properties" | "compress" | "large_threshold"
-  > & {
-    /**
-     * The Gateway Intents you wish to receive
-     *
-     * @see {@link https://discord.com/developers/docs/topics/gateway#gateway-intents}
-     */
-    intents?: (keyof typeof GatewayIntentBits)[];
-  } = {},
-): {
+type ConnectionActions = {
   [K in EventKeys as `on${K}`]: (
     callback: (
       data: (GatewayDispatchPayload extends infer U
@@ -44,13 +34,32 @@ export function createConnection(
         : never)["d"],
     ) => void,
   ) => () => void;
-} {
-  const intents = (config.intents ?? []).reduce(
-    (acc, intent) => acc | GatewayIntentBits[intent],
-    0,
-  );
+} & ReturnType<typeof createCache<typeof getters>>;
 
+/** Create a connection to the Discord gateway */
+export function createConnection(
+  config: Omit<
+    Partial<GatewayIdentifyData>,
+    "intents" | "properties" | "compress" | "large_threshold"
+  > & {
+    /**
+     * The Gateway Intents you wish to receive
+     *
+     * @see {@link https://discord.com/developers/docs/topics/gateway#gateway-intents}
+     */
+    intents?: (keyof typeof GatewayIntentBits)[];
+    cache?: CacheLogic<typeof getters>;
+  } = {},
+): ConnectionActions {
+  const {
+    cache: cacheConfig,
+    intents = [],
+    token = botEnv.DISCORD_TOKEN,
+    ...connectionConfig
+  } = config;
   const listeners = new Map<string, Map<string, (data: unknown) => void>>();
+
+  process.env.DISCORD_TOKEN = token;
 
   async function connect() {
     const { url } = await getGatewayBot();
@@ -81,14 +90,17 @@ export function createConnection(
           const identifyPayload: GatewayIdentify = {
             op: GatewayOpcodes.Identify,
             d: {
-              ...config,
-              token: config.token ?? botEnv.DISCORD_TOKEN,
+              ...connectionConfig,
+              token,
+              intents: intents.reduce(
+                (acc, intent) => acc | GatewayIntentBits[intent],
+                0,
+              ),
               properties: {
                 os: platform,
                 browser: "Dressed",
                 device: "Dressed",
               },
-              intents,
             },
           };
           ws.send(JSON.stringify(identifyPayload));
@@ -124,22 +136,19 @@ export function createConnection(
 
   connect();
 
-  return Object.fromEntries(
-    Object.keys(GatewayDispatchEvents).map((k) => [
-      `on${k}`,
-      (callback: () => never) => {
-        const id = crypto.randomUUID();
-        const eventName = GatewayDispatchEvents[k as EventKeys];
-        if (!listeners.has(eventName)) listeners.set(eventName, new Map());
-        listeners.get(eventName)!.set(id, callback);
-        return () => listeners.get(eventName)?.delete(id);
-      },
-    ]),
-  ) as ReturnType<typeof createConnection>;
+  return {
+    ...Object.fromEntries(
+      Object.keys(GatewayDispatchEvents).map((k) => [
+        `on${k}`,
+        (callback: () => never) => {
+          const id = crypto.randomUUID();
+          const eventName = GatewayDispatchEvents[k as EventKeys];
+          if (!listeners.has(eventName)) listeners.set(eventName, new Map());
+          listeners.get(eventName)!.set(id, callback);
+          return () => listeners.get(eventName)?.delete(id);
+        },
+      ]),
+    ),
+    ...createCache(getters, cacheConfig),
+  } as ReturnType<typeof createConnection>;
 }
-
-const connection = createConnection({ intents: ["GuildMessages"] });
-connection.onReady(async (data) => {
-  console.log("Ready", data.user.username);
-});
-connection.onMessageCreate((d) => console.log(d));
