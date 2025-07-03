@@ -1,0 +1,56 @@
+import { hash } from "node:crypto";
+import type { CachedFunctions, CacheLogic } from "./index.ts";
+
+interface Config {
+  /**
+   * Time To Live
+   * @description Time before a cache entry is considered stale (in ms)
+   * @default 300,000 // 5 minutes
+   */
+  ttl?: number;
+  /**
+   * Stale While Revalidate
+   * @description Time where a stale value may be used while a fresh value is being fetched (in ms)
+   * @default 60,000 // 1 minute
+   */
+  swr?: number;
+}
+
+/** Creates a hash of the key and args */
+export function resolveKey<F extends CachedFunctions, K extends keyof F>(
+  key: K,
+  args: Parameters<F[K]>
+) {
+  return hash("sha1", `${key.toString()}:${JSON.stringify(args)}`);
+}
+
+export function defaultLogic<F extends CachedFunctions>(config: Config): CacheLogic<F> {
+  const cache = new Map<
+    string,
+    {
+      swr: number;
+      value: unknown;
+      expiresAt: number;
+    }
+  >();
+  return {
+    get(key) {
+      const data = cache.get(key);
+      if (!data || data.expiresAt + data.swr < Date.now()) {
+        return { state: "miss" };
+      }
+      return {
+        state: data.expiresAt < Date.now() ? "stale" : "hit",
+        value: data.value,
+      };
+    },
+    set(key, value) {
+      cache.set(key, {
+        value,
+        swr: config.swr ?? 60 * 1000,
+        expiresAt: Date.now() + (config.ttl ?? 5 * 60 * 1000),
+      });
+    },
+    resolveKey,
+  };
+}

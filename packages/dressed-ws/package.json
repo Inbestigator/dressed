@@ -1,0 +1,35 @@
+{
+  "name": "@dressed/ws",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inbestigator/dressed.git",
+    "directory": "packages/dressed-ws"
+  },
+  "peerDependencies": {
+    "dressed": "^1.8.1"
+  },
+  "exports": "./dist/index.js",
+  "description": "Communicate with the Discord API using websockets",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://dressed.vercel.app",
+  "keywords": [
+    "dressed",
+    "websockets",
+    "gateway",
+    "discord"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "dist": "rm -fr dist && tsc",
+    "check-types": "tsc --noEmit",
+    "dry-publish": "bun publish --dry-run"
+  },
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "discord-api-types": "^0.38.14"
+  }
+}
