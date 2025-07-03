@@ -1,14 +1,14 @@
 import {
-  GatewayIntentBits,
-  type GatewayIdentifyData,
+  Routes,
   GatewayOpcodes,
-  type APIGatewayBotInfo,
+  GatewayIntentBits,
   GatewayDispatchEvents,
-  type GatewayReceivePayload,
   type GatewayIdentify,
   type GatewayHeartbeat,
-  Routes,
-  type GatewayReadyDispatch,
+  type APIGatewayBotInfo,
+  type GatewayIdentifyData,
+  type GatewayReceivePayload,
+  type GatewayDispatchPayload,
 } from "discord-api-types/v10";
 import { botEnv, callDiscord } from "dressed/utils";
 import { platform } from "node:process";
@@ -18,7 +18,9 @@ async function getGatewayBot(): Promise<APIGatewayBotInfo> {
   return res.json();
 }
 
-export async function createConnection(
+type EventKeys = keyof typeof GatewayDispatchEvents;
+
+export function createConnection(
   config: Omit<
     Partial<GatewayIdentifyData>,
     "intents" | "properties" | "compress" | "large_threshold"
@@ -29,75 +31,115 @@ export async function createConnection(
      * @see {@link https://discord.com/developers/docs/topics/gateway#gateway-intents}
      */
     intents?: (keyof typeof GatewayIntentBits)[];
-    onReady?: (event: GatewayReadyDispatch["d"]) => void;
-  },
-) {
+  } = {},
+): {
+  [K in EventKeys as `on${K}`]: (
+    callback: (
+      data: (GatewayDispatchPayload extends infer U
+        ? U extends { t: infer T }
+          ? (typeof GatewayDispatchEvents)[K] extends T
+            ? U
+            : never
+          : never
+        : never)["d"],
+    ) => void,
+  ) => () => void;
+} {
   const intents = (config.intents ?? []).reduce(
     (acc, intent) => acc | GatewayIntentBits[intent],
     0,
   );
 
-  const { url } = await getGatewayBot();
-  const ws = new WebSocket(url);
+  const listeners = new Map<string, Map<string, (data: unknown) => void>>();
 
-  let heartbeatInterval: NodeJS.Timeout;
-  let lastSeq: number | null = null;
+  async function connect() {
+    const { url } = await getGatewayBot();
+    const ws = new WebSocket(url);
 
-  ws.onmessage = (event) => {
-    const payload = JSON.parse(event.data) as GatewayReceivePayload;
+    let heartbeatInterval: NodeJS.Timeout;
+    let lastSeq: number | null = null;
 
-    if (payload.s !== null) {
-      lastSeq = payload.s;
-    }
+    ws.onmessage = (event) => {
+      const payload = JSON.parse(event.data) as GatewayReceivePayload;
 
-    switch (payload.op) {
-      case GatewayOpcodes.Hello: {
-        const { heartbeat_interval } = payload.d;
+      if (payload.s !== null) {
+        lastSeq = payload.s;
+      }
 
-        heartbeatInterval = setInterval(() => {
-          const heartbeatPayload: GatewayHeartbeat = {
-            op: GatewayOpcodes.Heartbeat,
-            d: lastSeq,
-          };
-          ws.send(JSON.stringify(heartbeatPayload));
-        }, heartbeat_interval);
+      switch (payload.op) {
+        case GatewayOpcodes.Hello: {
+          const { heartbeat_interval } = payload.d;
 
-        const identifyPayload: GatewayIdentify = {
-          op: GatewayOpcodes.Identify,
-          d: {
-            token: botEnv.DISCORD_TOKEN,
-            ...config,
-            properties: {
-              os: platform,
-              browser: "Dressed",
-              device: "Dressed",
+          heartbeatInterval = setInterval(() => {
+            const heartbeatPayload: GatewayHeartbeat = {
+              op: GatewayOpcodes.Heartbeat,
+              d: lastSeq,
+            };
+            ws.send(JSON.stringify(heartbeatPayload));
+          }, heartbeat_interval);
+
+          const identifyPayload: GatewayIdentify = {
+            op: GatewayOpcodes.Identify,
+            d: {
+              ...config,
+              token: config.token ?? botEnv.DISCORD_TOKEN,
+              properties: {
+                os: platform,
+                browser: "Dressed",
+                device: "Dressed",
+              },
+              intents,
             },
-            intents,
-          },
-        };
-        ws.send(JSON.stringify(identifyPayload));
-        break;
-      }
-      case GatewayOpcodes.Dispatch: {
-        if (payload.t === GatewayDispatchEvents.Ready) {
-          config.onReady?.(payload.d);
+          };
+          ws.send(JSON.stringify(identifyPayload));
+          break;
         }
-        break;
+        case GatewayOpcodes.Dispatch: {
+          const { t, d } = payload;
+          const eventListeners = listeners.get(t);
+          if (eventListeners) {
+            for (const callback of eventListeners.values()) {
+              callback(d);
+            }
+          }
+          break;
+        }
+        case GatewayOpcodes.HeartbeatAck: {
+          break;
+        }
+        default:
+          break;
       }
-      case GatewayOpcodes.HeartbeatAck: {
-        break;
-      }
-      default:
-        break;
-    }
-  };
+    };
 
-  ws.onclose = () => {
-    clearInterval(heartbeatInterval);
-    console.log("Disconnected");
-  };
+    ws.onclose = () => {
+      clearInterval(heartbeatInterval);
+      console.log("Disconnected");
+    };
 
-  ws.onerror = (err) => {
-    console.error("WebSocket error", err);
-  };
+    ws.onerror = (err) => {
+      console.error("WebSocket error", err);
+    };
+  }
+
+  connect();
+
+  return Object.fromEntries(
+    Object.keys(GatewayDispatchEvents).map((k) => [
+      `on${k}`,
+      (callback: () => never) => {
+        const id = crypto.randomUUID();
+        const eventName = GatewayDispatchEvents[k as EventKeys];
+        if (!listeners.has(eventName)) listeners.set(eventName, new Map());
+        listeners.get(eventName)!.set(id, callback);
+        return () => listeners.get(eventName)?.delete(id);
+      },
+    ]),
+  ) as ReturnType<typeof createConnection>;
 }
+
+const connection = createConnection({ intents: ["GuildMessages"] });
+connection.onReady(async (data) => {
+  console.log("Ready", data.user.username);
+});
+connection.onMessageCreate((d) => console.log(d));

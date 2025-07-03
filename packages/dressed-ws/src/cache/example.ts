@@ -31,7 +31,9 @@ const customCache = createCache(getters, {
     return { state: "hit", value: JSON.parse(res) };
   },
   set(key, value) {
-    redis.set(key, JSON.stringify(value), { expiration: { type: "EX", value: 300 } });
+    redis.set(key, JSON.stringify(value), {
+      expiration: { type: "EX", value: 300 },
+    });
   },
   resolveKey,
 });

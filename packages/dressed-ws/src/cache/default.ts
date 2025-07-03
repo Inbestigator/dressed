@@ -19,12 +19,14 @@ interface Config {
 /** Creates a hash of the key and args */
 export function resolveKey<F extends CachedFunctions, K extends keyof F>(
   key: K,
-  args: Parameters<F[K]>
+  args: Parameters<F[K]>,
 ) {
   return hash("sha1", `${key.toString()}:${JSON.stringify(args)}`);
 }
 
-export function defaultLogic<F extends CachedFunctions>(config: Config): CacheLogic<F> {
+export function defaultLogic<F extends CachedFunctions>(
+  config: Config,
+): CacheLogic<F> {
   const cache = new Map<
     string,
     {
