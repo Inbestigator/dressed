@@ -3,23 +3,6 @@
 import { createConnection } from "./index.ts";
 import { createCache, getters, resolveKey } from "./cache/index.ts";
 
-// Gateway
-
-const connection = createConnection({
-  intents: ["GuildMessages"],
-});
-connection.onReady(async (data) => {
-  console.log(data.user.username, "is ready");
-});
-const clearListener = connection.onMessageCreate(async (d) => {
-  process.stdout.write(`${d.author.username} sent a message in ...`);
-  const channel = await connection.getChannel(d.channel_id);
-  process.stdout.write(
-    `\r${d.author.username} sent a message in #${channel.name}\n`,
-  );
-  clearListener();
-});
-
 // Cache
 
 const cache = createCache(getters);
@@ -56,3 +39,20 @@ const customCache = createCache(getters, {
   resolveKey,
 });
 void customCache;
+
+// Gateway
+
+const connection = createConnection({
+  intents: ["GuildMessages"],
+});
+connection.onReady(async (data) => {
+  console.log(data.user.username, "is ready");
+});
+const clearListener = connection.onMessageCreate(async (d) => {
+  process.stdout.write(`${d.author.username} sent a message in ...`);
+  const channel = await cache.getChannel(d.channel_id);
+  process.stdout.write(
+    `\r${d.author.username} sent a message in #${channel.name}\n`,
+  );
+  clearListener();
+});

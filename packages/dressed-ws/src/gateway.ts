@@ -12,8 +12,6 @@ import {
 } from "discord-api-types/v10";
 import { botEnv, callDiscord } from "dressed/utils";
 import { platform } from "node:process";
-import { createCache, getters } from "./cache/index.ts";
-import type { CacheLogic } from "./cache/types.ts";
 
 async function getGatewayBot(): Promise<APIGatewayBotInfo> {
   const res = await callDiscord(Routes.gatewayBot(), { method: "GET" });
@@ -34,7 +32,7 @@ type ConnectionActions = {
         : never)["d"],
     ) => void,
   ) => () => void;
-} & ReturnType<typeof createCache<typeof getters>>;
+};
 
 /** Create a connection to the Discord gateway */
 export function createConnection(
@@ -48,11 +46,9 @@ export function createConnection(
      * @see {@link https://discord.com/developers/docs/topics/gateway#gateway-intents}
      */
     intents?: (keyof typeof GatewayIntentBits)[];
-    cache?: CacheLogic<typeof getters>;
   } = {},
 ): ConnectionActions {
   const {
-    cache: cacheConfig,
     intents = [],
     token = botEnv.DISCORD_TOKEN,
     ...connectionConfig
@@ -136,19 +132,16 @@ export function createConnection(
 
   connect();
 
-  return {
-    ...Object.fromEntries(
-      Object.keys(GatewayDispatchEvents).map((k) => [
-        `on${k}`,
-        (callback: () => never) => {
-          const id = crypto.randomUUID();
-          const eventName = GatewayDispatchEvents[k as EventKeys];
-          if (!listeners.has(eventName)) listeners.set(eventName, new Map());
-          listeners.get(eventName)!.set(id, callback);
-          return () => listeners.get(eventName)?.delete(id);
-        },
-      ]),
-    ),
-    ...createCache(getters, cacheConfig),
-  } as ReturnType<typeof createConnection>;
+  return Object.fromEntries(
+    Object.keys(GatewayDispatchEvents).map((k) => [
+      `on${k}`,
+      (callback: () => never) => {
+        const id = crypto.randomUUID();
+        const eventName = GatewayDispatchEvents[k as EventKeys];
+        if (!listeners.has(eventName)) listeners.set(eventName, new Map());
+        listeners.get(eventName)!.set(id, callback);
+        return () => listeners.get(eventName)?.delete(id);
+      },
+    ]),
+  ) as ReturnType<typeof createConnection>;
 }
