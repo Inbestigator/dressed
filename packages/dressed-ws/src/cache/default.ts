@@ -14,6 +14,12 @@ interface Config {
    * @default 60,000 // 1 minute
    */
   swr?: number;
+  /**
+   * Cleanup interval
+   * @description Interval at which to check and delete expired keys, set to -1 to disable
+   * @default 1,800,000 // 30 minutes
+   */
+  cleanup?: number;
 }
 
 /** Creates a hash of the key and args */
@@ -24,9 +30,8 @@ export function resolveKey<F extends CachedFunctions, K extends keyof F>(
   return hash("sha1", `${key.toString()}:${JSON.stringify(args)}`);
 }
 
-export function defaultLogic<F extends CachedFunctions>(
-  config: Config = {},
-): CacheLogic<F> {
+/** A super simple cache system using a map */
+export function defaultLogic<F extends CachedFunctions>(config: Config = {}) {
   const cache = new Map<
     string,
     {
@@ -35,6 +40,20 @@ export function defaultLogic<F extends CachedFunctions>(
       expiresAt: number;
     }
   >();
+
+  if (config.cleanup !== -1) {
+    setInterval(
+      () => {
+        for (const [key, { expiresAt, swr }] of cache.entries()) {
+          if (expiresAt + swr < Date.now()) {
+            cache.delete(key);
+          }
+        }
+      },
+      config.cleanup ?? 30 * 60 * 1000,
+    );
+  }
+
   return {
     get(key) {
       const data = cache.get(key);
@@ -53,6 +72,7 @@ export function defaultLogic<F extends CachedFunctions>(
         expiresAt: Date.now() + (config.ttl ?? 5 * 60 * 1000),
       });
     },
+    delete: (k) => cache.delete(k),
     resolveKey,
-  };
+  } satisfies CacheLogic<F>;
 }

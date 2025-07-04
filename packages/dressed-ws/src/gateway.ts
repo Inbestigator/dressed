@@ -11,7 +11,7 @@ import {
   type GatewayDispatchPayload,
 } from "discord-api-types/v10";
 import { botEnv, callDiscord } from "dressed/utils";
-import { platform } from "node:process";
+import { env, platform } from "node:process";
 
 async function getGatewayBot(): Promise<APIGatewayBotInfo> {
   const res = await callDiscord(Routes.gatewayBot(), { method: "GET" });
@@ -54,11 +54,14 @@ export function createConnection(
     ...connectionConfig
   } = config;
   const listeners = new Map<string, Map<string, (data: unknown) => void>>();
-
-  process.env.DISCORD_TOKEN = token;
+  env.DISCORD_TOKEN = token;
+  let url: string;
 
   async function connect() {
-    const { url } = await getGatewayBot();
+    if (!url) {
+      const bot = await getGatewayBot();
+      url = bot.url;
+    }
     const ws = new WebSocket(url);
 
     let heartbeatInterval: NodeJS.Timeout;
