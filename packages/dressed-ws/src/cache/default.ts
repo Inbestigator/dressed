@@ -25,7 +25,7 @@ export function resolveKey<F extends CachedFunctions, K extends keyof F>(
 }
 
 export function defaultLogic<F extends CachedFunctions>(
-  config: Config,
+  config: Config = {},
 ): CacheLogic<F> {
   const cache = new Map<
     string,

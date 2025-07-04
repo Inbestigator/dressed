@@ -1,19 +1,22 @@
 // TODO Remove this before release
 
-import { createConnection } from "./index.ts";
 import { createCache, getters, resolveKey } from "./cache/index.ts";
+import { createConnection } from "./gateway.ts";
 
 // Cache
 
-const cache = createCache(getters);
+const cache = createCache(getters, {
+  desiredProps: { getApp: ["approximate_guild_count"] },
+});
 
 // Cache miss
 await cache.getApp();
 // Cache hit
-await cache.getApp();
+console.log(await cache.getApp()); // Narrowed because of desiredProps
 
 // This is demonstrative, and should work if you install the redis lib
 
+/** Dummy redis */
 const createClient = () => ({
   connect: async () => ({
     get: async (k: string) => k,
@@ -25,19 +28,30 @@ const createClient = () => ({
 
 const redis = await createClient().connect();
 
-const customCache = createCache(getters, {
-  async get(key) {
-    const res = await redis.get(key);
-    if (!res) return { state: "miss" };
-    return { state: "hit", value: JSON.parse(res) };
+const customCache = createCache(
+  {
+    hi: async () => ({
+      greetings: ["hi"],
+      goodbies: ["bye"],
+    }),
   },
-  set(key, value) {
-    redis.set(key, JSON.stringify(value), {
-      expiration: { type: "EX", value: 300 },
-    });
+  {
+    desiredProps: { hi: ["greetings"] },
+    logic: {
+      async get(key) {
+        const res = await redis.get(key);
+        if (!res) return { state: "miss" };
+        return { state: "hit", value: JSON.parse(res) };
+      },
+      set(key, value) {
+        redis.set(key, JSON.stringify(value), {
+          expiration: { type: "EX", value: 300 },
+        });
+      },
+      resolveKey,
+    },
   },
-  resolveKey,
-});
+);
 void customCache;
 
 // Gateway
