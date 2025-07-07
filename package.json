@@ -2,7 +2,8 @@
   "name": "dressed",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "www"
   ],
   "scripts": {
     "format": "prettier -w .",
