@@ -11,7 +11,6 @@ These methods are available on all interactions:
    Sends an immediate response to the interaction.
 
    #### Parameters
-
    - `data`: The message content or options.
 
    ```ts
@@ -22,7 +21,6 @@ These methods are available on all interactions:
    Acknowledges the interaction, showing a "thinking..." indicator to the user, with an option to edit or respond later.
 
    #### Parameters
-
    - `data` (optional): Options for deferral, such as whether it's ephemeral:
 
    ```ts
@@ -33,7 +31,6 @@ These methods are available on all interactions:
    Edits the initial response to the interaction.
 
    #### Parameters
-
    - `data`: The updated message content or options.
 
    ```ts
@@ -44,7 +41,6 @@ These methods are available on all interactions:
    Sends an additional message related to the interaction.
 
    #### Parameters
-
    - `data`: The follow-up message content or options.
 
    ```ts
@@ -58,7 +54,6 @@ These methods are available on all interactions:
     Responds with a modal dialog. This is not available on modal submission interactions.
 
    #### Parameters
-
    - `data`: Modal data, including components and title.
 
    ```ts
