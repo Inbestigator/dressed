@@ -1,13 +1,18 @@
 import { walkFiles } from "walk-it";
 import ora from "ora";
-import { appendFileSync, existsSync } from "node:fs";
+import {
+  appendFileSync,
+  existsSync,
+  writeFileSync,
+  readdirSync,
+  mkdirSync,
+} from "node:fs";
 import { cwd, stdout } from "node:process";
 import { basename, extname, relative, resolve } from "node:path";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";
 import { parseEvents } from "./parsers/events.ts";
 import type {
-  BaseData,
   CommandData,
   ComponentData,
   EventData,
@@ -46,22 +51,31 @@ function override<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
  * Builds the bot imports and other variables.
  */
 export default async function build(config: ServerConfig = {}): Promise<{
-  commands: BaseData<CommandData>[];
-  components: BaseData<ComponentData>[];
-  events: BaseData<EventData>[];
+  commands: CommandData[];
+  components: ComponentData[];
+  events: EventData[];
   config: ServerConfig;
 }> {
+  mkdirSync(".dressed/cache", { recursive: true });
   await fetchMissingVars();
+  const configPath = readdirSync(".").find(
+    (f) => basename(f, extname(f)) === "dressed.config",
+  );
 
-  if (existsSync("dressed.config.ts")) {
+  if (configPath) {
     await bundleFile({
-      path: "dressed.config.ts",
+      path: configPath,
       outPath: ".dressed/cache/config.mjs",
     });
     const { default: importedConfig } = await import(
       pathToFileURL(".dressed/cache/config.mjs").href
     );
     config = override(importedConfig, config);
+  } else {
+    writeFileSync(
+      ".dressed/cache/config.mjs",
+      `export default ${JSON.stringify(config)}`,
+    );
   }
 
   const [commandFiles, componentFiles, eventFiles] = await Promise.all([

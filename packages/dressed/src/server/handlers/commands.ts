@@ -1,8 +1,4 @@
-import type {
-  BaseData,
-  CommandConfig,
-  CommandData,
-} from "../../types/config.ts";
+import type { CommandConfig, CommandData } from "../../types/config.ts";
 import ora from "ora";
 import { stdout } from "node:process";
 import { installGlobalCommands } from "../utils.ts";
@@ -18,7 +14,7 @@ import { botEnv } from "../../utils/env.ts";
 /**
  * Installs commands to the Discord API
  */
-export async function installCommands(commands: BaseData<CommandData>[]) {
+export async function installCommands(commands: CommandData[]) {
   const registerLoader = ora({
     stream: stdout,
     text: "Registering commands",

@@ -5,7 +5,6 @@ import {
   setupEvents,
 } from "dressed/server";
 import type {
-  BaseData,
   CommandData,
   ComponentData,
   EventData,
@@ -32,9 +31,9 @@ import { waitUntil } from "@vercel/functions";
  * @returns A request handler function compatible with Next.js API routes
  */
 export default function createHandler(
-  commands: BaseData<CommandData>[],
-  components: BaseData<ComponentData>[],
-  events: BaseData<EventData>[],
+  commands: CommandData[],
+  components: ComponentData[],
+  events: EventData[],
   config?: ServerConfig,
 ): (req: Request) => Promise<Response> {
   const [runCommand, runComponent, runEvent] = [

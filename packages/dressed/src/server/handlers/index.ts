@@ -7,16 +7,20 @@ import type { Promisable } from "../../types/possible-promise.ts";
 interface SetupItemMessages<T, P> {
   noItem: string;
   middlewareKey: keyof NonNullable<ServerConfig["middleware"]>;
-  pending: (data: BaseData<T>, props: P) => string;
+  pending: (data: T, props: P) => string;
 }
 
-export function createHandlerSetup<T, D, P extends unknown[] = [D]>(options: {
+export function createHandlerSetup<
+  T extends BaseData<unknown>,
+  D,
+  P extends unknown[] = [D],
+>(options: {
   itemMessages:
     | ((data: D) => SetupItemMessages<T, P>)
     | SetupItemMessages<T, P>;
-  findItem: (data: D, items: BaseData<T>[]) => [BaseData<T>, P] | undefined;
+  findItem: (data: D, items: T[]) => [T, P] | undefined;
 }): (
-  items: BaseData<T>[],
+  items: T[],
 ) => (
   data: D,
   middleware?: (...props: P) => Promisable<unknown[]>,
