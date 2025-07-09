@@ -120,29 +120,29 @@ export interface BaseData<T> {
   path: string;
   uid: string;
   data: T;
-  /** Externally provided only! */
-  run?: (...args: unknown[]) => Promise<unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  run: ((...args: any[]) => Promisable<unknown>) | null;
 }
 
 /**
  * Command data object in the `commands` array outputted from `build()`
  */
-export interface CommandData {
+export type CommandData = BaseData<{
   config?: CommandConfig;
-}
+}>;
 
 /**
  * Component data object in the `components` array outputted from `build()`
  */
-export interface ComponentData {
+export type ComponentData = BaseData<{
   regex: string;
   category: string;
   score: number;
-}
+}>;
 
 /**
  * Event data object in the `events` array outputted from `build()`
  */
-export interface EventData {
+export type EventData = BaseData<{
   type: string;
-}
+}>;
