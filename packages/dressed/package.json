@@ -15,7 +15,6 @@
     "discord-api-types": "^0.38.15",
     "dotenv": "^17.0.1",
     "esbuild": "^0.25.5",
-    "magic-bytes.js": "^1.12.1",
     "ora": "^8.2.0",
     "tweetnacl": "^1.0.3",
     "walk-it": "^6.0.1"
