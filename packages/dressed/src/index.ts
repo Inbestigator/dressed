@@ -3,6 +3,7 @@ export type { Event } from "./types/event.ts";
 export type { CommandConfig } from "./types/config.ts";
 export type {
   CommandInteraction,
+  CommandAutocompleteInteraction,
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "./types/interaction.ts";

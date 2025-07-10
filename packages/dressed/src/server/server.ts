@@ -1,6 +1,7 @@
 import ora from "ora";
 import { verifySignature } from "./signature.ts";
 import {
+  type APIApplicationCommandAutocompleteInteraction,
   type APIApplicationCommandInteraction,
   type APIMessageComponentInteraction,
   type APIModalSubmitInteraction,
@@ -155,7 +156,17 @@ export function handleInteraction(
     case InteractionType.ApplicationCommand: {
       const command = json as APIApplicationCommandInteraction;
       const interaction = createInteraction(command);
-      runCommand(interaction, middleware?.commands);
+      runCommand(
+        interaction,
+        "default",
+        middleware?.commands as Parameters<typeof runCommand>[2],
+      );
+      return 202;
+    }
+    case InteractionType.ApplicationCommandAutocomplete: {
+      const autocomplete = json as APIApplicationCommandAutocompleteInteraction;
+      const interaction = createInteraction(autocomplete);
+      runCommand(interaction, "autocomplete");
       return 202;
     }
     case InteractionType.MessageComponent:
@@ -164,7 +175,7 @@ export function handleInteraction(
         | APIMessageComponentInteraction
         | APIModalSubmitInteraction;
       const interaction = createInteraction(component);
-      runComponent(interaction, middleware?.components);
+      runComponent(interaction, "default", middleware?.components);
       return 202;
     }
     default: {
@@ -189,7 +200,7 @@ export function handleEvent(
     }
     case ApplicationWebhookType.Event: {
       const event = json.event as APIWebhookEventBody;
-      runEvent(event, middleware?.events);
+      runEvent(event, "default", middleware?.events);
       return 202;
     }
     default: {

@@ -77,7 +77,7 @@ export function createHandlerParser<
             path: file.path,
             data,
             uid,
-            run: null,
+            methods: null,
           } as T);
           tree.push(file.name, itemMessages.col2);
         } catch (e) {

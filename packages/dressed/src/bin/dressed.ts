@@ -54,7 +54,8 @@ import config from "./cache/config.mjs";${[
       ...events,
     ]
       .map(
-        (v) => `\nimport h${v.uid} from "./${relative(".dressed", v.path)}";`,
+        (v) =>
+          `\nimport * as h${v.uid} from "./${relative(".dressed", v.path)}";`,
       )
       .join("")}
 

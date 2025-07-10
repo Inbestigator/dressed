@@ -1,32 +1,26 @@
-import type { APIWebhookEventBody } from "discord-api-types/v10";
-import type {
-  CommandMiddleware,
-  ComponentMiddleware,
-  EventMiddleware,
-} from "./config.ts";
 import type { AnyEvent } from "./event.ts";
 import type {
   CommandInteraction,
+  CommandAutocompleteInteraction,
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "./interaction.ts";
+import type {
+  setupCommands,
+  setupComponents,
+  setupEvents,
+} from "../server/index.ts";
 
 export type CommandHandler = (interaction: CommandInteraction) => Promise<void>;
+export type CommandAutocompleteHandler = (
+  interaction: CommandAutocompleteInteraction,
+) => Promise<void>;
 export type ComponentHandler = (
   interaction: MessageComponentInteraction | ModalSubmitInteraction,
   args?: Record<string, string>,
 ) => Promise<void>;
 export type EventHandler = (event: AnyEvent) => Promise<void>;
 
-export type CommandRunner = (
-  interaction: CommandInteraction,
-  middleware?: CommandMiddleware,
-) => Promise<void>;
-export type ComponentRunner = (
-  interaction: MessageComponentInteraction | ModalSubmitInteraction,
-  middleware?: ComponentMiddleware,
-) => Promise<void>;
-export type EventRunner = (
-  event: APIWebhookEventBody,
-  middleware?: EventMiddleware,
-) => Promise<void>;
+export type CommandRunner = ReturnType<typeof setupCommands>;
+export type ComponentRunner = ReturnType<typeof setupComponents>;
+export type EventRunner = ReturnType<typeof setupEvents>;

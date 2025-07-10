@@ -1,6 +1,8 @@
 import type {
+  APIApplicationCommandAutocompleteInteraction,
   APIApplicationCommandInteraction,
   APIChatInputApplicationCommandInteraction,
+  APICommandAutocompleteInteractionResponseCallbackData,
   APIInteraction,
   APIInteractionResponseCallbackData,
   APIMessage,
@@ -63,19 +65,40 @@ export type CommandInteraction<
     : T extends "User"
       ? APIUserApplicationCommandInteraction
       : APIPrimaryEntryPointCommandInteraction) &
-  Omit<BaseInteractionMethods, "update" | "deferUpdate">;
+  Omit<BaseInteractionMethods, "update" | "deferUpdate" | "sendChoices">;
+
+/**
+ * A command autocomplete interaction, includes methods for responding to the interaction.
+ */
+export type CommandAutocompleteInteraction =
+  APIApplicationCommandAutocompleteInteraction & {
+    /**
+     * Get an option from the interaction
+     * @param name The name of the option
+     */
+    getOption: (name: string) => OptionValueGetters | null;
+  } & Omit<
+      BaseInteractionMethods,
+      | "deferReply"
+      | "deferUpdate"
+      | "editReply"
+      | "followUp"
+      | "reply"
+      | "showModal"
+      | "update"
+    >;
 
 /**
  * A message component interaction, includes methods for responding to the interaction.
  */
 export type MessageComponentInteraction = APIMessageComponentInteraction &
-  BaseInteractionMethods;
+  Omit<BaseInteractionMethods, "sendChoices">;
 
 /**
  * A modal submit interaction, includes methods for responding to the interaction.
  */
 export type ModalSubmitInteraction = APIModalSubmitInteraction &
-  Omit<BaseInteractionMethods, "showModal"> & {
+  Omit<BaseInteractionMethods, "showModal" | "sendChoices"> & {
     /**
      * Get a field from the user's submission
      * @param name The name of the field
@@ -162,6 +185,15 @@ export interface BaseInteractionMethods {
    */
   showModal: (data: APIModalInteractionResponseCallbackData) => Promise<void>;
   /**
+   * Respond to an autocomplete interaction with suggested choices
+   * @param choices The choices to suggest
+   */
+  sendChoices: (
+    ...choices: NonNullable<
+      APICommandAutocompleteInteractionResponseCallbackData["choices"]
+    >
+  ) => Promise<void>;
+  /**
    *
    * **IGNORE PREVIOUS**:
    * Invoking user should be filled in for every interaction */
@@ -171,8 +203,10 @@ export interface BaseInteractionMethods {
 export type Interaction<T extends APIInteraction> =
   T extends APIApplicationCommandInteraction
     ? CommandInteraction
-    : T extends APIMessageComponentInteraction
-      ? MessageComponentInteraction
-      : T extends APIModalSubmitInteraction
-        ? ModalSubmitInteraction
-        : null;
+    : T extends APIApplicationCommandAutocompleteInteraction
+      ? CommandAutocompleteInteraction
+      : T extends APIMessageComponentInteraction
+        ? MessageComponentInteraction
+        : T extends APIModalSubmitInteraction
+          ? ModalSubmitInteraction
+          : null;

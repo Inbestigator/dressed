@@ -6,9 +6,13 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType,
   InteractionContextType,
+  InteractionType,
 } from "discord-api-types/v10";
 import { createHandlerSetup } from "./index.ts";
-import type { CommandInteraction } from "../../types/interaction.ts";
+import type {
+  CommandAutocompleteInteraction,
+  CommandInteraction,
+} from "../../types/interaction.ts";
 import { botEnv } from "../../utils/env.ts";
 
 /**
@@ -62,12 +66,16 @@ export async function installCommands(commands: CommandData[]) {
  * @returns A function that runs a command
  */
 export const setupCommands: ReturnType<
-  typeof createHandlerSetup<CommandData, CommandInteraction>
+  typeof createHandlerSetup<
+    CommandData,
+    CommandInteraction | CommandAutocompleteInteraction
+  >
 > = createHandlerSetup({
   itemMessages: (interaction) => ({
     noItem: `No command handler for "${interaction.data.name}"`,
     middlewareKey: "commands",
-    pending: (item) => `Running command "${item.name}"`,
+    pending: (item) =>
+      `Running${interaction.type === InteractionType.ApplicationCommandAutocomplete ? " autocomplete for " : " "}command "${item.name}"`,
   }),
   findItem(interaction, items) {
     const item = items.find((i) => i.name === interaction.data.name);

@@ -14,7 +14,7 @@ import type { RawFile } from "../../types/file.ts";
 export const baseInteractionMethods = (
   interaction: APIInteraction,
 ): BaseInteractionMethods => ({
-  reply: async function (data) {
+  async reply(data) {
     if (typeof data === "string") {
       data = { content: data };
     }
@@ -45,7 +45,7 @@ export const baseInteractionMethods = (
     );
     return data.with_response ? res.json() : null;
   },
-  deferReply: async function (data) {
+  async deferReply(data) {
     if (data?.ephemeral) {
       const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
       data.flags = flags;
@@ -69,7 +69,7 @@ export const baseInteractionMethods = (
 
     return data?.with_response ? res.json() : null;
   },
-  update: async function (data) {
+  async update(data) {
     if (typeof data === "string") {
       data = { content: data };
     }
@@ -89,7 +89,7 @@ export const baseInteractionMethods = (
       },
     );
   },
-  deferUpdate: async function () {
+  async deferUpdate() {
     await callDiscord(
       Routes.interactionCallback(interaction.id, interaction.token),
       {
@@ -100,7 +100,7 @@ export const baseInteractionMethods = (
       },
     );
   },
-  editReply: async function (data) {
+  async editReply(data) {
     if (typeof data === "string") {
       data = { content: data };
     }
@@ -117,7 +117,7 @@ export const baseInteractionMethods = (
       },
     );
   },
-  followUp: async function (
+  async followUp(
     data:
       | string
       | (APIInteractionResponseCallbackData & {
@@ -146,7 +146,7 @@ export const baseInteractionMethods = (
       },
     );
   },
-  showModal: async function (
+  async showModal(
     data: APIModalInteractionResponseCallbackData,
   ): Promise<void> {
     await callDiscord(
@@ -156,6 +156,18 @@ export const baseInteractionMethods = (
         body: {
           type: InteractionResponseType.Modal,
           data,
+        },
+      },
+    );
+  },
+  async sendChoices(...choices) {
+    await callDiscord(
+      Routes.interactionCallback(interaction.id, interaction.token),
+      {
+        method: "POST",
+        body: {
+          type: InteractionResponseType.ApplicationCommandAutocompleteResult,
+          data: { choices },
         },
       },
     );

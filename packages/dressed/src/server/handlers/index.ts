@@ -15,17 +15,16 @@ export function createHandlerSetup<
   D,
   P extends unknown[] = [D],
 >(options: {
-  itemMessages:
-    | ((data: D) => SetupItemMessages<T, P>)
-    | SetupItemMessages<T, P>;
-  findItem: (data: D, items: T[]) => [T, P] | undefined;
+  itemMessages: ((d: D) => SetupItemMessages<T, P>) | SetupItemMessages<T, P>;
+  findItem: (d: D, i: T[]) => [T, P] | undefined;
 }): (
-  items: T[],
+  i: T[],
 ) => (
-  data: D,
-  middleware?: (...props: P) => Promisable<unknown[]>,
+  d: D,
+  k: keyof NonNullable<T["methods"]>,
+  m?: (...props: P) => Promisable<unknown[]>,
 ) => Promise<void> {
-  return (items) => async (data, middleware) => {
+  return (items) => async (data, key, middleware) => {
     const [item, props] = options.findItem(data, items) ?? [];
     let itemMessages = options.itemMessages;
 
@@ -43,10 +42,13 @@ export function createHandlerSetup<
     }).start();
 
     try {
+      if (!item.methods || !(key in item.methods))
+        throw new Error(`Unable to find '${String(key)}' in exports`);
+      const handler = item.methods[key as keyof typeof item.methods];
       if (middleware) {
-        await item.run?.(...(await middleware(...props)));
+        await handler(...(await middleware(...props)));
       } else {
-        await item.run?.(...props);
+        await handler(...props);
       }
       loader.succeed();
     } catch (e) {
