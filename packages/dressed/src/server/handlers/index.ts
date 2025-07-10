@@ -15,42 +15,49 @@ export function createHandlerSetup<
   D,
   P extends unknown[] = [D],
 >(options: {
-  itemMessages:
-    | ((data: D) => SetupItemMessages<T, P>)
-    | SetupItemMessages<T, P>;
-  findItem: (data: D, items: T[]) => [T, P] | undefined;
+  itemMessages: ((d: D) => SetupItemMessages<T, P>) | SetupItemMessages<T, P>;
+  findItem: (d: D, i: T[]) => [T, P] | undefined;
 }): (
-  items: T[],
+  i: T[],
 ) => (
-  data: D,
-  middleware?: (...props: P) => Promisable<unknown[]>,
+  d: D,
+  m?: (...props: P) => Promisable<unknown[]>,
+  k?: keyof NonNullable<T["exports"]>,
 ) => Promise<void> {
-  return (items) => async (data, middleware) => {
-    const [item, props] = options.findItem(data, items) ?? [];
-    let itemMessages = options.itemMessages;
+  return (items) =>
+    async (data, middleware, key = "default") => {
+      const [item, props] = options.findItem(data, items) ?? [];
+      let itemMessages = options.itemMessages;
 
-    if (typeof itemMessages === "function") {
-      itemMessages = itemMessages(data);
-    }
-    if (!item || !Array.isArray(props)) {
-      ora(itemMessages.noItem).warn();
-      return;
-    }
-
-    const loader = ora({
-      stream: stdout,
-      text: itemMessages.pending(item, props),
-    }).start();
-
-    try {
-      if (middleware) {
-        await item.run?.(...(await middleware(...props)));
-      } else {
-        await item.run?.(...props);
+      if (typeof itemMessages === "function") {
+        itemMessages = itemMessages(data);
       }
-      loader.succeed();
-    } catch (e) {
-      logRunnerError(e, loader);
-    }
-  };
+      if (!item || !Array.isArray(props)) {
+        ora(itemMessages.noItem).warn();
+        return;
+      }
+
+      const loader = ora({
+        stream: stdout,
+        text: itemMessages.pending(item, props),
+      }).start();
+
+      try {
+        let handler: T["run"] | undefined;
+        if (key) {
+          handler = item.exports?.[key as keyof typeof item.exports];
+          if (!handler) {
+            throw new Error(`Unable to find '${String(key)}' in exports`);
+          }
+        } else {
+          handler = item.run;
+        }
+        if (!handler) throw new Error("Unable to find a handler to execute");
+        const args = middleware ? await middleware(...props) : props;
+        await handler(...args);
+        loader.succeed();
+      } catch (e) {
+        logRunnerError(e, loader);
+      }
+    };
 }

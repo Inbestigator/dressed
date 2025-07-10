@@ -1,6 +1,7 @@
 import ora from "ora";
 import { verifySignature } from "./signature.ts";
 import {
+  type APIApplicationCommandAutocompleteInteraction,
   type APIApplicationCommandInteraction,
   type APIMessageComponentInteraction,
   type APIModalSubmitInteraction,
@@ -13,20 +14,28 @@ import type {
   ComponentRunner,
   EventRunner,
 } from "../types/handlers.ts";
-import type { ServerConfig } from "../types/config.ts";
+import type {
+  CommandData,
+  ComponentData,
+  EventData,
+  ServerConfig,
+} from "../types/config.ts";
 import { createServer as createHttpServer, type Server } from "node:http";
 import { stdout } from "node:process";
 import { Buffer } from "node:buffer";
 import { createInteraction } from "./extenders/interaction.ts";
+import { setupCommands } from "./handlers/commands.ts";
+import { setupComponents } from "./handlers/components.ts";
+import { setupEvents } from "./handlers/events.ts";
 
 /**
  * Starts a server to handle interactions.
  * @returns The server instance
  */
 export function createServer(
-  runCommand: CommandRunner,
-  runComponent: ComponentRunner,
-  runEvent: EventRunner,
+  commands: CommandRunner | CommandData[],
+  components: ComponentRunner | ComponentData[],
+  events: EventRunner | EventData[],
   config: ServerConfig,
 ): Server {
   const server = createHttpServer((req, res) => {
@@ -50,9 +59,9 @@ export function createServer(
             body: Buffer.concat(chunks),
             headers: req.headers as unknown as Headers,
           }),
-          runCommand,
-          runComponent,
-          runEvent,
+          commands,
+          components,
+          events,
           config,
         );
 
@@ -84,16 +93,17 @@ export function createServer(
 /**
  * Handles a request from Discord.
  * @param req The request from Discord
- * @param runCommand The function to run a command
- * @param runComponent The function to run a component
+ * @param commands A list of commands or the function to run a command
+ * @param components A list of components or the function to run a component
+ * @param events A list of events or the function to run an event
  * @param config Configuration for your server
  * @returns The response to send back to Discord
  */
 export async function handleRequest(
   req: Request,
-  runCommand: CommandRunner,
-  runComponent: ComponentRunner,
-  runEvent: EventRunner,
+  commands: CommandRunner | CommandData[],
+  components: ComponentRunner | ComponentData[],
+  events: EventRunner | EventData[],
   config?: ServerConfig,
 ): Promise<Response> {
   const reqLoader = ora({
@@ -121,13 +131,13 @@ export async function handleRequest(
     // The interaction response token
     if ("token" in json) {
       status = handleInteraction(
-        runCommand,
-        runComponent,
+        commands,
+        components,
         json,
         config?.middleware,
       );
     } else {
-      status = handleEvent(runEvent, json, config?.middleware);
+      status = handleEvent(events, json, config?.middleware);
     }
     return new Response(status === 200 ? '{"type":1}' : null, {
       status,
@@ -142,8 +152,8 @@ export async function handleRequest(
  * Runs an interaction, takes functions to run commands/components/middleware and the request body
  */
 export function handleInteraction(
-  runCommand: CommandRunner,
-  runComponent: ComponentRunner,
+  commands: CommandRunner | CommandData[],
+  components: ComponentRunner | ComponentData[],
   json: ReturnType<typeof JSON.parse>,
   middleware: ServerConfig["middleware"],
 ): 200 | 202 | 404 {
@@ -155,7 +165,20 @@ export function handleInteraction(
     case InteractionType.ApplicationCommand: {
       const command = json as APIApplicationCommandInteraction;
       const interaction = createInteraction(command);
-      runCommand(interaction, middleware?.commands);
+      const runCommand =
+        typeof commands === "function" ? commands : setupCommands(commands);
+      runCommand(
+        interaction,
+        middleware?.commands as Parameters<typeof runCommand>[1],
+      );
+      return 202;
+    }
+    case InteractionType.ApplicationCommandAutocomplete: {
+      const autocomplete = json as APIApplicationCommandAutocompleteInteraction;
+      const interaction = createInteraction(autocomplete);
+      const runCommand =
+        typeof commands === "function" ? commands : setupCommands(commands);
+      runCommand(interaction, undefined, "autocomplete");
       return 202;
     }
     case InteractionType.MessageComponent:
@@ -164,6 +187,10 @@ export function handleInteraction(
         | APIMessageComponentInteraction
         | APIModalSubmitInteraction;
       const interaction = createInteraction(component);
+      const runComponent =
+        typeof components === "function"
+          ? components
+          : setupComponents(components);
       runComponent(interaction, middleware?.components);
       return 202;
     }
@@ -178,7 +205,7 @@ export function handleInteraction(
  * Runs an event, takes a function to run events/middleware and the request body
  */
 export function handleEvent(
-  runEvent: EventRunner,
+  events: EventRunner | EventData[],
   json: ReturnType<typeof JSON.parse>,
   middleware: ServerConfig["middleware"],
 ): 200 | 202 | 404 {
@@ -189,6 +216,8 @@ export function handleEvent(
     }
     case ApplicationWebhookType.Event: {
       const event = json.event as APIWebhookEventBody;
+      const runEvent =
+        typeof events === "function" ? events : setupEvents(events);
       runEvent(event, middleware?.events);
       return 202;
     }

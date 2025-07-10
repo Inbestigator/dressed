@@ -115,21 +115,30 @@ export type CommandConfig =
   | ContextMenuConfig
   | PrimaryEntryPointConfig;
 
-export interface BaseData<T> {
+export interface BaseData<T, M extends ["default", ...string[]] = ["default"]> {
   name: string;
   path: string;
   uid: string;
   data: T;
+  /** @deprecated Use the `default` key in `exports` instead (will be removed at the next major release) */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  run: ((...args: any[]) => Promisable<unknown>) | null;
+  run?: (...args: any[]) => Promisable<unknown>; // TODO Remove before next major release
+  exports:
+    | ({ [K in M[number]]?: BaseData<T, M>["run"] } & {
+        default: BaseData<T, M>["run"];
+      })
+    | null;
 }
 
 /**
  * Command data object in the `commands` array outputted from `build()`
  */
-export type CommandData = BaseData<{
-  config?: CommandConfig;
-}>;
+export type CommandData = BaseData<
+  {
+    config?: CommandConfig;
+  },
+  ["default", "autocomplete"]
+>;
 
 /**
  * Component data object in the `components` array outputted from `build()`
