@@ -189,9 +189,9 @@ export interface BaseInteractionMethods {
    * @param choices The choices to suggest
    */
   sendChoices: (
-    ...choices: NonNullable<
+    choices: NonNullable<
       APICommandAutocompleteInteractionResponseCallbackData["choices"]
-    >
+    >,
   ) => Promise<void>;
   /**
    *

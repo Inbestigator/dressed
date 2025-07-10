@@ -160,7 +160,7 @@ export const baseInteractionMethods = (
       },
     );
   },
-  async sendChoices(...choices) {
+  async sendChoices(choices) {
     await callDiscord(
       Routes.interactionCallback(interaction.id, interaction.token),
       {
