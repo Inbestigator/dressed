@@ -22,7 +22,7 @@ export function createHandlerSetup<
 ) => (
   d: D,
   m?: (...props: P) => Promisable<unknown[]>,
-  k?: keyof NonNullable<T["methods"]>,
+  k?: keyof NonNullable<T["exports"]>,
 ) => Promise<void> {
   return (items) =>
     async (data, middleware, key = "default") => {
@@ -43,14 +43,18 @@ export function createHandlerSetup<
       }).start();
 
       try {
-        if (!item.methods || !(key in item.methods))
-          throw new Error(`Unable to find '${String(key)}' in exports`);
-        const handler = item.methods[key as keyof typeof item.methods];
-        if (middleware) {
-          await handler(...(await middleware(...props)));
+        let handler: T["run"] | undefined;
+        if (key) {
+          handler = item.exports?.[key as keyof typeof item.exports];
+          if (!handler) {
+            throw new Error(`Unable to find '${String(key)}' in exports`);
+          }
         } else {
-          await handler(...props);
+          handler = item.run;
         }
+        if (!handler) throw new Error("Unable to find a handler to execute");
+        const args = middleware ? await middleware(...props) : props;
+        await handler(...args);
         loader.succeed();
       } catch (e) {
         logRunnerError(e, loader);
