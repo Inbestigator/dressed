@@ -1,6 +1,6 @@
 {
   "name": "@dressed/next",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Request handler for Next.js routes.",
   "scripts": {
     "dist": "rm -fr dist && tsc",
@@ -11,7 +11,7 @@
     "@vercel/functions": "^2.2.3"
   },
   "peerDependencies": {
-    "dressed": "^1.8.1"
+    "dressed": "^1.9.0"
   },
   "exports": "./dist/index.js",
   "type": "module",
