@@ -158,15 +158,14 @@ export function handleInteraction(
       const interaction = createInteraction(command);
       runCommand(
         interaction,
-        "default",
-        middleware?.commands as Parameters<typeof runCommand>[2],
+        middleware?.commands as Parameters<typeof runCommand>[1],
       );
       return 202;
     }
     case InteractionType.ApplicationCommandAutocomplete: {
       const autocomplete = json as APIApplicationCommandAutocompleteInteraction;
       const interaction = createInteraction(autocomplete);
-      runCommand(interaction, "autocomplete");
+      runCommand(interaction, undefined, "autocomplete");
       return 202;
     }
     case InteractionType.MessageComponent:
@@ -175,7 +174,7 @@ export function handleInteraction(
         | APIMessageComponentInteraction
         | APIModalSubmitInteraction;
       const interaction = createInteraction(component);
-      runComponent(interaction, "default", middleware?.components);
+      runComponent(interaction, middleware?.components);
       return 202;
     }
     default: {
@@ -200,7 +199,7 @@ export function handleEvent(
     }
     case ApplicationWebhookType.Event: {
       const event = json.event as APIWebhookEventBody;
-      runEvent(event, "default", middleware?.events);
+      runEvent(event, middleware?.events);
       return 202;
     }
     default: {

@@ -21,38 +21,39 @@ export function createHandlerSetup<
   i: T[],
 ) => (
   d: D,
-  k: keyof NonNullable<T["methods"]>,
   m?: (...props: P) => Promisable<unknown[]>,
+  k?: keyof NonNullable<T["methods"]>,
 ) => Promise<void> {
-  return (items) => async (data, key, middleware) => {
-    const [item, props] = options.findItem(data, items) ?? [];
-    let itemMessages = options.itemMessages;
+  return (items) =>
+    async (data, middleware, key = "default") => {
+      const [item, props] = options.findItem(data, items) ?? [];
+      let itemMessages = options.itemMessages;
 
-    if (typeof itemMessages === "function") {
-      itemMessages = itemMessages(data);
-    }
-    if (!item || !Array.isArray(props)) {
-      ora(itemMessages.noItem).warn();
-      return;
-    }
-
-    const loader = ora({
-      stream: stdout,
-      text: itemMessages.pending(item, props),
-    }).start();
-
-    try {
-      if (!item.methods || !(key in item.methods))
-        throw new Error(`Unable to find '${String(key)}' in exports`);
-      const handler = item.methods[key as keyof typeof item.methods];
-      if (middleware) {
-        await handler(...(await middleware(...props)));
-      } else {
-        await handler(...props);
+      if (typeof itemMessages === "function") {
+        itemMessages = itemMessages(data);
       }
-      loader.succeed();
-    } catch (e) {
-      logRunnerError(e, loader);
-    }
-  };
+      if (!item || !Array.isArray(props)) {
+        ora(itemMessages.noItem).warn();
+        return;
+      }
+
+      const loader = ora({
+        stream: stdout,
+        text: itemMessages.pending(item, props),
+      }).start();
+
+      try {
+        if (!item.methods || !(key in item.methods))
+          throw new Error(`Unable to find '${String(key)}' in exports`);
+        const handler = item.methods[key as keyof typeof item.methods];
+        if (middleware) {
+          await handler(...(await middleware(...props)));
+        } else {
+          await handler(...props);
+        }
+        loader.succeed();
+      } catch (e) {
+        logRunnerError(e, loader);
+      }
+    };
 }
