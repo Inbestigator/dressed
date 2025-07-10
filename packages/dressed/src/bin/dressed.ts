@@ -63,8 +63,8 @@ export const commands = [ ${commands.map((c) => JSON.stringify(c).replace("null"
 export const components = [ ${components.map((c) => JSON.stringify(c).replace("null", `h${c.uid}`))} ];
 export const events = [ ${events.map((e) => JSON.stringify(e).replace("null", `h${e.uid}`))} ];
 export { config };
-${register ? `\ninstallCommands(commands);\n` : ""}
-${instance ? generateInstanceCreation() : ""}`.trim();
+${register ? "\ninstallCommands(commands);" : ""}
+${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
     const typeContent = `
 import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";
 
@@ -84,19 +84,12 @@ const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>
   addInstance || registerCommands
     ? `import { ${
         addInstance
-          ? `createServer${
-              registerCommands ? ", installCommands" : ""
-            }, setupCommands, setupComponents, setupEvents`
+          ? `createServer${registerCommands ? ", installCommands" : ""}`
           : registerCommands
             ? "installCommands"
             : ""
       } } from "dressed/server";`
     : "";
-
-function generateInstanceCreation(): string {
-  return `createServer(setupCommands(commands), setupComponents(components), setupEvents(events), config);
-  `.trim();
-}
 
 program
   .command("create")
