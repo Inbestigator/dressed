@@ -34,6 +34,21 @@ export function createInteraction<T extends APIInteraction>(
           ),
       } as unknown as Interaction<T>;
     }
+    case InteractionType.ApplicationCommandAutocomplete: {
+      return {
+        ...interaction,
+        ...baseInteractionMethods(interaction),
+        getOption: (name: string) =>
+          getOption(
+            name,
+            false,
+            "options" in interaction.data
+              ? (interaction.data.options ?? [])
+              : [],
+            interaction.data.resolved,
+          ),
+      } as unknown as Interaction<T>;
+    }
     case InteractionType.MessageComponent: {
       return {
         ...interaction,
@@ -44,7 +59,7 @@ export function createInteraction<T extends APIInteraction>(
       return {
         ...interaction,
         ...baseInteractionMethods(interaction),
-        getField: <R extends boolean>(name: string, required: R) => {
+        getField<R extends boolean>(name: string, required: R) {
           const field = interaction.data.components
             .map((c) => c.components)
             .flat()

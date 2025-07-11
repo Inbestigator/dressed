@@ -1,5 +1,4 @@
 import ora from "ora";
-import { filetypeinfo } from "magic-bytes.js";
 import type { RawFile } from "../types/file.ts";
 import {
   checkLimit,
@@ -42,19 +41,9 @@ export async function callDiscord(
     for (const [index, file] of files.entries()) {
       const fileKey = file.key ?? `files[${index}]`;
       if (Buffer.isBuffer(file.data)) {
-        let contentType = file.contentType;
-        if (!contentType) {
-          const [parsedType] = filetypeinfo(new Uint8Array(file.data));
-          if (parsedType) {
-            contentType =
-              parsedType.mime === "image/apng"
-                ? "image/png"
-                : (parsedType.mime ?? "application/octet-stream");
-          }
-        }
         formData.append(
           fileKey,
-          new Blob([Buffer.from(file.data)], { type: contentType }),
+          new Blob([Buffer.from(file.data)], { type: file.contentType }),
           file.name,
         );
       } else {

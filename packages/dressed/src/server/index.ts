@@ -17,13 +17,14 @@ export type {
   ComponentHandler,
   EventHandler,
 } from "../types/handlers.ts";
-export type { RawFile } from "../types/file.ts";
+export type * from "../types/file.ts";
 
 // Core
-export { createInteraction } from "./extenders/interaction.ts";
-export { installCommands, setupCommands } from "./handlers/commands.ts";
-export { setupComponents } from "./handlers/components.ts";
-export { setupEvents } from "./handlers/events.ts";
+export * from "./extenders/interaction.ts";
+export * from "./handlers/commands.ts";
+export * from "./handlers/components.ts";
+export * from "./handlers/events.ts";
+export * from "./handlers/index.ts";
 
 // Server
 export { verifySignature } from "./signature.ts";

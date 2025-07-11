@@ -8,7 +8,6 @@ import { select, input, confirm } from "@inquirer/prompts";
 import { parse } from "dotenv";
 import { mkdirSync, writeFileSync } from "fs";
 import build from "../server/build/build.ts";
-import { writeFile } from "node:fs/promises";
 
 const program = new Command()
   .name("dressed")
@@ -34,10 +33,9 @@ program
       ora("Port must be a valid number").fail();
       return;
     }
-    port = port ? Number(port) : undefined;
     const { commands, components, events } = await build({
       endpoint,
-      port,
+      port: port ? Number(port) : undefined,
       build: {
         root,
         extensions: extensions?.split(",").map((e: string) => e.trim()),
@@ -50,47 +48,33 @@ program
 
     const outputContent = `
 ${generateImports(instance, register)}
-import commands from "./commands.json" with { type: "json" };
-import components from "./components.json" with { type: "json" };
-import events from "./events.json" with { type: "json" };
-import config from "./cache/config.mjs";
+import config from "./cache/config.mjs";${[
+      ...commands,
+      ...components,
+      ...events,
+    ]
+      .map(
+        (v) =>
+          `\nimport * as h${v.uid} from "./${relative(".dressed", v.path)}";`,
+      )
+      .join("")}
 
-${[...commands, ...components, ...events]
-  .map((v) => `import h${v.uid} from "./${relative(".dressed", v.path)}";`)
-  .join("\n")}
-
-const handlers = { ${[...commands, ...components, ...events].map((v) => `h${v.uid}`).join(", ")} };
-
-for (const c of commands) {
-  c.run = handlers[\`h\${c.uid}\`];
-}
-for (const c of components) {
-  c.run = handlers[\`h\${c.uid}\`];
-}
-for (const e of events) {
-  e.run = handlers[\`h\${e.uid}\`];
-}
-
-export { commands, components, events, config }
-${register ? `\ninstallCommands(commands);\n` : ""}
-${instance ? generateInstanceCreation() : ""}`.trim();
+export const commands = [ ${commands.map((c) => JSON.stringify(c).replace("null", `h${c.uid}`))} ];
+export const components = [ ${components.map((c) => JSON.stringify(c).replace("null", `h${c.uid}`))} ];
+export const events = [ ${events.map((e) => JSON.stringify(e).replace("null", `h${e.uid}`))} ];
+export { config };
+${register ? "\ninstallCommands(commands);" : ""}
+${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
     const typeContent = `
-import type { BaseData, CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";
+import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";
 
-export declare const commands: BaseData<CommandData>[];
-export declare const components: BaseData<ComponentData>[];
-export declare const events: BaseData<EventData>[];
+export declare const commands: CommandData[];
+export declare const components: ComponentData[];
+export declare const events: EventData[];
 export declare const config: ServerConfig;`;
 
-    mkdirSync(".dressed", { recursive: true });
-
-    await Promise.all([
-      writeFile(".dressed/index.mjs", outputContent),
-      writeFile(".dressed/index.d.ts", typeContent),
-      writeFile(".dressed/commands.json", JSON.stringify(commands)),
-      writeFile(".dressed/components.json", JSON.stringify(components)),
-      writeFile(".dressed/events.json", JSON.stringify(events)),
-    ]);
+    writeFileSync(".dressed/index.mjs", outputContent);
+    writeFileSync(".dressed/index.d.ts", typeContent);
 
     buildLoader.succeed("Assembled generated build");
     exit(0);
@@ -100,19 +84,12 @@ const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>
   addInstance || registerCommands
     ? `import { ${
         addInstance
-          ? `createServer${
-              registerCommands ? ", installCommands" : ""
-            }, setupCommands, setupComponents, setupEvents`
+          ? `createServer${registerCommands ? ", installCommands" : ""}`
           : registerCommands
             ? "installCommands"
             : ""
       } } from "dressed/server";`
     : "";
-
-function generateInstanceCreation(): string {
-  return `createServer(setupCommands(commands), setupComponents(components), setupEvents(events), config);
-  `.trim();
-}
 
 program
   .command("create")

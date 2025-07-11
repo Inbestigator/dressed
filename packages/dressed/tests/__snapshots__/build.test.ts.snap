@@ -9,6 +9,7 @@ exports[`Build bot 1`] = `
           "description": "Replies with Pong!",
         },
       },
+      "exports": null,
       "name": "ping",
       "path": ".dressed/cache/8fb0c7f6d76f306d26b0a4439233cfcf2213aead.mjs",
       "uid": "8fb0c7f6d76f306d26b0a4439233cfcf2213aead",
@@ -21,6 +22,7 @@ exports[`Build bot 1`] = `
         "regex": "^button_(?<arg>.+?)$",
         "score": 0.3888888888888889,
       },
+      "exports": null,
       "name": "button",
       "path": ".dressed/cache/393f92e485a47bf513c3d0b247432a701b9380fa.mjs",
       "uid": "393f92e485a47bf513c3d0b247432a701b9380fa",
@@ -36,6 +38,7 @@ exports[`Build bot 1`] = `
       "data": {
         "type": "APPLICATION_AUTHORIZED",
       },
+      "exports": null,
       "name": "ApplicationAuthorized",
       "path": ".dressed/cache/69d246633f8b88caba1f573bc8f94948ebf48d5f.mjs",
       "uid": "69d246633f8b88caba1f573bc8f94948ebf48d5f",

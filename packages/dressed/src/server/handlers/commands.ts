@@ -1,8 +1,4 @@
-import type {
-  BaseData,
-  CommandConfig,
-  CommandData,
-} from "../../types/config.ts";
+import type { CommandConfig, CommandData } from "../../types/config.ts";
 import ora from "ora";
 import { stdout } from "node:process";
 import { installGlobalCommands } from "../utils.ts";
@@ -10,15 +6,19 @@ import {
   ApplicationCommandType,
   ApplicationIntegrationType,
   InteractionContextType,
+  InteractionType,
 } from "discord-api-types/v10";
 import { createHandlerSetup } from "./index.ts";
-import type { CommandInteraction } from "../../types/interaction.ts";
+import type {
+  CommandAutocompleteInteraction,
+  CommandInteraction,
+} from "../../types/interaction.ts";
 import { botEnv } from "../../utils/env.ts";
 
 /**
  * Installs commands to the Discord API
  */
-export async function installCommands(commands: BaseData<CommandData>[]) {
+export async function installCommands(commands: CommandData[]) {
   const registerLoader = ora({
     stream: stdout,
     text: "Registering commands",
@@ -66,12 +66,16 @@ export async function installCommands(commands: BaseData<CommandData>[]) {
  * @returns A function that runs a command
  */
 export const setupCommands: ReturnType<
-  typeof createHandlerSetup<CommandData, CommandInteraction>
+  typeof createHandlerSetup<
+    CommandData,
+    CommandInteraction | CommandAutocompleteInteraction
+  >
 > = createHandlerSetup({
   itemMessages: (interaction) => ({
     noItem: `No command handler for "${interaction.data.name}"`,
     middlewareKey: "commands",
-    pending: (item) => `Running command "${item.name}"`,
+    pending: (item) =>
+      `Running${interaction.type === InteractionType.ApplicationCommandAutocomplete ? " autocomplete for " : " "}command "${item.name}"`,
   }),
   findItem(interaction, items) {
     const item = items.find((i) => i.name === interaction.data.name);

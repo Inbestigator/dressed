@@ -27,7 +27,7 @@ function getCategory(interaction: Data) {
 export const setupComponents: ReturnType<
   typeof createHandlerSetup<ComponentData, Data, [Data, Record<string, string>]>
 > = createHandlerSetup({
-  itemMessages: (interaction) => {
+  itemMessages(interaction) {
     const category = getCategory(interaction).slice(0, -1);
     return {
       noItem: `No ${category} component handler for "${interaction.data.custom_id}"`,
