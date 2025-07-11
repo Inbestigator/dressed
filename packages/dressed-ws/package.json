@@ -1,6 +1,6 @@
 {
   "name": "@dressed/ws",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Inbestigator/dressed.git",
@@ -9,7 +9,10 @@
   "peerDependencies": {
     "dressed": "^1.8.1"
   },
-  "exports": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./cache": "./dist/cache/index.js"
+  },
   "description": "Communicate with the Discord API using websockets",
   "files": [
     "dist"

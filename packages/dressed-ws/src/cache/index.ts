@@ -22,7 +22,7 @@ export function createCache<
     desiredProps?: D;
     /** Functions for creating a custom cache implementation */
     logic?: L;
-  },
+  } = {},
 ): {
   [K in keyof F]: (K extends keyof D
     ? (
