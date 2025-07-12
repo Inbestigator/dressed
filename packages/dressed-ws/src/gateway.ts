@@ -3,12 +3,11 @@ import {
   GatewayOpcodes,
   GatewayIntentBits,
   GatewayDispatchEvents,
-  type GatewayIdentify,
-  type GatewayHeartbeat,
   type APIGatewayBotInfo,
   type GatewayIdentifyData,
   type GatewayReceivePayload,
   type GatewayDispatchPayload,
+  type GatewaySendPayload,
 } from "discord-api-types/v10";
 import { botEnv, callDiscord } from "dressed/utils";
 import { env, platform } from "node:process";
@@ -32,6 +31,20 @@ type ConnectionActions = {
         : never)["d"],
     ) => void,
   ) => () => void;
+} & {
+  /** Sends a gateway payload to Discord using the given opcode. */
+  emit: <
+    K extends keyof Omit<
+      typeof GatewayOpcodes,
+      "Dispatch" | "Reconnect" | "InvalidSession" | "Hello" | "HeartbeatAck"
+    >,
+  >(
+    opcode: K,
+    payload: Extract<
+      GatewaySendPayload,
+      { op: (typeof GatewayOpcodes)[K] }
+    >["d"],
+  ) => void;
 };
 
 /** Create a connection to the Discord gateway */
@@ -56,13 +69,19 @@ export function createConnection(
   const listeners = new Map<string, Map<string, (data: unknown) => void>>();
   env.DISCORD_TOKEN = token;
   let url: string;
+  let emit: ConnectionActions["emit"] = () => {
+    throw new Error("No websocket connection yet");
+  };
 
   async function connect() {
     if (!url) {
       const bot = await getGatewayBot();
       url = bot.url;
     }
+
     const ws = new WebSocket(url);
+
+    emit = (op, d) => ws.send(JSON.stringify({ op: GatewayOpcodes[op], d }));
 
     let heartbeatInterval: NodeJS.Timeout;
     let lastSeq: number | null = null;
@@ -78,31 +97,24 @@ export function createConnection(
         case GatewayOpcodes.Hello: {
           const { heartbeat_interval } = payload.d;
 
-          heartbeatInterval = setInterval(() => {
-            const heartbeatPayload: GatewayHeartbeat = {
-              op: GatewayOpcodes.Heartbeat,
-              d: lastSeq,
-            };
-            ws.send(JSON.stringify(heartbeatPayload));
-          }, heartbeat_interval);
+          heartbeatInterval = setInterval(
+            () => emit("Heartbeat", lastSeq),
+            heartbeat_interval,
+          );
 
-          const identifyPayload: GatewayIdentify = {
-            op: GatewayOpcodes.Identify,
-            d: {
-              ...connectionConfig,
-              token,
-              intents: intents.reduce(
-                (acc, intent) => acc | GatewayIntentBits[intent],
-                0,
-              ),
-              properties: {
-                os: platform,
-                browser: "Dressed",
-                device: "Dressed",
-              },
+          emit("Identify", {
+            ...connectionConfig,
+            token,
+            intents: intents.reduce(
+              (acc, intent) => acc | GatewayIntentBits[intent],
+              0,
+            ),
+            properties: {
+              os: platform,
+              browser: "Dressed",
+              device: "Dressed",
             },
-          };
-          ws.send(JSON.stringify(identifyPayload));
+          });
           break;
         }
         case GatewayOpcodes.Dispatch: {
@@ -135,16 +147,19 @@ export function createConnection(
 
   connect();
 
-  return Object.fromEntries(
-    Object.keys(GatewayDispatchEvents).map((k) => [
-      `on${k}`,
-      (callback: () => never) => {
-        const id = crypto.randomUUID();
-        const eventName = GatewayDispatchEvents[k as EventKeys];
-        if (!listeners.has(eventName)) listeners.set(eventName, new Map());
-        listeners.get(eventName)!.set(id, callback);
-        return () => listeners.get(eventName)?.delete(id);
-      },
-    ]),
-  ) as ReturnType<typeof createConnection>;
+  return {
+    ...Object.fromEntries(
+      Object.keys(GatewayDispatchEvents).map((k) => [
+        `on${k}`,
+        (callback: () => never) => {
+          const id = crypto.randomUUID();
+          const eventName = GatewayDispatchEvents[k as EventKeys];
+          if (!listeners.has(eventName)) listeners.set(eventName, new Map());
+          listeners.get(eventName)!.set(id, callback);
+          return () => listeners.get(eventName)?.delete(id);
+        },
+      ]),
+    ),
+    emit,
+  } as ReturnType<typeof createConnection>;
 }
