@@ -52,6 +52,7 @@ import type {
   RESTPostAPIGuildsMFAResult,
   RESTPostAPIGuildsResult,
   RESTPutAPIGuildBanJSONBody,
+  RESTPutAPIGuildIncidentActionsJSONBody,
   RESTPutAPIGuildMemberJSONBody,
   RESTPutAPIGuildMemberResult,
   RESTPutAPIGuildOnboardingJSONBody,
@@ -89,7 +90,7 @@ export async function getGuild(
 ): Promise<RESTGetAPIGuildResult> {
   const res = await callDiscord(Routes.guild(guild), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();
@@ -226,7 +227,7 @@ export async function listMembers(
 ): Promise<RESTGetAPIGuildMembersResult> {
   const res = await callDiscord(Routes.guildMembers(guild), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();
@@ -243,7 +244,7 @@ export async function searchMembers(
 ): Promise<RESTGetAPIGuildMembersSearchResult> {
   const res = await callDiscord(Routes.guildMembersSearch(guild), {
     method: "GET",
-    params: options as unknown as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();
@@ -344,7 +345,7 @@ export async function listBans(
 ): Promise<RESTGetAPIGuildBansResult> {
   const res = await callDiscord(Routes.guildBans(guild), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();
@@ -538,7 +539,7 @@ export async function getPruneCount(
 ): Promise<RESTGetAPIGuildPruneCountResult> {
   const res = await callDiscord(Routes.guildPrune(guild), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();
@@ -565,7 +566,7 @@ export async function startPrune(
  * Returns a list of voice region objects for the guild.
  * @param guild The guild to get the voice regions for
  */
-export async function listVoiceRegions(
+export async function listGuildVoiceRegions(
   guild: Snowflake,
 ): Promise<RESTGetAPIVoiceRegionsResult> {
   const res = await callDiscord(Routes.guildVoiceRegions(guild), {
@@ -687,7 +688,7 @@ export async function getWidgetImage(
 ): Promise<RESTGetAPIGuildWidgetImageResult> {
   const res = await callDiscord(Routes.guildWidgetImage(guild), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();
@@ -753,4 +754,19 @@ export async function modifyOnboarding(
   });
 
   return res.json();
+}
+
+/**
+ * Modifies the incident actions of the guild.
+ * @param guild The guild to modify the actions for
+ * @param data The new data for the onboarding
+ */
+export async function modifyGuildIncidentActions(
+  guild: Snowflake,
+  data: RESTPutAPIGuildIncidentActionsJSONBody,
+): Promise<void> {
+  await callDiscord(Routes.guildIncidentActions(guild), {
+    method: "PUT",
+    body: data,
+  });
 }

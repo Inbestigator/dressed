@@ -19,7 +19,7 @@ export async function listEntitlements(
 ): Promise<RESTGetAPIEntitlementsResult> {
   const res = await callDiscord(Routes.entitlements(botEnv.DISCORD_APP_ID), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();

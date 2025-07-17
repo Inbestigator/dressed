@@ -17,7 +17,7 @@ export async function getAuditLog(
 ): Promise<RESTGetAPIAuditLogResult> {
   const res = await callDiscord(Routes.guildAuditLog(guild), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();

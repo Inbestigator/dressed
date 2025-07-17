@@ -51,7 +51,7 @@ export async function listGuilds(
 ): Promise<RESTGetAPICurrentUserGuildsResult> {
   const res = await callDiscord(Routes.userGuilds(), {
     method: "GET",
-    params: options as Record<string, string>,
+    params: options,
   });
 
   return res.json();
