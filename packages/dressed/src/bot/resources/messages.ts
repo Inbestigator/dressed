@@ -3,8 +3,11 @@ import type {
   RESTGetAPIChannelMessageReactionUsersQuery,
   RESTGetAPIChannelMessageReactionUsersResult,
   RESTGetAPIChannelMessageResult,
+  RESTGetAPIChannelMessagesPinsQuery,
+  RESTGetAPIChannelMessagesPinsResult,
   RESTGetAPIChannelMessagesQuery,
   RESTGetAPIChannelMessagesResult,
+  RESTGetAPIChannelPinsResult,
   RESTPatchAPIChannelMessageJSONBody,
   RESTPostAPIChannelMessageCrosspostResult,
   RESTPostAPIChannelMessageJSONBody,
@@ -26,7 +29,7 @@ export async function listMessages(
 ): Promise<RESTGetAPIChannelMessagesResult> {
   const res = await callDiscord(Routes.channelMessages(channel), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();
@@ -50,7 +53,7 @@ export async function getMessage(
 
 /**
  * Post a message to a guild text or DM channel.
- * @param channel The channel to post the message to
+ * @param channel The channel to post the message in
  * @param data The message data
  */
 export async function createMessage(
@@ -142,7 +145,7 @@ export async function listReactions(
     Routes.channelMessageReaction(channel, message, emoji),
     {
       method: "GET",
-      params: options as Record<string, unknown>,
+      params: options,
     },
   );
 
@@ -231,5 +234,65 @@ export async function bulkDelete(
   await callDiscord(Routes.channelBulkDelete(channel), {
     method: "DELETE",
     body: { messages },
+  });
+}
+
+/**
+ * Returns all pinned messages in the channel.
+ * @param channel The channel to find the pins for
+ * @deprecated Use `listChannelPins`
+ */
+export async function listPins(
+  channel: Snowflake,
+): Promise<RESTGetAPIChannelPinsResult> {
+  const res = await callDiscord(Routes.channelPins(channel), {
+    method: "GET",
+  });
+
+  return res.json();
+}
+
+/**
+ * Retrieves the list of pins in a channel.
+ * @param channel The channel to find the pins for
+ * @param options Optional parameters for the request
+ */
+export async function listChannelPins(
+  channel: Snowflake,
+  options?: RESTGetAPIChannelMessagesPinsQuery,
+): Promise<RESTGetAPIChannelMessagesPinsResult> {
+  const res = await callDiscord(Routes.channelMessagesPins(channel), {
+    method: "GET",
+    params: options,
+  });
+
+  return res.json();
+}
+
+/**
+ * Pin a message in a channel.
+ * @param channel The channel to pin the message in
+ * @param message The message to pin
+ */
+export async function createPin(
+  channel: Snowflake,
+  message: Snowflake,
+): Promise<void> {
+  await callDiscord(Routes.channelMessagesPin(channel, message), {
+    method: "PUT",
+  });
+}
+
+/**
+ * Unpin a message in a channel.
+ * @param channel The channel to unpin the message in
+ * @param message The message to unpin
+ */
+export async function deletePin(
+  channel: Snowflake,
+  message: Snowflake,
+): Promise<void> {
+  await callDiscord(Routes.channelMessagesPin(channel, message), {
+    method: "DELETE",
   });
 }

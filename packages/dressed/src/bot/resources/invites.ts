@@ -17,7 +17,7 @@ export async function getInvite(
 ): Promise<RESTGetAPIInviteResult> {
   const res = await callDiscord(Routes.invite(invite), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();

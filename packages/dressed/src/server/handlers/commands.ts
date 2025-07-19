@@ -1,19 +1,19 @@
 import type { CommandConfig, CommandData } from "../../types/config.ts";
 import ora from "ora";
 import { stdout } from "node:process";
-import { installGlobalCommands } from "../utils.ts";
 import {
   ApplicationCommandType,
   ApplicationIntegrationType,
   InteractionContextType,
   InteractionType,
+  type RESTPostAPIApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
 import { createHandlerSetup } from "./index.ts";
 import type {
   CommandAutocompleteInteraction,
   CommandInteraction,
 } from "../../types/interaction.ts";
-import { botEnv } from "../../utils/env.ts";
+import { bulkOverwriteGlobalCommands } from "../../bot/resources/application-commands.ts";
 
 /**
  * Installs commands to the Discord API
@@ -24,8 +24,7 @@ export async function installCommands(commands: CommandData[]) {
     text: "Registering commands",
   }).start();
 
-  await installGlobalCommands(
-    botEnv.DISCORD_APP_ID,
+  await bulkOverwriteGlobalCommands(
     await Promise.all(
       commands.map(async (c) => {
         const config = c.data.config ?? ({} as CommandConfig);
@@ -53,7 +52,7 @@ export async function installCommands(commands: CommandData[]) {
                 description: config.description ?? "No description provided",
               }
             : {}),
-        };
+        } as RESTPostAPIApplicationCommandsJSONBody;
       }),
     ),
   );

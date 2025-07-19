@@ -3,7 +3,6 @@ import type {
   APIThreadChannel,
   RESTDeleteAPIChannelResult,
   RESTGetAPIChannelInvitesResult,
-  RESTGetAPIChannelPinsResult,
   RESTGetAPIChannelResult,
   RESTGetAPIChannelThreadMemberQuery,
   RESTGetAPIChannelThreadMemberResult,
@@ -159,48 +158,6 @@ export async function createTypingIndicator(channel: Snowflake): Promise<void> {
 }
 
 /**
- * Returns all pinned messages in the channel.
- * @param channel The channel to find the pins for
- */
-export async function listPins(
-  channel: Snowflake,
-): Promise<RESTGetAPIChannelPinsResult> {
-  const res = await callDiscord(Routes.channelPins(channel), {
-    method: "GET",
-  });
-
-  return res.json();
-}
-
-/**
- * Pin a message in a channel.
- * @param channel The channel to pin the message in
- * @param message The message to pin
- */
-export async function createPin(
-  channel: Snowflake,
-  message: Snowflake,
-): Promise<void> {
-  await callDiscord(Routes.channelPin(channel, message), {
-    method: "PUT",
-  });
-}
-
-/**
- * Unpin a message in a channel.
- * @param channel The channel to unpin the message in
- * @param message The message to unpin
- */
-export async function deletePin(
-  channel: Snowflake,
-  message: Snowflake,
-): Promise<void> {
-  await callDiscord(Routes.channelPin(channel, message), {
-    method: "DELETE",
-  });
-}
-
-/**
  * Adds a recipient to a Group DM using their access token.
  * @param channel The channel to add the recipient to
  * @param user The user to add
@@ -287,7 +244,7 @@ export async function addThreadMember(
   thread: Snowflake,
   user?: Snowflake,
 ): Promise<void> {
-  await callDiscord(Routes.threadMembers(thread, user ?? "@me"), {
+  await callDiscord(Routes.threadMembers(thread, user), {
     method: "PUT",
   });
 }
@@ -301,7 +258,7 @@ export async function removeThreadMember(
   thread: Snowflake,
   user?: Snowflake,
 ): Promise<void> {
-  await callDiscord(Routes.threadMembers(thread, user ?? "@me"), {
+  await callDiscord(Routes.threadMembers(thread, user), {
     method: "DELETE",
   });
 }
@@ -319,7 +276,7 @@ export async function getThreadMember(
 ): Promise<RESTGetAPIChannelThreadMemberResult> {
   const res = await callDiscord(Routes.threadMembers(thread, user), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();
@@ -336,7 +293,7 @@ export async function listThreadMembers(
 ): Promise<RESTGetAPIChannelThreadMembersResult> {
   const res = await callDiscord(Routes.threadMembers(thread), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();
@@ -361,7 +318,7 @@ export async function listArchivedThreads(
       : Routes.channelThreads(channel, publicThreads ? "public" : "private"),
     {
       method: "GET",
-      params: options as Record<string, unknown>,
+      params: options,
     },
   );
 
