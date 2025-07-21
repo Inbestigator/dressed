@@ -23,7 +23,7 @@ export interface OptionValueGetters {
   subcommandGroup: () => {
     getSubcommand: (
       name: string,
-    ) => ReturnType<OptionValueGetters["subcommand"]> | null;
+    ) => ReturnType<OptionValueGetters["subcommand"]> | undefined;
   };
   /**
    * Get the option as a string
@@ -68,11 +68,11 @@ export function getOption<R extends boolean>(
   required: R,
   options: APIApplicationCommandInteractionDataOption[],
   resolved?: APIInteractionDataResolved,
-): R extends true ? OptionValueGetters : OptionValueGetters | null {
+): R extends true ? OptionValueGetters : OptionValueGetters | undefined {
   const option = options.find((o) => o.name === name);
   if (!option) {
     if (required) throw new Error(`Required option "${name}" not found`);
-    return null as R extends true ? never : null;
+    return undefined as ReturnType<typeof getOption<R>>;
   }
 
   return {

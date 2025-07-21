@@ -26,5 +26,5 @@ test("Check for non existing option", () => {
     new Error(`Required option "option2" not found`),
   );
   const option = interaction.getOption("option3");
-  expect(option).toBeNull();
+  expect(option).toBeUndefined();
 });

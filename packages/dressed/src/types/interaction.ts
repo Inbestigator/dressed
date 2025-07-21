@@ -56,7 +56,7 @@ export type CommandInteraction<
       getOption: <R extends boolean>(
         name: string,
         required?: R,
-      ) => R extends true ? OptionValueGetters : OptionValueGetters | null;
+      ) => R extends true ? OptionValueGetters : OptionValueGetters | undefined;
     }
   : T extends "Message"
     ? APIMessageApplicationCommandInteraction
@@ -105,7 +105,7 @@ export type ModalSubmitInteraction = APIModalSubmitInteraction &
     getField: <R extends boolean>(
       name: string,
       required?: R,
-    ) => R extends true ? string : string | null;
+    ) => R extends true ? string : string | undefined;
   };
 
 export interface BaseInteractionMethods {

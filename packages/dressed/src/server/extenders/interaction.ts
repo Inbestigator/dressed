@@ -19,10 +19,7 @@ export function createInteraction<T extends APIInteraction>(
       return {
         ...interaction,
         ...baseInteractionMethods(interaction),
-        getOption: <Required extends boolean>(
-          name: string,
-          required: Required,
-        ) =>
+        getOption: (name: string, required: boolean) =>
           getOption(
             name,
             required,
@@ -59,15 +56,14 @@ export function createInteraction<T extends APIInteraction>(
       return {
         ...interaction,
         ...baseInteractionMethods(interaction),
-        getField<R extends boolean>(name: string, required: R) {
+        getField(custom_id: string, required: boolean) {
           const field = interaction.data.components
-            .map((c) => c.components)
-            .flat()
-            .find((c) => c.custom_id === name);
+            .flatMap((c) => c.components)
+            .find((c) => c.custom_id === custom_id);
 
           if (!field) {
             if (required) throw new Error(`Field "${name}" not found`);
-            return null;
+            return;
           }
 
           return field.value;
