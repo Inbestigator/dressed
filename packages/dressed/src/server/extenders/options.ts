@@ -12,15 +12,18 @@ export interface OptionValueGetters {
    * Get the option as a subcommand
    */
   subcommand: () => {
-    getOption: (name: string) => ReturnType<typeof getOption>;
+    getOption: <R extends boolean>(
+      name: string,
+      required?: R,
+    ) => ReturnType<typeof getOption<R>>;
   };
   /**
-   * Get the option as a group subcommand
+   * Get the option as a subcommand group
    */
-  groupSubcommand: () => {
-    getSubcommand: (name: string) => {
-      getOption: (name: string) => ReturnType<typeof getOption>;
-    };
+  subcommandGroup: () => {
+    getSubcommand: (
+      name: string,
+    ) => ReturnType<OptionValueGetters["subcommand"]> | undefined;
   };
   /**
    * Get the option as a string
@@ -65,35 +68,26 @@ export function getOption<R extends boolean>(
   required: R,
   options: APIApplicationCommandInteractionDataOption[],
   resolved?: APIInteractionDataResolved,
-): R extends true
-  ? NonNullable<OptionValueGetters>
-  : OptionValueGetters | null {
+): R extends true ? OptionValueGetters : OptionValueGetters | undefined {
   const option = options.find((o) => o.name === name);
   if (!option) {
     if (required) throw new Error(`Required option "${name}" not found`);
-    return null as R extends true ? never : null;
+    return undefined as ReturnType<typeof getOption<R>>;
   }
 
   return {
     subcommand: () => {
       if (option.type !== 1) throw new Error("Not a subcommand");
       return {
-        getOption: (name: string, required = false) =>
-          getOption(name, required, option.options ?? [], resolved),
+        getOption: (name: string, required) =>
+          getOption(name, required ?? false, option.options ?? [], resolved),
       };
     },
-    groupSubcommand: () => {
-      if (option.type !== 2) throw new Error("Not a group subcommand");
+    subcommandGroup: () => {
+      if (option.type !== 2) throw new Error("Not a subcommand group");
       return {
-        getSubcommand: (name: string) => {
-          const subcommand = option.options.find((o) => o.name === name);
-          if (!subcommand) throw new Error(`Subcommand "${name}" not found`);
-          return {
-            ...subcommand,
-            getOption: (name: string, required = false) =>
-              getOption(name, required, subcommand.options ?? [], resolved),
-          };
-        },
+        getSubcommand: (name: string) =>
+          getOption(name, false, option.options, resolved)?.subcommand(),
       };
     },
     string: () => {
