@@ -7,13 +7,18 @@ import {
   InteractionContextType,
   InteractionType,
   type RESTPostAPIApplicationCommandsJSONBody,
+  type RESTPutAPIApplicationCommandsJSONBody,
+  type RESTPutAPIApplicationGuildCommandsJSONBody,
 } from "discord-api-types/v10";
 import { createHandlerSetup } from "./index.ts";
 import type {
   CommandAutocompleteInteraction,
   CommandInteraction,
 } from "../../types/interaction.ts";
-import { bulkOverwriteGlobalCommands } from "../../bot/resources/application-commands.ts";
+import {
+  bulkOverwriteGlobalCommands,
+  bulkOverwriteGuildCommands,
+} from "../../bot/resources/application-commands.ts";
 
 /**
  * Installs commands to the Discord API
@@ -24,38 +29,54 @@ export async function installCommands(commands: CommandData[]) {
     text: "Registering commands",
   }).start();
 
-  await bulkOverwriteGlobalCommands(
-    await Promise.all(
-      commands.map(async (c) => {
-        const config = c.data.config ?? ({} as CommandConfig);
-        if (!config.type) {
-          config.type = "ChatInput";
-        }
-        return {
-          ...config,
-          name: c.name,
-          type: ApplicationCommandType[config.type],
-          integration_types: config.integration_type
-            ? [ApplicationIntegrationType[`${config.integration_type}Install`]]
-            : [0, 1],
-          contexts: config.contexts
-            ? config.contexts.reduce<number[]>(
-                (p, c) =>
-                  !p.includes(InteractionContextType[c])
-                    ? [...p, InteractionContextType[c]]
-                    : p,
-                [],
-              )
-            : [0, 1, 2],
-          ...(config.type === "ChatInput"
-            ? {
-                description: config.description ?? "No description provided",
-              }
-            : {}),
-        } as RESTPostAPIApplicationCommandsJSONBody;
-      }),
-    ),
-  );
+  const scopes = new Map<
+    string,
+    | RESTPutAPIApplicationCommandsJSONBody
+    | RESTPutAPIApplicationGuildCommandsJSONBody
+  >([["global", []]]);
+
+  for (const command of commands) {
+    const config = command.data.config ?? ({} as CommandConfig);
+
+    if (!config.type) {
+      config.type = "ChatInput";
+    }
+
+    const commandBody = {
+      ...config,
+      name: command.name,
+      type: ApplicationCommandType[config.type],
+      integration_types: config.integration_type
+        ? [ApplicationIntegrationType[`${config.integration_type}Install`]]
+        : [0, 1],
+      contexts: config.contexts
+        ? config.contexts.reduce<number[]>(
+            (p, c) =>
+              !p.includes(InteractionContextType[c])
+                ? [...p, InteractionContextType[c]]
+                : p,
+            [],
+          )
+        : [0, 1, 2],
+      ...(config.type === "ChatInput"
+        ? {
+            description: config.description ?? "No description provided",
+          }
+        : {}),
+    } as RESTPostAPIApplicationCommandsJSONBody;
+
+    for (const guild of config.guilds ?? ["global"]) {
+      scopes.set(guild, (scopes.get(guild) ?? []).concat(commandBody));
+    }
+  }
+
+  for (const [scope, commands] of scopes) {
+    if (scope === "global") {
+      await bulkOverwriteGlobalCommands(commands);
+    } else {
+      await bulkOverwriteGuildCommands(scope, commands as never);
+    }
+  }
 
   registerLoader.succeed("Registered commands");
 }
