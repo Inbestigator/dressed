@@ -53,12 +53,10 @@ export type CommandInteraction<
        * @param name The name of the option
        * @param required Whether the option is required
        */
-      getOption: <Required extends boolean>(
+      getOption: <R extends boolean>(
         name: string,
-        required?: Required,
-      ) => Required extends true
-        ? NonNullable<OptionValueGetters>
-        : OptionValueGetters | null;
+        required?: R,
+      ) => R extends true ? OptionValueGetters : OptionValueGetters | null;
     }
   : T extends "Message"
     ? APIMessageApplicationCommandInteraction
@@ -104,10 +102,10 @@ export type ModalSubmitInteraction = APIModalSubmitInteraction &
      * @param name The name of the field
      * @param required Whether the field is required
      */
-    getField: <Required extends boolean>(
+    getField: <R extends boolean>(
       name: string,
-      required?: Required,
-    ) => Required extends true ? NonNullable<string> : string | null;
+      required?: R,
+    ) => R extends true ? string : string | null;
   };
 
 export interface BaseInteractionMethods {
