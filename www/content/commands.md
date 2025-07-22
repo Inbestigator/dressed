@@ -18,6 +18,7 @@ All commands are required to have a default export, this function is how your
 command will be handled.
 
 ```ts
+// src/commands/greet.ts
 import type { CommandInteraction } from "dressed";
 
 export default async function (interaction: CommandInteraction) {
