@@ -6,6 +6,7 @@ import {
   ApplicationIntegrationType,
   InteractionContextType,
   InteractionType,
+  PermissionFlagsBits,
   type RESTPostAPIApplicationCommandsJSONBody,
   type RESTPutAPIApplicationCommandsJSONBody,
   type RESTPutAPIApplicationGuildCommandsJSONBody,
@@ -42,31 +43,39 @@ export async function installCommands(commands: CommandData[]) {
       config.type = "ChatInput";
     }
 
-    const commandBody = {
-      ...config,
-      name: command.name,
-      type: ApplicationCommandType[config.type],
-      integration_types: config.integration_type
-        ? [ApplicationIntegrationType[`${config.integration_type}Install`]]
-        : [0, 1],
-      contexts: config.contexts
-        ? config.contexts.reduce<number[]>(
-            (p, c) =>
-              !p.includes(InteractionContextType[c])
-                ? [...p, InteractionContextType[c]]
-                : p,
-            [],
-          )
-        : [0, 1, 2],
-      ...(config.type === "ChatInput"
-        ? {
-            description: config.description ?? "No description provided",
-          }
-        : {}),
-    } as RESTPostAPIApplicationCommandsJSONBody;
+    if (config.type === "ChatInput") {
+      config.description = config.description ?? "No description provided";
+    }
+
+    if (Array.isArray(config.default_member_permissions)) {
+      config.default_member_permissions = config.default_member_permissions
+        .reduce((p, k) => p | PermissionFlagsBits[k], BigInt(0))
+        .toString();
+    }
+
+    if (config.contexts) {
+      config.contexts = [
+        ...new Set(
+          config.contexts.map((c) => InteractionContextType[c] as never),
+        ),
+      ];
+    }
+
+    if (config.integration_type) {
+      config.integration_types = [
+        ApplicationIntegrationType[`${config.integration_type}Install`],
+      ];
+    }
 
     for (const guild of config.guilds ?? ["global"]) {
-      scopes.set(guild, (scopes.get(guild) ?? []).concat(commandBody));
+      scopes.set(
+        guild,
+        (scopes.get(guild) ?? []).concat({
+          ...config,
+          name: command.name,
+          type: ApplicationCommandType[config.type],
+        } as RESTPostAPIApplicationCommandsJSONBody),
+      );
     }
   }
 
