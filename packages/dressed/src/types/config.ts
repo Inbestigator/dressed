@@ -5,6 +5,7 @@ import type {
   RESTPostAPIContextMenuApplicationCommandsJSONBody,
   RESTPostAPIPrimaryEntryPointApplicationCommandJSONBody,
   Snowflake,
+  PermissionFlagsBits,
 } from "discord-api-types/v10";
 import type { Promisable } from "./possible-promise.ts";
 import type {
@@ -79,6 +80,8 @@ type BaseCommandConfig = {
   integration_type?: "Guild" | "User";
   /** The guilds this command is available in, this prop will cause the command to become guild-scoped */
   guilds?: Snowflake[];
+  /** An array of permissions */
+  default_member_permissions?: (keyof typeof PermissionFlagsBits)[] | string;
 };
 
 type CommandTypeConfig<T, K extends PropertyKey, A> = Omit<
