@@ -24,7 +24,7 @@ export async function listAnswerVoters(
     Routes.pollAnswerVoters(channel, message, answer),
     {
       method: "GET",
-      params: options as Record<string, unknown>,
+      params: options,
     },
   );
 

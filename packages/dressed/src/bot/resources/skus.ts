@@ -31,7 +31,7 @@ export async function listSubscriptions(
 ): Promise<RESTGetAPISKUSubscriptionsResult> {
   const res = await callDiscord(Routes.skuSubscriptions(sku), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();

@@ -12,21 +12,27 @@ export async function checkLimit(endpoint: string) {
   const endpointLimit = limits.get(endpoint);
   if (globalLimit) {
     if (globalLimit.remaining === 0) {
-      ora(
-        `You have hit the global rate limit!\nWaiting to try again...`,
-      ).warn();
+      const waiting = ora(
+        "Global rate limit reached! - Waiting to try again...",
+      ).start();
       await delayUntil(globalLimit.resetAt);
       limits.delete("global");
+      waiting.warn(
+        "A request was delayed because you hit the global rate limit",
+      );
     } else if (globalLimit.remaining === 1) {
       ora("You are about to hit the global rate limit!").warn();
     }
   } else if (endpointLimit) {
     if (endpointLimit.remaining === 0) {
-      ora(
-        `You have hit the rate limit for ${endpoint}!\nWaiting to try again...`,
-      ).warn();
+      const waiting = ora(
+        `Rate limit for ${endpoint} reached! - Waiting to try again...`,
+      ).start();
       await delayUntil(endpointLimit.resetAt);
       limits.delete(endpoint);
+      waiting.warn(
+        `A request was delayed because you hit the rate limit for ${endpoint}`,
+      );
     } else if (endpointLimit.remaining === 1) {
       ora(`You are about to hit the rate limit for ${endpoint}!`).warn();
     }

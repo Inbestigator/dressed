@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Github, Home, Puzzle, Reply, Terminal } from "lucide-react";
-
+import { Cog, Github, Home, Puzzle, Reply, Terminal, Ear } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import {
@@ -24,6 +23,11 @@ const data = {
       icon: Home,
     },
     {
+      title: "Server Config",
+      url: "/docs/server-config",
+      icon: Cog,
+    },
+    {
       title: "Commands",
       url: "/docs/commands",
       icon: Terminal,
@@ -32,12 +36,21 @@ const data = {
           title: "Config",
           url: "/docs/commands/config",
         },
+        {
+          title: "Options",
+          url: "/docs/commands/options",
+        },
       ],
     },
     {
       title: "Components",
       url: "/docs/components",
       icon: Puzzle,
+    },
+    {
+      title: "Events",
+      url: "/docs/events",
+      icon: Ear,
     },
     {
       title: "Interactions",

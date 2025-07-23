@@ -25,7 +25,7 @@ export async function listScheduledEvents(
 ): Promise<RESTGetAPIGuildScheduledEventsResult> {
   const res = await callDiscord(Routes.guildScheduledEvents(guild), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();
@@ -61,7 +61,7 @@ export async function getScheduledEvent(
 ): Promise<RESTGetAPIGuildScheduledEventResult> {
   const res = await callDiscord(Routes.guildScheduledEvent(guild, event), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();
@@ -113,7 +113,7 @@ export async function getScheduledEventUsers(
 ): Promise<RESTGetAPIGuildScheduledEventUsersResult> {
   const res = await callDiscord(Routes.guildScheduledEventUsers(guild, event), {
     method: "GET",
-    params: options as Record<string, unknown>,
+    params: options,
   });
 
   return res.json();

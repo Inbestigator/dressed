@@ -1,7 +1,6 @@
 import ora from "ora";
 import { stdout } from "node:process";
 import type { BaseData, ServerConfig } from "../../types/config.ts";
-import { logRunnerError } from "../utils.ts";
 import type { Promisable } from "../../types/possible-promise.ts";
 
 interface SetupItemMessages<T, P> {
@@ -57,7 +56,13 @@ export function createHandlerSetup<
         await handler(...args);
         loader.succeed();
       } catch (e) {
-        logRunnerError(e, loader);
+        const text = loader.text.replace("Running", "Failed to run");
+        if (e instanceof Error) {
+          loader.fail(`${text} - ${e.message}`);
+        } else {
+          loader.fail(text);
+          console.error(e);
+        }
       }
     };
 }

@@ -17,7 +17,7 @@ import { Buffer } from "node:buffer";
 export async function callDiscord(
   endpoint: string,
   options: Omit<RequestInit, "body"> & {
-    params?: Record<string, unknown>;
+    params?: unknown;
     body?: unknown;
     files?: RawFile[];
     flattenBodyInForm?: boolean;

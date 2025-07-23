@@ -23,12 +23,14 @@ export * from "./bot/components/text-input.ts";
 export * from "./bot/components/thumbnail.ts";
 
 // API interactions
+export * from "./bot/resources/application-commands.ts";
 export * from "./bot/resources/application.ts";
 export * from "./bot/resources/audit-log.ts";
 export * from "./bot/resources/automod.ts";
 export * from "./bot/resources/channels.ts";
 export * from "./bot/resources/emojis.ts";
 export * from "./bot/resources/entitlements.ts";
+export * from "./bot/resources/gateway.ts";
 export * from "./bot/resources/guild-events.ts";
 export * from "./bot/resources/guild-templates.ts";
 export * from "./bot/resources/guilds.ts";
@@ -42,3 +44,4 @@ export * from "./bot/resources/stages.ts";
 export * from "./bot/resources/stickers.ts";
 export * from "./bot/resources/users.ts";
 export * from "./bot/resources/voice.ts";
+export * from "./bot/resources/webhooks.ts";
