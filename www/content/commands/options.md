@@ -77,16 +77,18 @@ export const config: CommandConfig = {
 };
 
 export default function (interaction: CommandInteraction) {
-  const foo = interaction.getOption("foo")?.subcommand();
-  const bar = interaction
-    .getOption("group")
-    ?.subcommandGroup()
-    .getSubcommand("bar");
-  if (bar) {
-    return interaction.reply("Bar");
-  } else if (foo) {
-    const baz = foo.getOption("baz", true).number();
-    return interaction.reply(`${baz} is a pretty big number!`);
+  const subcommand =
+    interaction.getOption("foo")?.subcommand() ||
+    interaction.getOption("group")?.subcommandGroup().getSubcommand("bar");
+
+  switch (subcommand?.name) {
+    case "foo": {
+      const baz = subcommand.getOption("baz", true).number();
+      return interaction.reply(`${baz} is a pretty big number!`);
+    }
+    case "bar": {
+      return interaction.reply("Bar");
+    }
   }
 }
 ```

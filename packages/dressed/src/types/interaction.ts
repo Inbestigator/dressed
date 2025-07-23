@@ -16,7 +16,10 @@ import type {
   ApplicationCommandType,
   MessageFlags,
 } from "discord-api-types/v10";
-import type { OptionValueGetters } from "../server/extenders/options.ts";
+import type {
+  getOption,
+  OptionValueGetters,
+} from "../server/extenders/options.ts";
 import type { Buffer } from "node:buffer";
 
 /** Type ripped from Discord.js (tysm) */
@@ -53,10 +56,10 @@ export type CommandInteraction<
        * @param name The name of the option
        * @param required Whether the option is required
        */
-      getOption: <R extends boolean>(
-        name: string,
+      getOption: <N extends string, R extends boolean>(
+        name: N,
         required?: R,
-      ) => R extends true ? OptionValueGetters : OptionValueGetters | undefined;
+      ) => ReturnType<typeof getOption<N, R>>;
     }
   : T extends "Message"
     ? APIMessageApplicationCommandInteraction
@@ -74,7 +77,7 @@ export type CommandAutocompleteInteraction =
      * Get an option from the interaction
      * @param name The name of the option
      */
-    getOption: (name: string) => OptionValueGetters | null;
+    getOption: <N extends string>(name: N) => OptionValueGetters<N> | undefined;
   } & Omit<
       BaseInteractionMethods,
       | "deferReply"
@@ -99,11 +102,11 @@ export type ModalSubmitInteraction = APIModalSubmitInteraction &
   Omit<BaseInteractionMethods, "showModal" | "sendChoices"> & {
     /**
      * Get a field from the user's submission
-     * @param name The name of the field
+     * @param custom_id The custom_id of the field
      * @param required Whether the field is required
      */
     getField: <R extends boolean>(
-      name: string,
+      custom_id: string,
       required?: R,
     ) => R extends true ? string : string | undefined;
   };

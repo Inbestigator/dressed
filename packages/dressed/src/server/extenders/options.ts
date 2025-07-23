@@ -6,24 +6,33 @@ import type {
   APIRole,
   APIUser,
 } from "discord-api-types/v10";
+import type { CommandInteraction } from "../../types/interaction.ts";
 
-export interface OptionValueGetters {
+export interface OptionValueGetters<N> {
   /**
    * Get the option as a subcommand
    */
   subcommand: () => {
-    getOption: <R extends boolean>(
-      name: string,
-      required?: R,
-    ) => ReturnType<typeof getOption<R>>;
+    /**
+     * Get an option from the subcommand
+     * @param name The name of the option
+     * @param required Whether the option is required
+     */
+    getOption: CommandInteraction["getOption"];
+    name: N;
   };
   /**
    * Get the option as a subcommand group
    */
   subcommandGroup: () => {
-    getSubcommand: (
-      name: string,
-    ) => ReturnType<OptionValueGetters["subcommand"]> | undefined;
+    /**
+     * Get a subcommand from the group
+     * @param name The name of the subcommand
+     */
+    getSubcommand: <N extends string>(
+      name: N,
+    ) => ReturnType<OptionValueGetters<N>["subcommand"]> | undefined;
+    name: N;
   };
   /**
    * Get the option as a string
@@ -63,22 +72,23 @@ export interface OptionValueGetters {
   attachment: () => APIAttachment;
 }
 
-export function getOption<R extends boolean>(
-  name: string,
+export function getOption<N extends string, R extends boolean>(
+  name: N,
   required: R,
   options: APIApplicationCommandInteractionDataOption[],
   resolved?: APIInteractionDataResolved,
-): R extends true ? OptionValueGetters : OptionValueGetters | undefined {
+): R extends true ? OptionValueGetters<N> : OptionValueGetters<N> | undefined {
   const option = options.find((o) => o.name === name);
   if (!option) {
     if (required) throw new Error(`Required option "${name}" not found`);
-    return undefined as ReturnType<typeof getOption<R>>;
+    return undefined as ReturnType<typeof getOption<N, R>>;
   }
 
   return {
     subcommand: () => {
       if (option.type !== 1) throw new Error("Not a subcommand");
       return {
+        name,
         getOption: (name: string, required) =>
           getOption(name, required ?? false, option.options ?? [], resolved),
       };
@@ -86,6 +96,7 @@ export function getOption<R extends boolean>(
     subcommandGroup: () => {
       if (option.type !== 2) throw new Error("Not a subcommand group");
       return {
+        name,
         getSubcommand: (name: string) =>
           getOption(name, false, option.options, resolved)?.subcommand(),
       };
@@ -119,9 +130,13 @@ export function getOption<R extends boolean>(
     },
     mentionable: () => {
       if (option.type !== 9) throw new Error("Not a mentionable");
-      if (!resolved?.users) throw new Error("No users found");
-      if (!resolved?.roles) throw new Error("No roles found");
-      return resolved.users[option.value] || resolved.roles[option.value];
+      if (resolved?.users?.[option.value]) {
+        return resolved.users[option.value];
+      } else if (resolved?.roles?.[option.value]) {
+        return resolved.roles[option.value];
+      } else {
+        throw new Error("No mentionables found");
+      }
     },
     number: () => {
       if (option.type !== 10) throw new Error("Not a number");
@@ -132,5 +147,5 @@ export function getOption<R extends boolean>(
       if (!resolved?.attachments) throw new Error("No attachments found");
       return resolved.attachments[option.value];
     },
-  } as ReturnType<typeof getOption<R>>;
+  } as ReturnType<typeof getOption<N, R>>;
 }

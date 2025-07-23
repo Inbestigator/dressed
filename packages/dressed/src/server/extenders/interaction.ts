@@ -39,9 +39,7 @@ export function createInteraction<T extends APIInteraction>(
           getOption(
             name,
             false,
-            "options" in interaction.data
-              ? (interaction.data.options ?? [])
-              : [],
+            interaction.data.options,
             interaction.data.resolved,
           ),
       } as unknown as Interaction<T>;
@@ -62,7 +60,7 @@ export function createInteraction<T extends APIInteraction>(
             .find((c) => c.custom_id === custom_id);
 
           if (!field) {
-            if (required) throw new Error(`Field "${name}" not found`);
+            if (required) throw new Error(`Field "${custom_id}" not found`);
             return;
           }
 
