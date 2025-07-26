@@ -73,7 +73,7 @@ export function createServer(
 
   const port = config.port ?? 8000;
 
-  server.listen(port, "localhost", () => {
+  server.listen(port, "0.0.0.0", () => {
     console.log(
       "Bot is now listening on",
       new URL(config.endpoint ?? "", `http://localhost:${port}`).href,
