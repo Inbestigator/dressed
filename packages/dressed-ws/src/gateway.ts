@@ -1,25 +1,21 @@
-import {
-  Routes,
+import type {
+  GatewayIdentifyData,
+  GatewayDispatchPayload,
+  GatewaySendPayload,
   GatewayOpcodes,
-  GatewayIntentBits,
-  GatewayDispatchEvents,
-  type APIGatewayBotInfo,
-  type GatewayIdentifyData,
-  type GatewayReceivePayload,
-  type GatewayDispatchPayload,
-  type GatewaySendPayload,
+  APIGatewayBotInfo,
 } from "discord-api-types/v10";
-import { botEnv, callDiscord } from "dressed/utils";
-import { env, platform } from "node:process";
-
-async function getGatewayBot(): Promise<APIGatewayBotInfo> {
-  const res = await callDiscord(Routes.gatewayBot(), { method: "GET" });
-  return res.json();
-}
+import {
+  GatewayDispatchEvents,
+  GatewayIntentBits,
+} from "discord-api-types/v10";
+import { getGatewayBot } from "dressed";
+import { botEnv } from "dressed/utils";
+import { env } from "node:process";
 
 type EventKeys = keyof typeof GatewayDispatchEvents;
 
-type ConnectionActions = {
+export type ConnectionActions = {
   [K in EventKeys as `on${K}`]: (
     callback: (
       data: (GatewayDispatchPayload extends infer U
@@ -32,7 +28,12 @@ type ConnectionActions = {
     ) => void,
   ) => () => void;
 } & {
-  /** Sends a gateway payload to Discord using the given opcode. */
+  /**
+   * Sends a gateway payload to Discord using the given opcode.
+   * @param opcode The event to emit
+   * @param payload The data to send
+   * @param shardId Only emit from one shard
+   */
   emit: <
     K extends keyof Omit<
       typeof GatewayOpcodes,
@@ -44,108 +45,72 @@ type ConnectionActions = {
       GatewaySendPayload,
       { op: (typeof GatewayOpcodes)[K] }
     >["d"],
+    shardId?: number,
   ) => void;
+  shards: { reshard: (n?: number) => Promise<void>; workers: Worker[] };
 };
 
-/** Create a connection to the Discord gateway */
 export function createConnection(
   config: Omit<
     Partial<GatewayIdentifyData>,
-    "intents" | "properties" | "compress" | "large_threshold"
+    "intents" | "properties" | "compress" | "large_threshold" | "shard"
   > & {
-    /**
-     * The Gateway Intents you wish to receive
-     *
-     * @see {@link https://discord.com/developers/docs/topics/gateway#gateway-intents}
-     */
     intents?: (keyof typeof GatewayIntentBits)[];
   } = {},
 ): ConnectionActions {
-  const {
-    intents = [],
-    token = botEnv.DISCORD_TOKEN,
-    ...connectionConfig
-  } = config;
+  const { intents = [], token = botEnv.DISCORD_TOKEN, ...rest } = config;
+
   const listeners = new Map<string, Map<string, (data: unknown) => void>>();
+  const workers: Worker[] = [];
+  let bot: APIGatewayBotInfo | undefined;
+
   env.DISCORD_TOKEN = token;
-  let url: string;
-  let emit: ConnectionActions["emit"] = () => {
-    throw new Error("No websocket connection yet");
-  };
 
-  async function connect() {
-    if (!url) {
-      const bot = await getGatewayBot();
-      url = bot.url;
-    }
-
-    const ws = new WebSocket(url);
-
-    emit = (op, d) => ws.send(JSON.stringify({ op: GatewayOpcodes[op], d }));
-
-    let heartbeatInterval: NodeJS.Timeout;
-    let lastSeq: number | null = null;
-
-    ws.onmessage = (event) => {
-      const payload = JSON.parse(event.data) as GatewayReceivePayload;
-
-      if (payload.s !== null) {
-        lastSeq = payload.s;
+  async function reshard(newCount?: number) {
+    bot ??= await getGatewayBot();
+    newCount ??= bot.shards;
+    if (newCount < workers.length) {
+      while (workers.length > newCount) {
+        workers.pop()?.terminate();
       }
+    } else if (newCount > workers.length) {
+      while (workers.length < newCount) {
+        const worker = new Worker(new URL("./worker.js", import.meta.url), {
+          type: "module",
+        });
 
-      switch (payload.op) {
-        case GatewayOpcodes.Hello: {
-          const { heartbeat_interval } = payload.d;
-
-          heartbeatInterval = setInterval(
-            () => emit("Heartbeat", lastSeq),
-            heartbeat_interval,
-          );
-
-          emit("Identify", {
-            ...connectionConfig,
+        worker.postMessage({
+          type: "connect",
+          config: {
             token,
             intents: intents.reduce(
               (acc, intent) => acc | GatewayIntentBits[intent],
               0,
             ),
-            properties: {
-              os: platform,
-              browser: "Dressed",
-              device: "Dressed",
-            },
-          });
-          break;
-        }
-        case GatewayOpcodes.Dispatch: {
-          const { t, d } = payload;
-          const eventListeners = listeners.get(t);
-          if (eventListeners) {
-            for (const callback of eventListeners.values()) {
-              callback(d);
+            ...rest,
+            bot,
+            shard: [workers.length, newCount],
+          },
+        });
+
+        worker.onmessage = (event) => {
+          const { type, t, d } = event.data;
+          if (type === "dispatch" && t) {
+            const eventListeners = listeners.get(t);
+            if (eventListeners) {
+              for (const callback of eventListeners.values()) {
+                callback(d);
+              }
             }
           }
-          break;
-        }
-        case GatewayOpcodes.HeartbeatAck: {
-          break;
-        }
-        default:
-          break;
+        };
+
+        workers.push(worker);
       }
-    };
-
-    ws.onclose = () => {
-      clearInterval(heartbeatInterval);
-      console.log("Disconnected");
-    };
-
-    ws.onerror = (err) => {
-      console.error("WebSocket error", err);
-    };
+    }
   }
 
-  connect();
+  reshard();
 
   return {
     ...Object.fromEntries(
@@ -160,6 +125,15 @@ export function createConnection(
         },
       ]),
     ),
-    emit,
+    emit(op, d, id) {
+      if (id != null) {
+        workers[id]?.postMessage({ type: "emit", op, d });
+      } else {
+        for (const worker of workers) {
+          worker.postMessage({ type: "emit", op, d });
+        }
+      }
+    },
+    shards: { reshard, workers },
   } as ReturnType<typeof createConnection>;
 }

@@ -2,8 +2,6 @@
 
 TODO
 
-- Sharding
-- Workers
+- Sharding (connecting many)
 - Restarts
-- Emit events
 - Close connection
