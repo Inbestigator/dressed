@@ -71,7 +71,7 @@ trivia_guess_:answer.ts
 
 ```ts
 // trivia_guess_answer.ts
-export const pattern = "trivia_guess_:answer"; // Matches `trivia_guess_([^/]+)` no matter the filename
+export const pattern = "trivia_guess_:answer"; // Matches `trivia_guess_(.+)` no matter the filename
 ```
 
 ### Examples
