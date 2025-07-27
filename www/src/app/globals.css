@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
-@import 'rehype-callouts/theme/github';
+@import "rehype-callouts/theme/github";
 
 @layer base {
   :root {
@@ -44,4 +44,3 @@
     @apply bg-background text-foreground;
   }
 }
-

@@ -58,14 +58,17 @@ You can also make parts of the pattern **optional** using `{...}`. This allows c
 If you'd like to add some regex syntax, you can simply do `(...)`. This can be paired with an argument to ensure the argument value is correct.
 
 ### Pattern Export
+
 If you have a complex dynamic ID or you're on Windows you may opt to use the `pattern` export over file name. Using pattern export will override file name completely.
 
 #### Before
+
 ```sh
 /trivia_guess_:answer.ts
 ```
 
 #### After
+
 ```ts
 // trivia_guess_answer.ts
 export const pattern = "trivia_guess_:answer"; // Still responds to `trivia_guess_(.+)` no matter the filename
