@@ -42,6 +42,9 @@ export default async function guess(
 
 ## Dynamic Component IDs
 
+> [!IMPORTANT]
+> If you are are Windows or have Windows developers you will have issues with the file name method for dynamic component, you're recommended to use [Pattern Export](#pattern-export) over filenames.
+
 As you may have noticed in the previous example, a component can be passed certain arguments.
 
 Components can be **parameterized** using special patterns in their filenames. This enables you to match component IDs dynamically and extract arguments from them. Dynamic IDs can be applied to any component type.
@@ -54,10 +57,18 @@ You can also make parts of the pattern **optional** using `{...}`. This allows c
 
 If you'd like to add some regex syntax, you can simply do `(...)`. This can be paired with an argument to ensure the argument value is correct.
 
-Alternatively, if your pattern is too long/complex for a filename, you can export it instead.
+### Pattern Export
+If you have a complex dynamic ID or you're on Windows you may opt to use the `pattern` export over file name. Using pattern export will override file name completely.
 
+#### Before
+```sh
+/trivia_guess_:answer.ts
+```
+
+#### After
 ```ts
-export const pattern = "...";
+// trivia_guess_answer.ts
+export const pattern = "trivia_guess_:answer"; // Still responds to `trivia_guess_(.+)` no matter the filename
 ```
 
 ### Examples
