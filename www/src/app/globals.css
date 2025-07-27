@@ -1,6 +1,7 @@
 @import "tailwindcss";
-
 @config "../../tailwind.config.ts";
+@import "rehype-callouts/theme/github";
+
 @layer base {
   :root {
     --background: 240 9% 13%;
