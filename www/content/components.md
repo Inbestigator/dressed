@@ -64,7 +64,7 @@ If you have a complex dynamic ID or you're on Windows you may opt to use the `pa
 #### Before
 
 ```sh
-/trivia_guess_:answer.ts
+trivia_guess_:answer.ts
 ```
 
 #### After
