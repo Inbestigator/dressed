@@ -8,7 +8,7 @@ src
 └ components
   ├ buttons
   │ ├ increase.ts # Will handle for buttons with ID `increase`
-  │ └ trivia_guess_:answer.ts # Will handle for buttons with ID `trivia_guess_(.+)`
+  │ └ trivia_guess_:answer.ts # Will handle for buttons with ID `trivia_guess_(.+?)`
   ├ modals
   │ └ suggestion.ts # Will handle for modals with ID `suggestion`
   └ selects
@@ -71,7 +71,7 @@ trivia_guess_:answer.ts
 
 ```ts
 // trivia_guess_answer.ts
-export const pattern = "trivia_guess_:answer"; // Matches `trivia_guess_(.+)` no matter the filename
+export const pattern = "trivia_guess_:answer"; // Matches `trivia_guess_(.+?)` no matter the filename
 ```
 
 ### Examples
