@@ -43,7 +43,7 @@ export default async function guess(
 ## Dynamic Component IDs
 
 > [!IMPORTANT]
-> If you are are Windows you will encounter issues with the file name method for dynamic component IDs. It is recommended to use [Pattern Export](#pattern-export) over filenames in that instance.
+> If you are on Windows you will encounter issues with dynamic component IDs in file names. It is recommended to export a [pattern variable](#pattern-export) instead.
 
 As you may have noticed in the previous example, a component can be passed certain arguments.
 
