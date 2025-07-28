@@ -1,11 +1,15 @@
 import type { Snowflake } from "discord-api-types/globals";
 
-const DISCORD_EPOCH = BigInt(1462015105796);
+const DISCORD_EPOCH = BigInt(1420070400000);
 
 interface DecodedSnowflake {
+  /** Number of milliseconds since the unix epoch (1970-01-01) */
   timestamp: number;
+  /** InternalworkerID */
   worker: number;
+  /** Internal process ID */
   process: number;
+  /** Incremented for every generated ID on that process6422120 */
   increment: number;
 }
 
