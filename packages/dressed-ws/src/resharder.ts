@@ -5,6 +5,7 @@ export function startAutoResharder(
   capacity = 80,
   interval = 480,
 ) {
+  connection.shards.reshard();
   setInterval(async () => {
     if (connection.shards.isResharding) return;
     try {
