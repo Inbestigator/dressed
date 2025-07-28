@@ -4,9 +4,9 @@
     "": {
       "name": "dressed",
       "devDependencies": {
-        "@eslint/js": "^9.31.0",
+        "@eslint/js": "^9.32.0",
         "@types/bun": "1.2.18",
-        "eslint": "^9.31.0",
+        "eslint": "^9.32.0",
         "globals": "^16.3.0",
         "prettier": "^3.6.2",
         "turbo": "^2.5.5",
@@ -64,7 +64,7 @@
     },
     "packages/dressed-ws": {
       "name": "@dressed/ws",
-      "version": "0.0.1",
+      "version": "0.1.0",
       "dependencies": {
         "discord-api-types": "^0.38.14",
       },

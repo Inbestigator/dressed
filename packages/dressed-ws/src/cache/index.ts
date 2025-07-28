@@ -1,29 +1,19 @@
-import { defaultLogic } from "./default.ts";
+import { defaultLogic } from "./default-logic.ts";
 import type { CachedFunctions, CacheLogic } from "./types.ts";
 
-export function createCache<
+type DesiredProps<F extends CachedFunctions> = Partial<{
+  [K in keyof F as Awaited<ReturnType<F[K]>> extends object
+    ? Awaited<ReturnType<F[K]>> extends string[]
+      ? never
+      : K
+    : never]: (keyof Awaited<ReturnType<F[K]>>)[];
+}>;
+
+export type Cache<
   F extends CachedFunctions,
-  D extends Partial<{
-    [K in keyof F as Awaited<ReturnType<F[K]>> extends object
-      ? Awaited<ReturnType<F[K]>> extends string[]
-        ? never
-        : K
-      : never]: (keyof Awaited<ReturnType<F[K]>>)[];
-  }>,
-  L extends CacheLogic<F>,
->(
-  /** The functions to cache */
-  functions: F,
-  {
-    desiredProps,
-    logic = defaultLogic() as unknown as L,
-  }: {
-    /** Only store the specified props for that function */
-    desiredProps?: D;
-    /** Functions for creating a custom cache implementation */
-    logic?: L;
-  } = {},
-): {
+  D extends DesiredProps<F> = object,
+  L extends CacheLogic<F> = CacheLogic<F>,
+> = {
   [K in keyof F]: (K extends keyof D
     ? (
         ...a: Parameters<F[K]>
@@ -38,7 +28,25 @@ export function createCache<
     /** Delete the cached value corresponding to the parameters */
     clear: (...a: Parameters<F[K]>) => ReturnType<L["delete"]>;
   };
-} {
+};
+
+export function createCache<
+  F extends CachedFunctions,
+  D extends DesiredProps<F>,
+  L extends CacheLogic<F>,
+>(
+  /** The functions to cache */
+  functions: F,
+  {
+    desiredProps,
+    logic = defaultLogic() as unknown as L,
+  }: {
+    /** Only store the specified props for that function */
+    desiredProps?: D;
+    /** Functions for creating a custom cache implementation */
+    logic?: L;
+  } = {},
+): Cache<F, D> {
   const revalidating = new Set<string>();
   function set(key: keyof F, cacheKey: string, value: unknown) {
     let storedValue = value;
@@ -90,8 +98,8 @@ export function createCache<
         },
       ),
     ]),
-  ) as ReturnType<typeof createCache<F, D, L>>;
+  ) as Cache<F, D>;
 }
 
-export * from "./default.ts";
-export * from "./getters.ts";
+export * from "./default-logic.ts";
+export * as getters from "./getters.ts";

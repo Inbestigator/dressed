@@ -6,33 +6,42 @@ import {
 } from "discord-api-types/v10";
 import { platform } from "node:process";
 
-let ws: WebSocket;
-let heartbeatInterval: NodeJS.Timeout;
-let lastSeq: number | null = null;
+interface ShardState {
+  ws: WebSocket;
+  heartbeatInterval: NodeJS.Timeout;
+}
+
+const shards = new Map<string, ShardState>();
 
 type WorkerMsg =
   | {
-      type: "connect";
+      type: "addShard";
       config: GatewayIdentifyData & {
         intents: number;
         shard: [number, number];
         bot: APIGatewayBotInfo;
       };
     }
-  | { type: "emit"; op: keyof typeof GatewayOpcodes; d: unknown };
+  | {
+      type: "removeShard";
+      shardId: string;
+    }
+  | {
+      type: "emit";
+      op: keyof typeof GatewayOpcodes;
+      d: unknown;
+    };
 
-onmessage = async ({ data: msg }: MessageEvent<WorkerMsg>) => {
-  switch (msg.type) {
-    case "connect": {
-      ws = new WebSocket(msg.config.bot.url);
+self.onmessage = ({ data }: MessageEvent<WorkerMsg>) => {
+  switch (data.type) {
+    case "addShard": {
+      const { config } = data;
+      const shardId = config.shard.toString();
+      const ws = new WebSocket(config.bot.url);
+      let seq: number | null = null;
 
       function beat() {
-        ws.send(
-          JSON.stringify({
-            op: GatewayOpcodes.Heartbeat,
-            d: lastSeq,
-          }),
-        );
+        ws.send(JSON.stringify({ op: GatewayOpcodes.Heartbeat, d: seq }));
       }
 
       ws.onopen = () => {
@@ -40,13 +49,12 @@ onmessage = async ({ data: msg }: MessageEvent<WorkerMsg>) => {
           JSON.stringify({
             op: GatewayOpcodes.Identify,
             d: {
-              ...msg.config,
+              ...config,
               properties: {
                 os: platform,
                 browser: "Dressed",
                 device: "Dressed",
               },
-              shard: msg.config.shard,
             },
           }),
         );
@@ -54,19 +62,19 @@ onmessage = async ({ data: msg }: MessageEvent<WorkerMsg>) => {
 
       ws.onmessage = (e) => {
         const payload = JSON.parse(e.data) as GatewayReceivePayload;
-        if (payload.s) lastSeq = payload.s;
+        if (payload.s !== null) seq = payload.s;
 
         switch (payload.op) {
           case GatewayOpcodes.Hello: {
-            heartbeatInterval = setInterval(beat, payload.d.heartbeat_interval);
+            const interval = setInterval(beat, payload.d.heartbeat_interval);
+            shards.set(shardId, { ws, heartbeatInterval: interval });
             break;
           }
           case GatewayOpcodes.Dispatch: {
             postMessage({
               type: "dispatch",
-              shard: msg.config.shard[0],
-              t: payload.t,
-              d: payload.d,
+              shard: config.shard,
+              ...payload,
             });
             break;
           }
@@ -78,19 +86,38 @@ onmessage = async ({ data: msg }: MessageEvent<WorkerMsg>) => {
       };
 
       ws.onerror = (err) => {
-        console.error("WebSocket error", err);
+        console.error("WebSocket error (shard", shardId, ")", err);
       };
 
       ws.onclose = () => {
-        clearInterval(heartbeatInterval);
-        console.log("Shard", msg.config.shard[0], "disconnected");
+        const shard = shards.get(shardId);
+        if (shard) clearInterval(shard.heartbeatInterval);
+        shards.delete(shardId);
       };
-
       break;
     }
-
-    case "emit":
-      ws?.send(JSON.stringify({ op: GatewayOpcodes[msg.op], d: msg.d }));
+    case "removeShard": {
+      const shard = shards.get(data.shardId);
+      if (shard) {
+        clearInterval(shard.heartbeatInterval);
+        shard.ws.close(1000, "Shard removed");
+        shards.delete(data.shardId);
+      }
       break;
+    }
+    case "emit": {
+      for (const { ws } of shards.values()) {
+        ws.send(JSON.stringify({ op: GatewayOpcodes[data.op], d: data.d }));
+      }
+      break;
+    }
   }
+};
+
+self.onclose = () => {
+  for (const { ws, heartbeatInterval } of shards.values()) {
+    clearInterval(heartbeatInterval);
+    ws.close(1000, "Worker closed");
+  }
+  shards.clear();
 };

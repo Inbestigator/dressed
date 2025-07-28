@@ -2,6 +2,4 @@
 
 TODO
 
-- Sharding (connecting many)
-- Restarts
-- Close connection
+- Restarts/reconnects

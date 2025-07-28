@@ -1,31 +1,21 @@
-import { listGuilds } from "dressed";
 import type { ConnectionActions } from "./gateway.ts";
-import { createCache } from "./cache/index.ts";
 
-export function startAutoSharder(
+export function startAutoResharder(
   connection: ConnectionActions,
-  threshold = 0.9,
-  disableCache?: boolean,
+  capacity = 80,
+  interval = 480,
 ) {
-  const guildCache = disableCache
-    ? { listGuilds }
-    : createCache({ listGuilds });
-
-  async function checkReshard() {
+  setInterval(async () => {
+    if (connection.shards.isResharding) return;
     try {
-      const guilds = await guildCache.listGuilds();
-      const ratio = guilds.length / 2500;
-      const next = Math.ceil(ratio);
-      const delta = next - ratio;
-
-      if (delta < 1 - threshold || delta > threshold) {
-        connection.shards.reshard(next);
+      const bot = await connection.shards.cache.getGatewayBot();
+      // Each shard will be at capacity% usage (e.g. 2,000 g/s instead of 2,500 g/s)
+      const target = Math.ceil((bot.shards / (2.5 * capacity)) * 100);
+      if (target !== connection.shards.numShards) {
+        await connection.shards.reshard(target);
       }
     } catch (e) {
       console.error("Failed to auto-reshard:", e);
     }
-  }
-
-  connection.onGuildCreate(checkReshard);
-  connection.onGuildDelete(checkReshard);
+  }, interval * 60000);
 }

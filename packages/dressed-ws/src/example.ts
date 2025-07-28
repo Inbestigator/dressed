@@ -1,7 +1,7 @@
 // TODO Remove this before release
 
 import { createCache, defaultLogic, getters } from "@dressed/ws/cache";
-import { createConnection, startAutoSharder } from "@dressed/ws";
+import { createConnection } from "@dressed/ws";
 import { hash } from "bun";
 
 // Cache
@@ -47,7 +47,6 @@ const customCache = createCache(getters, {
 const connection = createConnection({
   intents: ["GuildMessages"],
 });
-startAutoSharder(connection);
 connection.onReady(async (data) => {
   console.log(data.user.username, "is ready");
 });
@@ -61,5 +60,8 @@ const stopListening = connection.onMessageCreate(async (d) => {
     connection.shards.reshard(0);
     stopListening();
     customCache.getChannel.clear(d.channel_id);
+  }
+  if (!isNaN(Number(d.content))) {
+    connection.shards.reshard(Number(d.content));
   }
 });

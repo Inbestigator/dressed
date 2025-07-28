@@ -12,6 +12,8 @@ import {
 import { getGatewayBot } from "dressed";
 import { botEnv } from "dressed/utils";
 import { env } from "node:process";
+import { createCache, type Cache } from "./cache/index.ts";
+import { startAutoResharder } from "./resharder.ts";
 
 type EventKeys = keyof typeof GatewayDispatchEvents;
 
@@ -47,7 +49,13 @@ export type ConnectionActions = {
     >["d"],
     shardId?: number,
   ) => void;
-  shards: { reshard: (n?: number) => Promise<void>; workers: Worker[] };
+  shards: {
+    reshard: (n?: number) => Promise<void>;
+    cache: Cache<{ getGatewayBot: typeof getGatewayBot }>;
+    isResharding?: boolean;
+    numShards: number;
+    workers: Worker[];
+  };
 };
 
 export function createConnection(
@@ -56,9 +64,15 @@ export function createConnection(
     "intents" | "properties" | "compress" | "large_threshold" | "shard"
   > & {
     intents?: (keyof typeof GatewayIntentBits)[];
+    shards?: { shardsPerWorker?: number };
   } = {},
 ): ConnectionActions {
-  const { intents = [], token = botEnv.DISCORD_TOKEN, ...rest } = config;
+  const {
+    intents = [],
+    token = botEnv.DISCORD_TOKEN,
+    shards = {},
+    ...rest
+  } = config;
 
   const listeners = new Map<string, Map<string, (data: unknown) => void>>();
   const workers: Worker[] = [];
@@ -66,57 +80,11 @@ export function createConnection(
 
   env.DISCORD_TOKEN = token;
 
-  async function reshard(newCount?: number) {
-    bot ??= await getGatewayBot();
-    newCount ??= bot.shards;
-    if (newCount < workers.length) {
-      while (workers.length > newCount) {
-        workers.pop()?.terminate();
-      }
-    } else if (newCount > workers.length) {
-      while (workers.length < newCount) {
-        const worker = new Worker(new URL("./worker.js", import.meta.url), {
-          type: "module",
-        });
-
-        worker.postMessage({
-          type: "connect",
-          config: {
-            token,
-            intents: intents.reduce(
-              (acc, intent) => acc | GatewayIntentBits[intent],
-              0,
-            ),
-            ...rest,
-            bot,
-            shard: [workers.length, newCount],
-          },
-        });
-
-        worker.onmessage = (event) => {
-          const { type, t, d } = event.data;
-          if (type === "dispatch" && t) {
-            const eventListeners = listeners.get(t);
-            if (eventListeners) {
-              for (const callback of eventListeners.values()) {
-                callback(d);
-              }
-            }
-          }
-        };
-
-        workers.push(worker);
-      }
-    }
-  }
-
-  reshard();
-
-  return {
+  const connection = {
     ...Object.fromEntries(
       Object.keys(GatewayDispatchEvents).map((k) => [
         `on${k}`,
-        (callback: () => never) => {
+        (callback: () => unknown) => {
           const id = crypto.randomUUID();
           const eventName = GatewayDispatchEvents[k as EventKeys];
           if (!listeners.has(eventName)) listeners.set(eventName, new Map());
@@ -125,15 +93,98 @@ export function createConnection(
         },
       ]),
     ),
-    emit(op, d, id) {
-      if (id != null) {
-        workers[id]?.postMessage({ type: "emit", op, d });
-      } else {
-        for (const worker of workers) {
-          worker.postMessage({ type: "emit", op, d });
-        }
+    emit(op, d) {
+      for (const worker of workers) {
+        worker.postMessage({ type: "emit", op, d });
       }
     },
-    shards: { reshard, workers },
+    shards: {
+      workers,
+      numShards: 0,
+      cache: createCache({ getGatewayBot }),
+      async reshard(newShardCount?: number) {
+        if (connection.shards.isResharding)
+          throw new Error("Already resharding");
+
+        connection.shards.isResharding = true;
+        bot ??= await connection.shards.cache.getGatewayBot();
+        newShardCount ??= bot.shards;
+        const prevShardCount = connection.shards.numShards;
+        const shardsPerWorker = shards.shardsPerWorker ?? 100;
+
+        if (newShardCount === prevShardCount) return;
+
+        const newWorkers = Math.ceil(newShardCount / shardsPerWorker);
+        while (newWorkers < workers.length) workers.pop()?.terminate();
+
+        const maxConcurrency = bot.session_start_limit.max_concurrency;
+        const numBuckets = Math.floor(newShardCount / maxConcurrency);
+
+        for (let bucketId = 0; bucketId < numBuckets; ++bucketId) {
+          for (let i = 0; i < maxConcurrency; ++i) {
+            let worker =
+              workers[
+                Math.floor((bucketId * maxConcurrency + i) / shardsPerWorker)
+              ];
+            if (!worker) {
+              worker = new Worker(new URL("./worker.js", import.meta.url), {
+                type: "module",
+              });
+              workers.push(worker);
+            }
+
+            worker.postMessage({
+              type: "addShard",
+              config: {
+                token,
+                intents: intents.reduce(
+                  (p, intent) => p | GatewayIntentBits[intent],
+                  0,
+                ),
+                ...rest,
+                bot,
+                shard: [bucketId * maxConcurrency + i, newShardCount],
+              },
+            });
+
+            worker.onmessage = (event) => {
+              const { type, t, d, shard } = event.data;
+              if (
+                type === "dispatch" &&
+                t &&
+                shard[1] === connection.shards.numShards
+              ) {
+                const eventListeners = listeners.get(t);
+                if (eventListeners) {
+                  for (const callback of eventListeners.values()) {
+                    callback(d);
+                  }
+                }
+              }
+            };
+          }
+          if (bucketId < numBuckets - 1) {
+            await new Promise((res) => setTimeout(res, 5000));
+          }
+        }
+
+        connection.shards.numShards = newShardCount;
+
+        for (let i = prevShardCount - 1; i >= 0; --i) {
+          const worker = workers[Math.floor(i / prevShardCount)];
+          if (!worker) continue;
+          worker.postMessage({
+            type: "removeShard",
+            shardId: `${i},${prevShardCount}`,
+          });
+        }
+
+        connection.shards.isResharding = false;
+      },
+    },
   } as ReturnType<typeof createConnection>;
+
+  startAutoResharder(connection);
+
+  return connection;
 }
