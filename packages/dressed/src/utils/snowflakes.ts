@@ -5,7 +5,7 @@ const DISCORD_EPOCH = BigInt(1420070400000);
 interface DecodedSnowflake {
   /** Number of milliseconds since the unix epoch (1970-01-01) */
   timestamp: number;
-  /** InternalworkerID */
+  /** Internal worker ID */
   worker: number;
   /** Internal process ID */
   process: number;
@@ -13,6 +13,7 @@ interface DecodedSnowflake {
   increment: number;
 }
 
+/** Serialize data into a snowflake */
 export function encodeSnowflake({
   timestamp,
   worker,
