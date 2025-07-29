@@ -40,19 +40,20 @@ export async function callDiscord(
 
     for (const [index, file] of files.entries()) {
       const fileKey = file.key ?? `files[${index}]`;
-      if (Buffer.isBuffer(file.data)) {
-        formData.append(
-          fileKey,
-          new Blob([Buffer.from(file.data)], { type: file.contentType }),
-          file.name,
-        );
-      } else {
-        formData.append(
-          fileKey,
-          new Blob([`${file.data}`], { type: file.contentType }),
-          file.name,
-        );
-      }
+      formData.append(
+        fileKey,
+        new Blob(
+          [
+            Buffer.isBuffer(file.data)
+              ? Buffer.from(file.data)
+              : file.data.toString(),
+          ],
+          {
+            type: file.contentType,
+          },
+        ),
+        file.name,
+      );
     }
 
     if (options.body && options.flattenBodyInForm) {
