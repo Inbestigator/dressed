@@ -16,7 +16,7 @@
     },
     "packages/dressed": {
       "name": "dressed",
-      "version": "1.9.0-rc.2",
+      "version": "1.9.0",
       "bin": {
         "dressed": "dist/bin/dressed.js",
       },
