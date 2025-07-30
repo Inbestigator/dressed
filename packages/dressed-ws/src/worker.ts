@@ -114,7 +114,7 @@ function connectShard(
         const shard = shards.get(shardId);
         if (shard) {
           clearInterval(shard.heartbeatInterval);
-          shard.ws.close(1000, "Reconnect message received");
+          shard.ws.close(3000, "Reconnect message received");
           if (shard.resuming && seq) {
             connectShard(shard.resuming.resume_gateway_url, config, {
               seq,
@@ -156,7 +156,13 @@ function connectShard(
     const shard = shards.get(shardId);
     if (shard) {
       clearInterval(shard.heartbeatInterval);
-      if (shard.resuming && reconnectableCodes.includes(code) && seq) {
+      if (
+        shard.resuming &&
+        (reconnectableCodes.includes(code) ||
+          (!Object.values(GatewayCloseCodes).includes(code) &&
+            code !== 3000)) &&
+        seq
+      ) {
         connectShard(shard.resuming.resume_gateway_url, config, {
           seq,
           sessionId: shard.resuming.session_id,
@@ -181,7 +187,7 @@ parentPort.on("message", (data: WorkerMsg) => {
       const shard = shards.get(data.shardId);
       if (shard) {
         clearInterval(shard.heartbeatInterval);
-        shard.ws.close(1000, "Shard removed");
+        shard.ws.close(3000, "Shard removed");
         shards.delete(data.shardId);
       }
       break;
@@ -198,7 +204,7 @@ parentPort.on("message", (data: WorkerMsg) => {
 parentPort.on("close", () => {
   for (const { ws, heartbeatInterval } of shards.values()) {
     clearInterval(heartbeatInterval);
-    ws.close(1000, "Worker closed");
+    ws.close(3000, "Worker closed");
   }
   shards.clear();
 });
