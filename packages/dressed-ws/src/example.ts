@@ -47,8 +47,8 @@ const customCache = createCache(getters, {
 const connection = createConnection({
   intents: ["GuildMessages"],
 });
-connection.onReady(async (data) => {
-  console.log(data.user.username, "is ready");
+connection.onReady((data) => console.log(data.user.username, "is ready"), {
+  once: true,
 });
 const stopListening = connection.onMessageCreate(async (d) => {
   process.stdout.write(`${d.author.username} sent a message in ...`);

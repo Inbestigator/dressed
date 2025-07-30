@@ -1,6 +1,6 @@
 {
   "name": "@dressed/ws",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Inbestigator/dressed.git",
@@ -13,7 +13,7 @@
     ".": "./dist/index.js",
     "./cache": "./dist/cache/index.js"
   },
-  "description": "Communicate with the Discord API using websockets",
+  "description": "Communicate with the Discord Gateway",
   "files": [
     "dist"
   ],

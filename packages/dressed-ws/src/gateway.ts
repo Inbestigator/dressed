@@ -14,11 +14,23 @@ import { botEnv } from "dressed/utils";
 import { env } from "node:process";
 import { createCache, type Cache } from "./cache/index.ts";
 import { startAutoResharder } from "./resharder.ts";
+import { Worker } from "node:worker_threads";
 
-type EventKeys = keyof typeof GatewayDispatchEvents;
+type EventKey = keyof typeof GatewayDispatchEvents;
+interface ListenerConfig {
+  /** The event should only be handled once */
+  once?: boolean;
+}
+
+type ParentMsg = {
+  type: "dispatch";
+  t: GatewayDispatchEvents;
+  shard: [number, number];
+  d: GatewayDispatchPayload;
+};
 
 export type ConnectionActions = {
-  [K in EventKeys as `on${K}`]: (
+  [K in EventKey as `on${K}`]: (
     callback: (
       data: (GatewayDispatchPayload extends infer U
         ? U extends { t: infer T }
@@ -28,13 +40,13 @@ export type ConnectionActions = {
           : never
         : never)["d"],
     ) => void,
+    config?: ListenerConfig,
   ) => () => void;
 } & {
   /**
    * Sends a gateway payload to Discord using the given opcode.
    * @param opcode The event to emit
    * @param payload The data to send
-   * @param shardId Only emit from one shard
    */
   emit: <
     K extends keyof Omit<
@@ -47,17 +59,20 @@ export type ConnectionActions = {
       GatewaySendPayload,
       { op: (typeof GatewayOpcodes)[K] }
     >["d"],
-    shardId?: number,
   ) => void;
   shards: {
     reshard: (n?: number) => Promise<void>;
     cache: Cache<{ getGatewayBot: typeof getGatewayBot }>;
-    isResharding?: boolean;
+    isResharding: boolean;
     numShards: number;
     workers: Worker[];
   };
 };
 
+/**
+ * Establish a connection with the Discord Gateway
+ * @returns Functions for interacting with the connection and resharding
+ */
 export function createConnection(
   config: Omit<
     Partial<GatewayIdentifyData>,
@@ -74,7 +89,10 @@ export function createConnection(
     ...rest
   } = config;
 
-  const listeners = new Map<string, Map<string, (data: unknown) => void>>();
+  const listeners = new Map<
+    string,
+    Map<string, { callback: (data: unknown) => void; config: ListenerConfig }>
+  >();
   const workers: Worker[] = [];
   let bot: APIGatewayBotInfo | undefined;
 
@@ -84,11 +102,11 @@ export function createConnection(
     ...Object.fromEntries(
       Object.keys(GatewayDispatchEvents).map((k) => [
         `on${k}`,
-        (callback: () => unknown) => {
+        (callback: () => unknown, config = {}) => {
           const id = crypto.randomUUID();
-          const eventName = GatewayDispatchEvents[k as EventKeys];
+          const eventName = GatewayDispatchEvents[k as EventKey];
           if (!listeners.has(eventName)) listeners.set(eventName, new Map());
-          listeners.get(eventName)!.set(id, callback);
+          listeners.get(eventName)!.set(id, { callback, config });
           return () => listeners.get(eventName)?.delete(id);
         },
       ]),
@@ -101,6 +119,7 @@ export function createConnection(
     shards: {
       workers,
       numShards: 0,
+      isResharding: false,
       cache: createCache({ getGatewayBot }),
       async reshard(newShardCount?: number) {
         if (connection.shards.isResharding)
@@ -127,8 +146,23 @@ export function createConnection(
                 Math.floor((bucketId * maxConcurrency + i) / shardsPerWorker)
               ];
             if (!worker) {
-              worker = new Worker(new URL("./worker.js", import.meta.url), {
-                type: "module",
+              worker = new Worker(new URL("./worker.js", import.meta.url));
+              worker.on("message", ({ type, t, d, shard }: ParentMsg) => {
+                if (
+                  type === "dispatch" &&
+                  t &&
+                  shard[1] === connection.shards.numShards
+                ) {
+                  const eventListeners = listeners.get(t);
+                  if (eventListeners) {
+                    for (const [id, callback] of eventListeners) {
+                      callback.callback(d);
+                      if (callback.config.once) {
+                        eventListeners.delete(id);
+                      }
+                    }
+                  }
+                }
               });
               workers.push(worker);
             }
@@ -146,22 +180,6 @@ export function createConnection(
                 shard: [bucketId * maxConcurrency + i, newShardCount],
               },
             });
-
-            worker.onmessage = (event) => {
-              const { type, t, d, shard } = event.data;
-              if (
-                type === "dispatch" &&
-                t &&
-                shard[1] === connection.shards.numShards
-              ) {
-                const eventListeners = listeners.get(t);
-                if (eventListeners) {
-                  for (const callback of eventListeners.values()) {
-                    callback(d);
-                  }
-                }
-              }
-            };
           }
           if (bucketId < numBuckets - 1) {
             await new Promise((res) => setTimeout(res, 5000));

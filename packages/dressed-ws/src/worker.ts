@@ -7,7 +7,11 @@ import {
   GatewayDispatchEvents,
   type GatewayReadyDispatchData,
 } from "discord-api-types/v10";
+import assert from "node:assert";
 import { platform } from "node:process";
+import { parentPort } from "node:worker_threads";
+
+assert(parentPort);
 
 interface ShardState {
   ws: WebSocket;
@@ -92,6 +96,7 @@ function connectShard(
   };
 
   ws.onmessage = (e) => {
+    assert(parentPort);
     const payload = JSON.parse(e.data) as GatewayReceivePayload;
     if (payload.s !== null) seq = payload.s;
 
@@ -129,7 +134,7 @@ function connectShard(
             },
           });
         }
-        postMessage({
+        parentPort.postMessage({
           type: "dispatch",
           shard: config.shard,
           ...payload,
@@ -166,7 +171,7 @@ function connectShard(
   };
 }
 
-self.onmessage = ({ data }: MessageEvent<WorkerMsg>) => {
+parentPort.on("message", (data: WorkerMsg) => {
   switch (data.type) {
     case "addShard": {
       connectShard(data.config.bot.url, data.config);
@@ -188,12 +193,12 @@ self.onmessage = ({ data }: MessageEvent<WorkerMsg>) => {
       break;
     }
   }
-};
+});
 
-self.onclose = () => {
+parentPort.on("close", () => {
   for (const { ws, heartbeatInterval } of shards.values()) {
     clearInterval(heartbeatInterval);
     ws.close(1000, "Worker closed");
   }
   shards.clear();
-};
+});
