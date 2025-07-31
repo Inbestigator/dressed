@@ -98,7 +98,6 @@ function connectShard(
   ws.onmessage = (e) => {
     assert(parentPort);
     const payload = JSON.parse(e.data) as GatewayReceivePayload;
-    if (payload.s !== null) seq = payload.s;
 
     switch (payload.op) {
       case GatewayOpcodes.Hello: {
@@ -115,7 +114,12 @@ function connectShard(
         if (shard) {
           clearInterval(shard.heartbeatInterval);
           shard.ws.close(3000, "Reconnect message received");
-          if (shard.resuming && seq) {
+          if (
+            payload.op === GatewayOpcodes.InvalidSession &&
+            payload.d === false
+          ) {
+            connectShard(config.bot.url, config);
+          } else if (shard.resuming && seq !== null) {
             connectShard(shard.resuming.resume_gateway_url, config, {
               seq,
               sessionId: shard.resuming.session_id,
@@ -125,6 +129,7 @@ function connectShard(
         break;
       }
       case GatewayOpcodes.Dispatch: {
+        seq = payload.s;
         if (payload.t === GatewayDispatchEvents.Ready) {
           shards.set(shardId, {
             ...shards.get(shardId)!,
@@ -152,7 +157,7 @@ function connectShard(
     console.error(`WebSocket error (shard ${config.shard[0]})`, e);
   };
 
-  ws.onclose = ({ code }) => {
+  ws.onclose = ({ code, reason }) => {
     const shard = shards.get(shardId);
     if (shard) {
       clearInterval(shard.heartbeatInterval);
@@ -161,7 +166,7 @@ function connectShard(
         (reconnectableCodes.includes(code) ||
           (!Object.values(GatewayCloseCodes).includes(code) &&
             code !== 3000)) &&
-        seq
+        seq !== null
       ) {
         connectShard(shard.resuming.resume_gateway_url, config, {
           seq,
@@ -170,7 +175,7 @@ function connectShard(
       } else {
         shards.delete(shardId);
         console.log(
-          `Connection closed with code ${code} (shard ${config.shard[0]})`,
+          `Connection closed with code ${code} - ${reason || "No reason provided"} (shard ${config.shard[0]})`,
         );
       }
     }
