@@ -162,19 +162,27 @@ function connectShard(
     const shard = shards.get(shardId);
     if (shard) {
       clearInterval(shard.heartbeatInterval);
-      if (code > 1001 && code < 2000) {
-        code = 3001;
-      }
       switch (code) {
+        case GatewayCloseCodes.AuthenticationFailed:
+        case GatewayCloseCodes.InvalidShard:
+        case GatewayCloseCodes.ShardingRequired:
+        case GatewayCloseCodes.InvalidAPIVersion:
+        case GatewayCloseCodes.InvalidIntents:
+        case GatewayCloseCodes.DisallowedIntents:
+        case WSCodes.Disconnect: {
+          shards.delete(shardId);
+          console.log(
+            `Connection closed with code ${code} - ${reason || "No reason provided"} (shard ${config.shard[0]})`,
+          );
+          break;
+        }
         case GatewayCloseCodes.UnknownError:
         case GatewayCloseCodes.UnknownOpcode:
         case GatewayCloseCodes.DecodeError:
-        case GatewayCloseCodes.NotAuthenticated:
         case GatewayCloseCodes.AlreadyAuthenticated:
-        case GatewayCloseCodes.InvalidSeq:
         case GatewayCloseCodes.RateLimited:
-        case GatewayCloseCodes.SessionTimedOut:
-        case WSCodes.ResumeSession: {
+        case WSCodes.ResumeSession:
+        default: {
           if (resumeData && seq !== null) {
             connectShard(resumeData.resume_gateway_url, config, {
               seq,
@@ -184,15 +192,12 @@ function connectShard(
           }
         }
         // eslint-disable-next-line no-fallthrough
+        case GatewayCloseCodes.NotAuthenticated:
+        case GatewayCloseCodes.InvalidSeq:
+        case GatewayCloseCodes.SessionTimedOut:
         case WSCodes.NewSession: {
           connectShard(config.bot.url, config);
           break;
-        }
-        default: {
-          shards.delete(shardId);
-          console.log(
-            `Connection closed with code ${code} - ${reason || "No reason provided"} (shard ${config.shard[0]})`,
-          );
         }
       }
     }
