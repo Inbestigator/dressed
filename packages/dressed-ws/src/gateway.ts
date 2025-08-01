@@ -79,7 +79,28 @@ export function createConnection(
     "intents" | "properties" | "compress" | "large_threshold" | "shard"
   > & {
     intents?: (keyof typeof GatewayIntentBits)[];
-    shards?: { shardsPerWorker?: number };
+    shards?: {
+      /**
+       * The interval in minutes between reshard calculations.
+       *
+       * Setting to `-1` disables resharding
+       * @default 480 // (8 hours)
+       */
+      reshardInterval?: number;
+      /**
+       * The number of shards that each worker should control
+       * @default 100
+       */
+      shardsPerWorker?: number;
+      /**
+       * The percentage of total allowed guilds for each shard to target.
+       * For example, a value of 80 means each shard will target 80% of the 2,500 guild cap (2,000 guilds).
+       *
+       * Setting to `0` disables auto resharding
+       * @default 80
+       */
+      shardCapacity?: number;
+    };
   } = {},
 ): ConnectionActions {
   const {
@@ -202,7 +223,7 @@ export function createConnection(
     },
   } as ReturnType<typeof createConnection>;
 
-  startAutoResharder(connection);
+  startAutoResharder(connection, shards.reshardInterval, shards.shardCapacity);
 
   return connection;
 }

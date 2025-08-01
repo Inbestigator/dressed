@@ -2,11 +2,11 @@ import type { ConnectionActions } from "./gateway.ts";
 
 export function startAutoResharder(
   connection: ConnectionActions,
-  capacity = 80,
   interval = 480,
+  capacity = 80,
 ) {
-  connection.shards.reshard();
-  setInterval(async () => {
+  if (interval < 0 || capacity === 0) return;
+  async function calculateShards() {
     if (connection.shards.isResharding) return;
     try {
       const bot = await connection.shards.cache.getGatewayBot();
@@ -18,5 +18,7 @@ export function startAutoResharder(
     } catch (e) {
       console.error("Failed to auto-reshard:", e);
     }
-  }, interval * 60000);
+  }
+  calculateShards();
+  setInterval(calculateShards, interval * 60000);
 }

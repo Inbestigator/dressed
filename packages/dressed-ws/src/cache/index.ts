@@ -81,9 +81,7 @@ export function createCache<
             case "stale": {
               if (!revalidating.has(key)) {
                 revalidating.add(key);
-                v(...args).then((v) => {
-                  set(k, key, v);
-                });
+                v(...args).then((v) => set(k, key, v));
               }
             }
             // eslint-disable-next-line no-fallthrough
