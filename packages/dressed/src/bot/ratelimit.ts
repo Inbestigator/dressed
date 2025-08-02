@@ -11,6 +11,10 @@ export async function checkLimit(endpoint: string) {
   const globalLimit = limits.get("global");
   const endpointLimit = limits.get(endpoint);
   if (globalLimit) {
+    if (Date.now() > globalLimit.resetAt) {
+      limits.delete("global");
+      return;
+    }
     if (globalLimit.remaining === 0) {
       const waiting = ora(
         "Global rate limit reached! - Waiting to try again...",
@@ -24,6 +28,10 @@ export async function checkLimit(endpoint: string) {
       ora("You are about to hit the global rate limit!").warn();
     }
   } else if (endpointLimit) {
+    if (Date.now() > endpointLimit.resetAt) {
+      limits.delete(endpoint);
+      return;
+    }
     if (endpointLimit.remaining === 0) {
       const waiting = ora(
         `Rate limit for ${endpoint} reached! - Waiting to try again...`,
