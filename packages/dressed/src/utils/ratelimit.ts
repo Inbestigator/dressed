@@ -19,10 +19,14 @@ export async function checkLimit(endpoint: string, method = "") {
       return;
     }
     if (globalLimit.remaining === 0) {
-      const waiting = ora("Global rate limit reached! - Waiting to try again...").start();
+      const waiting = ora(
+        "Global rate limit reached! - Waiting to try again...",
+      ).start();
       await delayUntil(globalLimit.resetAt);
       buckets.delete("global");
-      waiting.warn("A request was delayed because you hit the global rate limit");
+      waiting.warn(
+        "A request was delayed because you hit the global rate limit",
+      );
     } else if (globalLimit.remaining === 1) {
       ora("You are about to hit the global rate limit!").warn();
     }
@@ -32,17 +36,25 @@ export async function checkLimit(endpoint: string, method = "") {
       return;
     }
     if (endpointLimit.remaining === 0) {
-      const waiting = ora(`Rate limit for ${endpoint} reached! - Waiting to try again...`).start();
+      const waiting = ora(
+        `Rate limit for ${endpoint} reached! - Waiting to try again...`,
+      ).start();
       await delayUntil(endpointLimit.resetAt);
       buckets.delete(bucket);
-      waiting.warn(`A request was delayed because you hit the rate limit for ${endpoint}`);
+      waiting.warn(
+        `A request was delayed because you hit the rate limit for ${endpoint}`,
+      );
     } else if (endpointLimit.remaining === 1) {
       ora(`You are about to hit the rate limit for ${endpoint}!`).warn();
     }
   }
 }
 
-export function headerUpdateLimit(endpoint: string, res: Response, method = "") {
+export function headerUpdateLimit(
+  endpoint: string,
+  res: Response,
+  method = "",
+) {
   const remaining = res.headers.get("x-ratelimit-remaining");
   const resetAt = res.headers.get("x-ratelimit-reset");
   const bucket = res.headers.get("x-ratelimit-bucket");
@@ -52,6 +64,10 @@ export function headerUpdateLimit(endpoint: string, res: Response, method = "") 
   }
 }
 
-export function updateLimit(bucket: string, remaining: number, resetAt: number) {
+export function updateLimit(
+  bucket: string,
+  remaining: number,
+  resetAt: number,
+) {
   buckets.set(bucket, { remaining, resetAt });
 }
