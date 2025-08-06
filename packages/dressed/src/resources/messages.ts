@@ -15,8 +15,8 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../../utils/call-discord.ts";
-import type { RawFile } from "../../types/file.ts";
+import { callDiscord } from "../utils/call-discord.ts";
+import type { RawFile } from "../types/file.ts";
 
 /**
  * Lists the messages in a channel.
@@ -73,9 +73,9 @@ export async function createMessage(
 }
 
 /**
- * Edit a previously sent message.
- * @param channel The channel to edit the message in
- * @param message The snowflake of the message to edit
+ * Crosspost a message in an Announcement Channel to following channels.
+ * @param channel The channel to post from
+ * @param message The snowflake of the message to crosspost
  */
 export async function crosspostMessage(
   channel: Snowflake,

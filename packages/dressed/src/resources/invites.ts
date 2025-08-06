@@ -4,7 +4,7 @@ import type {
   RESTGetAPIInviteResult,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../../utils/call-discord.ts";
+import { callDiscord } from "../utils/call-discord.ts";
 
 /**
  * Returns an invite object for the given code.

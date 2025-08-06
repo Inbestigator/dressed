@@ -4,7 +4,7 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../../utils/call-discord.ts";
+import { callDiscord } from "../utils/call-discord.ts";
 
 /**
  * Get a guild's audit log.

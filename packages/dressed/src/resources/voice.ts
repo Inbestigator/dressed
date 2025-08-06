@@ -6,7 +6,7 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../../utils/call-discord.ts";
+import { callDiscord } from "../utils/call-discord.ts";
 
 /**
  * Returns an array of voice region objects that can be used when setting a voice or stage channel's rtc_region.
