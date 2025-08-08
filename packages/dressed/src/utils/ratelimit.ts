@@ -1,18 +1,21 @@
 import ora from "ora";
 
-const limits = new Map<string, { remaining: number; resetAt: number }>();
+const buckets = new Map<string, { remaining: number; resetAt: number }>();
+const endpoints = new Map<string, string>();
 
 async function delayUntil(time: number) {
   const delayDuration = Math.max(0, time - Date.now());
   await new Promise((resolve) => setTimeout(resolve, delayDuration));
 }
 
-export async function checkLimit(endpoint: string) {
-  const globalLimit = limits.get("global");
-  const endpointLimit = limits.get(endpoint);
+export async function checkLimit(endpoint: string, method = "") {
+  const bucket = endpoints.get(method + endpoint);
+  if (!bucket) return;
+  const globalLimit = buckets.get("global");
+  const endpointLimit = buckets.get(bucket);
   if (globalLimit) {
     if (Date.now() > globalLimit.resetAt) {
-      limits.delete("global");
+      buckets.delete("global");
       return;
     }
     if (globalLimit.remaining === 0) {
@@ -20,7 +23,7 @@ export async function checkLimit(endpoint: string) {
         "Global rate limit reached! - Waiting to try again...",
       ).start();
       await delayUntil(globalLimit.resetAt);
-      limits.delete("global");
+      buckets.delete("global");
       waiting.warn(
         "A request was delayed because you hit the global rate limit",
       );
@@ -29,7 +32,7 @@ export async function checkLimit(endpoint: string) {
     }
   } else if (endpointLimit) {
     if (Date.now() > endpointLimit.resetAt) {
-      limits.delete(endpoint);
+      buckets.delete(bucket);
       return;
     }
     if (endpointLimit.remaining === 0) {
@@ -37,7 +40,7 @@ export async function checkLimit(endpoint: string) {
         `Rate limit for ${endpoint} reached! - Waiting to try again...`,
       ).start();
       await delayUntil(endpointLimit.resetAt);
-      limits.delete(endpoint);
+      buckets.delete(bucket);
       waiting.warn(
         `A request was delayed because you hit the rate limit for ${endpoint}`,
       );
@@ -47,21 +50,24 @@ export async function checkLimit(endpoint: string) {
   }
 }
 
-export function headerUpdateLimit(endpoint: string, res: Response) {
+export function headerUpdateLimit(
+  endpoint: string,
+  res: Response,
+  method = "",
+) {
   const remaining = res.headers.get("x-ratelimit-remaining");
   const resetAt = res.headers.get("x-ratelimit-reset");
-  if (remaining) {
-    limits.set(endpoint, {
-      remaining: Number(remaining),
-      resetAt: Number(resetAt) * 1000,
-    });
+  const bucket = res.headers.get("x-ratelimit-bucket");
+  if (remaining && bucket) {
+    updateLimit(bucket, Number(remaining), Number(resetAt) * 1000);
+    endpoints.set(method + endpoint, bucket);
   }
 }
 
 export function updateLimit(
-  endpoint: string,
+  bucket: string,
   remaining: number,
   resetAt: number,
 ) {
-  limits.set(endpoint, { remaining, resetAt });
+  buckets.set(bucket, { remaining, resetAt });
 }

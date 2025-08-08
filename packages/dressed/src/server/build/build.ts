@@ -20,7 +20,7 @@ import type {
 } from "../../types/config.ts";
 import type { WalkEntry } from "../../types/walk.ts";
 import { botEnv } from "../../utils/env.ts";
-import { getApp } from "../../bot/resources/application.ts";
+import { getApp } from "../../resources/application.ts";
 import bundleFile from "./bundle.ts";
 import { pathToFileURL } from "node:url";
 

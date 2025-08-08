@@ -1,10 +1,6 @@
 import ora from "ora";
 import type { RawFile } from "../types/file.ts";
-import {
-  checkLimit,
-  headerUpdateLimit,
-  updateLimit,
-} from "../bot/ratelimit.ts";
+import { checkLimit, headerUpdateLimit, updateLimit } from "./ratelimit.ts";
 import {
   RouteBases,
   type RESTError,
@@ -16,26 +12,32 @@ import { Buffer } from "node:buffer";
 
 export async function callDiscord(
   endpoint: string,
-  options: Omit<RequestInit, "body"> & {
+  {
+    params,
+    files,
+    flattenBodyInForm,
+    ...options
+  }: Omit<RequestInit, "body"> & {
     params?: unknown;
     body?: unknown;
     files?: RawFile[];
     flattenBodyInForm?: boolean;
   },
 ): Promise<Response> {
+  const token = botEnv.DISCORD_TOKEN;
   const url = new URL(RouteBases.api + endpoint);
-  if (options.params) {
-    Object.entries(options.params)
-      .filter((p) => p !== undefined)
-      .forEach(([key, value]) => {
-        url.searchParams.append(
-          key,
-          typeof value === "string" ? value : JSON.stringify(value),
-        );
-      });
+  options.method ??= "GET";
+
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (!value) continue;
+      url.searchParams.append(
+        key,
+        typeof value === "string" ? value : JSON.stringify(value),
+      );
+    }
   }
-  if (options.files?.length) {
-    const files = options.files;
+  if (files?.length) {
     const formData = new FormData();
 
     for (const [index, file] of files.entries()) {
@@ -56,7 +58,7 @@ export async function callDiscord(
       );
     }
 
-    if (options.body && options.flattenBodyInForm) {
+    if (options.body && flattenBodyInForm) {
       for (const [key, value] of Object.entries(options.body)) {
         formData.append(key, value);
       }
@@ -68,13 +70,15 @@ export async function callDiscord(
   } else if (options.body) {
     options.body = JSON.stringify(options.body);
   }
-  await checkLimit(endpoint);
+
+  await checkLimit(endpoint, options.method);
+
   const res = await fetch(url, {
     headers: {
-      Authorization: `Bot ${botEnv.DISCORD_TOKEN}`,
-      ...(!options.files?.length ? { "Content-Type": "application/json" } : {}),
+      Authorization: `Bot ${token}`,
+      ...(!files?.length ? { "Content-Type": "application/json" } : {}),
     },
-    ...(options as unknown as RequestInit),
+    ...(options as RequestInit),
   });
 
   if (!res.ok) {
@@ -97,7 +101,7 @@ export async function callDiscord(
     throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`);
   }
 
-  headerUpdateLimit(endpoint, res);
+  headerUpdateLimit(endpoint, res, options.method);
 
   return res;
 }

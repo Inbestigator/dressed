@@ -4,8 +4,8 @@ import {
   type RESTPutAPIApplicationRoleConnectionMetadataResult,
   Routes,
 } from "discord-api-types/v10";
-import { callDiscord } from "../../utils/call-discord.ts";
-import { botEnv } from "../../utils/env.ts";
+import { callDiscord } from "../utils/call-discord.ts";
+import { botEnv } from "../utils/env.ts";
 
 /**
  * Get a list of application role connection metadata records

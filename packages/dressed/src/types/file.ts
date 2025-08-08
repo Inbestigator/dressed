@@ -1,23 +1,22 @@
 import type { Buffer } from "node:buffer";
 
-/** Type ripped from Discord.js (tysm) */
+/** The data for including a file within a `multipart/form-data` request */
 export interface RawFile {
   /**
-   * Content-Type of the file
+   * The name of the file
    */
-  contentType?: string;
+  name: string;
   /**
    * The actual data for the file
    */
   data: Buffer | Uint8Array | boolean | number | string;
   /**
-   * An explicit key to use for key of the formdata field for this file.
-   * When not provided, the index of the file in the files array is used in the form `files[${index}]`.
-   * If you wish to alter the placeholder snowflake, you must provide this property in the same form (`files[${placeholder}]`)
+   * An explicit string to use as the formdata field key for this file.
+   * @default `files[${index}]`
    */
   key?: string;
   /**
-   * The name of the file
+   * Content-Type of the file
    */
-  name: string;
+  contentType?: string;
 }

@@ -3,7 +3,7 @@ import type {
   RESTGetAPIGatewayResult,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../../utils/call-discord.ts";
+import { callDiscord } from "../utils/call-discord.ts";
 
 /**
  * Returns an object with a valid WSS URL which the app can use when Connecting to the Gateway.
