@@ -12,9 +12,10 @@ import { parentPort } from "node:worker_threads";
 
 assert(parentPort);
 
-interface ShardState {
+interface Shard {
   ws: WebSocket;
   heartbeatInterval: NodeJS.Timeout;
+  state: "Connecting" | "Disconnecting" | "Ready";
 }
 
 interface ShardConfig extends GatewayIdentifyData {
@@ -23,7 +24,7 @@ interface ShardConfig extends GatewayIdentifyData {
   bot: APIGatewayBotInfo;
 }
 
-const shards = new Map<string, ShardState>();
+const shards = new Map<string, Shard>();
 
 type WorkerMsg =
   | {
@@ -59,6 +60,12 @@ function connectShard(
     session_id: resume.sessionId,
   };
   let beatAcked = true;
+  const shard: Shard = {
+    state: "Connecting",
+    heartbeatInterval: null as never,
+    ws,
+  };
+  shards.set(shardId, shard);
 
   function beat() {
     if (!beatAcked) {
@@ -104,27 +111,24 @@ function connectShard(
       case GatewayOpcodes.Hello: {
         setTimeout(() => {
           beat();
-          const interval = setInterval(beat, payload.d.heartbeat_interval);
-          shards.set(shardId, {
-            ws,
-            heartbeatInterval: interval,
-          });
+          shard.state = "Ready";
+          shard.heartbeatInterval = setInterval(
+            beat,
+            payload.d.heartbeat_interval,
+          );
         }, payload.d.heartbeat_interval * Math.random());
         break;
       }
       case GatewayOpcodes.InvalidSession:
       case GatewayOpcodes.Reconnect: {
-        const shard = shards.get(shardId);
-        if (shard) {
-          clearInterval(shard.heartbeatInterval);
-          if (
-            payload.op === GatewayOpcodes.InvalidSession &&
-            payload.d === false
-          ) {
-            shard.ws.close(WSCodes.NewSession, "Initiating full reset");
-          } else {
-            shard.ws.close(WSCodes.ResumeSession, "Reconnect message received");
-          }
+        clearInterval(shard.heartbeatInterval);
+        if (
+          payload.op === GatewayOpcodes.InvalidSession &&
+          payload.d === false
+        ) {
+          shard.ws.close(WSCodes.NewSession, "Initiating full reset");
+        } else {
+          shard.ws.close(WSCodes.ResumeSession, "Reconnect message received");
         }
         break;
       }
@@ -159,46 +163,46 @@ function connectShard(
   };
 
   ws.onclose = ({ code, reason }) => {
-    const shard = shards.get(shardId);
-    if (shard) {
-      clearInterval(shard.heartbeatInterval);
-      switch (code) {
-        case GatewayCloseCodes.AuthenticationFailed:
-        case GatewayCloseCodes.InvalidShard:
-        case GatewayCloseCodes.ShardingRequired:
-        case GatewayCloseCodes.InvalidAPIVersion:
-        case GatewayCloseCodes.InvalidIntents:
-        case GatewayCloseCodes.DisallowedIntents:
-        case WSCodes.Disconnect: {
-          shards.delete(shardId);
-          console.log(
-            `Connection closed with code ${code} - ${reason || "No reason provided"} (shard ${config.shard[0]})`,
-          );
+    if (shard.state !== "Disconnecting" && code === WSCodes.Disconnect) {
+      code = WSCodes.NewSession;
+    }
+    clearInterval(shard.heartbeatInterval);
+    switch (code) {
+      case GatewayCloseCodes.AuthenticationFailed:
+      case GatewayCloseCodes.InvalidShard:
+      case GatewayCloseCodes.ShardingRequired:
+      case GatewayCloseCodes.InvalidAPIVersion:
+      case GatewayCloseCodes.InvalidIntents:
+      case GatewayCloseCodes.DisallowedIntents:
+      case WSCodes.Disconnect: {
+        shards.delete(shardId);
+        console.log(
+          `Connection closed with code ${code} - ${reason || "No reason provided"} (shard ${config.shard[0]})`,
+        );
+        break;
+      }
+      case GatewayCloseCodes.UnknownError:
+      case GatewayCloseCodes.UnknownOpcode:
+      case GatewayCloseCodes.DecodeError:
+      case GatewayCloseCodes.AlreadyAuthenticated:
+      case GatewayCloseCodes.RateLimited:
+      case WSCodes.ResumeSession:
+      default: {
+        if (resumeData && seq !== null) {
+          connectShard(resumeData.resume_gateway_url, config, {
+            seq,
+            sessionId: resumeData.session_id,
+          });
           break;
         }
-        case GatewayCloseCodes.UnknownError:
-        case GatewayCloseCodes.UnknownOpcode:
-        case GatewayCloseCodes.DecodeError:
-        case GatewayCloseCodes.AlreadyAuthenticated:
-        case GatewayCloseCodes.RateLimited:
-        case WSCodes.ResumeSession:
-        default: {
-          if (resumeData && seq !== null) {
-            connectShard(resumeData.resume_gateway_url, config, {
-              seq,
-              sessionId: resumeData.session_id,
-            });
-            break;
-          }
-        }
-        // eslint-disable-next-line no-fallthrough
-        case GatewayCloseCodes.NotAuthenticated:
-        case GatewayCloseCodes.InvalidSeq:
-        case GatewayCloseCodes.SessionTimedOut:
-        case WSCodes.NewSession: {
-          connectShard(config.bot.url, config);
-          break;
-        }
+      }
+      // eslint-disable-next-line no-fallthrough
+      case GatewayCloseCodes.NotAuthenticated:
+      case GatewayCloseCodes.InvalidSeq:
+      case GatewayCloseCodes.SessionTimedOut:
+      case WSCodes.NewSession: {
+        connectShard(config.bot.url, config);
+        break;
       }
     }
   };
@@ -213,6 +217,7 @@ parentPort.on("message", (data: WorkerMsg) => {
     case "removeShard": {
       const shard = shards.get(data.shardId);
       if (shard) {
+        shard.state = "Disconnecting";
         clearInterval(shard.heartbeatInterval);
         shard.ws.close(WSCodes.Disconnect, "Shard removed");
         shards.delete(data.shardId);
@@ -229,9 +234,10 @@ parentPort.on("message", (data: WorkerMsg) => {
 });
 
 parentPort.on("close", () => {
-  for (const { ws, heartbeatInterval } of shards.values()) {
-    clearInterval(heartbeatInterval);
-    ws.close(WSCodes.Disconnect, "Worker closed");
+  for (const shard of shards.values()) {
+    shard.state = "Disconnecting";
+    clearInterval(shard.heartbeatInterval);
+    shard.ws.close(WSCodes.Disconnect, "Worker closed");
   }
   shards.clear();
 });
