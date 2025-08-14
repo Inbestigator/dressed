@@ -4,29 +4,29 @@ const buckets = new Map<string, { remaining: number; resetAt: number }>();
 const endpoints = new Map<string, string>();
 
 export async function checkLimit(endpoint: string, method = "") {
+  if (endpoint !== "global") await checkLimit("global");
   const bucket = endpoints.get(method + endpoint);
   if (!bucket) return;
   const limit = buckets.get(bucket);
-  if (endpoint === "global") endpoint = "all endpoints";
-  else await checkLimit("global");
   if (limit) {
     if (Date.now() > limit.resetAt) {
       buckets.delete(bucket);
       return;
     }
+    const displayed = endpoint === "global" ? "all endpoints" : endpoint;
     if (limit.remaining === 0) {
       const waiting = ora(
-        `Rate limit for ${endpoint} reached! - Waiting to try again...`,
+        `Rate limit for ${displayed} reached! - waiting to try again...`,
       ).start();
       await new Promise((r) =>
         setTimeout(r, Math.max(0, limit.resetAt - Date.now())),
       );
       buckets.delete(bucket);
       waiting.warn(
-        `A request was delayed because you hit the rate limit for ${endpoint}`,
+        `A request was delayed because you hit the rate limit for ${displayed}`,
       );
     } else if (limit.remaining === 1) {
-      ora(`You are about to hit the rate limit for ${endpoint}`).warn();
+      ora(`You are about to hit the rate limit for ${displayed}`).warn();
     }
   }
 }
