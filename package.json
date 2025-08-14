@@ -20,5 +20,8 @@
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.39.1"
   },
-  "packageManager": "bun@1.2.13"
+  "packageManager": "bun@1.2.13",
+  "dependencies": {
+    "@types/bun": "^1.2.20"
+  }
 }
