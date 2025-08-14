@@ -3,49 +3,30 @@ import ora from "ora";
 const buckets = new Map<string, { remaining: number; resetAt: number }>();
 const endpoints = new Map<string, string>();
 
-async function delayUntil(time: number) {
-  const delayDuration = Math.max(0, time - Date.now());
-  await new Promise((resolve) => setTimeout(resolve, delayDuration));
-}
-
 export async function checkLimit(endpoint: string, method = "") {
   const bucket = endpoints.get(method + endpoint);
   if (!bucket) return;
-  const globalLimit = buckets.get("global");
-  const endpointLimit = buckets.get(bucket);
-  if (globalLimit) {
-    if (Date.now() > globalLimit.resetAt) {
-      buckets.delete("global");
-      return;
-    }
-    if (globalLimit.remaining === 0) {
-      const waiting = ora(
-        "Global rate limit reached! - Waiting to try again...",
-      ).start();
-      await delayUntil(globalLimit.resetAt);
-      buckets.delete("global");
-      waiting.warn(
-        "A request was delayed because you hit the global rate limit",
-      );
-    } else if (globalLimit.remaining === 1) {
-      ora("You are about to hit the global rate limit!").warn();
-    }
-  } else if (endpointLimit) {
-    if (Date.now() > endpointLimit.resetAt) {
+  const limit = buckets.get(bucket);
+  if (endpoint === "global") endpoint = "all endpoints";
+  else await checkLimit("global");
+  if (limit) {
+    if (Date.now() > limit.resetAt) {
       buckets.delete(bucket);
       return;
     }
-    if (endpointLimit.remaining === 0) {
+    if (limit.remaining === 0) {
       const waiting = ora(
         `Rate limit for ${endpoint} reached! - Waiting to try again...`,
       ).start();
-      await delayUntil(endpointLimit.resetAt);
+      await new Promise((r) =>
+        setTimeout(r, Math.max(0, limit.resetAt - Date.now())),
+      );
       buckets.delete(bucket);
       waiting.warn(
         `A request was delayed because you hit the rate limit for ${endpoint}`,
       );
-    } else if (endpointLimit.remaining === 1) {
-      ora(`You are about to hit the rate limit for ${endpoint}!`).warn();
+    } else if (limit.remaining === 1) {
+      ora(`You are about to hit the rate limit for ${endpoint}`).warn();
     }
   }
 }
