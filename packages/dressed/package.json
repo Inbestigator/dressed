@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
-    "@inquirer/prompts": "^7.7.1",
+    "@inquirer/prompts": "^7.8.2",
     "commander": "^14.0.0",
-    "discord-api-types": "^0.38.17",
+    "discord-api-types": "^0.38.19",
     "dotenv": "^17.2.1",
-    "esbuild": "^0.25.8",
+    "esbuild": "^0.25.9",
     "ora": "^8.2.0",
     "tweetnacl": "^1.0.3",
     "walk-it": "^6.0.1"

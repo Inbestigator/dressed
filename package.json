@@ -12,14 +12,13 @@
     "outdated": "for pkg in packages/*; do (cd \"$pkg\" && bun outdated); done"
   },
   "devDependencies": {
-    "@eslint/js": "^9.32.0",
-    "@types/bun": "1.2.18",
-    "eslint": "^9.32.0",
+    "@eslint/js": "^9.33.0",
+    "eslint": "^9.33.0",
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
     "turbo": "^2.5.5",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.38.0"
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.1"
   },
   "packageManager": "bun@1.2.13"
 }
