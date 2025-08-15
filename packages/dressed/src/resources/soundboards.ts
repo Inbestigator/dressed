@@ -10,7 +10,7 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../../utils/call-discord.ts";
+import { callDiscord } from "../utils/call-discord.ts";
 
 /**
  * Send a soundboard sound to a voice channel the user is connected to.

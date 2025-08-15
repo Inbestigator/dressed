@@ -7,8 +7,8 @@
     "directory": "packages/dressed-react"
   },
   "peerDependencies": {
-    "dressed": "^1.8.1",
-    "react": "^19.1.0"
+    "dressed": "^1.9.0",
+    "react": "^19.1.1"
   },
   "exports": "./dist/index.js",
   "description": "Render Dressed's components using React",
@@ -31,11 +31,11 @@
   "type": "module",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "discord-api-types": "^0.38.17",
+    "discord-api-types": "^0.38.20",
     "react-reconciler": "github:inbestigator/dressed-rr"
   },
   "devDependencies": {
-    "@types/react": "^19.1.8",
+    "@types/react": "^19.1.10",
     "@types/react-reconciler": "^0.32.0"
   }
 }

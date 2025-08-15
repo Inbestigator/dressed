@@ -4,7 +4,7 @@ import type {
   RESTPatchCurrentApplicationResult,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../../utils/call-discord.ts";
+import { callDiscord } from "../utils/call-discord.ts";
 
 /**
  * Get the current bot application.

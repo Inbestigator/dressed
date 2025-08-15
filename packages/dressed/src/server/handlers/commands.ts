@@ -19,7 +19,7 @@ import type {
 import {
   bulkOverwriteGlobalCommands,
   bulkOverwriteGuildCommands,
-} from "../../bot/resources/application-commands.ts";
+} from "../../resources/application-commands.ts";
 
 /**
  * Installs commands to the Discord API

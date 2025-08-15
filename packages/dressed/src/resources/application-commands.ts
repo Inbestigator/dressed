@@ -23,8 +23,8 @@ import type {
   RESTPutAPIApplicationCommandPermissionsJSONBody,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../../utils/call-discord.ts";
-import { botEnv } from "../../utils/env.ts";
+import { callDiscord } from "../utils/call-discord.ts";
+import { botEnv } from "../utils/env.ts";
 
 /**
  * Fetch all of the global commands for your application.
