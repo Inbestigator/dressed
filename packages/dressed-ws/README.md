@@ -50,7 +50,11 @@ const app = await cache.getApp();
 const user = await myCache.findUser("123");
 ```
 
-If you want to customize the behaviour of your cache, it's as easy as providing functions in the logic option.
+<details>
+
+<summary>
+To customize the behaviour of your cache, it's as easy as providing functions in the logic option.
+</summary>
 
 The `get` function must return an object with a state. The state can be `hit`, `stale`, or `miss`.
 
@@ -60,19 +64,15 @@ The `get` function must return an object with a state. The state can be `hit`, `
 
 Checkout [this example](https://github.com/Inbestigator/dressed/blob/53cea0eaa3a8643dc7c58bee9acfae720e13bc68/packages/dressed-ws/src/example.ts#L25-L43) to see some custom logic using Redis.
 
-The default logic has some timing options which can be updated by using the `defaultLogic` function.
+The default logic has some timing config which can be updated by using the `defaultLogic` function in the logic option.
 
-```ts
-import { createCache, defaultLogic, getters } from "@dressed/ws/cache";
+</details>
 
-const cache = createCache(getters, {
-  logic: defaultLogic({ swr: 120, ttl: 600, cleanup: 3600 }),
-});
-```
+<details>
 
-If you only want to save a certain key in the cache, you can use the `desiredProps` option.
+<summary>You can use the <code>desiredProps</code> option to only save certain keys in the cache.</summary>
 
-The returned type will be turned into a partial where only the set props in your array are excluded.
+Doing this will cause the returned type to be turned into a partial where only the props in your array are excluded.
 
 The reason that all others aren't omitted completely is because a miss will return the whole data from the response.
 
@@ -84,3 +84,5 @@ const user = await cache.getUser("123456789012345678");
 user.username; // string
 user.id; // string | undefined (normally this would be a string)
 ```
+
+</details>
