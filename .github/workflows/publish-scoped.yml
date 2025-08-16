@@ -11,6 +11,7 @@ on:
           - "matcher"
           - "next"
           - "react"
+          - "ws"
       prerelease:
         description: "Mark as a release candidate"
         required: false
