@@ -1,5 +1,11 @@
 import type { ConnectionActions } from "./gateway.ts";
 
+/**
+ * Automatically check/reshard the connection every so often
+ *
+ * **This is used by default within `createConnection`**
+ * @returns The reshard interval (for you to clear etc.)
+ */
 export function startAutoResharder(
   connection: ConnectionActions,
   interval = 480,
@@ -20,5 +26,5 @@ export function startAutoResharder(
     }
   }
   calculateShards();
-  setInterval(calculateShards, interval * 60000);
+  return setInterval(calculateShards, interval * 60 * 1000);
 }

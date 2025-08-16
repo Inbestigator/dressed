@@ -61,10 +61,20 @@ export type ConnectionActions = {
     >["d"],
   ) => void;
   shards: {
+    /**
+     * Change the number of shards that the bot is currently using.
+     * @param n Number of shards to use
+     */
     reshard: (n?: number) => Promise<void>;
+    /** `getGatewayBot` cache */
     cache: Cache<{ getGatewayBot: typeof getGatewayBot }>;
+    /** Whether the bot is currently resharding */
     isResharding: boolean;
+    /** The auto-resharder interval */
+    reshardInterval?: NodeJS.Timeout;
+    /** The current number of shards the bot is using (only updated after resharding finishes) */
     numShards: number;
+    /** The workers containing the shards */
     workers: Worker[];
   };
 };
@@ -83,7 +93,7 @@ export function createConnection(
       /**
        * The interval in minutes between reshard calculations.
        *
-       * Setting to `-1` disables resharding
+       * Setting to `-1` disables auto-resharding
        * @default 480 // (8 hours)
        */
       reshardInterval?: number;
@@ -96,7 +106,7 @@ export function createConnection(
        * The percentage of total allowed guilds for each shard to target.
        * For example, a value of 80 means each shard will target 80% of the 2,500 guild cap (2,000 guilds).
        *
-       * Setting to `0` disables auto resharding
+       * Setting to `0` disables auto-resharding
        * @default 80
        */
       shardCapacity?: number;
@@ -143,8 +153,9 @@ export function createConnection(
       isResharding: false,
       cache: createCache({ getGatewayBot }),
       async reshard(newShardCount?: number) {
-        if (connection.shards.isResharding)
-          throw new Error("Already resharding");
+        if (connection.shards.isResharding) {
+          throw new Error("Attempted to reshard while already resharding");
+        }
 
         connection.shards.isResharding = true;
         bot ??= await connection.shards.cache.getGatewayBot();
@@ -209,7 +220,7 @@ export function createConnection(
 
         connection.shards.numShards = newShardCount;
 
-        for (let i = prevShardCount - 1; i >= 0; --i) {
+        for (let i = 0; i < prevShardCount; ++i) {
           const worker = workers[Math.floor(i / prevShardCount)];
           if (!worker) continue;
           worker.postMessage({
@@ -223,7 +234,11 @@ export function createConnection(
     },
   } as ReturnType<typeof createConnection>;
 
-  startAutoResharder(connection, shards.reshardInterval, shards.shardCapacity);
+  connection.shards.reshardInterval = startAutoResharder(
+    connection,
+    shards.reshardInterval,
+    shards.shardCapacity,
+  );
 
   return connection;
 }

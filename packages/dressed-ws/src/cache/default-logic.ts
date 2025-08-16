@@ -4,20 +4,20 @@ import type { CachedFunctions, CacheLogic } from "./types.ts";
 interface Config {
   /**
    * Time To Live
-   * @description Time before a cache entry is considered stale (in ms)
-   * @default 300,000 // 5 minutes
+   * @description Time in seconds before a cache entry is considered stale
+   * @default 300 // 5 minutes
    */
   ttl?: number;
   /**
    * Stale While Revalidate
-   * @description Time where a stale value may be used while a fresh value is being fetched (in ms)
-   * @default 60,000 // 1 minute
+   * @description Time in seconds where a stale value may be used while a fresh value is being fetched
+   * @default 60 // 1 minute
    */
   swr?: number;
   /**
    * Cleanup interval
-   * @description Interval at which to check and delete expired keys, set to -1 to disable
-   * @default 1,800,000 // 30 minutes
+   * @description Interval in seconds at which to check and delete expired keys, set to -1 to disable
+   * @default 1,800 // 30 minutes
    */
   cleanup?: number;
 }
@@ -50,7 +50,7 @@ export function defaultLogic<F extends CachedFunctions>(config: Config = {}) {
           }
         }
       },
-      config.cleanup ?? 30 * 60 * 1000,
+      (config.cleanup ?? 30 * 60) * 1000,
     );
   }
 
@@ -68,8 +68,8 @@ export function defaultLogic<F extends CachedFunctions>(config: Config = {}) {
     set(key, value) {
       cache.set(key, {
         value,
-        swr: config.swr ?? 60 * 1000,
-        expiresAt: Date.now() + (config.ttl ?? 5 * 60 * 1000),
+        swr: (config.swr ?? 60) * 1000,
+        expiresAt: Date.now() + (config.ttl ?? 5 * 60) * 1000,
       });
     },
     delete: (k) => cache.delete(k),
