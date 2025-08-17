@@ -28,14 +28,14 @@ component will be handled.
 // src/components/buttons/guess_:answer.ts
 import type { ComponentInteraction } from "dressed";
 
-export default async function guess(
+export default function guess(
   interaction: ComponentInteraction,
   args: { answer: string },
 ) {
   if (args.answer === correctAnswer) {
-    await interaction.reply("Good job!");
+    interaction.reply("Good job!");
   } else {
-    await interaction.reply("Nice try!");
+    interaction.reply("Nice try!");
   }
 }
 ```
@@ -94,7 +94,7 @@ Will be invoked for IDs like `print-Hello world` or `print-wowie`.
 
 ```ts
 // src/components/buttons/ticket{-:action(open|close)}.ts
-export default async function ticket(_, args: { action?: "open" | "close" }) {
+export default function ticket(_, args: { action?: "open" | "close" }) {
   console.log("Action:", args.action ?? "none");
 }
 ```
