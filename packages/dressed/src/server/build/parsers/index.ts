@@ -2,9 +2,7 @@ import logTree from "../log-tree.ts";
 import type { WalkEntry } from "../../../types/walk.ts";
 import ora from "ora";
 import { stdout } from "node:process";
-import bundleFile from "../bundle.ts";
 import { createHash } from "node:crypto";
-import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { Promisable } from "../../../types/possible-promise.ts";
 import type { BaseData } from "../../../types/config.ts";
@@ -28,9 +26,7 @@ export function createHandlerParser<
   uniqueKeys?: (keyof T["data"])[];
   messages: ParserMessages;
   itemMessages: ((file: WalkEntry) => ParserItemMessages) | ParserItemMessages;
-  createData: (
-    file: WalkEntry & { originalPath: string },
-  ) => Promisable<T["data"]>;
+  createData: (file: WalkEntry) => Promisable<T["data"]>;
   postMortem?: (items: T[]) => Promisable<T[]>;
 }): (files: WalkEntry[]) => Promise<T[]> {
   return async (files) => {
@@ -53,15 +49,9 @@ export function createHandlerParser<
           if (typeof itemMessages === "function") {
             itemMessages = itemMessages(file);
           }
-          const originalPath = file.path;
-          file.path = await bundleFile({
-            ...file,
-            outPath: join(".dressed/cache", `${uid}.mjs`),
-          });
           data = await options.createData({
             ...file,
             path: pathToFileURL(file.path).href,
-            originalPath,
           });
           const hasConflict = items.some((c) => {
             if (c.name !== file.name) return false;

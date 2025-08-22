@@ -63,25 +63,40 @@ export default async function build(config: ServerConfig = {}): Promise<{
   );
 
   if (configPath) {
-    await bundleFile({
-      path: configPath,
-      outPath: ".dressed/cache/config.mjs",
-    });
+    await bundleFile([configPath]);
     const { default: importedConfig } = await import(
-      pathToFileURL(".dressed/cache/config.mjs").href
+      pathToFileURL(".dressed/cache/dressed.config.js").href
     );
     config = override(importedConfig, config);
   } else {
     writeFileSync(
-      ".dressed/cache/config.mjs",
+      ".dressed/cache/dressed.config.js",
       `export default ${JSON.stringify(config)}`,
     );
   }
 
+  const files: string[] = [];
+  const extensions = config.build?.extensions ?? ["js", "ts", "mjs"];
+
+  for (const dir of [
+    "commands",
+    "components/buttons",
+    "components/selects",
+    "components/modals",
+    "events",
+  ]) {
+    const path = `${config.build?.root ?? "src"}/${dir}`;
+    if (existsSync(path)) {
+      files.push(...extensions.map((e) => `${path}/**/*.${e}`));
+    }
+  }
+
+  await bundleFile(files);
+
   const [commandFiles, componentFiles, eventFiles] = await Promise.all([
-    fetchFiles(config.build, "commands"),
-    fetchFiles(config.build, "components"),
-    fetchFiles(config.build, "events"),
+    fetchFiles(extensions, "commands"),
+    fetchFiles(extensions, "components"),
+    fetchFiles(extensions, "events"),
   ]);
   const commands = await parseCommands(commandFiles);
   const components = await parseComponents(componentFiles);
@@ -91,10 +106,10 @@ export default async function build(config: ServerConfig = {}): Promise<{
 }
 
 async function fetchFiles(
-  config: ServerConfig["build"] = {},
+  extensions: string[],
   dirName: string,
 ): Promise<WalkEntry[]> {
-  const dirPath = resolve(config.root ?? "src", dirName);
+  const dirPath = resolve(".dressed/cache", dirName);
 
   if (!existsSync(dirPath)) {
     ora(
@@ -105,10 +120,7 @@ async function fetchFiles(
 
   const filesArray: WalkEntry[] = [];
   for await (const file of walkFiles(dirPath, {
-    filterFile: (f) =>
-      (config.extensions ?? ["js", "ts", "mjs"]).includes(
-        extname(f.name).slice(1),
-      ),
+    filterFile: (f) => extensions.includes(extname(f.name).slice(1)),
   })) {
     const relativePath = relative(cwd(), file.path);
     filesArray.push({

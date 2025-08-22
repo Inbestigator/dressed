@@ -48,11 +48,7 @@ program
 
     const outputContent = `
 ${generateImports(instance, register)}
-import config from "./cache/config.mjs";${[
-      ...commands,
-      ...components,
-      ...events,
-    ]
+import config from "./cache/config.js";${[...commands, ...components, ...events]
       .map(
         (v) =>
           `\nimport * as h${v.uid} from "./${relative(".dressed", v.path)}";`,
