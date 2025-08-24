@@ -88,8 +88,8 @@ export default async function build(config: ServerConfig = {}): Promise<{
   ]) {
     const path = `${config.build?.root ?? "src"}/${dir}`;
     if (existsSync(path)) {
-      files.concat(
-        (config.build?.extensions ?? ["js", "ts", "mjs"]).map(
+      files.push(
+        ...(config.build?.extensions ?? ["js", "ts", "mjs"]).map(
           (e) => `${path}/**/*.${e}`,
         ),
       );

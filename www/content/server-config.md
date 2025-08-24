@@ -42,7 +42,7 @@ This is the source root that the server uses when assembling files, the default 
 
 ### Build extensions
 
-The file extensions are used when bundling handlers and determine which files to include, by default it is `[".js", ".ts", ".mjs"]`.
+The file extensions are used when bundling handlers and determine which files to include, by default it is `["js", "ts", "mjs"]`.
 
 ### Middleware
 

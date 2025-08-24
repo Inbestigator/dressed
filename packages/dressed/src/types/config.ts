@@ -43,7 +43,7 @@ export type ServerConfig = Partial<{
      */
     root: string;
     /** File extensions to include when bundling handlers
-     * @default [".js", ".ts", ".mjs"]
+     * @default ["js", "ts", "mjs"]
      */
     extensions: string[];
   }>;
