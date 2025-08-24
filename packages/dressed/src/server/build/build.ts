@@ -6,6 +6,7 @@ import {
   writeFileSync,
   readdirSync,
   mkdirSync,
+  rmSync,
 } from "node:fs";
 import { cwd, stdout } from "node:process";
 import { basename, extname, relative, resolve } from "node:path";
@@ -21,7 +22,7 @@ import type {
 import type { WalkEntry } from "../../types/walk.ts";
 import { botEnv } from "../../utils/env.ts";
 import { getApp } from "../../resources/application.ts";
-import bundleFile from "./bundle.ts";
+import bundleFiles from "./bundle.ts";
 import { pathToFileURL } from "node:url";
 
 function override<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
@@ -56,6 +57,7 @@ export default async function build(config: ServerConfig = {}): Promise<{
   events: EventData[];
   config: ServerConfig;
 }> {
+  rmSync(".dressed/cache", { recursive: true, force: true });
   mkdirSync(".dressed/cache", { recursive: true });
   await fetchMissingVars();
   const configPath = readdirSync(".").find(
@@ -63,7 +65,7 @@ export default async function build(config: ServerConfig = {}): Promise<{
   );
 
   if (configPath) {
-    await bundleFile([configPath]);
+    await bundleFiles([configPath]);
     const { default: importedConfig } = await import(
       pathToFileURL(".dressed/cache/dressed.config.js").href
     );
@@ -76,7 +78,6 @@ export default async function build(config: ServerConfig = {}): Promise<{
   }
 
   const files: string[] = [];
-  const extensions = config.build?.extensions ?? ["js", "ts", "mjs"];
 
   for (const dir of [
     "commands",
@@ -87,16 +88,20 @@ export default async function build(config: ServerConfig = {}): Promise<{
   ]) {
     const path = `${config.build?.root ?? "src"}/${dir}`;
     if (existsSync(path)) {
-      files.push(...extensions.map((e) => `${path}/**/*.${e}`));
+      files.concat(
+        (config.build?.extensions ?? ["js", "ts", "mjs"]).map(
+          (e) => `${path}/**/*.${e}`,
+        ),
+      );
     }
   }
 
-  await bundleFile(files);
+  await bundleFiles(files);
 
   const [commandFiles, componentFiles, eventFiles] = await Promise.all([
-    fetchFiles(extensions, "commands"),
-    fetchFiles(extensions, "components"),
-    fetchFiles(extensions, "events"),
+    fetchFiles("commands"),
+    fetchFiles("components"),
+    fetchFiles("events"),
   ]);
   const commands = await parseCommands(commandFiles);
   const components = await parseComponents(componentFiles);
@@ -105,10 +110,7 @@ export default async function build(config: ServerConfig = {}): Promise<{
   return { commands, components, events, config };
 }
 
-async function fetchFiles(
-  extensions: string[],
-  dirName: string,
-): Promise<WalkEntry[]> {
+async function fetchFiles(dirName: string): Promise<WalkEntry[]> {
   const dirPath = resolve(".dressed/cache", dirName);
 
   if (!existsSync(dirPath)) {
@@ -120,7 +122,7 @@ async function fetchFiles(
 
   const filesArray: WalkEntry[] = [];
   for await (const file of walkFiles(dirPath, {
-    filterFile: (f) => extensions.includes(extname(f.name).slice(1)),
+    filterFile: (f) => extname(f.name) === ".js",
   })) {
     const relativePath = relative(cwd(), file.path);
     filesArray.push({
