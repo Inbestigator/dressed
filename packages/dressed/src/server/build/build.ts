@@ -98,11 +98,9 @@ export default async function build(config: ServerConfig = {}): Promise<{
 
   await bundleFiles(files);
 
-  const [commandFiles, componentFiles, eventFiles] = await Promise.all([
-    fetchFiles("commands"),
-    fetchFiles("components"),
-    fetchFiles("events"),
-  ]);
+  const [commandFiles, componentFiles, eventFiles] = await Promise.all(
+    ["commands", "components", "events"].map(fetchFiles),
+  );
   const commands = await parseCommands(commandFiles);
   const components = await parseComponents(componentFiles);
   const events = await parseEvents(eventFiles);
