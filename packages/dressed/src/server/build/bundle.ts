@@ -11,26 +11,24 @@ const paths = Object.keys(tsconfig.compilerOptions?.paths ?? {}).map(
   (p) => p.split("*")[0],
 );
 
-export default async function bundleFile(file: {
-  path: string;
-  outPath: string;
-}) {
+export default async function bundleFile(entryPoints: string[]) {
   await build({
-    entryPoints: [file.path],
-    outfile: file.outPath,
+    entryPoints,
+    outdir: ".dressed/cache",
     bundle: true,
     minify: true,
+    splitting: true,
     platform: "node",
     format: "esm",
     write: true,
     treeShaking: true,
     jsx: "automatic",
+    logLevel: "error",
     plugins: [
       {
         name: "make-all-packages-external",
-        setup: (build) => {
-          const filter = /^[^./]|^\.[^./]|^\.\.[^/]/;
-          build.onResolve({ filter }, (args) => {
+        setup(build) {
+          build.onResolve({ filter: /^[^./]|^\.[^./]|^\.\.[^/]/ }, (args) => {
             if (paths.some((p) => args.path.startsWith(p))) {
               return { external: false };
             }
@@ -40,6 +38,4 @@ export default async function bundleFile(file: {
       },
     ],
   });
-
-  return file.outPath;
 }
