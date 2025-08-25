@@ -37,7 +37,15 @@ export async function installCommands(commands: CommandData[]) {
   >([["global", []]]);
 
   for (const command of commands) {
-    const config = command.data.config ?? ({} as CommandConfig);
+    if (command.exports === null) return;
+    if ("config" in command.data) {
+      ora(
+        "In the next major version of Dressed, command config must be passed in using `command.exports` instead of `command.data`",
+      ).warn();
+      command.exports.config = command.data.config; // TODO Remove check before next major release
+    }
+
+    const config = command.exports.config ?? ({} as CommandConfig);
 
     if (!config.type) {
       config.type = "ChatInput";

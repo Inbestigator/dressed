@@ -4,11 +4,7 @@ exports[`Build bot 1`] = `
 {
   "commands": [
     {
-      "data": {
-        "config": {
-          "description": "Replies with Pong!",
-        },
-      },
+      "data": {},
       "exports": null,
       "name": "ping",
       "path": ".dressed/cache/commands/ping.js",

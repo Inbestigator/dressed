@@ -11,8 +11,5 @@ export const parseCommands = createHandlerParser<CommandData>({
   itemMessages: ({ name }) => ({
     confict: `"${name}" conflicts with another command, skipping the duplicate`,
   }),
-  async createData({ path }) {
-    const { config } = await import(path);
-    return { config };
-  },
+  createData: () => ({}),
 });
