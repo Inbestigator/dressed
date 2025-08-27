@@ -27,7 +27,7 @@ bun add @dressed/next
    ```ts
    // api/bot.ts
    import createHandler from "@dressed/next";
-   // @ts-ignore – generated after build
+   // @ts-ignore Generated after build
    import { commands, components, events, config } from "../.dressed/index.mjs";
 
    export const POST = createHandler(commands, components, events, config);
@@ -42,7 +42,7 @@ If you’re using Next.js, you don’t need a `vercel.json` file. Vercel’s Nex
 ```ts
 // app/api/bot/route.ts
 import createHandler from "@dressed/next";
-// @ts-ignore – generated after build
+// @ts-ignore Generated after build
 import { commands, components, events, config } from "../../../.dressed";
 
 export const POST = createHandler(commands, components, events, config);
