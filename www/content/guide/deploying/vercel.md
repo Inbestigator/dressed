@@ -37,7 +37,7 @@ bun add @dressed/next
 
 ## Next.js Projects
 
-If you’re using Next.js, you don’t need a `vercel.json` file. Vercel’s Next.js preset will handle it automatically. Just add an API route:
+If you’re using Next.js, you don’t need a `vercel.json` file. The Next.js framework preset will handle config automatically. Just add an API route:
 
 ```ts
 // app/api/bot/route.ts
@@ -48,19 +48,23 @@ import { commands, components, events, config } from "../../../.dressed";
 export const POST = createHandler(commands, components, events, config);
 ```
 
-### Important
-
-Make sure your build script builds your bot files before your Next.js project.
-For example, in package.json:
-
-```json
-{
-  "scripts": {
-    "build": "dressed build && next build"
-  }
-}
-```
+> [!IMPORTANT]
+> Make sure your build script builds your bot files before your Next.js project.
+> For example, in package.json:
+>
+> ```json
+> {
+>   "scripts": {
+>     "build": "dressed build && next build"
+>   }
+> }
+> ```
 
 ---
 
-You now can upload it to Vercel however you like, either through linking to GitHub, or using their [CLI](https://vercel.com/docs/cli).
+You now can upload it to Vercel however you like, either through linking to GitHub, or using the CLI:
+
+```sh
+bun add -g vercel
+vercel --prod
+```
