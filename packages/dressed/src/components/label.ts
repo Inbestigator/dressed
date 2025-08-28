@@ -4,12 +4,12 @@
 // Remove input check
 import {
   ComponentType,
-  type APIStringSelectComponent,
+  type APISelectMenuComponent,
   type APITextInputComponent,
 } from "discord-api-types/v10";
 
 type APIComponentInLabel =
-  | (APIStringSelectComponent & { required?: boolean })
+  | (APISelectMenuComponent & { required?: boolean })
   | Omit<APITextInputComponent, "label">;
 
 interface APILabelComponent {
