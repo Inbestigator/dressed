@@ -51,20 +51,8 @@ export interface OptionValueGetters<N> {
   attachment: () => APIAttachment;
 }
 
-const blurbs = [
-  null,
-  "a subcommand",
-  "a subcommand group",
-  "a string",
-  "an integer",
-  "a boolean",
-  "a user",
-  "a channel",
-  "a role",
-  "a mentionable",
-  "a number",
-  "an attachment",
-];
+// prettier-ignore
+const blurbs = [null, "a subcommand", "a subcommand group", "a string", "an integer", "a boolean", "a user", "a channel", "a role", "a mentionable", "a number", "an attachment"];
 
 export function getOption<N extends string, R extends boolean>(
   name: N,
