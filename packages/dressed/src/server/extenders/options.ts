@@ -10,9 +10,7 @@ import {
 import type { CommandInteraction } from "../../types/interaction.ts";
 
 export interface OptionValueGetters<N> {
-  /**
-   * Get the option as a subcommand
-   */
+  /** Return the option as a subcommand - Option type must be `Subcommand` */
   subcommand: () => {
     /**
      * Get an option from the subcommand
@@ -22,9 +20,7 @@ export interface OptionValueGetters<N> {
     getOption: CommandInteraction["getOption"];
     name: N;
   };
-  /**
-   * Get the option as a subcommand group
-   */
+  /** Return the option as a subcommand group - Option type must be `SubcommandGroup` */
   subcommandGroup: () => {
     /**
      * Get a subcommand from the group
@@ -35,41 +31,23 @@ export interface OptionValueGetters<N> {
     ) => ReturnType<OptionValueGetters<N>["subcommand"]> | undefined;
     name: N;
   };
-  /**
-   * Get the option as a string
-   */
+  /** Return the option's value as a string - Option type must be `String` */
   string: () => string;
-  /**
-   * Get the option as an integer
-   */
+  /** Return the option's value as an integer - Option type must be `Integer` */
   integer: () => number;
-  /**
-   * Get the option as a boolean
-   */
+  /** Return the option's value as a boolean - Option type must be `Boolean` */
   boolean: () => boolean;
-  /**
-   * Get the option as a user
-   */
+  /** Get the user from the option - Option type must be `User` */
   user: () => APIUser;
-  /**
-   * Get the option as a channel
-   */
+  /** Get the channel from the option - Option type must be `Channel` */
   channel: () => APIInteractionDataResolvedChannel;
-  /**
-   * Get the option as a role
-   */
+  /** Get the role from the option - Option type must be `Role` */
   role: () => APIRole;
-  /**
-   * Get the option as a mentionable
-   */
+  /** Get the mentionable from the option - Option type must be `Mentionable` */
   mentionable: () => APIUser | APIRole;
-  /**
-   * Get the option as a number
-   */
+  /** Return the option's value as a number - Option type must be `Number` */
   number: () => number;
-  /**
-   * Get the option as an attachment
-   */
+  /** Get the attachment from the option - Option type must be `Attachment` */
   attachment: () => APIAttachment;
 }
 
@@ -99,15 +77,12 @@ export function getOption<N extends string, R extends boolean>(
     return undefined as ReturnType<typeof getOption<N, R>>;
   }
 
-  const returnOption = (
-    type: Exclude<
-      ApplicationCommandOptionType,
-      | ApplicationCommandOptionType.Subcommand
-      | ApplicationCommandOptionType.SubcommandGroup
-    >,
-    resolvedKey?: keyof APIInteractionDataResolved,
-  ) => {
-    return () => {
+  const returnOption =
+    (
+      type: Exclude<ApplicationCommandOptionType, 1 | 2>,
+      resolvedKey?: keyof APIInteractionDataResolved,
+    ) =>
+    () => {
       if (option.type !== type) {
         throw new Error(
           `The option ${option.name} is ${optionTypeToName[option.type]}, not ${optionTypeToName[type]}`,
@@ -121,7 +96,6 @@ export function getOption<N extends string, R extends boolean>(
       }
       return option.value;
     };
-  };
 
   return {
     subcommand() {
