@@ -51,19 +51,20 @@ export interface OptionValueGetters<N> {
   attachment: () => APIAttachment;
 }
 
-const optionTypeToName = {
-  [ApplicationCommandOptionType.Subcommand]: "a subcommand",
-  [ApplicationCommandOptionType.SubcommandGroup]: "a subcommand group",
-  [ApplicationCommandOptionType.String]: "a string",
-  [ApplicationCommandOptionType.Integer]: "an integer",
-  [ApplicationCommandOptionType.Boolean]: "a boolean",
-  [ApplicationCommandOptionType.User]: "a user",
-  [ApplicationCommandOptionType.Channel]: "a channel",
-  [ApplicationCommandOptionType.Role]: "a role",
-  [ApplicationCommandOptionType.Mentionable]: "a mentionable",
-  [ApplicationCommandOptionType.Number]: "a number",
-  [ApplicationCommandOptionType.Attachment]: "an attachment",
-};
+const blurbs = [
+  null,
+  "a subcommand",
+  "a subcommand group",
+  "a string",
+  "an integer",
+  "a boolean",
+  "a user",
+  "a channel",
+  "a role",
+  "a mentionable",
+  "a number",
+  "an attachment",
+];
 
 export function getOption<N extends string, R extends boolean>(
   name: N,
@@ -85,7 +86,7 @@ export function getOption<N extends string, R extends boolean>(
     () => {
       if (option.type !== type) {
         throw new Error(
-          `The option ${option.name} is ${optionTypeToName[option.type]}, not ${optionTypeToName[type]}`,
+          `The option ${option.name} is ${blurbs[option.type]}, not ${blurbs[type]}`,
         );
       }
       if (resolvedKey) {
@@ -101,7 +102,7 @@ export function getOption<N extends string, R extends boolean>(
     subcommand() {
       if (option.type !== ApplicationCommandOptionType.Subcommand) {
         throw new Error(
-          `The option ${option.name} is ${optionTypeToName[option.type]}, not a subcommand`,
+          `The option ${option.name} is ${blurbs[option.type]}, not a subcommand`,
         );
       }
       return {
@@ -113,7 +114,7 @@ export function getOption<N extends string, R extends boolean>(
     subcommandGroup() {
       if (option.type !== ApplicationCommandOptionType.SubcommandGroup) {
         throw new Error(
-          `The option ${option.name} is ${optionTypeToName[option.type]}, not a subcommand group`,
+          `The option ${option.name} is ${blurbs[option.type]}, not a subcommand group`,
         );
       }
       return {
@@ -131,7 +132,7 @@ export function getOption<N extends string, R extends boolean>(
     mentionable() {
       if (option.type !== ApplicationCommandOptionType.Mentionable) {
         throw new Error(
-          `The option ${option.name} is ${optionTypeToName[option.type]}, not a mentionable`,
+          `The option ${option.name} is ${blurbs[option.type]}, not a mentionable`,
         );
       }
       if (!resolved?.users && !resolved?.roles) {
