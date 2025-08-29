@@ -21,6 +21,7 @@ import type {
   OptionValueGetters,
 } from "../server/extenders/options.ts";
 import type { RawFile } from "./file.ts";
+import type { getField } from "../server/extenders/fields.ts";
 
 /**
  * A command interaction, includes methods for responding to the interaction.
@@ -82,11 +83,13 @@ export type ModalSubmitInteraction = APIModalSubmitInteraction &
      * Get a field from the user's submission
      * @param custom_id The custom_id of the field
      * @param required Whether the field is required
+     *
+     * **The returned string is deprecated, use .textInput() to fetch the value in the future**
      */
     getField: <R extends boolean>(
       custom_id: string,
       required?: R,
-    ) => R extends true ? string : string | undefined;
+    ) => ReturnType<typeof getField<R>>;
   };
 
 export interface BaseInteractionMethods {

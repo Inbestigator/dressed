@@ -7,7 +7,7 @@ import type {
   Snowflake,
   PermissionFlagsBits,
 } from "discord-api-types/v10";
-import type { Promisable } from "./possible-promise.ts";
+import type { Promisable } from "./utilities.ts";
 import type {
   CommandHandler,
   ComponentHandler,
