@@ -6,7 +6,7 @@ import { dirname, join, relative } from "node:path";
 import { cwd, exit, stdout } from "node:process";
 import { select, input, confirm } from "@inquirer/prompts";
 import { parse } from "dotenv";
-import { mkdirSync, writeFileSync } from "fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import build from "../server/build/build.ts";
 
 const program = new Command()

@@ -43,7 +43,6 @@ export function createHandlerParser<
       for (const file of files) {
         let data: T["data"];
         let itemMessages = options.itemMessages;
-        const uid = createHash("sha1").update(file.path).digest("hex");
 
         try {
           if (typeof itemMessages === "function") {
@@ -66,7 +65,7 @@ export function createHandlerParser<
             name: file.name,
             path: file.path,
             data,
-            uid,
+            uid: createHash("sha1").update(file.path).digest("hex"),
             exports: null,
           } as T);
           tree.push(file.name, itemMessages.col2);
