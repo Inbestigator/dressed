@@ -11,7 +11,9 @@ const paths = Object.keys(tsconfig.compilerOptions?.paths ?? {}).map(
   (p) => p.split("*")[0],
 );
 
-export default async function bundleFile(entryPoints: string[]) {
+export default async function bundleFile(
+  entryPoints: { in: string; out: string }[],
+) {
   await build({
     entryPoints,
     outdir: ".dressed/cache",

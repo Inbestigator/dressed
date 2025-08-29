@@ -2,7 +2,7 @@
 
 By default, Dressed uses an opinionated server system that includes file layout and bundling. While the opinionated part has been separated from the vital server functionality, if you create a custom system using those functions, this config may still pertain to you.
 
-Many of the options here are also parameters in the `dressed build` function, which will override your server config.
+Many of the options here are also parameters in the `dressed build` function, using them in the command will override the value in your config file.
 
 The config file is named `dressed.config.ts`, although other JS filetypes will work (including `.json`).
 
