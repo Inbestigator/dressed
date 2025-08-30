@@ -4,7 +4,7 @@ import ora from "ora";
 import { stdout } from "node:process";
 import { createHash } from "node:crypto";
 import { pathToFileURL } from "node:url";
-import type { Promisable } from "../../../types/possible-promise.ts";
+import type { Promisable } from "../../../types/utilities.ts";
 import type { BaseData } from "../../../types/config.ts";
 
 interface ParserMessages {

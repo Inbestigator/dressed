@@ -3,70 +3,66 @@ import type {
   APIChatInputApplicationCommandInteractionData,
   APIInteraction,
 } from "discord-api-types/v10";
-import type { Interaction } from "../../types/interaction.ts";
+import type {
+  CommandAutocompleteInteraction,
+  CommandInteraction,
+  Interaction,
+  MessageComponentInteraction,
+  ModalSubmitInteraction,
+} from "../../types/interaction.ts";
 import { InteractionType } from "discord-api-types/v10";
 import { getOption } from "./options.ts";
+import { getField } from "./fields.ts";
 
 export function createInteraction<T extends APIInteraction>(
-  interaction: T,
+  input: T,
 ): Interaction<T> {
-  if (!interaction.user && interaction.member) {
-    interaction.user = interaction.member.user;
+  if (!input.user && input.member) {
+    input.user = input.member.user;
   }
 
-  switch (interaction.type) {
+  switch (input.type) {
     case InteractionType.ApplicationCommand: {
       return {
-        ...interaction,
-        ...baseInteractionMethods(interaction),
-        getOption: (name: string, required: boolean) =>
+        ...input,
+        ...baseInteractionMethods(input),
+        getOption: (n, r) =>
           getOption(
-            name,
-            required,
-            "options" in interaction.data
-              ? (interaction.data.options ?? [])
-              : [],
-            (interaction.data as APIChatInputApplicationCommandInteractionData)
+            n,
+            r ?? false,
+            "options" in input.data ? (input.data.options ?? []) : [],
+            (input.data as APIChatInputApplicationCommandInteractionData)
               .resolved,
           ),
-      } as unknown as Interaction<T>;
+      } as CommandInteraction as Interaction<T>;
     }
     case InteractionType.ApplicationCommandAutocomplete: {
       return {
-        ...interaction,
-        ...baseInteractionMethods(interaction),
-        getOption: (name: string) =>
-          getOption(
-            name,
-            false,
-            interaction.data.options,
-            interaction.data.resolved,
-          ),
-      } as unknown as Interaction<T>;
+        ...input,
+        ...baseInteractionMethods(input),
+        getOption: (n) =>
+          getOption(n, false, input.data.options, input.data.resolved),
+      } as CommandAutocompleteInteraction as Interaction<T>;
     }
     case InteractionType.MessageComponent: {
       return {
-        ...interaction,
-        ...baseInteractionMethods(interaction),
-      } as unknown as Interaction<T>;
+        ...input,
+        ...baseInteractionMethods(input),
+      } as MessageComponentInteraction as Interaction<T>;
     }
     case InteractionType.ModalSubmit: {
       return {
-        ...interaction,
-        ...baseInteractionMethods(interaction),
-        getField(custom_id: string, required: boolean) {
-          const field = interaction.data.components
-            .flatMap((c) => c.components)
-            .find((c) => c.custom_id === custom_id);
-
-          if (!field) {
-            if (required) throw new Error(`Field "${custom_id}" not found`);
-            return;
-          }
-
-          return field.value;
-        },
-      } as unknown as Interaction<T>;
+        ...input,
+        ...baseInteractionMethods(input),
+        getField: (c, r) =>
+          getField(
+            c,
+            r ?? false,
+            input.data.components.flatMap((c) =>
+              c.type === 1 ? c.components : c.component,
+            ),
+          ),
+      } as ModalSubmitInteraction as Interaction<T>;
     }
     default: {
       return null as Interaction<T>;

@@ -1,7 +1,7 @@
 import ora from "ora";
 import { stdout } from "node:process";
 import type { BaseData, ServerConfig } from "../../types/config.ts";
-import type { Promisable } from "../../types/possible-promise.ts";
+import type { Promisable } from "../../types/utilities.ts";
 
 interface SetupItemMessages<T, P> {
   noItem: string;

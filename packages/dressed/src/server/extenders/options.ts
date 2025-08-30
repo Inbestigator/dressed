@@ -8,6 +8,7 @@ import {
   type APIUser,
 } from "discord-api-types/v10";
 import type { CommandInteraction } from "../../types/interaction.ts";
+import type { Requirable } from "../../types/utilities.ts";
 
 export interface OptionValueGetters<N> {
   /** Return the option as a subcommand - Option type must be `Subcommand` */
@@ -59,7 +60,7 @@ export function getOption<N extends string, R extends boolean>(
   required: R,
   options: APIApplicationCommandInteractionDataOption[],
   resolved?: APIInteractionDataResolved,
-): R extends true ? OptionValueGetters<N> : OptionValueGetters<N> | undefined {
+): Requirable<R, OptionValueGetters<N>> {
   const option = options.find((o) => o.name === name);
   if (!option) {
     if (required) throw new Error(`Required option "${name}" not found`);
@@ -74,7 +75,7 @@ export function getOption<N extends string, R extends boolean>(
     () => {
       if (option.type !== type) {
         throw new Error(
-          `The option ${option.name} is ${blurbs[option.type]}, not ${blurbs[type]}`,
+          `The option ${name} is ${blurbs[option.type]}, not ${blurbs[type]}`,
         );
       }
       if (resolvedKey) {
@@ -90,7 +91,7 @@ export function getOption<N extends string, R extends boolean>(
     subcommand() {
       if (option.type !== ApplicationCommandOptionType.Subcommand) {
         throw new Error(
-          `The option ${option.name} is ${blurbs[option.type]}, not a subcommand`,
+          `The option ${name} is ${blurbs[option.type]}, not a subcommand`,
         );
       }
       return {
