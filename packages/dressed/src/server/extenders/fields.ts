@@ -25,7 +25,7 @@ export function getField<R extends boolean>(
     return undefined as ReturnType<typeof getField<R>>;
   }
 
-  const returnOption = (type: ModalSubmitComponent["type"]) => () => {
+  const returnValue = (type: ModalSubmitComponent["type"]) => () => {
     if (component.type !== type) {
       throw new Error(
         `The field ${custom_id} is ${blurbs[component.type - 3]}, not ${blurbs[type - 3]}`,
@@ -40,10 +40,10 @@ export function getField<R extends boolean>(
 
   // TODO Remove this assign and just return the getters before next major release
   return Object.assign(
-    component.type === ComponentType.TextInput ? component.value : "",
+    component.type === ComponentType.TextInput ? component.value : {},
     {
-      textInput: returnOption(ComponentType.TextInput),
-      stringSelect: returnOption(ComponentType.StringSelect),
+      textInput: returnValue(ComponentType.TextInput),
+      stringSelect: returnValue(ComponentType.StringSelect),
     },
   ) as ReturnType<typeof getField<R>>;
 }
