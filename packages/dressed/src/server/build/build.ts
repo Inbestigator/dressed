@@ -6,9 +6,10 @@ import {
   writeFileSync,
   readdirSync,
   mkdirSync,
+  rmSync,
 } from "node:fs";
 import { cwd, stdout } from "node:process";
-import { basename, extname, relative, resolve } from "node:path";
+import { basename, extname, join, relative, resolve } from "node:path";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";
 import { parseEvents } from "./parsers/events.ts";
@@ -21,7 +22,7 @@ import type {
 import type { WalkEntry } from "../../types/walk.ts";
 import { botEnv } from "../../utils/env.ts";
 import { getApp } from "../../resources/application.ts";
-import bundleFile from "./bundle.ts";
+import bundleFiles from "./bundle.ts";
 import { pathToFileURL } from "node:url";
 
 function override<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
@@ -56,6 +57,7 @@ export default async function build(config: ServerConfig = {}): Promise<{
   events: EventData[];
   config: ServerConfig;
 }> {
+  rmSync(".dressed/cache", { recursive: true, force: true });
   mkdirSync(".dressed/cache", { recursive: true });
   await fetchMissingVars();
   const configPath = readdirSync(".").find(
@@ -63,26 +65,37 @@ export default async function build(config: ServerConfig = {}): Promise<{
   );
 
   if (configPath) {
-    await bundleFile({
-      path: configPath,
-      outPath: ".dressed/cache/config.mjs",
-    });
+    await bundleFiles([{ in: configPath, out: "dressed.config" }]);
     const { default: importedConfig } = await import(
-      pathToFileURL(".dressed/cache/config.mjs").href
+      pathToFileURL(".dressed/cache/dressed.config.js").href
     );
     config = override(importedConfig, config);
   } else {
     writeFileSync(
-      ".dressed/cache/config.mjs",
+      ".dressed/cache/dressed.config.js",
       `export default ${JSON.stringify(config)}`,
     );
   }
 
-  const [commandFiles, componentFiles, eventFiles] = await Promise.all([
-    fetchFiles(config.build, "commands"),
-    fetchFiles(config.build, "components"),
-    fetchFiles(config.build, "events"),
-  ]);
+  const root = config.build?.root ?? "src";
+
+  const [commandFiles, componentFiles, eventFiles] = await Promise.all(
+    ["commands", "components", "events"].map((d) =>
+      fetchFiles(root, d, config.build?.extensions ?? ["js", "ts", "mjs"]),
+    ),
+  );
+  await bundleFiles(
+    [...commandFiles, ...componentFiles, ...eventFiles].map((f) => ({
+      in: f.path,
+      out: relative(
+        ".dressed/cache",
+        (f.path = join(
+          ".dressed/cache",
+          relative(root, f.path.slice(0, -extname(f.path).length) + ".js"),
+        )),
+      ).slice(0, -3),
+    })),
+  );
   const commands = await parseCommands(commandFiles);
   const components = await parseComponents(componentFiles);
   const events = await parseEvents(eventFiles);
@@ -91,24 +104,22 @@ export default async function build(config: ServerConfig = {}): Promise<{
 }
 
 async function fetchFiles(
-  config: ServerConfig["build"] = {},
-  dirName: string,
+  root: string,
+  dir: string,
+  extensions: string[],
 ): Promise<WalkEntry[]> {
-  const dirPath = resolve(config.root ?? "src", dirName);
+  const dirPath = resolve(root, dir);
 
   if (!existsSync(dirPath)) {
     ora(
-      `${dirName.slice(0, 1).toUpperCase() + dirName.slice(1)} directory not found`,
+      `${dir.slice(0, 1).toUpperCase() + dir.slice(1)} directory not found`,
     ).warn();
     return [];
   }
 
   const filesArray: WalkEntry[] = [];
   for await (const file of walkFiles(dirPath, {
-    filterFile: (f) =>
-      (config.extensions ?? ["js", "ts", "mjs"]).includes(
-        extname(f.name).slice(1),
-      ),
+    filterFile: (f) => extensions.includes(extname(f.name).slice(1)),
   })) {
     const relativePath = relative(cwd(), file.path);
     filesArray.push({

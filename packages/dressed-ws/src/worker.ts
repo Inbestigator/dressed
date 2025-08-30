@@ -42,8 +42,8 @@ type WorkerMsg =
     };
 
 const WSCodes = {
-  Disconnect: 1000,
-  NewSession: 1001,
+  NormalClose: 1000,
+  GoingAway: 1001,
   ResumeSession: 3001,
 } as const;
 
@@ -126,7 +126,7 @@ function connectShard(
           payload.op === GatewayOpcodes.InvalidSession &&
           payload.d === false
         ) {
-          shard.ws.close(WSCodes.NewSession, "Initiating full reset");
+          shard.ws.close(WSCodes.NormalClose, "Initiating full reset");
         } else {
           shard.ws.close(WSCodes.ResumeSession, "Reconnect message received");
         }
@@ -163,8 +163,10 @@ function connectShard(
   };
 
   ws.onclose = ({ code, reason }) => {
-    if (shard.state !== "Disconnecting" && code === WSCodes.Disconnect) {
-      code = WSCodes.NewSession;
+    if (shard.state === "Disconnecting") {
+      code = WSCodes.GoingAway;
+    } else if (code === WSCodes.GoingAway) {
+      code = WSCodes.NormalClose;
     }
     clearInterval(shard.heartbeatInterval);
     switch (code) {
@@ -174,7 +176,7 @@ function connectShard(
       case GatewayCloseCodes.InvalidAPIVersion:
       case GatewayCloseCodes.InvalidIntents:
       case GatewayCloseCodes.DisallowedIntents:
-      case WSCodes.Disconnect: {
+      case WSCodes.GoingAway: {
         shards.delete(shardId);
         console.log(
           `Connection closed with code ${code} - ${reason || "No reason provided"} (shard ${config.shard[0]})`,
@@ -200,7 +202,7 @@ function connectShard(
       case GatewayCloseCodes.NotAuthenticated:
       case GatewayCloseCodes.InvalidSeq:
       case GatewayCloseCodes.SessionTimedOut:
-      case WSCodes.NewSession: {
+      case WSCodes.NormalClose: {
         connectShard(config.bot.url, config);
         break;
       }
@@ -219,7 +221,7 @@ parentPort.on("message", (data: WorkerMsg) => {
       if (shard) {
         shard.state = "Disconnecting";
         clearInterval(shard.heartbeatInterval);
-        shard.ws.close(WSCodes.Disconnect, "Shard removed");
+        shard.ws.close(WSCodes.NormalClose, "Shard removed");
         shards.delete(data.shardId);
       }
       break;
@@ -237,7 +239,7 @@ parentPort.on("close", () => {
   for (const shard of shards.values()) {
     shard.state = "Disconnecting";
     clearInterval(shard.heartbeatInterval);
-    shard.ws.close(WSCodes.Disconnect, "Worker closed");
+    shard.ws.close(WSCodes.NormalClose, "Worker closed");
   }
   shards.clear();
 });
