@@ -84,7 +84,7 @@ export type ModalSubmitInteraction = APIModalSubmitInteraction &
      * @param custom_id The custom_id of the field
      * @param required Whether the field is required
      *
-     * **The returned string is deprecated, use .textInput() to fetch the value in the future**
+     * **The returned string is deprecated, use `.textInput()` to fetch the value of a text input in the future**
      */
     getField: <R extends boolean>(
       custom_id: string,
