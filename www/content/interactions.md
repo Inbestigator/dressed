@@ -85,6 +85,27 @@ const user = interaction.getOption("user", true).user();
 
 ---
 
+## Command autocomplete interactions
+
+This method is only available for command autocomplete interactions
+
+### sendChoices
+
+Provides a list of choices for the user to prompt the user to select from.
+
+#### Parameters
+
+- `choices`: The choices to suggest.
+
+```ts
+interaction.sendChoices([
+  { name: "Dog", value: "dog" },
+  { name: "Cat", value: "cat" },
+]);
+```
+
+---
+
 ## Message component interactions
 
 This method is only available for components
