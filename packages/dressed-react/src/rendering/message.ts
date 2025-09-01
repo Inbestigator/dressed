@@ -26,8 +26,7 @@ export async function createMessage(
     files?: RawFile[];
   } = {},
 ) {
-  const flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
-  data.flags = flags;
+  data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
   data.components = (await render(components)).components as never;
   return dressedCreateMessage(channel, data);
 }
@@ -47,8 +46,7 @@ export async function editMessage(
     files?: RawFile[];
   } = {},
 ) {
-  const flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
-  data.flags = flags;
+  data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
   data.components = (await render(components)).components as never;
   return dressedEditMessage(channel, message, data);
 }

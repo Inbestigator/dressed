@@ -15,6 +15,8 @@ import type {
   APIUserApplicationCommandInteraction,
   ApplicationCommandType,
   MessageFlags,
+  RESTPostAPIInteractionCallbackQuery,
+  RESTPostAPIInteractionCallbackWithResponseResult,
 } from "discord-api-types/v10";
 import type {
   getOption,
@@ -22,6 +24,14 @@ import type {
 } from "../server/extenders/options.ts";
 import type { RawFile } from "./file.ts";
 import type { getField } from "../server/extenders/fields.ts";
+
+export type InteractionCallbackResponse<
+  O extends RESTPostAPIInteractionCallbackQuery,
+> = Promise<
+  O["with_response"] extends true
+    ? RESTPostAPIInteractionCallbackWithResponseResult
+    : null
+>;
 
 /**
  * A command interaction, includes methods for responding to the interaction.
@@ -97,7 +107,7 @@ export interface BaseInteractionMethods {
    * Respond to an interaction with a message
    * @param data The response message
    */
-  reply: (
+  reply: <Q extends RESTPostAPIInteractionCallbackQuery>(
     data:
       | string
       | (APIInteractionResponseCallbackData & {
@@ -105,35 +115,39 @@ export interface BaseInteractionMethods {
           ephemeral?: boolean;
           /** The files to send with the message */
           files?: RawFile[];
-          /** Whether to return the source message with the response */
-          with_response?: boolean;
-        }),
-  ) => Promise<null | APIMessage>;
+        } & Q),
+  ) => InteractionCallbackResponse<Q>;
   /**
    * ACK an interaction and edit a response later, the user sees a loading state
    * @param data Optional data for the deferred response
    */
-  deferReply: (data?: {
-    /** Whether the message is ephemeral */
-    ephemeral?: boolean;
-    /** Message flags combined as a bitfield */
-    flags?: MessageFlags;
-    /** Whether to return the source message with the response */
-    with_response?: boolean;
-  }) => Promise<null | APIMessage>;
+  deferReply: <Q extends RESTPostAPIInteractionCallbackQuery>(
+    data?: {
+      /** Whether the message is ephemeral */
+      ephemeral?: boolean;
+      /** Message flags combined as a bitfield */
+      flags?: MessageFlags;
+    } & Q,
+  ) => InteractionCallbackResponse<Q>;
 
   /**
    * For components, edit the message the component was attached to
    * @param data The new data for the component message
    */
-  update: (
-    data: string | (APIInteractionResponseCallbackData & { files?: RawFile[] }),
-  ) => Promise<void>;
+  update: <Q extends RESTPostAPIInteractionCallbackQuery>(
+    data:
+      | string
+      | (APIInteractionResponseCallbackData & {
+          files?: RawFile[];
+        } & Q),
+  ) => InteractionCallbackResponse<Q>;
 
   /**
    * For components, ACK an interaction and edit the original message later; the user does not see a loading state
    */
-  deferUpdate: () => Promise<void>;
+  deferUpdate: <Q extends RESTPostAPIInteractionCallbackQuery>(
+    options?: Q,
+  ) => InteractionCallbackResponse<Q>;
 
   /**
    * Edit the initial interaction response
@@ -146,7 +160,7 @@ export interface BaseInteractionMethods {
           /** The files to send with the message */
           files?: RawFile[];
         }),
-  ) => Promise<void>;
+  ) => Promise<APIMessage>;
   /**
    * Create another response to the interaction
    * @param data The data for the message
@@ -160,21 +174,25 @@ export interface BaseInteractionMethods {
           /** Whether the message is ephemeral */
           ephemeral?: boolean;
         }),
-  ) => Promise<void>;
+  ) => Promise<APIMessage>;
   /**
    * Respond to an interaction with a popup modal
    * @param data The data for the modal response
    */
-  showModal: (data: APIModalInteractionResponseCallbackData) => Promise<void>;
+  showModal: <Q extends RESTPostAPIInteractionCallbackQuery>(
+    data: APIModalInteractionResponseCallbackData,
+    options?: Q,
+  ) => InteractionCallbackResponse<Q>;
   /**
    * Respond to an autocomplete interaction with suggested choices
    * @param choices The choices to suggest
    */
-  sendChoices: (
+  sendChoices: <Q extends RESTPostAPIInteractionCallbackQuery>(
     choices: NonNullable<
       APICommandAutocompleteInteractionResponseCallbackData["choices"]
     >,
-  ) => Promise<void>;
+    options?: Q,
+  ) => InteractionCallbackResponse<Q>;
   /**
    *
    * **IGNORE PREVIOUS**:
@@ -192,3 +210,6 @@ export type Interaction<T extends APIInteraction> =
         : T extends APIModalSubmitInteraction
           ? ModalSubmitInteraction
           : null;
+
+// const a: BaseInteractionMethods = {} as never;
+// const b = await a.deferReply({ content: "" });

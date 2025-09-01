@@ -1,22 +1,23 @@
 import {
   type APIInteraction,
   type APIInteractionResponseCallbackData,
-  type APIModalInteractionResponseCallbackData,
-  InteractionResponseType,
   MessageFlags,
-  Routes,
 } from "discord-api-types/v10";
 import type { BaseInteractionMethods } from "../../types/interaction.ts";
-import { callDiscord } from "../../utils/call-discord.ts";
 import { botEnv } from "../../utils/env.ts";
 import type { RawFile } from "../../types/file.ts";
+import {
+  editWebhookMessage,
+  executeWebhook,
+} from "../../resources/webhooks.ts";
+import { createInteractionCallback } from "../../resources/interactions.ts";
 
 export const baseInteractionMethods = (
   interaction: APIInteraction,
 ): BaseInteractionMethods => ({
   async reply(data) {
     if (typeof data === "string") {
-      data = { content: data };
+      data = { content: data } as never;
     }
 
     if (data.ephemeral) {
@@ -27,23 +28,14 @@ export const baseInteractionMethods = (
     const files = data.files;
     delete data.files;
 
-    const res = await callDiscord(
-      Routes.interactionCallback(interaction.id, interaction.token),
-      {
-        method: "POST",
-        body: {
-          type: InteractionResponseType.ChannelMessageWithSource,
-          data,
-        },
-        params: data.with_response
-          ? {
-              with_response: data.with_response,
-            }
-          : undefined,
-        files,
-      },
-    );
-    return data.with_response ? res.json() : null;
+    return createInteractionCallback(
+      interaction.id,
+      interaction.token,
+      "ChannelMessageWithSource",
+      data,
+      files,
+      { with_response: data?.with_response },
+    ) as never;
   },
   async deferReply(data) {
     if (data?.ephemeral) {
@@ -51,72 +43,49 @@ export const baseInteractionMethods = (
       data.flags = flags;
     }
 
-    const res = await callDiscord(
-      Routes.interactionCallback(interaction.id, interaction.token),
-      {
-        method: "POST",
-        body: {
-          type: InteractionResponseType.DeferredChannelMessageWithSource,
-          data,
-        },
-        params: data?.with_response
-          ? {
-              with_response: data.with_response,
-            }
-          : undefined,
-      },
-    );
-
-    return data?.with_response ? res.json() : null;
+    return createInteractionCallback(
+      interaction.id,
+      interaction.token,
+      "DeferredChannelMessageWithSource",
+      data,
+      undefined,
+      { with_response: data?.with_response },
+    ) as never;
   },
   async update(data) {
     if (typeof data === "string") {
-      data = { content: data };
+      data = { content: data } as never;
     }
 
     const files = data.files;
     delete data.files;
 
-    await callDiscord(
-      Routes.interactionCallback(interaction.id, interaction.token),
-      {
-        method: "POST",
-        body: {
-          type: InteractionResponseType.UpdateMessage,
-          data,
-        },
-        files,
-      },
+    return createInteractionCallback(
+      interaction.id,
+      interaction.token,
+      "UpdateMessage",
+      data,
+      files,
+      { with_response: data.with_response },
+    ) as never;
+  },
+  async deferUpdate(options) {
+    return createInteractionCallback(
+      interaction.id,
+      interaction.token,
+      "DeferredMessageUpdate",
+      undefined,
+      undefined,
+      options,
     );
   },
-  async deferUpdate() {
-    await callDiscord(
-      Routes.interactionCallback(interaction.id, interaction.token),
-      {
-        method: "POST",
-        body: {
-          type: InteractionResponseType.DeferredMessageUpdate,
-        },
-      },
-    );
-  },
-  async editReply(data) {
-    if (typeof data === "string") {
-      data = { content: data };
-    }
-
-    const files = data.files;
-    delete data.files;
-
-    await callDiscord(
-      Routes.webhookMessage(botEnv.DISCORD_APP_ID!, interaction.token),
-      {
-        method: "PATCH",
-        body: data,
-        files,
-      },
-    );
-  },
+  editReply: (data) =>
+    editWebhookMessage(
+      botEnv.DISCORD_APP_ID!,
+      interaction.token,
+      "@original",
+      data,
+    ),
   async followUp(
     data:
       | string
@@ -124,52 +93,33 @@ export const baseInteractionMethods = (
           files?: RawFile[];
           ephemeral?: boolean;
         }),
-  ): Promise<void> {
-    if (typeof data === "string") {
-      data = { content: data };
-    }
-
-    if (data.ephemeral) {
+  ) {
+    if (typeof data === "object" && data.ephemeral) {
       const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
       data.flags = flags;
     }
-
-    const files = data.files;
-    delete data.files;
-
-    await callDiscord(
-      Routes.webhook(botEnv.DISCORD_APP_ID!, interaction.token),
-      {
-        method: "POST",
-        body: data,
-        files,
-      },
+    return executeWebhook(botEnv.DISCORD_APP_ID!, interaction.token, data, {
+      wait: true,
+    });
+  },
+  async showModal(data, options) {
+    return createInteractionCallback(
+      interaction.id,
+      interaction.token,
+      "Modal",
+      data,
+      undefined,
+      options,
     );
   },
-  async showModal(
-    data: APIModalInteractionResponseCallbackData,
-  ): Promise<void> {
-    await callDiscord(
-      Routes.interactionCallback(interaction.id, interaction.token),
-      {
-        method: "POST",
-        body: {
-          type: InteractionResponseType.Modal,
-          data,
-        },
-      },
-    );
-  },
-  async sendChoices(choices) {
-    await callDiscord(
-      Routes.interactionCallback(interaction.id, interaction.token),
-      {
-        method: "POST",
-        body: {
-          type: InteractionResponseType.ApplicationCommandAutocompleteResult,
-          data: { choices },
-        },
-      },
+  async sendChoices(choices, options) {
+    return createInteractionCallback(
+      interaction.id,
+      interaction.token,
+      "ApplicationCommandAutocompleteResult",
+      { choices },
+      undefined,
+      options,
     );
   },
   user: interaction.member?.user ?? interaction.user!,
