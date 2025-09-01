@@ -8,9 +8,12 @@ import type { RawFile } from "../types/file.ts";
 import type { InteractionCallbackResponse } from "../types/interaction.ts";
 
 /**
- * Returns an invite object for the given code.
+ * Respond to an interaction by sending a modal, message, or update the original.
  * @param interactionId The ID of the interaction to callback
- * @param interactionId The token of the interaction to callback
+ * @param interactionToken The token of the interaction to callback
+ * @param type The type of response
+ * @param data The data to use, the respective modal, message data etc.
+ * @param files Files used in messages
  * @param options Optional parameters for the request
  */
 export async function createInteractionCallback<
