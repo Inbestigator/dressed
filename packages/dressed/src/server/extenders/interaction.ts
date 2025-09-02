@@ -61,6 +61,8 @@ export function createInteraction<T extends APIInteraction>(
             input.data.components.flatMap((c) =>
               c.type === 1 ? c.components : c.component,
             ),
+            // @ts-expect-error Valid
+            input.data.resolved,
           ),
       } as ModalSubmitInteraction as Interaction<T>;
     }
