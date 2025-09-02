@@ -17,12 +17,14 @@ export const baseInteractionMethods = (
 ): BaseInteractionMethods => ({
   async reply(data) {
     if (typeof data === "string") {
-      data = { content: data } as never;
+      data = { content: data } as Extract<
+        Parameters<BaseInteractionMethods["reply"]>[0],
+        { content: string }
+      >;
     }
 
     if (data.ephemeral) {
-      const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
-      data.flags = flags;
+      data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     }
 
     const files = data.files;
@@ -39,8 +41,7 @@ export const baseInteractionMethods = (
   },
   async deferReply(data) {
     if (data?.ephemeral) {
-      const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
-      data.flags = flags;
+      data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     }
 
     return createInteractionCallback(
@@ -54,7 +55,10 @@ export const baseInteractionMethods = (
   },
   async update(data) {
     if (typeof data === "string") {
-      data = { content: data } as never;
+      data = { content: data } as Extract<
+        Parameters<BaseInteractionMethods["update"]>[0],
+        { content: string }
+      >;
     }
 
     const files = data.files;
@@ -95,8 +99,7 @@ export const baseInteractionMethods = (
         }),
   ) {
     if (typeof data === "object" && data.ephemeral) {
-      const flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
-      data.flags = flags;
+      data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     }
     return executeWebhook(botEnv.DISCORD_APP_ID!, interaction.token, data, {
       wait: true,

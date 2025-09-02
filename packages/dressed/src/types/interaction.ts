@@ -2,19 +2,16 @@ import type {
   APIApplicationCommandAutocompleteInteraction,
   APIApplicationCommandInteraction,
   APIChatInputApplicationCommandInteraction,
-  APICommandAutocompleteInteractionResponseCallbackData,
   APIInteraction,
-  APIInteractionResponseCallbackData,
   APIMessage,
   APIMessageApplicationCommandInteraction,
   APIMessageComponentInteraction,
-  APIModalInteractionResponseCallbackData,
   APIModalSubmitInteraction,
   APIPrimaryEntryPointCommandInteraction,
   APIUser,
   APIUserApplicationCommandInteraction,
   ApplicationCommandType,
-  MessageFlags,
+  InteractionResponseType,
   RESTPostAPIInteractionCallbackQuery,
   RESTPostAPIInteractionCallbackWithResponseResult,
 } from "discord-api-types/v10";
@@ -24,6 +21,11 @@ import type {
 } from "../server/extenders/options.ts";
 import type { RawFile } from "./file.ts";
 import type { getField } from "../server/extenders/fields.ts";
+import type { createInteractionCallback } from "../resources/interactions.ts";
+import type {
+  editWebhookMessage,
+  executeWebhook,
+} from "../resources/webhooks.ts";
 
 export type InteractionCallbackResponse<
   O extends RESTPostAPIInteractionCallbackQuery,
@@ -102,6 +104,10 @@ export type ModalSubmitInteraction = APIModalSubmitInteraction &
     ) => ReturnType<typeof getField<R>>;
   };
 
+type InteractionResponseCallbackData<
+  T extends keyof typeof InteractionResponseType,
+> = Parameters<typeof createInteractionCallback<T, object>>[3];
+
 export interface BaseInteractionMethods {
   /**
    * Respond to an interaction with a message
@@ -110,7 +116,7 @@ export interface BaseInteractionMethods {
   reply: <Q extends RESTPostAPIInteractionCallbackQuery>(
     data:
       | string
-      | (APIInteractionResponseCallbackData & {
+      | (InteractionResponseCallbackData<"ChannelMessageWithSource"> & {
           /** Whether the message is ephemeral */
           ephemeral?: boolean;
           /** The files to send with the message */
@@ -122,11 +128,9 @@ export interface BaseInteractionMethods {
    * @param data Optional data for the deferred response
    */
   deferReply: <Q extends RESTPostAPIInteractionCallbackQuery>(
-    data?: {
+    data?: InteractionResponseCallbackData<"DeferredChannelMessageWithSource"> & {
       /** Whether the message is ephemeral */
       ephemeral?: boolean;
-      /** Message flags combined as a bitfield */
-      flags?: MessageFlags;
     } & Q,
   ) => InteractionCallbackResponse<Q>;
 
@@ -137,7 +141,8 @@ export interface BaseInteractionMethods {
   update: <Q extends RESTPostAPIInteractionCallbackQuery>(
     data:
       | string
-      | (APIInteractionResponseCallbackData & {
+      | (InteractionResponseCallbackData<"UpdateMessage"> & {
+          /** The files to send with the message */
           files?: RawFile[];
         } & Q),
   ) => InteractionCallbackResponse<Q>;
@@ -154,33 +159,26 @@ export interface BaseInteractionMethods {
    * @param data The new data for the response message
    */
   editReply: (
-    data:
-      | string
-      | (APIInteractionResponseCallbackData & {
-          /** The files to send with the message */
-          files?: RawFile[];
-        }),
+    data: Parameters<typeof editWebhookMessage>[3],
   ) => Promise<APIMessage>;
   /**
    * Create another response to the interaction
    * @param data The data for the message
    */
   followUp: (
-    data:
-      | string
-      | (APIInteractionResponseCallbackData & {
-          /** The files to send with the message */
-          files?: RawFile[];
-          /** Whether the message is ephemeral */
-          ephemeral?: boolean;
-        }),
+    data: Parameters<typeof executeWebhook>[2] & {
+      /** Whether the message is ephemeral */
+      ephemeral?: boolean;
+      /** The files to send with the message */
+      files?: RawFile[];
+    },
   ) => Promise<APIMessage>;
   /**
    * Respond to an interaction with a popup modal
    * @param data The data for the modal response
    */
   showModal: <Q extends RESTPostAPIInteractionCallbackQuery>(
-    data: APIModalInteractionResponseCallbackData,
+    data: InteractionResponseCallbackData<"Modal">,
     options?: Q,
   ) => InteractionCallbackResponse<Q>;
   /**
@@ -188,9 +186,7 @@ export interface BaseInteractionMethods {
    * @param choices The choices to suggest
    */
   sendChoices: <Q extends RESTPostAPIInteractionCallbackQuery>(
-    choices: NonNullable<
-      APICommandAutocompleteInteractionResponseCallbackData["choices"]
-    >,
+    choices?: InteractionResponseCallbackData<"ApplicationCommandAutocompleteResult">["choices"],
     options?: Q,
   ) => InteractionCallbackResponse<Q>;
   /**
@@ -210,6 +206,3 @@ export type Interaction<T extends APIInteraction> =
         : T extends APIModalSubmitInteraction
           ? ModalSubmitInteraction
           : null;
-
-// const a: BaseInteractionMethods = {} as never;
-// const b = await a.deferReply({ content: "" });
