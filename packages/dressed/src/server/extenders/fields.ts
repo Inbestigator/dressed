@@ -1,23 +1,36 @@
 import {
   ComponentType,
+  type APIInteractionDataResolved,
+  type APIInteractionDataResolvedChannel,
+  type APIRole,
+  type APIUser,
   type ModalSubmitComponent,
 } from "discord-api-types/v10";
 import type { Requirable } from "../../types/utilities.ts";
 
 export interface FieldValueGetters {
-  /** Return the input's value as a string - Component type must be `TextInput` */
-  textInput: () => string;
-  /** Return the select menu's values as an array of strings - Component type must be `StringSelect` */
+  /** Return the select menu's values as an array of strings - Component must be a select with type `String` */
   stringSelect: () => string[];
+  /** Return the input's value as a string - Component must be a text input */
+  textInput: () => string;
+  /** Return the select menu's values as an array of users - Component type must be a select with type `User` */
+  userSelect: () => APIUser[];
+  /** Return the select menu's values as an array of roles - Component type must be a select with type `Role` */
+  roleSelect: () => APIRole[];
+  /** Return the select menu's values as an array of users and roles (mentionables) - Component type must be a select with type `Mentionable` */
+  mentionableSelect: () => (APIUser | APIRole)[];
+  /** Return the select menu's values as an array of channels - Component type must be a select with type `Channel` */
+  channelSelect: () => APIInteractionDataResolvedChannel[];
 }
 
 // prettier-ignore
-const blurbs = ["a string select", "a text input"];
+const blurbs = ["a string select", "a text input", "a user select", "a role select","a mentionable select", "a channel select"];
 
 export function getField<R extends boolean>(
   custom_id: string,
   required: R,
   components: ModalSubmitComponent[],
+  resolved?: APIInteractionDataResolved,
 ): Requirable<R, FieldValueGetters> {
   const component = components.find((c) => c.custom_id === custom_id);
   if (!component) {
@@ -25,25 +38,68 @@ export function getField<R extends boolean>(
     return undefined as ReturnType<typeof getField<R>>;
   }
 
-  const returnValue = (type: ModalSubmitComponent["type"]) => () => {
-    if (component.type !== type) {
-      throw new Error(
-        `The field ${custom_id} is ${blurbs[component.type - 3]}, not ${blurbs[type - 3]}`,
-      );
-    }
-    if (component.type === ComponentType.TextInput) {
-      return component.value;
-    } else {
-      return component.values;
-    }
-  };
+  const returnValue =
+    (
+      type: ModalSubmitComponent["type"],
+      resolvedKey?: keyof APIInteractionDataResolved,
+    ) =>
+    () => {
+      if (component.type !== type) {
+        throw new Error(
+          `The field ${custom_id} is ${blurbs[component.type - 3]}, not ${blurbs[type - 3]}`,
+        );
+      }
+      if (component.type === ComponentType.TextInput) {
+        return component.value;
+      } else {
+        if (resolvedKey) {
+          if (!resolved?.[resolvedKey]) {
+            throw new Error(
+              `No ${resolvedKey} found for field ${component.custom_id}`,
+            );
+          }
+          const resolveds = [];
+          for (const value of component.values) {
+            resolveds.push(resolved[resolvedKey][value]);
+          }
+          return resolveds;
+        }
+        return component.values;
+      }
+    };
 
   // TODO Remove this assign and just return the getters before next major release
   return Object.assign(
     component.type === ComponentType.TextInput ? component.value : {},
     {
-      textInput: returnValue(ComponentType.TextInput),
       stringSelect: returnValue(ComponentType.StringSelect),
+      textInput: returnValue(ComponentType.TextInput),
+      // @ts-expect-error This is valid, `discord-api-types` hasn't released yet
+      userSelect: returnValue(ComponentType.UserSelect, "users"),
+      // @ts-expect-error This is valid, `discord-api-types` hasn't released yet
+      roleSelect: returnValue(ComponentType.RoleSelect, "roles"),
+      mentionableSelect() {
+        // @ts-expect-error This is valid, `discord-api-types` hasn't released yet
+        if (component.type !== ComponentType.MentionableSelect) {
+          throw new Error(
+            `The field ${component.custom_id} is ${blurbs[component.type]}, not a mentionable select`,
+          );
+        }
+        if (!resolved?.users && !resolved?.roles) {
+          throw new Error(
+            // @ts-expect-error This is valid, `discord-api-types` hasn't released yet
+            `No mentionables found for field ${component.custom_id}`,
+          );
+        }
+        const mentionables = [];
+        // @ts-expect-error This is valid, `discord-api-types` hasn't released yet
+        for (const value of component.values) {
+          mentionables.push(resolved.users?.[value] ?? resolved.roles?.[value]);
+        }
+        return mentionables;
+      },
+      // @ts-expect-error This is valid, `discord-api-types` hasn't released yet
+      channelSelect: returnValue(ComponentType.ChannelSelect, "channels"),
     },
   ) as ReturnType<typeof getField<R>>;
 }
