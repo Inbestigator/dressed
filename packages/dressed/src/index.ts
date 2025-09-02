@@ -35,6 +35,7 @@ export * from "./resources/gateway.ts";
 export * from "./resources/guild-events.ts";
 export * from "./resources/guild-templates.ts";
 export * from "./resources/guilds.ts";
+export * from "./resources/interactions.ts";
 export * from "./resources/invites.ts";
 export * from "./resources/messages.ts";
 export * from "./resources/polls.ts";

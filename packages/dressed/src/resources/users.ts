@@ -100,7 +100,7 @@ export async function listConnections(): Promise<RESTGetAPICurrentUserConnection
  */
 export async function getRoleConnection(): Promise<RESTGetAPICurrentUserApplicationRoleConnectionResult> {
   const res = await callDiscord(
-    Routes.userApplicationRoleConnection(botEnv.DISCORD_APP_ID!),
+    Routes.userApplicationRoleConnection(botEnv.DISCORD_APP_ID),
     {
       method: "GET",
     },
@@ -117,7 +117,7 @@ export async function modifyRoleConnection(
   data: RESTPutAPICurrentUserApplicationRoleConnectionJSONBody,
 ): Promise<RESTPutAPICurrentUserApplicationRoleConnectionResult> {
   const res = await callDiscord(
-    Routes.userApplicationRoleConnection(botEnv.DISCORD_APP_ID!),
+    Routes.userApplicationRoleConnection(botEnv.DISCORD_APP_ID),
     {
       method: "PUT",
       body: data,

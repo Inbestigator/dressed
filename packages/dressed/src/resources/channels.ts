@@ -14,6 +14,7 @@ import type {
   RESTPostAPIChannelFollowersResult,
   RESTPostAPIChannelInviteJSONBody,
   RESTPostAPIChannelInviteResult,
+  RESTPostAPIChannelMessageJSONBody,
   RESTPostAPIChannelThreadsJSONBody,
   RESTPostAPIChannelThreadsResult,
   RESTPostAPIGuildForumThreadsJSONBody,
@@ -223,13 +224,23 @@ export async function createThread(
  */
 export async function createForumThread(
   channel: Snowflake,
-  data: RESTPostAPIGuildForumThreadsJSONBody & {
-    files?: RawFile[];
+  data: Omit<RESTPostAPIGuildForumThreadsJSONBody, "message"> & {
+    message:
+      | string
+      | (RESTPostAPIChannelMessageJSONBody & { files?: RawFile[] });
   },
 ): Promise<APIThreadChannel & { message: APIMessage }> {
+  if (typeof data.message === "string") {
+    data.message = { content: data.message };
+  }
+
+  const files = data.message.files;
+  delete data.message.files;
+
   const res = await callDiscord(Routes.threads(channel), {
     method: "POST",
     body: data,
+    files,
   });
 
   return res.json();
