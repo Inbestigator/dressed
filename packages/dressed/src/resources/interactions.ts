@@ -27,12 +27,12 @@ export async function createInteractionCallback<
   interactionId: string,
   interactionToken: string,
   type: T,
-  // This accounts for the different types submitting data or not
   ...[data, files, options]: E extends {
     data?: infer D;
   }
-    ? [...(E extends { data: object } ? [D] : [D?]), RawFile[]?, Q?]
-    : [undefined?, RawFile[]?, Q?]
+    ? // This accounts for the different types submitting data or not
+      [...(E extends { data: object } ? [D] : [D?]), RawFile[]?, Q?]
+    : [undefined?, undefined?, Q?]
 ): InteractionCallbackResponse<Q> {
   const res = await callDiscord(
     Routes.interactionCallback(interactionId, interactionToken),

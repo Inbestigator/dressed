@@ -73,16 +73,15 @@ export const baseInteractionMethods = (
       { with_response: data.with_response },
     ) as never;
   },
-  async deferUpdate(options) {
-    return createInteractionCallback(
+  deferUpdate: (options) =>
+    createInteractionCallback(
       interaction.id,
       interaction.token,
       "DeferredMessageUpdate",
       undefined,
       undefined,
       options,
-    );
-  },
+    ),
   editReply: (data) =>
     editWebhookMessage(
       botEnv.DISCORD_APP_ID!,
@@ -105,25 +104,23 @@ export const baseInteractionMethods = (
       wait: true,
     });
   },
-  async showModal(data, options) {
-    return createInteractionCallback(
+  showModal: (data, options) =>
+    createInteractionCallback(
       interaction.id,
       interaction.token,
       "Modal",
       data,
       undefined,
       options,
-    );
-  },
-  async sendChoices(choices, options) {
-    return createInteractionCallback(
+    ),
+  sendChoices: (choices, options) =>
+    createInteractionCallback(
       interaction.id,
       interaction.token,
       "ApplicationCommandAutocompleteResult",
       { choices },
       undefined,
       options,
-    );
-  },
+    ),
   user: interaction.member?.user ?? interaction.user!,
 });
