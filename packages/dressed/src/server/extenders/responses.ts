@@ -84,7 +84,7 @@ export const baseInteractionMethods = (
     ),
   editReply: (data) =>
     editWebhookMessage(
-      botEnv.DISCORD_APP_ID!,
+      botEnv.DISCORD_APP_ID,
       interaction.token,
       "@original",
       data,
@@ -100,7 +100,7 @@ export const baseInteractionMethods = (
     if (typeof data === "object" && data.ephemeral) {
       data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     }
-    return executeWebhook(botEnv.DISCORD_APP_ID!, interaction.token, data, {
+    return executeWebhook(botEnv.DISCORD_APP_ID, interaction.token, data, {
       wait: true,
     });
   },
