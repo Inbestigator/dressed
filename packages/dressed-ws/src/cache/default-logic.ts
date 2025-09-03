@@ -1,5 +1,5 @@
 import { hash } from "node:crypto";
-import type { CachedFunctions, CacheLogic } from "./types.ts";
+import type { CachedFunctions, DefaultLogic } from "./types.ts";
 
 interface Config {
   /**
@@ -31,7 +31,9 @@ export function resolveKey<F extends CachedFunctions, K extends keyof F>(
 }
 
 /** A super simple cache system using a map */
-export function defaultLogic<F extends CachedFunctions>(config: Config = {}) {
+export function defaultLogic<F extends CachedFunctions>(
+  config: Config = {},
+): DefaultLogic<F> {
   const cache = new Map<
     string,
     {
@@ -72,7 +74,7 @@ export function defaultLogic<F extends CachedFunctions>(config: Config = {}) {
         expiresAt: Date.now() + (config.ttl ?? 5 * 60) * 1000,
       });
     },
-    delete: (k) => cache.delete(k),
+    delete: cache.delete,
     resolveKey,
-  } satisfies CacheLogic<F>;
+  };
 }

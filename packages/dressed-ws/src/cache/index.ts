@@ -1,5 +1,5 @@
 import { defaultLogic } from "./default-logic.ts";
-import type { CachedFunctions, CacheLogic } from "./types.ts";
+import type { CachedFunctions, CacheLogic, DefaultLogic } from "./types.ts";
 
 type DesiredProps<F extends CachedFunctions> = Partial<{
   [K in keyof F as Awaited<ReturnType<F[K]>> extends object
@@ -12,7 +12,7 @@ type DesiredProps<F extends CachedFunctions> = Partial<{
 export type Cache<
   F extends CachedFunctions,
   D extends DesiredProps<F> = object,
-  L extends CacheLogic<F> = ReturnType<typeof defaultLogic<F>>,
+  L extends CacheLogic<F> = DefaultLogic<F>,
 > = {
   [K in keyof F]: (K extends keyof D
     ? (
@@ -33,7 +33,7 @@ export type Cache<
 export function createCache<
   F extends CachedFunctions,
   D extends DesiredProps<F> = object,
-  L extends CacheLogic<F> = ReturnType<typeof defaultLogic<F>>,
+  L extends CacheLogic<F> = DefaultLogic<F>,
 >(
   /** The functions to cache */
   functions: F,
