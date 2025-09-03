@@ -8,8 +8,7 @@ import {
  * Creates a container component
  *
  * Container that visually groups a set of components
- *
- * @param componenets - Up to 10 components of the type action row, text display, section, media gallery, separator, or file
+ * @param componenets Child components that are encapsulated within the Container
  *
  * **IMPORTANT**:
  * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message

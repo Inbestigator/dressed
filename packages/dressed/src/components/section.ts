@@ -11,8 +11,8 @@ import { TextDisplay } from "./text-display.ts";
  *
  * Container to display text alongside an accessory component
  *
- * @param components - One to three text components
- * @param accessory - A thumbnail or a button component, with a future possibility of adding more compatible components
+ * @param components One to three text components
+ * @param accessory A thumbnail or a button component, with a future possibility of adding more compatible components
  *
  * **IMPORTANT**:
  * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message

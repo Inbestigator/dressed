@@ -8,6 +8,9 @@ import {
  * Creates a label component
  *
  * Container associating a label and description with a component
+ * @param label The label text; max 45 characters
+ * @param component The component within the label
+ * @param description An optional description text for the label; max 100 characters
  */
 export function Label(
   label: string,
