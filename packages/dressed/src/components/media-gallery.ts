@@ -9,6 +9,7 @@ import { Thumbnail } from "./thumbnail.ts";
  * Creates a media gallery component
  *
  * Display images and other media
+ *
  * @param items 1 to 10 media gallery items
  *
  * **IMPORTANT**:

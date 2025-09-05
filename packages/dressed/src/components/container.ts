@@ -8,7 +8,8 @@ import {
  * Creates a container component
  *
  * Container that visually groups a set of components
- * @param componenets Child components that are encapsulated within the Container
+ *
+ * @param components Child components that are encapsulated within the Container
  *
  * **IMPORTANT**:
  * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message
