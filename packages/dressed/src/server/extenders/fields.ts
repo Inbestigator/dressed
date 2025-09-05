@@ -74,12 +74,9 @@ export function getField<R extends boolean>(
     {
       stringSelect: returnValue(ComponentType.StringSelect),
       textInput: returnValue(ComponentType.TextInput),
-      // @ts-expect-error This is valid, `discord-api-types` hasn't released yet
       userSelect: returnValue(ComponentType.UserSelect, "users"),
-      // @ts-expect-error This is valid, `discord-api-types` hasn't released yet
       roleSelect: returnValue(ComponentType.RoleSelect, "roles"),
       mentionableSelect() {
-        // @ts-expect-error This is valid, `discord-api-types` hasn't released yet
         if (component.type !== ComponentType.MentionableSelect) {
           throw new Error(
             `The field ${component.custom_id} is ${blurbs[component.type]}, not a mentionable select`,
@@ -87,18 +84,15 @@ export function getField<R extends boolean>(
         }
         if (!resolved?.users && !resolved?.roles) {
           throw new Error(
-            // @ts-expect-error This is valid, `discord-api-types` hasn't released yet
             `No mentionables found for field ${component.custom_id}`,
           );
         }
         const mentionables = [];
-        // @ts-expect-error This is valid, `discord-api-types` hasn't released yet
         for (const value of component.values) {
           mentionables.push(resolved.users?.[value] ?? resolved.roles?.[value]);
         }
         return mentionables;
       },
-      // @ts-expect-error This is valid, `discord-api-types` hasn't released yet
       channelSelect: returnValue(ComponentType.ChannelSelect, "channels"),
     },
   ) as ReturnType<typeof getField<R>>;
