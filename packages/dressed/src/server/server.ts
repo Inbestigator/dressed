@@ -37,22 +37,25 @@ export function createServer(
   events: EventRunner | EventData[],
   config: ServerConfig,
 ): Server {
+  const endpoint = new URL(
+    config.endpoint ?? "/",
+    `http://localhost:${config.port ?? 8000}`,
+  );
   const server = createHttpServer(async (req, res) => {
-    if (req.url !== (config.endpoint ?? "/")) {
-      res.writeHead(404).end();
-      return;
+    if (req.url !== endpoint.pathname) {
+      return res.writeHead(404).end();
     } else if (req.method !== "POST") {
-      res.writeHead(405).end();
-      return;
+      return res.writeHead(405).end();
     }
 
     const handlerRes = await handleRequest(
-      new Request("http://0", {
+      new Request(endpoint, {
         method: "POST",
         // @ts-expect-error Headers will init from an object, the type is just weird
         headers: req.headers,
         // @ts-expect-error The node:http req reads to a body
         body: req,
+        duplex: "half", // Undici throws if this isn't present when body is a stream -inb
       }),
       commands,
       components,
@@ -64,16 +67,13 @@ export function createServer(
       .writeHead(handlerRes.status, {
         "Content-Type": "application/json",
       })
-      .end(handlerRes.status === 200 ? '{"type":1}' : "");
+      .end(handlerRes.body);
   });
 
   const port = config.port ?? 8000;
 
   server.listen(port, "0.0.0.0", () => {
-    console.log(
-      "Bot is now listening on",
-      new URL(config.endpoint ?? "", `http://localhost:${port}`).href,
-    );
+    console.log("Bot is now listening on", endpoint.href);
   });
 
   const shutdown = () => server.close(() => process.exit(0));
