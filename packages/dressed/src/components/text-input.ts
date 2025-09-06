@@ -7,7 +7,7 @@ import {
 /**
  * Creates a text input component
  *
- * Text input object (modals)
+ * An interactive component that allows users to enter free-form text responses in modals
  */
 export function TextInput(
   config: Omit<APITextInputComponent, "type" | "style"> & {

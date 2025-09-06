@@ -10,6 +10,8 @@ import { Thumbnail } from "./thumbnail.ts";
  *
  * Display images and other media
  *
+ * @param items 1 to 10 media gallery items
+ *
  * **IMPORTANT**:
  * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message
  */
