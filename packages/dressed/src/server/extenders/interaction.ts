@@ -2,6 +2,7 @@ import { baseInteractionMethods } from "./responses.ts";
 import type {
   APIChatInputApplicationCommandInteractionData,
   APIInteraction,
+  ModalSubmitComponent,
 } from "discord-api-types/v10";
 import type {
   CommandAutocompleteInteraction,
@@ -10,7 +11,7 @@ import type {
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "../../types/interaction.ts";
-import { InteractionType } from "discord-api-types/v10";
+import { ComponentType, InteractionType } from "discord-api-types/v10";
 import { getOption } from "./options.ts";
 import { getField } from "./fields.ts";
 
@@ -51,17 +52,24 @@ export function createInteraction<T extends APIInteraction>(
       } as MessageComponentInteraction as Interaction<T>;
     }
     case InteractionType.ModalSubmit: {
+      const components: ModalSubmitComponent[] = [];
+      for (const component of input.data.components) {
+        switch (component.type) {
+          case ComponentType.ActionRow:
+            components.push(...component.components);
+            break;
+          case ComponentType.Label:
+            components.push(component.component);
+            break;
+          case ComponentType.TextDisplay:
+            continue;
+        }
+      }
       return {
         ...input,
         ...baseInteractionMethods(input),
         getField: (c, r) =>
-          getField(
-            c,
-            r ?? false,
-            input.data.components.flatMap((c) =>
-              c.type === 1 ? c.components : c.component,
-            ),
-          ),
+          getField(c, r ?? false, components, input.data.resolved),
       } as ModalSubmitInteraction as Interaction<T>;
     }
     default: {

@@ -8,10 +8,10 @@
     "dry-publish": "bun publish --dry-run"
   },
   "dependencies": {
-    "@vercel/functions": "^2.2.13"
+    "@vercel/functions": "^3.0.0"
   },
   "peerDependencies": {
-    "dressed": "^1.9.0"
+    "dressed": "^1.9.1"
   },
   "exports": "./dist/index.js",
   "type": "module",
