@@ -7,13 +7,14 @@ import {
   ComponentType,
 } from "discord-api-types/v10";
 import { TextDisplay } from "dressed";
+import { createTextNode } from "./text-node.ts";
 import { parseActionRow } from "../components/action-row.ts";
 import { parseContainer } from "../components/container.ts";
-import { parseTextDisplay } from "../components/text-display.ts";
-import { parseSelectMenu } from "../components/select-menu.ts";
+import { parseLabel } from "../components/label.ts";
 import { parseMediaGallery } from "../components/media-gallery.ts";
+import { parseSelectMenu } from "../components/select-menu.ts";
 import { parseSection } from "../components/section.ts";
-import { createTextNode } from "./text-node.ts";
+import { parseTextDisplay } from "../components/text-display.ts";
 
 export interface Renderer {
   nodes: Node<unknown>[];
@@ -104,6 +105,9 @@ export async function renderNode(
     }
     case ComponentType.Container: {
       return parseContainer(node.props, node.children);
+    }
+    case ComponentType.Label: {
+      return parseLabel(node.props, node.children);
     }
     default: {
       if (typeof node.props === "string") {
