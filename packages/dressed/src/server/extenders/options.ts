@@ -1,17 +1,17 @@
-import type {
-  APIApplicationCommandInteractionDataOption,
-  APIAttachment,
-  APIInteractionDataResolved,
-  APIInteractionDataResolvedChannel,
-  APIRole,
-  APIUser,
+import {
+  ApplicationCommandOptionType,
+  type APIApplicationCommandInteractionDataOption,
+  type APIAttachment,
+  type APIInteractionDataResolved,
+  type APIInteractionDataResolvedChannel,
+  type APIRole,
+  type APIUser,
 } from "discord-api-types/v10";
 import type { CommandInteraction } from "../../types/interaction.ts";
+import type { Requirable } from "../../types/utilities.ts";
 
 export interface OptionValueGetters<N> {
-  /**
-   * Get the option as a subcommand
-   */
+  /** Return the option as a subcommand - Option type must be `Subcommand` */
   subcommand: () => {
     /**
      * Get an option from the subcommand
@@ -21,9 +21,7 @@ export interface OptionValueGetters<N> {
     getOption: CommandInteraction["getOption"];
     name: N;
   };
-  /**
-   * Get the option as a subcommand group
-   */
+  /** Return the option as a subcommand group - Option type must be `SubcommandGroup` */
   subcommandGroup: () => {
     /**
      * Get a subcommand from the group
@@ -34,118 +32,107 @@ export interface OptionValueGetters<N> {
     ) => ReturnType<OptionValueGetters<N>["subcommand"]> | undefined;
     name: N;
   };
-  /**
-   * Get the option as a string
-   */
+  /** Return the option's value as a string - Option type must be `String` */
   string: () => string;
-  /**
-   * Get the option as an integer
-   */
+  /** Return the option's value as an integer - Option type must be `Integer` */
   integer: () => number;
-  /**
-   * Get the option as a boolean
-   */
+  /** Return the option's value as a boolean - Option type must be `Boolean` */
   boolean: () => boolean;
-  /**
-   * Get the option as a user
-   */
+  /** Get the user from the option - Option type must be `User` */
   user: () => APIUser;
-  /**
-   * Get the option as a channel
-   */
+  /** Get the channel from the option - Option type must be `Channel` */
   channel: () => APIInteractionDataResolvedChannel;
-  /**
-   * Get the option as a role
-   */
+  /** Get the role from the option - Option type must be `Role` */
   role: () => APIRole;
-  /**
-   * Get the option as a mentionable
-   */
+  /** Get the mentionable from the option - Option type must be `Mentionable` */
   mentionable: () => APIUser | APIRole;
-  /**
-   * Get the option as a number
-   */
+  /** Return the option's value as a number - Option type must be `Number` */
   number: () => number;
-  /**
-   * Get the option as an attachment
-   */
+  /** Get the attachment from the option - Option type must be `Attachment` */
   attachment: () => APIAttachment;
 }
+
+// prettier-ignore
+const blurbs = [null, "a subcommand", "a subcommand group", "a string", "an integer", "a boolean", "a user", "a channel", "a role", "a mentionable", "a number", "an attachment"];
 
 export function getOption<N extends string, R extends boolean>(
   name: N,
   required: R,
   options: APIApplicationCommandInteractionDataOption[],
   resolved?: APIInteractionDataResolved,
-): R extends true ? OptionValueGetters<N> : OptionValueGetters<N> | undefined {
+): Requirable<R, OptionValueGetters<N>> {
   const option = options.find((o) => o.name === name);
   if (!option) {
     if (required) throw new Error(`Required option "${name}" not found`);
     return undefined as ReturnType<typeof getOption<N, R>>;
   }
 
-  return {
-    subcommand: () => {
-      if (option.type !== 1) throw new Error("Not a subcommand");
-      return {
-        name,
-        getOption: (name: string, required) =>
-          getOption(name, required ?? false, option.options ?? [], resolved),
-      };
-    },
-    subcommandGroup: () => {
-      if (option.type !== 2) throw new Error("Not a subcommand group");
-      return {
-        name,
-        getSubcommand: (name: string) =>
-          getOption(name, false, option.options, resolved)?.subcommand(),
-      };
-    },
-    string: () => {
-      if (option.type !== 3) throw new Error("Not a string");
-      return option.value;
-    },
-    integer: () => {
-      if (option.type !== 4) throw new Error("Not an integer");
-      return option.value;
-    },
-    boolean: () => {
-      if (option.type !== 5) throw new Error("Not a boolean");
-      return option.value;
-    },
-    user: () => {
-      if (option.type !== 6) throw new Error("Not a user");
-      if (!resolved?.users) throw new Error("No users found");
-      return resolved.users[option.value];
-    },
-    channel: () => {
-      if (option.type !== 7) throw new Error("Not a channel");
-      if (!resolved?.channels) throw new Error("No channels found");
-      return resolved.channels[option.value];
-    },
-    role: () => {
-      if (option.type !== 8) throw new Error("Not a role");
-      if (!resolved?.roles) throw new Error("No roles found");
-      return resolved.roles[option.value];
-    },
-    mentionable: () => {
-      if (option.type !== 9) throw new Error("Not a mentionable");
-      if (resolved?.users?.[option.value]) {
-        return resolved.users[option.value];
-      } else if (resolved?.roles?.[option.value]) {
-        return resolved.roles[option.value];
-      } else {
-        throw new Error("No mentionables found");
+  const returnOption =
+    (
+      type: Exclude<ApplicationCommandOptionType, 1 | 2>,
+      resolvedKey?: keyof APIInteractionDataResolved,
+    ) =>
+    () => {
+      if (option.type !== type) {
+        throw new Error(
+          `The option ${name} is ${blurbs[option.type]}, not ${blurbs[type]}`,
+        );
       }
-    },
-    number: () => {
-      if (option.type !== 10) throw new Error("Not a number");
+      if (resolvedKey) {
+        if (!resolved?.[resolvedKey]) {
+          throw new Error(`No ${resolvedKey} found for option ${option.name}`);
+        }
+        return resolved[resolvedKey][option.value as string];
+      }
       return option.value;
+    };
+
+  return {
+    subcommand() {
+      if (option.type !== ApplicationCommandOptionType.Subcommand) {
+        throw new Error(
+          `The option ${name} is ${blurbs[option.type]}, not a subcommand`,
+        );
+      }
+      return {
+        name,
+        getOption: (n, r) =>
+          getOption(n, r ?? false, option.options ?? [], resolved),
+      };
     },
-    attachment: () => {
-      if (option.type !== 11) throw new Error("Not an attachment");
-      if (!resolved?.attachments) throw new Error("No attachments found");
-      return resolved.attachments[option.value];
+    subcommandGroup() {
+      if (option.type !== ApplicationCommandOptionType.SubcommandGroup) {
+        throw new Error(
+          `The option ${option.name} is ${blurbs[option.type]}, not a subcommand group`,
+        );
+      }
+      return {
+        name,
+        getSubcommand: (n) =>
+          getOption(n, false, option.options, resolved)?.subcommand(),
+      };
     },
+    string: returnOption(ApplicationCommandOptionType.String),
+    integer: returnOption(ApplicationCommandOptionType.Integer),
+    boolean: returnOption(ApplicationCommandOptionType.Boolean),
+    user: returnOption(ApplicationCommandOptionType.User, "users"),
+    channel: returnOption(ApplicationCommandOptionType.Channel, "channels"),
+    role: returnOption(ApplicationCommandOptionType.Role, "roles"),
+    mentionable() {
+      if (option.type !== ApplicationCommandOptionType.Mentionable) {
+        throw new Error(
+          `The option ${option.name} is ${blurbs[option.type]}, not a mentionable`,
+        );
+      }
+      if (!resolved?.users && !resolved?.roles) {
+        throw new Error(`No mentionables found for option ${option.name}`);
+      }
+      return resolved.users?.[option.value] ?? resolved.roles?.[option.value];
+    },
+    number: returnOption(ApplicationCommandOptionType.Number),
+    attachment: returnOption(
+      ApplicationCommandOptionType.Attachment,
+      "attachments",
+    ),
   } as ReturnType<typeof getOption<N, R>>;
 }

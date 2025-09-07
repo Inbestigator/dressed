@@ -22,9 +22,9 @@ export const parseComponents = createHandlerParser<ComponentData>({
       col2: category ?? "unknown",
     };
   },
-  async createData({ name, path, originalPath }) {
+  async createData({ name, path }) {
     const { pattern = name } = await import(path);
-    const category = getCategory(originalPath);
+    const category = getCategory(path);
 
     if (!category) {
       ora(`Category for "${name}" could not be determined, skipping`).warn();

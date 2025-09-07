@@ -8,7 +8,7 @@ import {
  *
  * Small image that can be used as an accessory
  *
- * @param media - A url or attachment
+ * @param media A url or attachment
  *
  * **IMPORTANT**:
  * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message

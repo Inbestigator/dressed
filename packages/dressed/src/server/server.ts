@@ -22,7 +22,6 @@ import type {
 } from "../types/config.ts";
 import { createServer as createHttpServer, type Server } from "node:http";
 import { stdout } from "node:process";
-import { Buffer } from "node:buffer";
 import { createInteraction } from "./extenders/interaction.ts";
 import { setupCommands } from "./handlers/commands.ts";
 import { setupComponents } from "./handlers/components.ts";
@@ -38,51 +37,46 @@ export function createServer(
   events: EventRunner | EventData[],
   config: ServerConfig,
 ): Server {
-  const server = createHttpServer((req, res) => {
-    if (req.url !== (config.endpoint ?? "/")) {
-      res.statusCode = 404;
-      res.end();
-      return;
+  const endpoint = new URL(
+    config.endpoint ?? "/",
+    `http://localhost:${config.port ?? 8000}`,
+  );
+  const server = createHttpServer(async (req, res) => {
+    if (req.url !== endpoint.pathname) {
+      return res.writeHead(404).end();
     } else if (req.method !== "POST") {
-      res.statusCode = 405;
-      res.end();
-      return;
+      return res.writeHead(405).end();
     }
 
-    const chunks: Uint8Array[] = [];
-    req
-      .on("data", (c) => chunks.push(c))
-      .on("end", async () => {
-        const handlerRes = await handleRequest(
-          new Request("http://localhost", {
-            method: "POST",
-            body: Buffer.concat(chunks),
-            headers: req.headers as unknown as Headers,
-          }),
-          commands,
-          components,
-          events,
-          config,
-        );
+    const handlerRes = await handleRequest(
+      new Request(endpoint, {
+        method: "POST",
+        // @ts-expect-error Headers will init from an object, the type is just weird
+        headers: req.headers,
+        // @ts-expect-error The node:http req reads to a body
+        body: req,
+        duplex: "half", // Undici throws if this isn't present when body is a stream -inb
+      }),
+      commands,
+      components,
+      events,
+      config,
+    );
 
-        res.statusCode = handlerRes.status;
-        res.setHeader("Content-Type", "application/json");
-        res.end(handlerRes.status === 200 ? '{"type":1}' : null);
-      });
+    res
+      .writeHead(handlerRes.status, {
+        "Content-Type": "application/json",
+      })
+      .end(handlerRes.body);
   });
 
   const port = config.port ?? 8000;
 
   server.listen(port, "0.0.0.0", () => {
-    console.log(
-      "Bot is now listening on",
-      new URL(config.endpoint ?? "", `http://localhost:${port}`).href,
-    );
+    console.log("Bot is now listening on", endpoint.href);
   });
 
-  function shutdown() {
-    server.close(() => process.exit(0));
-  }
+  const shutdown = () => server.close(() => process.exit(0));
 
   process.on("SIGTERM", shutdown);
   process.on("SIGINT", shutdown);

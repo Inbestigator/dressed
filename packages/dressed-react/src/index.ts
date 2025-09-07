@@ -3,6 +3,7 @@ export { ActionRow } from "./components/action-row.ts";
 export { Button } from "./components/button.ts";
 export { Container } from "./components/container.ts";
 export { File } from "./components/file.ts";
+export { Label } from "./components/label.ts";
 export { MediaGallery, MediaGalleryItem } from "./components/media-gallery.ts";
 export { Section } from "./components/section.ts";
 export { SelectMenu, SelectMenuOption } from "./components/select-menu.ts";

@@ -2,11 +2,9 @@ import logTree from "../log-tree.ts";
 import type { WalkEntry } from "../../../types/walk.ts";
 import ora from "ora";
 import { stdout } from "node:process";
-import bundleFile from "../bundle.ts";
 import { createHash } from "node:crypto";
-import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import type { Promisable } from "../../../types/possible-promise.ts";
+import type { Promisable } from "../../../types/utilities.ts";
 import type { BaseData } from "../../../types/config.ts";
 
 interface ParserMessages {
@@ -28,9 +26,7 @@ export function createHandlerParser<
   uniqueKeys?: (keyof T["data"])[];
   messages: ParserMessages;
   itemMessages: ((file: WalkEntry) => ParserItemMessages) | ParserItemMessages;
-  createData: (
-    file: WalkEntry & { originalPath: string },
-  ) => Promisable<T["data"]>;
+  createData: (file: WalkEntry) => Promisable<T["data"]>;
   postMortem?: (items: T[]) => Promisable<T[]>;
 }): (files: WalkEntry[]) => Promise<T[]> {
   return async (files) => {
@@ -47,21 +43,14 @@ export function createHandlerParser<
       for (const file of files) {
         let data: T["data"];
         let itemMessages = options.itemMessages;
-        const uid = createHash("sha1").update(file.path).digest("hex");
 
         try {
           if (typeof itemMessages === "function") {
             itemMessages = itemMessages(file);
           }
-          const originalPath = file.path;
-          file.path = await bundleFile({
-            ...file,
-            outPath: join(".dressed/cache", `${uid}.mjs`),
-          });
           data = await options.createData({
             ...file,
             path: pathToFileURL(file.path).href,
-            originalPath,
           });
           const hasConflict = items.some((c) => {
             if (c.name !== file.name) return false;
@@ -76,7 +65,7 @@ export function createHandlerParser<
             name: file.name,
             path: file.path,
             data,
-            uid,
+            uid: createHash("sha1").update(file.path).digest("hex"),
             exports: null,
           } as T);
           tree.push(file.name, itemMessages.col2);

@@ -21,7 +21,7 @@ import { waitUntil } from "@vercel/functions";
  * import createHandler from "@dressed/next";
  * import { commands, components, events, config } from "@/.dressed";
  *
- * export const POST = createHandler(commands, components, events);
+ * export const POST = createHandler(commands, components, events, config);
  * ```
  *
  * @param commands - Array of command datas to use

@@ -4,7 +4,7 @@ All interaction types share a set of core response methods. Additional methods a
 
 ## Base methods
 
-These methods are available on all interactions:
+These methods are available on most interactions:
 
 1. **Reply**
 
@@ -72,7 +72,7 @@ This method is only available for command interactions
 
 ### getOption
 
-Retrieves an option value from the command.
+Retrieves an option from the command, provides functions to retrieve the value.
 
 #### Parameters
 
@@ -130,7 +130,7 @@ This method is only available for modal responses
 
 ### getField
 
-Retrieves a field value from the modal submission.
+Retrieves a field from the modal submission, provides functions to retrieve the value.
 
 #### Parameters
 
@@ -138,5 +138,5 @@ Retrieves a field value from the modal submission.
 - `required`: If true, throws an error if the field is not present.
 
 ```ts
-const fieldValue = interaction.getField("input_name", true);
+const selectedLibraries = interaction.getField("library", true).stringSelect();
 ```

@@ -5,6 +5,7 @@ import type {
 } from "dressed";
 import type { createInteraction, RawFile } from "dressed/server";
 import {
+  ApplicationCommandType,
   MessageFlags,
   type APIInteractionResponseCallbackData,
   type APIModalInteractionResponseCallbackData,
@@ -44,9 +45,7 @@ type ShowModalProps = [
   data: Omit<APIModalInteractionResponseCallbackData, "components">,
 ];
 
-type ReactivatedInteraction<
-  T extends NonNullable<ReturnType<typeof createInteraction>>,
-> = OverrideMethodParams<
+type ReactivatedInteraction<T> = OverrideMethodParams<
   T,
   {
     reply: ReplyProps;
@@ -66,8 +65,9 @@ type OverrideMethodParams<T, Overrides extends Record<string, unknown[]>> = {
     : T[K];
 };
 
-export type CommandInteraction =
-  ReactivatedInteraction<DressedCommandInteraction>;
+export type CommandInteraction<
+  T extends keyof typeof ApplicationCommandType = "ChatInput",
+> = ReactivatedInteraction<DressedCommandInteraction<T>>;
 export type MessageComponentInteraction =
   ReactivatedInteraction<DressedMessageComponentInteraction>;
 export type ModalSubmitInteraction =

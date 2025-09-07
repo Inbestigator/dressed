@@ -6,7 +6,7 @@ import { dirname, join, relative } from "node:path";
 import { cwd, exit, stdout } from "node:process";
 import { select, input, confirm } from "@inquirer/prompts";
 import { parse } from "dotenv";
-import { mkdirSync, writeFileSync } from "fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import build from "../server/build/build.ts";
 
 const program = new Command()
@@ -48,11 +48,8 @@ program
 
     const outputContent = `
 ${generateImports(instance, register)}
-import config from "./cache/config.mjs";${[
-      ...commands,
-      ...components,
-      ...events,
-    ]
+import config from "./cache/dressed.config.js";${[commands, components, events]
+      .flat()
       .map(
         (v) =>
           `\nimport * as h${v.uid} from "./${relative(".dressed", v.path)}";`,

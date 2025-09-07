@@ -8,7 +8,7 @@ import {
  *
  * Markdown text
  *
- * @param content - Text that will be displayed similar to a message
+ * @param content Text that will be displayed similar to a message
  *
  * **IMPORTANT**:
  * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message

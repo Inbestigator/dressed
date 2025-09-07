@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/Inbestigator/dressed/49cefd8d9f1d0a17374caaadc4506599390a2129/www/public/dressed_small.webp" alt="Dressed logo" width="128" />
+  <img src="https://raw.githubusercontent.com/Inbestigator/dressed/main/www/public/dressed.webp" alt="Dressed logo" width="128" />
   <h1>Dressed</h1>
 </div>
 

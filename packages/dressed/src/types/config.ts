@@ -7,7 +7,7 @@ import type {
   Snowflake,
   PermissionFlagsBits,
 } from "discord-api-types/v10";
-import type { Promisable } from "./possible-promise.ts";
+import type { Promisable } from "./utilities.ts";
 import type {
   CommandHandler,
   ComponentHandler,
@@ -43,7 +43,7 @@ export type ServerConfig = Partial<{
      */
     root: string;
     /** File extensions to include when bundling handlers
-     * @default [".js", ".ts", ".mjs"]
+     * @default ["js", "ts", "mjs"]
      */
     extensions: string[];
   }>;
@@ -71,7 +71,7 @@ export type ServerConfig = Partial<{
   }>;
 }>;
 
-type BaseCommandConfig = {
+interface BaseCommandConfig {
   /** Type of the command, defaults to `ChatInput` */
   type?: keyof typeof ApplicationCommandType;
   /** Interaction context(s) where the command can be used, only for globally-scoped commands. Defaults to all */
@@ -82,7 +82,7 @@ type BaseCommandConfig = {
   guilds?: Snowflake[];
   /** An array of permissions */
   default_member_permissions?: (keyof typeof PermissionFlagsBits)[] | string;
-};
+}
 
 type CommandTypeConfig<T, K extends PropertyKey, A> = Omit<
   T,
@@ -121,29 +121,25 @@ export type CommandConfig =
   | ContextMenuConfig
   | PrimaryEntryPointConfig;
 
-export interface BaseData<T, M extends ["default", ...string[]] = ["default"]> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyFn = (...args: any[]) => Promisable<unknown>;
+
+export interface BaseData<T, M extends object = object> {
   name: string;
   path: string;
   uid: string;
   data: T;
   /** @deprecated Use the `default` key in `exports` instead (will be removed at the next major release) */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  run?: (...args: any[]) => Promisable<unknown>; // TODO Remove before next major release
-  exports:
-    | ({ [K in M[number]]?: BaseData<T, M>["run"] } & {
-        default: BaseData<T, M>["run"];
-      })
-    | null;
+  run?: AnyFn; // TODO Remove before next major release
+  exports: (M & { default: AnyFn }) | null;
 }
 
 /**
  * Command data object in the `commands` array outputted from `build()`
  */
 export type CommandData = BaseData<
-  {
-    config?: CommandConfig;
-  },
-  ["default", "autocomplete"]
+  { config?: CommandConfig },
+  { autocomplete?: AnyFn; config?: CommandConfig }
 >;
 
 /**

@@ -64,9 +64,13 @@ export async function createMessage(
     data = { content: data };
   }
 
+  const files = data.files;
+  delete data.files;
+
   const res = await callDiscord(Routes.channelMessages(channel), {
     method: "POST",
     body: data,
+    files,
   });
 
   return res.json();
@@ -200,9 +204,13 @@ export async function editMessage(
     data = { content: data };
   }
 
+  const files = data.files;
+  delete data.files;
+
   const res = await callDiscord(Routes.channelMessage(channel, message), {
     method: "PATCH",
     body: data,
+    files,
   });
 
   return res.json();
