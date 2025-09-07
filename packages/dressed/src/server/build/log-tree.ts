@@ -1,8 +1,4 @@
-/**
- * Log a table of values with a title (two columns max)
- *
- * Witch magic
- */
+/** Log a table of values with a title (two columns max) */
 export default function logTree(total: number, title1: string, title2 = "") {
   const col1 = [title1];
   const col2 = [title2];

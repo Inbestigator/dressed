@@ -106,7 +106,7 @@ export async function listApplicationEmojis(): Promise<
     },
   );
 
-  return res.json();
+  return (await res.json()).items;
 }
 
 /**

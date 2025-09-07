@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { DocsSidebar } from "@/components/docs-sidebar";
-import UpdateBackground from "@/components/update-background";
 
 export const metadata: Metadata = {
   title: "Dressed Docs",
@@ -15,9 +14,9 @@ export default function DocsLayout({
 }) {
   return (
     <SidebarProvider>
+      <div className="fixed inset-0 bg-sidebar -z-1" />
       <DocsSidebar />
       <SidebarInset className="overflow-x-hidden">{children}</SidebarInset>
-      <UpdateBackground color="var(--sidebar-background)" />
     </SidebarProvider>
   );
 }

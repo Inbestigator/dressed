@@ -18,7 +18,7 @@ You can find examples of bots ready to deploy on
 
 ## 🚀 Usage
 
-```bash
+```sh
 bun add dressed
 # or
 deno add jsr:@dressed/dressed
@@ -42,7 +42,7 @@ export default async function (interaction: CommandInteraction) {
 
 You can then build and run the bot with:
 
-```bash
+```sh
 bun dressed build -ir
 bun .dressed
 # or

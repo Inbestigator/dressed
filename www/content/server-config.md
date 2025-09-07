@@ -8,8 +8,7 @@ The config file is named `dressed.config.ts`, although other JS filetypes will w
 
 ## Example config
 
-```ts
-// dressed.config.ts
+```ts title="dressed.config.ts"
 import { patchInteraction } from "@dressed/react";
 import type { ServerConfig } from "dressed/server";
 

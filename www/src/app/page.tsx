@@ -1,22 +1,40 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { BookDashed, BookHeart, Cloud, Code } from "lucide-react";
+import { BookDashed } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import JSRLogo from "@/components/jsr-logo";
 import NPMLogo from "@/components/npm-logo";
+import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="min-h-dvh flex flex-col gap-8 items-center justify-center py-10 px-4 max-w-5xl mx-auto text-center">
-      <h1 className="block font-black leading-tight sm:leading-tight ">
-        <span className="block text-[max(28px,min(4vw,56px))] text-primary">
+    <main className="my-auto flex flex-col gap-8 items-center justify-center py-10 px-4 max-w-5xl mx-auto text-center">
+      <div className="relative">
+        <Image
+          src="/dressed.webp"
+          alt="Blurred bg of logo"
+          width={128}
+          height={128}
+          className="not-sm:scale-75 top-0 left-0 absolute -z-1 blur animate-[opacityUp_600ms_ease-in-out_forwards]"
+        />
+        <Image
+          src="/dressed.webp"
+          alt="Dressed logo"
+          width={128}
+          height={128}
+          className="not-sm:scale-75"
+        />
+      </div>
+      <h1 className="leading-tight">
+        <span className="text-[max(28px,min(4vw,56px))] font-medium text-primary">
           Build Faster
         </span>
-        <span className="block text-[max(36px,min(5vw,72px))] text-white">
+        <br />
+        <span className="text-[max(36px,min(5vw,72px))] font-bold text-white">
           Deploy Anywhere
         </span>
       </h1>
-      <p className="text-lg sm:text-xl max-w-2xl mx-auto">
+      <p className="text-lg sm:text-xl max-w-2xl mx-auto text-muted-foreground">
         A sleek, serverless-ready Discord bot framework.
       </p>
       <div className="flex flex-wrap justify-center gap-4">
@@ -56,13 +74,13 @@ export default function Home() {
         </div>
         <Button
           title="Examples"
-          className="size-11"
+          className="size-11 not-sm:hidden"
           variant="outline"
           asChild
           size="icon"
         >
           <Link
-            href="https://github.com/inbestigator/dressed-examples"
+            href="https://github.com/Inbestigator/dressed-examples"
             target="_blank"
             rel="noreferrer"
           >
@@ -70,29 +88,6 @@ export default function Home() {
           </Link>
         </Button>
       </div>
-      <div className="grid md:grid-cols-3 gap-8 text-left">
-        <div className="bg-card p-6 rounded-lg shadow-lg">
-          <BookHeart className="h-10 w-10 mb-4 text-primary" />
-          <h2 className="text-xl font-semibold mb-2">Anything, Anytime</h2>
-          <p className="text-muted-foreground">
-            Dressed has 100% support for the Discord API.
-          </p>
-        </div>
-        <div className="bg-card p-6 rounded-lg shadow-lg">
-          <Cloud className="h-10 w-10 mb-4 text-primary" />
-          <h2 className="text-xl font-semibold mb-2">Serverless Ready</h2>
-          <p className="text-muted-foreground">
-            Deploy effortlessly to serverless environments.
-          </p>
-        </div>
-        <div className="bg-card p-6 rounded-lg shadow-lg">
-          <Code className="h-10 w-10 mb-4 text-primary" />
-          <h2 className="text-xl font-semibold mb-2">Developer Friendly</h2>
-          <p className="text-muted-foreground">
-            Smart and simple API design, making bot development a breeze.
-          </p>
-        </div>
-      </div>
-    </div>
+    </main>
   );
 }

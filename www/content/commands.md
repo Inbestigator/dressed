@@ -17,8 +17,7 @@ This means that command file names must be globally unique.
 All commands are required to have a default export, this function is how your
 command will be handled.
 
-```ts
-// src/commands/greet.ts
+```ts title="src / commands / greet.ts" showLineNumbers
 import type { CommandInteraction } from "dressed";
 
 export default async function (interaction: CommandInteraction) {
@@ -30,7 +29,7 @@ export default async function (interaction: CommandInteraction) {
 
 For some command options, you want to enable autocomplete. To create a handler for those interactions, you can simply export a function named autocomplete!
 
-```ts
+```ts showLineNumbers
 import {
   CommandOption,
   type CommandConfig,

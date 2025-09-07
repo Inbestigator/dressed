@@ -1,0 +1,49 @@
+.extended-prose {
+  @apply prose prose-invert max-w-none;
+
+  h1:not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply text-4xl font-semibold tracking-tight text-neutral-800 dark:text-neutral-300;
+  }
+
+  h2:not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply text-2xl font-medium tracking-tight text-neutral-800 dark:text-neutral-300;
+  }
+
+  h3:not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply text-xl font-semibold tracking-tight text-neutral-800 dark:text-neutral-300;
+  }
+
+  code:not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    @apply bg-muted text-muted-foreground rounded-md p-1 text-sm font-normal before:content-none after:content-none;
+  }
+
+  pre:has(> code) {
+    @apply bg-muted! rounded-lg border p-2;
+  }
+
+  code[data-line-numbers] {
+    counter-reset: line;
+  }
+
+  figure[data-rehype-pretty-code-figure]:has(
+      > figcaption[data-rehype-pretty-code-title]
+    )
+    pre {
+    @apply rounded-tl-none;
+  }
+
+  figcaption[data-rehype-pretty-code-title] {
+    @apply w-fit rounded-t-lg border border-b-0 bg-muted px-2 translate-y-[1px];
+  }
+
+  figcaption[data-rehype-pretty-code-title]::after {
+    @apply content-[''] absolute h-full aspect-square border-b border-l border-border translate-x-2 rounded-lg bg-background;
+    box-shadow: -0.25rem 0.25rem 0 var(--muted);
+    clip-path: rect(50% 50% 100% 0);
+  }
+
+  code[data-line-numbers] > [data-line]::before {
+    counter-increment: line;
+    @apply text-muted-foreground/50 mr-4 inline-block w-3 text-right content-[counter(line)];
+  }
+}

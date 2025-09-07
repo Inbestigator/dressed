@@ -10,11 +10,22 @@ Both project systems use the `@dressed/next` package, this will make sure that V
 bun add @dressed/next
 ```
 
+> [!WARNING]
+> Vercel stops the server as soon as your handler's promise resolves, so your handlers should either return promises or await them.
+>
+> They also forcefully stop the server execution after 10 seconds if you're using their free plan.
+>
+> ```ts
+> export default async function myCommand(interaction) {
+>   interaction.reply("This may not finish because"); // ❌ There's nothing telling the server that something crucial is still happening
+>   await interaction.reply("This will always work"); // ✅ // Awaiting makes the server wait for this to finish
+>   return interaction.reply("This too"); // ✅ Your handler function is awaited, so returning acts like `await`
+> }
+> ```
+
 ## Standalone Deployment ([Vercel Functions](https://vercel.com/docs/functions/))
 
-1. Create a `vercel.json` file in the root of your project:
-
-   ```json
+1. ```json title="vercel.json"
    {
      "$schema": "https://openapi.vercel.sh/vercel.json",
      "buildCommand": "bun dressed build",
@@ -22,10 +33,7 @@ bun add @dressed/next
    }
    ```
 
-2. Create a file at `./api/bot.ts`:
-
-   ```ts
-   // api/bot.ts
+2. ```ts title="api / bot.ts"
    import createHandler from "@dressed/next";
    // @ts-ignore Generated after build
    import { commands, components, events, config } from "../.dressed/index.mjs";
@@ -39,8 +47,7 @@ bun add @dressed/next
 
 If you’re using Next.js, you don’t need a `vercel.json` file. The Next.js framework preset will handle config automatically. Just add an API route:
 
-```ts
-// app/api/bot/route.ts
+```ts title="app / api / bot / route.ts"
 import createHandler from "@dressed/next";
 // @ts-ignore Generated after build
 import { commands, components, events, config } from "../../../.dressed";
@@ -49,10 +56,9 @@ export const POST = createHandler(commands, components, events, config);
 ```
 
 > [!IMPORTANT]
-> Make sure your build script builds your bot files before your Next.js project.
-> For example, in package.json:
+> Make sure your build script builds your bot files before your Next.js project, like so:
 >
-> ```json
+> ```json title="package.json"
 > {
 >   "scripts": {
 >     "build": "dressed build && next build"
@@ -61,6 +67,10 @@ export const POST = createHandler(commands, components, events, config);
 > ```
 
 ---
+
+## Environment variables
+
+If you are creating a new project, you will need to upload your environment variables to be used by the bot. [Vercel documentation](https://vercel.com/docs/environment-variables).
 
 You now can upload it to Vercel however you like, either through linking to GitHub, or using the CLI:
 

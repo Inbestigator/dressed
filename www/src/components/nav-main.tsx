@@ -20,65 +20,59 @@ import {
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon: LucideIcon;
-    items?: {
-      title: string;
-      url: string;
-    }[];
-  }[];
-}) {
-  const path = usePathname();
+interface Item {
+  title: string;
+  url: string;
+  icon?: LucideIcon;
+  items?: Item[];
+}
 
+export function NavMain({ items }: { items: Item[] }) {
   return (
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            asChild
-            defaultOpen={
-              (path.split("/")[2] ?? "").toLowerCase() ===
-              item.title.toLowerCase()
-            }
-          >
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip={item.title}>
-                <a href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </a>
-              </SidebarMenuButton>
-              {item.items?.length ? (
-                <>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuAction className="data-[state=open]:rotate-90">
-                      <ChevronRight />
-                      <span className="sr-only">Toggle</span>
-                    </SidebarMenuAction>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      {item.items?.map((subItem) => (
-                        <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton asChild>
-                            <Link href={subItem.url}>{subItem.title}</Link>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </>
-              ) : null}
-            </SidebarMenuItem>
-          </Collapsible>
+          <Item key={item.url} item={item} />
         ))}
       </SidebarMenu>
     </SidebarGroup>
+  );
+}
+
+function Item({ item }: { item: Item }) {
+  const path = usePathname().split("/");
+  return (
+    <Collapsible
+      asChild
+      defaultOpen={path.some(
+        (p) => p.toLowerCase() === item.title.toLowerCase(),
+      )}
+    >
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild tooltip={item.title}>
+          <Link href={item.url}>
+            {item.icon && <item.icon />}
+            {item.title}
+          </Link>
+        </SidebarMenuButton>
+        {item.items?.length && (
+          <>
+            <CollapsibleTrigger asChild>
+              <SidebarMenuAction className="data-[state=open]:rotate-90">
+                <ChevronRight />
+                <span className="sr-only">Toggle</span>
+              </SidebarMenuAction>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SidebarMenuSub className="relative">
+                {item.items.map((subItem) => (
+                  <Item item={subItem} key={subItem.url} />
+                ))}
+              </SidebarMenuSub>
+            </CollapsibleContent>
+          </>
+        )}
+      </SidebarMenuItem>
+    </Collapsible>
   );
 }

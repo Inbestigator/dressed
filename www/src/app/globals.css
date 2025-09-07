@@ -1,46 +1,93 @@
 @import "tailwindcss";
-@config "../../tailwind.config.ts";
+@import "tw-animate-css";
 @import "rehype-callouts/theme/github";
+@import "./prose.css";
+@plugin "@tailwindcss/typography";
 
-@layer base {
-  :root {
-    --background: 240 9% 13%;
-    --foreground: 215 23% 80%;
-    --muted: 240 12% 17%;
-    --muted-foreground: 240 12% 67%;
-    --popover: 240 9% 10%;
-    --popover-foreground: 215 23% 90%;
-    --card: 240 9% 11%;
-    --card-foreground: 215 23% 85%;
-    --border: 0 0% 18%;
-    --input: 0 0% 21%;
-    --primary: 235 86% 65%;
-    --primary-foreground: 255 100% 100%;
-    --secondary: 0 0% 25%;
-    --secondary-foreground: 0 0% 85%;
-    --accent: 240 9% 28%;
-    --accent-foreground: 240 9% 88%;
-    --destructive: 6 87% 56%;
-    --destructive-foreground: 0 0% 100%;
-    --ring: 0 0% 100%;
-    --radius: 0.5rem;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-    --page-background: var(--background);
-  }
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --background: hsl(240 9% 13%);
+  --foreground: hsl(215 23% 80%);
+  --muted: hsl(240 12% 17%);
+  --muted-foreground: hsl(240 12% 67%);
+  --popover: hsl(240 9% 10%);
+  --popover-foreground: hsl(215 23% 90%);
+  --card: hsl(240 9% 11%);
+  --card-foreground: hsl(215 23% 85%);
+  --border: hsl(0 0% 18%);
+  --input: hsl(0 0% 21%);
+  --primary: hsl(235 86% 65%);
+  --primary-foreground: hsl(255 100% 100%);
+  --secondary: hsl(0 0% 25%);
+  --secondary-foreground: hsl(0 0% 85%);
+  --accent: hsl(240 9% 28%);
+  --accent-foreground: hsl(240 9% 88%);
+  --destructive: hsl(6 87% 56%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --ring: hsl(0 0% 100%);
+  --radius: 0.5rem;
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --page-background: var(--background);
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@keyframes opacityUp {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

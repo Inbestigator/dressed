@@ -4,7 +4,7 @@ Easily handle Discord interactions/events using Dressed in your Next.js or Verce
 
 ## 📦 Install
 
-```bash
+```sh
 bun add dressed @dressed/next
 ```
 

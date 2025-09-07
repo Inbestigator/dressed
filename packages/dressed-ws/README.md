@@ -4,7 +4,7 @@ Interact with the Discord gateway. Handles connecting, disconnecting, sharding.
 
 ## 📦 Install
 
-```bash
+```sh
 bun add dressed @dressed/ws
 ```
 

@@ -100,9 +100,9 @@ export default async function DocsPage({
           </Breadcrumb>
         </div>
       </header>
-      <div className="p-4 pt-0 max-w-screen">
+      <main className="p-4 pt-0 max-w-screen">
         <DocsMD content={doc.content} />
-      </div>
+      </main>
     </>
   );
 }

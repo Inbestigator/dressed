@@ -8,7 +8,7 @@ src
 └ components
   ├ buttons
   │ ├ increase.ts # Will handle for buttons with ID `increase`
-  │ └ trivia_guess_:answer.ts # Will handle for buttons with ID `trivia_guess_(.+?)`
+  │ └ trivia_guess_:answer.ts # Will handle for buttons with IDs like `trivia_guess_Jurassic Park`
   ├ modals
   │ └ suggestion.ts # Will handle for modals with ID `suggestion`
   └ selects
@@ -24,8 +24,7 @@ The component categories available are buttons, selects, and modals.
 All components are required to have a default export, this function is how your
 component will be handled.
 
-```ts
-// src/components/buttons/guess_:answer.ts
+```ts title="src / components / buttons / guess_:answer.ts" showLineNumbers
 import type { ComponentInteraction } from "dressed";
 
 export default function guess(
@@ -63,14 +62,13 @@ If you have a complex dynamic ID or you're on Windows you may opt to use the `pa
 
 #### Before
 
-```sh
-trivia_guess_:answer.ts
+```ts title="trivia_guess_:answer.ts"
+
 ```
 
 #### After
 
-```ts
-// trivia_guess_answer.ts
+```ts title="trivia_guess.ts"
 export const pattern = "trivia_guess_:answer"; // Matches `trivia_guess_(.+?)` no matter the filename
 ```
 
@@ -80,11 +78,10 @@ export const pattern = "trivia_guess_:answer"; // Matches `trivia_guess_(.+?)` n
 | ------------------------------- | ---------------------------- | ------------------------------------ |
 | `print-:value.ts`               | `print-<...>`                | `{ value: string }`                  |
 | `ticket{-:state}.ts`            | `dialog`, `dialog-<...>`     | `{ state?: string }`                 |
-| `wait{-:length}.ts`             | `wait-<[0-9]+>`              | `{ length: string (string number) }` |
+| `wait-:length(\d+).ts`          | `wait-<[0-9]+>`              | `{ length: string (string number) }` |
 | `i-love-:animal(dogs\|cats).ts` | `i-love-dogs`, `i-love-cats` | `{ animal: "dogs" \| "cats" }`       |
 
-```ts
-// src/components/buttons/print-:value.ts
+```ts title="src / components / buttons / print-:value.ts"
 export default async function print(_, args: { value: string }) {
   console.log(args.value);
 }
@@ -92,8 +89,7 @@ export default async function print(_, args: { value: string }) {
 
 Will be invoked for IDs like `print-Hello world` or `print-wowie`.
 
-```ts
-// src/components/buttons/ticket{-:action(open|close)}.ts
+```ts title="src / components / buttons / ticket{-:action(open|close)}.ts"
 export default function ticket(_, args: { action?: "open" | "close" }) {
   console.log("Action:", args.action ?? "none");
 }
@@ -103,4 +99,4 @@ Will handle either `ticket` (no `action` argument) or `ticket-open`/`ticket-clos
 
 ### Learn More
 
-This behavior is powered by [`@dressed/matcher`](https://www.npmjs.com/package/@dressed/matcher).
+This behavior is powered by [@dressed/matcher](https://www.npmjs.com/package/@dressed/matcher).
