@@ -9,7 +9,7 @@ Deploying is the last step in building your bot, it will be where Discord can se
 To get Dressed working, all you need to do is:
 
 1. Add `deno -A npm:dressed build -i` to the build command
-2. Set `.dressed/index.mjs` as the entrypoint
+2. Set `.dressed/index.js` as the entrypoint
 
 ## Environment variables
 
@@ -18,9 +18,12 @@ If you are creating a new project, you will need to upload your environment vari
 > [!TIP]
 > If you are using [@dressed/react](https://www.npmjs.com/package/@dressed/react), Deno will fail to install it, this can be fixed by changing the install command to use a different package manager, e.g. Bun or pnpm
 
+## Upload
+
 You now can upload it to Deno Deploy however you like, either through linking to GitHub, or using the CLI:
 
 ```sh
-deno install -gArf jsr:@deno/deployctl
-deployctl deploy
+deno run -A jsr:@deno/deployctl deploy
 ```
+
+Your bot should now be accessible at `<project>.<user>.deno.net`.

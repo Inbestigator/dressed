@@ -9,10 +9,6 @@ const nextConfig: NextConfig = {
       source: "/docs",
       destination: "/docs/home",
     },
-    {
-      source: "/docs/guide/deploying",
-      destination: "/docs/guide",
-    },
   ],
 };
 

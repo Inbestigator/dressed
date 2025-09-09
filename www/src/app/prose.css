@@ -33,7 +33,7 @@
   }
 
   figcaption[data-rehype-pretty-code-title] {
-    @apply w-fit rounded-t-lg border border-b-0 bg-muted px-2 translate-y-[1px];
+    @apply w-fit rounded-t-lg relative border border-b-0 bg-muted px-2 top-[1px];
   }
 
   figcaption[data-rehype-pretty-code-title]::after {

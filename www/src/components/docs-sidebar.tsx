@@ -62,6 +62,10 @@ const data = {
               title: "Deno Deploy",
               url: "/docs/guide/deploying/deno-deploy",
             },
+            {
+              title: "Netlify",
+              url: "/docs/guide/deploying/netlify",
+            },
           ],
         },
       ],
