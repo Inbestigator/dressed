@@ -9,18 +9,23 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import fs from "fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 
 export function generateStaticParams() {
   return readDir("content").map((s) => ({ slug: s.slug }));
 }
 
+const banner = `> [!IMPORTANT]
+> Currently the documentation here pertains to the canary tag of Dressed (\`dressed@1.10.0-canary.5.x\`), keep in mind that some items (especially talked about in the [deployment guides](/docs/guide/deploying)) are not available / work slightly differently in the \`@latest\` version.
+
+`;
+
 function readDir(path: string) {
   const files: { slug: string[]; content: string }[] = [];
-  const dir = fs.readdirSync(path);
+  const dir = readdirSync(path);
 
   for (const file of dir) {
-    const stat = fs.statSync(`${path}/${file}`);
+    const stat = statSync(`${path}/${file}`);
     if (stat.isDirectory()) {
       files.push(...readDir(`${path}/${file}`));
     } else {
@@ -28,7 +33,7 @@ function readDir(path: string) {
         slug: `${path.split("content/")[1] ?? ""}/${file.split(".")[0]}`
           .split("/")
           .filter((v) => v !== ""),
-        content: fs.readFileSync(`${path}/${file}`, "utf-8"),
+        content: banner + readFileSync(`${path}/${file}`, "utf-8"),
       });
     }
   }
