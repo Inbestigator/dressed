@@ -62,6 +62,8 @@ export const events = [ ${events.map((e) => JSON.stringify(e).replace("null", `h
 export { config };
 ${register ? "\ninstallCommands(commands);" : ""}
 ${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
+    const mjsContent = `// This is generated for compatibility with previous versions of Dressed, you should import from \`index.js\` instead
+export * from "./index.js";`; // TODO Remove mjs file before next major release
     const typeContent = `
 import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";
 
@@ -70,7 +72,8 @@ export declare const components: ComponentData[];
 export declare const events: EventData[];
 export declare const config: ServerConfig;`;
 
-    writeFileSync(".dressed/index.mjs", outputContent);
+    writeFileSync(".dressed/index.js", outputContent);
+    writeFileSync(".dressed/index.mjs", mjsContent);
     writeFileSync(".dressed/index.d.ts", typeContent);
 
     buildLoader.succeed("Assembled generated build");
@@ -91,8 +94,8 @@ const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>
 program
   .command("create")
   .description("Clone a new bot from the examples repository")
-  .argument("[template]", "Template name (deno/economy)")
   .argument("[name]", "Project name")
+  .argument("[template]", "Template name (node/deno)")
   .action(async (name, template) => {
     if (!name) {
       name = await input({
