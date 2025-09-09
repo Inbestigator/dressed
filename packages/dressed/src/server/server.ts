@@ -67,7 +67,7 @@ export function createServer(
       .writeHead(handlerRes.status, {
         "Content-Type": "application/json",
       })
-      .end(handlerRes.body);
+      .end(await handlerRes.text());
   });
 
   const port = config.port ?? 8000;
