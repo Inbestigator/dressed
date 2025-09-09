@@ -13,9 +13,17 @@ Deploying is the last step in building your bot, it will be where Discord can se
    }
    ```
 
-2. ```ts title="api / bot.ts"
+2. Make sure that the type key is set to `"module"` in your `package.json`
+
+   ```json title="package.json"
+   {
+     "type": "module"
+   }
+   ```
+
+3. ```ts title="api / bot.ts"
    // @ts-ignore Generated after build
-   import { commands, components, events, config } from "../.dressed/index.mjs";
+   import { commands, components, events, config } from "../.dressed/index.js";
    import { handleRequest } from "dressed/server";
 
    export const POST = (req: Request) =>

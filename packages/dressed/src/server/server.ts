@@ -124,14 +124,14 @@ export async function handleRequest(
     let status = 500;
     // The interaction response token
     if ("token" in json) {
-      status = handleInteraction(
+      status = await handleInteraction(
         commands,
         components,
         json,
         config?.middleware,
       );
     } else {
-      status = handleEvent(events, json, config?.middleware);
+      status = await handleEvent(events, json, config?.middleware);
     }
     return new Response(status === 200 ? '{"type":1}' : null, {
       status,
@@ -145,47 +145,48 @@ export async function handleRequest(
 /**
  * Runs an interaction, takes functions to run commands/components/middleware and the request body
  */
-export function handleInteraction(
+export async function handleInteraction(
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
   json: ReturnType<typeof JSON.parse>,
   middleware: ServerConfig["middleware"],
-): 200 | 202 | 404 {
+): Promise<200 | 202 | 404> {
   switch (json.type) {
     case InteractionType.Ping: {
       console.log("Received ping test");
       return 200;
     }
     case InteractionType.ApplicationCommand: {
-      const command = json as APIApplicationCommandInteraction;
-      const interaction = createInteraction(command);
+      const interaction = createInteraction(
+        json as APIApplicationCommandInteraction,
+      );
       const runCommand =
         typeof commands === "function" ? commands : setupCommands(commands);
-      runCommand(
+      await runCommand(
         interaction,
         middleware?.commands as Parameters<typeof runCommand>[1],
       );
       return 202;
     }
     case InteractionType.ApplicationCommandAutocomplete: {
-      const autocomplete = json as APIApplicationCommandAutocompleteInteraction;
-      const interaction = createInteraction(autocomplete);
+      const interaction = createInteraction(
+        json as APIApplicationCommandAutocompleteInteraction,
+      );
       const runCommand =
         typeof commands === "function" ? commands : setupCommands(commands);
-      runCommand(interaction, undefined, "autocomplete");
+      await runCommand(interaction, undefined, "autocomplete");
       return 202;
     }
     case InteractionType.MessageComponent:
     case InteractionType.ModalSubmit: {
-      const component = json as
-        | APIMessageComponentInteraction
-        | APIModalSubmitInteraction;
-      const interaction = createInteraction(component);
+      const interaction = createInteraction(
+        json as APIMessageComponentInteraction | APIModalSubmitInteraction,
+      );
       const runComponent =
         typeof components === "function"
           ? components
           : setupComponents(components);
-      runComponent(interaction, middleware?.components);
+      await runComponent(interaction, middleware?.components);
       return 202;
     }
     default: {
@@ -198,21 +199,20 @@ export function handleInteraction(
 /**
  * Runs an event, takes a function to run events/middleware and the request body
  */
-export function handleEvent(
+export async function handleEvent(
   events: EventRunner | EventData[],
   json: ReturnType<typeof JSON.parse>,
   middleware: ServerConfig["middleware"],
-): 200 | 202 | 404 {
+): Promise<200 | 202 | 404> {
   switch (json.type) {
     case ApplicationWebhookType.Ping: {
       console.log("Received ping test");
       return 200;
     }
     case ApplicationWebhookType.Event: {
-      const event = json.event as APIWebhookEventBody;
       const runEvent =
         typeof events === "function" ? events : setupEvents(events);
-      runEvent(event, middleware?.events);
+      await runEvent(json.event as APIWebhookEventBody, middleware?.events);
       return 202;
     }
     default: {
