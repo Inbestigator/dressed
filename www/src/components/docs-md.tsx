@@ -7,10 +7,10 @@ import rehypeCallouts from "rehype-callouts";
 
 export default function DocsMD({ content }: { content: string }) {
   return (
-    <div className="prose prose-invert max-w-none">
+    <div className="extended-prose">
       <MarkdownAsync
         rehypePlugins={[
-          [rehypePrettyCode, { theme: "catppuccin-mocha" }],
+          [rehypePrettyCode, { theme: "slack-dark" }],
           rehypeSlug,
           rehypeUnwrapImages,
           rehypeCallouts,

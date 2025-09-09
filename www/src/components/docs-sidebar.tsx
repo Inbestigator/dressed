@@ -1,7 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { Cog, Github, Home, Puzzle, Reply, Terminal, Ear } from "lucide-react";
+import {
+  Cog,
+  Github,
+  Home,
+  Puzzle,
+  Reply,
+  Terminal,
+  Ear,
+  Book,
+  Network,
+} from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import {
@@ -21,6 +31,44 @@ const data = {
       title: "Home",
       url: "/docs",
       icon: Home,
+    },
+    {
+      title: "Guide",
+      url: "/docs/guide",
+      icon: Book,
+      items: [
+        {
+          title: "Getting started",
+          url: "/docs/guide/getting-started",
+        },
+        {
+          title: "Counter",
+          url: "/docs/guide/counter",
+        },
+        {
+          title: "Deploying",
+          url: "/docs/guide/deploying",
+          icon: Network,
+          items: [
+            {
+              title: "Vercel",
+              url: "/docs/guide/deploying/vercel",
+            },
+            {
+              title: "Cloudflare",
+              url: "/docs/guide/deploying/cf-workers",
+            },
+            {
+              title: "Deno Deploy",
+              url: "/docs/guide/deploying/deno-deploy",
+            },
+            {
+              title: "Netlify",
+              url: "/docs/guide/deploying/netlify",
+            },
+          ],
+        },
+      ],
     },
     {
       title: "Server Config",
@@ -61,7 +109,7 @@ const data = {
   navSecondary: [
     {
       title: "GitHub",
-      url: "https://github.com/inbestigator/dressed",
+      url: "https://github.com/Inbestigator/dressed",
       icon: Github,
     },
   ],
@@ -76,19 +124,15 @@ export function DocsSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Image
-                    src="/dressed_small.webp"
-                    width={256}
-                    height={256}
-                    alt="Dressed logo"
-                    className="rounded-lg"
-                  />
-                </div>
-                <div className="grid flex-1 text-left leading-tight">
-                  <span className="truncate font-semibold">Dressed</span>
-                </div>
+              <Link href="/" className="font-semibold">
+                <Image
+                  src="/dressed_small.webp"
+                  width={32}
+                  height={32}
+                  alt="Dressed logo"
+                  className="rounded-lg"
+                />
+                Dressed
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

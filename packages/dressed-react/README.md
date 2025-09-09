@@ -6,7 +6,7 @@ If you manually call the render function yourself, you can use the old component
 
 ## 📦 Install
 
-```bash
+```sh
 bun add dressed react @dressed/react
 ```
 

@@ -8,7 +8,7 @@ structure:
 ```sh
 src
 └ events
-  ├ ApplicationAuthorized.ts # Triggered when your app was authorized by a user
+  ├ ApplicationAuthorized.ts # Triggered when your app was added to a server/user
   └ EntitlementCreate.ts # Triggered when an entitlement was created
 ```
 
@@ -18,8 +18,7 @@ This means that command file names must be globally unique. Yes, currently casin
 
 All events are required to have a default export, this function is how the event will be handled.
 
-```ts
-// src/events/ApplicationAuthorized.ts
+```ts title="src / events / ApplicationAuthorized.ts" showLineNumbers
 import type { Event } from "dressed";
 
 export default async function (event: Event<"ApplicationAuthorized">) {

@@ -1,57 +1,28 @@
-# Dressed
-
-Dressed is a Discord bot framework with 100% API support. It allows you to host a bot using the
+Dressed is a Discord bot library that allows you to host a bot using the
 [interactions endpoint](https://discord.com/developers/docs/interactions/overview#configuring-an-interactions-endpoint-url)
-system for Discord.
+system for Discord. Discord will send POST requests to your bot, instead of the websocket system that other libraries utilize.
 
-For more information on common functions (e.g. getUser, createChannel, etc.), see [the docs on JSR](https://jsr.io/@dressed/dressed/doc)
+For more information on common functions (e.g. getUser, createChannel, etc.), see [the docs on JSR](https://jsr.io/@dressed/dressed/doc).
 
-Discord will send POST requests to your bot, instead of the websocket system
-that Discord.js utilizes.
+One cool feature of Dressed is that you can make dynamic component IDs, so that you only need to write one component handler for many different scenarios. [See more](/docs/components#dynamic-component-ids)
 
-One cool feature of Dressed is that you can make dynamic component IDs, so that you only need to write one component handler for many different scenarios. [See more](https://dressed.vercel.app/docs/components#dynamic-component-ids)
+## Quick usage
 
-You can find an example of some bots ready to deploy on
-[Vercel](https://vercel.com) and [Deno deploy](https://deno.com/deploy) in
-[this repo](https://github.com/Inbestigator/dressed-examples).
-
-## Installation
-
-```bash
+```sh
 bun add dressed
 ```
 
-```ts
-// src/commands/ping.ts
-import type { CommandConfig, CommandInteraction } from "dressed";
+```ts title="index.ts"
+import { createMessage } from "dressed";
 
-export const config: CommandConfig = {
-  description: "Returns pong",
-};
-
-export default async function (interaction: CommandInteraction) {
-  await interaction.reply({
-    content: "Pong!",
-    ephemeral: true,
-  });
-}
+createMessage("<CHANNEL_ID>", "Hello from Dressed!");
 ```
 
-You can then build and run the bot with this command
-
-```bash
-bun dressed build -ir
-bun .dressed
+```sh
+bun index.ts
 ```
 
-By default the builder outputs only boilerplate data, if you want it to
-include an instance creator, add `-i` when running the build command.
-
-In order to register the commands for your bot, you can run the build command with `-r`.
-
-In addition to Dressed, I'd recommend installing
-[Discord API Types](https://www.npmjs.com/package/discord-api-types) (The type
-lib that Dressed uses internally).
+For more information on how to create a simple bot, check out [the getting started guide](/docs/guide/getting-started). You can find an example of some bots ready to deploy on [Vercel](https://vercel.com) and [Deno deploy](https://deno.com/deploy) in [this repo](https://github.com/Inbestigator/dressed-examples).
 
 Dressed includes a [Node HTTP](https://nodejs.org/api/http.html) server out of the box.
 If you'd prefer to create your own, all the functions you need are available within `dressed/server`.
