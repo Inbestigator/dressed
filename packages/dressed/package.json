@@ -1,6 +1,6 @@
 {
   "name": "dressed",
-  "version": "1.10.0-canary.5.5",
+  "version": "1.10.0-canary.5.6",
   "description": "A sleek, serverless-ready Discord bot framework.",
   "scripts": {
     "dist": "rm -fr dist && tsc",
