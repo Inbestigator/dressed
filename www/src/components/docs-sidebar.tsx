@@ -3,7 +3,6 @@
 import * as React from "react";
 import {
   Cog,
-  Github,
   Home,
   Puzzle,
   Reply,
@@ -13,7 +12,6 @@ import {
   Network,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
 import {
   Sidebar,
   SidebarContent,
@@ -25,95 +23,86 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 
-const data = {
-  navMain: [
-    {
-      title: "Home",
-      url: "/docs",
-      icon: Home,
-    },
-    {
-      title: "Guide",
-      url: "/docs/guide",
-      icon: Book,
-      items: [
-        {
-          title: "Getting started",
-          url: "/docs/guide/getting-started",
-        },
-        {
-          title: "Counter",
-          url: "/docs/guide/counter",
-        },
-        {
-          title: "Deploying",
-          url: "/docs/guide/deploying",
-          icon: Network,
-          items: [
-            {
-              title: "Vercel",
-              url: "/docs/guide/deploying/vercel",
-            },
-            {
-              title: "Cloudflare",
-              url: "/docs/guide/deploying/cf-workers",
-            },
-            {
-              title: "Deno Deploy",
-              url: "/docs/guide/deploying/deno-deploy",
-            },
-            {
-              title: "Netlify",
-              url: "/docs/guide/deploying/netlify",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      title: "Server Config",
-      url: "/docs/server-config",
-      icon: Cog,
-    },
-    {
-      title: "Commands",
-      url: "/docs/commands",
-      icon: Terminal,
-      items: [
-        {
-          title: "Config",
-          url: "/docs/commands/config",
-        },
-        {
-          title: "Options",
-          url: "/docs/commands/options",
-        },
-      ],
-    },
-    {
-      title: "Components",
-      url: "/docs/components",
-      icon: Puzzle,
-    },
-    {
-      title: "Events",
-      url: "/docs/events",
-      icon: Ear,
-    },
-    {
-      title: "Interactions",
-      url: "/docs/interactions",
-      icon: Reply,
-    },
-  ],
-  navSecondary: [
-    {
-      title: "GitHub",
-      url: "https://github.com/Inbestigator/dressed",
-      icon: Github,
-    },
-  ],
-};
+const data = [
+  {
+    title: "Home",
+    url: "/docs",
+    icon: Home,
+  },
+  {
+    title: "Guide",
+    url: "/docs/guide",
+    icon: Book,
+    items: [
+      {
+        title: "Getting started",
+        url: "/docs/guide/getting-started",
+      },
+      {
+        title: "Counter",
+        url: "/docs/guide/counter",
+      },
+      {
+        title: "Deploying",
+        url: "/docs/guide/deploying",
+        icon: Network,
+        items: [
+          {
+            title: "Vercel",
+            url: "/docs/guide/deploying/vercel",
+          },
+          {
+            title: "Cloudflare",
+            url: "/docs/guide/deploying/cf-workers",
+          },
+          {
+            title: "Deno Deploy",
+            url: "/docs/guide/deploying/deno-deploy",
+          },
+          {
+            title: "Netlify",
+            url: "/docs/guide/deploying/netlify",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Server Config",
+    url: "/docs/server-config",
+    icon: Cog,
+  },
+  {
+    title: "Commands",
+    url: "/docs/commands",
+    icon: Terminal,
+    items: [
+      {
+        title: "Config",
+        url: "/docs/commands/config",
+      },
+      {
+        title: "Options",
+        url: "/docs/commands/options",
+      },
+    ],
+  },
+  {
+    title: "Components",
+    url: "/docs/components",
+    icon: Puzzle,
+  },
+  {
+    title: "Events",
+    url: "/docs/events",
+    icon: Ear,
+  },
+  {
+    title: "Interactions",
+    url: "/docs/interactions",
+    icon: Reply,
+  },
+];
 
 export function DocsSidebar({
   ...props
@@ -139,8 +128,7 @@ export function DocsSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={data} />
       </SidebarContent>
     </Sidebar>
   );
