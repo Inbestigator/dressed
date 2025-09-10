@@ -6,7 +6,7 @@ import { dirname, join, resolve } from "node:path";
 import { cwd, exit, stdout } from "node:process";
 import { select, input, confirm } from "@inquirer/prompts";
 import { parse } from "dotenv";
-import { mkdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import build from "../server/build/build.ts";
 import bundleFiles from "../server/build/bundle.ts";
 
@@ -60,8 +60,7 @@ export const events = [ ${events.map((e) => JSON.stringify(e).replace("null", `h
 export { config };
 ${register ? "\ninstallCommands(commands);" : ""}
 ${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
-    const mjsContent = `// This is generated for compatibility with previous versions of Dressed, you should import from \`index.js\` instead
-export * from "./index.js";`; // TODO Remove mjs file before next major release
+    const jsContent = `export * from "./index.mjs";`;
     const typeContent = `
 import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";
 
@@ -70,10 +69,9 @@ export declare const components: ComponentData[];
 export declare const events: EventData[];
 export declare const config: ServerConfig;`;
 
-    writeFileSync(".dressed/tmp/entries.ts", outputContent);
-    await bundleFiles([{ in: ".dressed/tmp/entries.ts", out: "index" }]);
-    renameSync(".dressed/index.mjs", ".dressed/index.js");
-    writeFileSync(".dressed/index.mjs", mjsContent);
+    writeFileSync(".dressed/tmp/index.ts", outputContent);
+    await bundleFiles([{ in: ".dressed/tmp/index.ts", out: "index" }]);
+    writeFileSync(".dressed/index.js", jsContent);
     writeFileSync(".dressed/index.d.ts", typeContent);
     rmSync(".dressed/tmp", { recursive: true, force: true });
 
