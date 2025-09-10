@@ -8,7 +8,7 @@ exports[`Build bot 1`] = `
       "exports": null,
       "name": "ping",
       "path": "tests/src/commands/ping.ts",
-      "uid": "616e8683b1d82c08564766c78c2794712e725ad5",
+      "uid": "8fb0c7f6d76f306d26b0a4439233cfcf2213aead",
     },
   ],
   "components": [
@@ -21,7 +21,7 @@ exports[`Build bot 1`] = `
       "exports": null,
       "name": "button",
       "path": "tests/src/components/buttons/button.ts",
-      "uid": "6e42883313db55c8d3fd23b1ecf0d2d3f9e0a361",
+      "uid": "393f92e485a47bf513c3d0b247432a701b9380fa",
     },
   ],
   "config": {
@@ -37,7 +37,7 @@ exports[`Build bot 1`] = `
       "exports": null,
       "name": "ApplicationAuthorized",
       "path": "tests/src/events/ApplicationAuthorized.ts",
-      "uid": "59e6c4745671bf0abec588fcd259deddd0bc85a5",
+      "uid": "69d246633f8b88caba1f573bc8f94948ebf48d5f",
     },
   ],
 }

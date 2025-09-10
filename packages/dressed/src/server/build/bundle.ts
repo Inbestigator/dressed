@@ -17,9 +17,7 @@ export default async function bundleFiles(
   await build({
     entryPoints,
     outdir: ".dressed",
-    outExtension: {
-      ".js": ".mjs",
-    },
+    outExtension: { ".js": ".mjs" },
     bundle: true,
     minify: true,
     splitting: true,
