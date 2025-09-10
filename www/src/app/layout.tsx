@@ -15,7 +15,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dressed",
+  title: {
+    default: "Dressed",
+    template: "%s - Dressed",
+  },
   description: "A sleek, serverless-ready Discord bot framework.",
 };
 
