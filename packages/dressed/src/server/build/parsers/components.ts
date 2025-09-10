@@ -22,8 +22,8 @@ export const parseComponents = createHandlerParser<ComponentData>({
       col2: category ?? "unknown",
     };
   },
-  async createData({ name, path }) {
-    const { pattern = name } = await import(path);
+  async createData({ name, path, exports }) {
+    const { pattern = name } = exports as { pattern?: string | RegExp };
     const category = getCategory(path);
 
     if (!category) {

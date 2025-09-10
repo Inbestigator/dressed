@@ -2,12 +2,13 @@
 
 import ora from "ora";
 import { Command } from "commander";
-import { dirname, join, relative } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { cwd, exit, stdout } from "node:process";
 import { select, input, confirm } from "@inquirer/prompts";
 import { parse } from "dotenv";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import build from "../server/build/build.ts";
+import bundleFiles from "../server/build/bundle.ts";
 
 const program = new Command()
   .name("dressed")
@@ -48,12 +49,9 @@ program
 
     const outputContent = `
 ${generateImports(instance, register)}
-import config from "./cache/dressed.config.js";${[commands, components, events]
+import config from "./dressed.config.mjs";${[commands, components, events]
       .flat()
-      .map(
-        (v) =>
-          `\nimport * as h${v.uid} from "./${relative(".dressed", v.path)}";`,
-      )
+      .map((v) => `\nimport * as h${v.uid} from "${resolve(v.path)}";`)
       .join("")}
 
 export const commands = [ ${commands.map((c) => JSON.stringify(c).replace("null", `h${c.uid}`))} ];
@@ -72,9 +70,12 @@ export declare const components: ComponentData[];
 export declare const events: EventData[];
 export declare const config: ServerConfig;`;
 
-    writeFileSync(".dressed/index.js", outputContent);
+    writeFileSync(".dressed/tmp/entries.ts", outputContent);
+    await bundleFiles([{ in: ".dressed/tmp/entries.ts", out: "index" }]);
+    renameSync(".dressed/index.mjs", ".dressed/index.js");
     writeFileSync(".dressed/index.mjs", mjsContent);
     writeFileSync(".dressed/index.d.ts", typeContent);
+    rmSync(".dressed/tmp", { recursive: true, force: true });
 
     buildLoader.succeed("Assembled generated build");
     exit(0);

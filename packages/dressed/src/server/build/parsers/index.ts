@@ -1,8 +1,7 @@
 import logTree from "../log-tree.ts";
-import type { WalkEntry } from "../../../types/walk.ts";
+import type { ImportedWalkEntry } from "../../../types/walk.ts";
 import ora from "ora";
 import { stdout } from "node:process";
-import { createHash } from "node:crypto";
 import { pathToFileURL } from "node:url";
 import type { Promisable } from "../../../types/utilities.ts";
 import type { BaseData } from "../../../types/config.ts";
@@ -25,10 +24,12 @@ export function createHandlerParser<
   col2Name?: string;
   uniqueKeys?: (keyof T["data"])[];
   messages: ParserMessages;
-  itemMessages: ((file: WalkEntry) => ParserItemMessages) | ParserItemMessages;
-  createData: (file: WalkEntry) => Promisable<T["data"]>;
+  itemMessages:
+    | ((file: ImportedWalkEntry) => ParserItemMessages)
+    | ParserItemMessages;
+  createData: (file: ImportedWalkEntry) => Promisable<T["data"]>;
   postMortem?: (items: T[]) => Promisable<T[]>;
-}): (files: WalkEntry[]) => Promise<T[]> {
+}): (files: ImportedWalkEntry[]) => Promise<T[]> {
   return async (files) => {
     if (files.length === 0) return [];
     const generatingLoader = ora({
@@ -64,8 +65,8 @@ export function createHandlerParser<
           items.push({
             name: file.name,
             path: file.path,
+            uid: file.uid,
             data,
-            uid: createHash("sha1").update(file.path).digest("hex"),
             exports: null,
           } as T);
           tree.push(file.name, itemMessages.col2);

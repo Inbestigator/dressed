@@ -7,8 +7,8 @@ exports[`Build bot 1`] = `
       "data": {},
       "exports": null,
       "name": "ping",
-      "path": ".dressed/cache/commands/ping.js",
-      "uid": "f3bb6220234a3aea7d9af436f5a4ff954ed07062",
+      "path": "tests/src/commands/ping.ts",
+      "uid": "616e8683b1d82c08564766c78c2794712e725ad5",
     },
   ],
   "components": [
@@ -20,8 +20,8 @@ exports[`Build bot 1`] = `
       },
       "exports": null,
       "name": "button",
-      "path": ".dressed/cache/components/buttons/button.js",
-      "uid": "f0944af4572c3d7a91d6da18949f42a57fbcdaaa",
+      "path": "tests/src/components/buttons/button.ts",
+      "uid": "6e42883313db55c8d3fd23b1ecf0d2d3f9e0a361",
     },
   ],
   "config": {
@@ -36,8 +36,8 @@ exports[`Build bot 1`] = `
       },
       "exports": null,
       "name": "ApplicationAuthorized",
-      "path": ".dressed/cache/events/ApplicationAuthorized.js",
-      "uid": "ea837a77b7c72e4a5512c8ad6ef32484475e767c",
+      "path": "tests/src/events/ApplicationAuthorized.ts",
+      "uid": "59e6c4745671bf0abec588fcd259deddd0bc85a5",
     },
   ],
 }
