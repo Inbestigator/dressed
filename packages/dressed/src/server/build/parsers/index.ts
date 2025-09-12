@@ -1,5 +1,5 @@
 import logTree from "../log-tree.ts";
-import type { ImportedWalkEntry } from "../../../types/walk.ts";
+import type { WalkEntry } from "../../../types/walk.ts";
 import ora from "ora";
 import { stdout } from "node:process";
 import { pathToFileURL } from "node:url";
@@ -19,17 +19,16 @@ interface ParserItemMessages {
 
 export function createHandlerParser<
   T extends BaseData<Partial<Record<keyof T["data"], unknown>>>,
+  F extends WalkEntry = WalkEntry,
 >(options: {
   col1Name: string;
   col2Name?: string;
   uniqueKeys?: (keyof T["data"])[];
   messages: ParserMessages;
-  itemMessages:
-    | ((file: ImportedWalkEntry) => ParserItemMessages)
-    | ParserItemMessages;
-  createData: (file: ImportedWalkEntry) => Promisable<T["data"]>;
+  itemMessages: ((file: F) => ParserItemMessages) | ParserItemMessages;
+  createData: (file: F) => Promisable<T["data"]>;
   postMortem?: (items: T[]) => Promisable<T[]>;
-}): (files: ImportedWalkEntry[]) => Promise<T[]> {
+}): (files: F[]) => Promise<T[]> {
   return async (files) => {
     if (files.length === 0) return [];
     const generatingLoader = ora({
