@@ -10,7 +10,7 @@ system for Discord.
 Discord will send `POST` requests to your bot, instead of using the WebSocket system that libraries like Discord.js rely on.
 
 One cool feature of Dressed is support for **dynamic component IDs**, so you only need to write one component handler for many different scenarios.
-👉 [See more](https://dressed.vercel.app/docs/components#dynamic-component-ids)
+👉 [See more](https://dressed.js.org/docs/components#dynamic-component-ids)
 
 You can find examples of bots ready to deploy on
 [Vercel](https://vercel.com) and [Deno Deploy](https://deno.com/deploy) in

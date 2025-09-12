@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Metadata } from "next";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 
 export function generateStaticParams() {
@@ -39,6 +40,20 @@ function readDir(path: string) {
   }
 
   return files;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string[] }>;
+}): Promise<Metadata> {
+  return {
+    title: (await params).slug
+      .at(-1)!
+      .split("-")
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(" "),
+  };
 }
 
 export default async function DocsPage({
@@ -75,7 +90,7 @@ export default async function DocsPage({
               {doc.slug.map((s, i) => {
                 if (i === doc.slug.length - 1) {
                   return (
-                    <BreadcrumbItem key={s}>
+                    <BreadcrumbItem key={i}>
                       <BreadcrumbPage>
                         {s
                           .split("-")
@@ -86,7 +101,7 @@ export default async function DocsPage({
                   );
                 }
                 return (
-                  <div key={s} className=" gap-2.5 items-center hidden md:flex">
+                  <div key={i} className=" gap-2.5 items-center hidden md:flex">
                     <BreadcrumbItem>
                       <BreadcrumbLink
                         href={"/docs/" + doc.slug.slice(0, i + 1).join("/")}

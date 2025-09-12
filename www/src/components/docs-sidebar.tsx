@@ -10,6 +10,8 @@ import {
   Ear,
   Book,
   Network,
+  Atom,
+  Server,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import {
@@ -45,7 +47,7 @@ const data = [
       {
         title: "Deploying",
         url: "/docs/guide/deploying",
-        icon: Network,
+        icon: Server,
         items: [
           {
             title: "Vercel",
@@ -101,6 +103,16 @@ const data = [
     title: "Interactions",
     url: "/docs/interactions",
     icon: Reply,
+  },
+  {
+    title: "Custom servers",
+    url: "/docs/custom-servers",
+    icon: Network,
+  },
+  {
+    title: "React",
+    url: "/docs/react",
+    icon: Atom,
   },
 ];
 

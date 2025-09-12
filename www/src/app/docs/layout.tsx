@@ -3,8 +3,10 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { DocsSidebar } from "@/components/docs-sidebar";
 
 export const metadata: Metadata = {
-  title: "Dressed Docs",
-  description: "",
+  title: {
+    default: "Dressed Docs",
+    template: "%s - Dressed Docs",
+  },
 };
 
 export default function DocsLayout({
