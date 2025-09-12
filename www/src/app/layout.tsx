@@ -42,7 +42,7 @@ export default function RootLayout({
             GitHub
           </Link>
           <Link
-            href="https://discord.gg/Crj9wW863c"
+            href="https://discord.gg/AJTkvuCpZu"
             target="_blank"
             className="hover:underline"
           >
