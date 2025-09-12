@@ -83,7 +83,7 @@ export default async function build(config: ServerConfig = {}): Promise<{
   writeFileSync(
     componentsPath,
     `${componentFiles
-      .map((f) => `\nimport * as h${f.uid} from "${resolve(f.path)}";`)
+      .map((f) => `import * as h${f.uid} from "${resolve(f.path)}";`)
       .join(
         "",
       )}export const components = [${componentFiles.map((f) => `${JSON.stringify(f).slice(0, -1)},pattern:h${f.uid}.pattern}`)}]`,
