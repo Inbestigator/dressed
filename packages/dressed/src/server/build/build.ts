@@ -73,24 +73,25 @@ export default async function build(config: ServerConfig = {}): Promise<{
 
   const root = config.build?.root ?? "src";
   const categories = ["commands", "components", "events"];
-  const [commands, componentFiles, events] = await Promise.all(
+  const files = await Promise.all(
     categories.map((d) =>
       fetchFiles(root, d, config.build?.extensions ?? ["js", "ts", "mjs"]),
     ),
   );
-  const componentsPath = ".dressed/tmp/components.ts";
+  const entriesPath = ".dressed/tmp/entries.ts";
 
   writeFileSync(
-    componentsPath,
-    `${componentFiles
-      .map((f) => `import * as h${f.uid} from "${resolve(f.path)}";`)
-      .join(
-        "",
-      )}export const components = [${componentFiles.map((f) => `${JSON.stringify(f).slice(0, -1)},pattern:h${f.uid}.pattern}`)}]`,
+    entriesPath,
+    files
+      .flatMap((c, i) => [
+        c.map((f) => `import * as h${f.uid} from "${resolve(f.path)}";`),
+        `export const ${categories[i]} = [${c.map((f) => `${JSON.stringify(f).slice(0, -1)},exports:h${f.uid}}`)}].filter((x)=>typeof x.exports.default==="function");`,
+      ])
+      .join(""),
   );
-  await bundleFiles([{ in: componentsPath, out: "tmp/components" }]);
-  const { components } = await import(
-    resolve(componentsPath.replace(".ts", ".mjs"))
+  await bundleFiles([{ in: entriesPath, out: "tmp/entries" }]);
+  const { commands, components, events } = await import(
+    resolve(entriesPath.replace(".ts", ".mjs"))
   );
 
   return {

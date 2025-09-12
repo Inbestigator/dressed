@@ -10,7 +10,7 @@ const validComponentCategories = ["buttons", "modals", "selects"];
 export const parseComponents = createHandlerParser<
   ComponentData,
   WalkEntry & {
-    pattern: string | RegExp | undefined;
+    exports: { pattern: string | RegExp | undefined };
   }
 >({
   col1Name: "Component",
@@ -28,7 +28,7 @@ export const parseComponents = createHandlerParser<
       col2: category ?? "unknown",
     };
   },
-  async createData({ name, path, pattern = name }) {
+  async createData({ name, path, exports: { pattern = name } }) {
     const category = getCategory(path);
 
     if (!category) {
