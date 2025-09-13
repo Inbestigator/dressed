@@ -3,16 +3,10 @@ import type { ComponentData } from "../../../types/config.ts";
 import ora from "ora";
 import { patternToRegex, scorePattern } from "@dressed/matcher";
 import { createHandlerParser } from "./index.ts";
-import type { WalkEntry } from "../../../types/walk.ts";
 
 const validComponentCategories = ["buttons", "modals", "selects"];
 
-export const parseComponents = createHandlerParser<
-  ComponentData,
-  WalkEntry & {
-    exports: { pattern: string | RegExp | undefined };
-  }
->({
+export const parseComponents = createHandlerParser<ComponentData>({
   col1Name: "Component",
   col2Name: "Category",
   messages: {

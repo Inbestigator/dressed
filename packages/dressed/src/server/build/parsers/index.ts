@@ -19,7 +19,7 @@ interface ParserItemMessages {
 
 export function createHandlerParser<
   T extends BaseData<Partial<Record<keyof T["data"], unknown>>>,
-  F extends WalkEntry = WalkEntry,
+  F extends WalkEntry = WalkEntry & { exports: NonNullable<T["exports"]> },
 >(options: {
   col1Name: string;
   col2Name?: string;
