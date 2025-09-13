@@ -76,7 +76,7 @@ export function createServer(
     console.log("Bot is now listening on", endpoint.href);
   });
 
-  const shutdown = () => server.close(() => process.exit(0));
+  const shutdown = () => server.close(() => process.exit());
 
   process.on("SIGTERM", shutdown);
   process.on("SIGINT", shutdown);

@@ -1,11 +1,9 @@
 import { build } from "esbuild";
 
-export default async function bundleFiles(
-  entryPoints: { in: string; out: string }[],
-) {
+export default async function bundleFiles(entry: string, outdir: string) {
   await build({
-    entryPoints,
-    outdir: ".dressed",
+    entryPoints: [entry],
+    outdir,
     outExtension: { ".js": ".mjs" },
     bundle: true,
     minify: true,

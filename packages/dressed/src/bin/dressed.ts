@@ -48,7 +48,17 @@ program
     }).start();
 
     const outputContent = `
-${generateImports(instance, register)}
+${
+  instance || register
+    ? `import { ${
+        instance
+          ? `createServer${register ? ", installCommands" : ""}`
+          : register
+            ? "installCommands"
+            : ""
+      } } from "dressed/server";`
+    : ""
+}
 import config from "./dressed.config.mjs";${[commands, components, events]
       .flat()
       .map((v) => `\nimport * as h${v.uid} from "${resolve(v.path)}";`)
@@ -70,25 +80,14 @@ export declare const events: EventData[];
 export declare const config: ServerConfig;`;
 
     writeFileSync(".dressed/tmp/index.ts", outputContent);
-    await bundleFiles([{ in: ".dressed/tmp/index.ts", out: "index" }]);
+    await bundleFiles(".dressed/tmp/index.ts", ".dressed");
     writeFileSync(".dressed/index.js", jsContent);
     writeFileSync(".dressed/index.d.ts", typeContent);
     rmSync(".dressed/tmp", { recursive: true, force: true });
 
     buildLoader.succeed("Assembled generated build");
-    exit(0);
+    exit();
   });
-
-const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>
-  addInstance || registerCommands
-    ? `import { ${
-        addInstance
-          ? `createServer${registerCommands ? ", installCommands" : ""}`
-          : registerCommands
-            ? "installCommands"
-            : ""
-      } } from "dressed/server";`
-    : "";
 
 program
   .command("create")
@@ -139,6 +138,7 @@ program
     const envVars: Record<string, string> = {};
 
     for (const [k, v] of Object.entries(parsed)) {
+      if (k === "DISCORD_APP_ID" || k === "DISCORD_PUBLIC_KEY") continue;
       envVars[k] = await input({ message: k, default: v });
     }
 
@@ -192,7 +192,7 @@ program
     mkdirLoader.succeed();
 
     console.log("\x1b[32m%s", "Project created successfully.");
-    exit(0);
+    exit();
   });
 
 program.parse();

@@ -50,7 +50,10 @@ function override<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
 /**
  * Builds the bot imports and other variables.
  */
-export default async function build(config: ServerConfig = {}): Promise<{
+export default async function build(
+  config: ServerConfig = {},
+  { bundle = bundleFiles }: { bundle?: typeof bundleFiles } = {},
+): Promise<{
   commands: CommandData[];
   components: ComponentData[];
   events: EventData[];
@@ -64,7 +67,7 @@ export default async function build(config: ServerConfig = {}): Promise<{
   const configOutPath = ".dressed/tmp/dressed.config.mjs";
 
   if (configPath) {
-    await bundleFiles([{ in: configPath, out: "tmp/dressed.config" }]);
+    await bundle(configPath, ".dressed/tmp");
     const { default: importedConfig } = await import(resolve(configOutPath));
     config = override(importedConfig, config);
   } else {
@@ -90,7 +93,7 @@ export default async function build(config: ServerConfig = {}): Promise<{
       .flat(2)
       .join(""),
   );
-  await bundleFiles([{ in: entriesPath, out: "tmp/entries" }]);
+  await bundle(entriesPath, ".dressed/tmp");
   const { commands, components, events } = await import(
     resolve(entriesPath.replace(".ts", ".mjs"))
   );

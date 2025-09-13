@@ -22,7 +22,7 @@ export const parseComponents = createHandlerParser<ComponentData>({
       col2: category ?? "unknown",
     };
   },
-  async createData({ name, path, exports: { pattern = name } }) {
+  async createData({ name, path, exports: { pattern = name } = {} }) {
     const category = getCategory(path);
 
     if (!category) {
