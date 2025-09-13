@@ -83,10 +83,11 @@ export default async function build(config: ServerConfig = {}): Promise<{
   writeFileSync(
     entriesPath,
     files
-      .flatMap((c, i) => [
+      .map((c, i) => [
         c.map((f) => `import * as h${f.uid} from "${resolve(f.path)}";`),
         `export const ${categories[i]} = [${c.map((f) => `${JSON.stringify(f).slice(0, -1)},exports:h${f.uid}}`)}].filter((x)=>typeof x.exports.default==="function");`,
       ])
+      .flat(2)
       .join(""),
   );
   await bundleFiles([{ in: entriesPath, out: "tmp/entries" }]);
