@@ -24,6 +24,20 @@ import { getApp } from "../../resources/application.ts";
 import bundleFiles from "./bundle.ts";
 import { createHash } from "node:crypto";
 
+export function importString(file: WalkEntry) {
+  return `import * as h${file.uid} from "${relative(".dressed/tmp", file.path).replace(/\\/g, "/")}";`;
+}
+
+export function categoryExports(
+  categories: WalkEntry[][],
+  exports: "null" | "append",
+) {
+  return categories.map(
+    (c, i) =>
+      `export const ${["commands", "components", "events"][i]} = [${c.map((f) => (exports === "append" ? `${JSON.stringify(f).slice(0, -1)},exports:h${f.uid}}` : JSON.stringify(f).replace('"exports":null', `"exports":h${f.uid}`)))}];`,
+  );
+}
+
 function override<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
   const result = { ...a };
 
@@ -85,11 +99,7 @@ export default async function build(
 
   writeFileSync(
     entriesPath,
-    files
-      .map((c, i) => [
-        c.map((f) => `import * as h${f.uid} from "${resolve(f.path)}";`),
-        `export const ${categories[i]} = [${c.map((f) => `${JSON.stringify(f).slice(0, -1)},exports:h${f.uid}}`)}].filter((x)=>typeof x.exports.default==="function");`,
-      ])
+    [files.map((c) => c.map(importString)), categoryExports(files, "append")]
       .flat(2)
       .join(""),
   );

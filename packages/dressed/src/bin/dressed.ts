@@ -2,12 +2,12 @@
 
 import ora from "ora";
 import { Command } from "commander";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join } from "node:path";
 import { cwd, exit, stdout } from "node:process";
 import { select, input, confirm } from "@inquirer/prompts";
 import { parse } from "dotenv";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
-import build from "../server/build/build.ts";
+import build, { categoryExports, importString } from "../server/build/build.ts";
 import bundleFiles from "../server/build/bundle.ts";
 
 const program = new Command()
@@ -46,6 +46,7 @@ program
       stream: stdout,
       text: "Assembling generated build",
     }).start();
+    const categories = [commands, components, events];
 
     const outputContent = `
 ${
@@ -59,25 +60,14 @@ ${
       } } from "dressed/server";`
     : ""
 }
-import config from "./dressed.config.mjs";${[commands, components, events]
-      .flat()
-      .map((v) => `\nimport * as h${v.uid} from "${resolve(v.path)}";`)
-      .join("")}
-
-export const commands = [ ${commands.map((c) => JSON.stringify(c).replace("null", `h${c.uid}`))} ];
-export const components = [ ${components.map((c) => JSON.stringify(c).replace("null", `h${c.uid}`))} ];
-export const events = [ ${events.map((e) => JSON.stringify(e).replace("null", `h${e.uid}`))} ];
+import config from "./dressed.config.mjs";
+${[categories.map((c) => c.map(importString)), categoryExports(categories, "null")].flat(2).join("")}
 export { config };
 ${register ? "\ninstallCommands(commands);" : ""}
 ${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
-    const jsContent = `export * from "./index.mjs";`;
-    const typeContent = `
-import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";
-
-export declare const commands: CommandData[];
-export declare const components: ComponentData[];
-export declare const events: EventData[];
-export declare const config: ServerConfig;`;
+    const jsContent = 'export * from "./index.mjs";';
+    const typeContent =
+      'import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
 
     writeFileSync(".dressed/tmp/index.ts", outputContent);
     await bundleFiles(".dressed/tmp/index.ts", ".dressed");

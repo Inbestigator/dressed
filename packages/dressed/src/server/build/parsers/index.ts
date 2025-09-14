@@ -2,7 +2,6 @@ import logTree from "../log-tree.ts";
 import type { WalkEntry } from "../../../types/walk.ts";
 import ora from "ora";
 import { stdout } from "node:process";
-import { pathToFileURL } from "node:url";
 import type { Promisable } from "../../../types/utilities.ts";
 import type { BaseData } from "../../../types/config.ts";
 
@@ -48,10 +47,7 @@ export function createHandlerParser<
           if (typeof itemMessages === "function") {
             itemMessages = itemMessages(file);
           }
-          data = await options.createData({
-            ...file,
-            path: pathToFileURL(file.path).href,
-          });
+          data = await options.createData(file);
           const hasConflict = items.some((c) => {
             if (c.name !== file.name) return false;
             return options.uniqueKeys?.every((k) => data[k] === c.data[k]);
