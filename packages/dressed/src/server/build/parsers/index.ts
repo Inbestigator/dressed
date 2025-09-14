@@ -40,6 +40,10 @@ export function createHandlerParser<
       let items: T[] = [];
 
       for (const file of files) {
+        // @ts-expect-error Technically, type F should extend `& { default: AnyFn }`. Shouldn't skip if exports aren't even included
+        if ("exports" in file && typeof file.exports.default !== "function") {
+          continue;
+        }
         let data: T["data"];
         let itemMessages = options.itemMessages;
 
