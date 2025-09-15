@@ -23,14 +23,11 @@ jobs:
       - name: Install Dependencies
         run: bun install --frozen-lockfile
 
-      - name: Verify formatting
-        run: bun format:check
-
       - name: Run TSC
         run: bun turbo dist
 
-      - name: Run ESLint
-        run: bun eslint
+      - name: Run Biome
+        run: bun --bun biome check
 
       - name: Run tests
         run: bun turbo test

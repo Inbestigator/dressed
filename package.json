@@ -6,8 +6,6 @@
     "www"
   ],
   "scripts": {
-    "format": "prettier -w .",
-    "format:check": "prettier -c .",
     "checks": "turbo dist && bun --bun biome check --write && turbo test",
     "outdated": "for pkg in packages/*; do (cd \"$pkg\" && bun outdated); done"
   },
