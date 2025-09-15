@@ -2,12 +2,13 @@
 
 import ora from "ora";
 import { Command } from "commander";
-import { dirname, join, relative } from "node:path";
+import { dirname, join } from "node:path";
 import { cwd, exit, stdout } from "node:process";
 import { select, input, confirm } from "@inquirer/prompts";
 import { parse } from "dotenv";
-import { mkdirSync, writeFileSync } from "node:fs";
-import build from "../server/build/build.ts";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import build, { categoryExports, importString } from "../server/build/build.ts";
+import bundleFiles from "../server/build/bundle.ts";
 
 const program = new Command()
   .name("dressed")
@@ -45,51 +46,38 @@ program
       stream: stdout,
       text: "Assembling generated build",
     }).start();
+    const categories = [commands, components, events];
 
     const outputContent = `
-${generateImports(instance, register)}
-import config from "./cache/dressed.config.js";${[commands, components, events]
-      .flat()
-      .map(
-        (v) =>
-          `\nimport * as h${v.uid} from "./${relative(".dressed", v.path)}";`,
-      )
-      .join("")}
-
-export const commands = [ ${commands.map((c) => JSON.stringify(c).replace("null", `h${c.uid}`))} ];
-export const components = [ ${components.map((c) => JSON.stringify(c).replace("null", `h${c.uid}`))} ];
-export const events = [ ${events.map((e) => JSON.stringify(e).replace("null", `h${e.uid}`))} ];
-export { config };
-${register ? "\ninstallCommands(commands);" : ""}
-${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
-    const mjsContent = `// This is generated for compatibility with previous versions of Dressed, you should import from \`index.js\` instead
-export * from "./index.js";`; // TODO Remove mjs file before next major release
-    const typeContent = `
-import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";
-
-export declare const commands: CommandData[];
-export declare const components: ComponentData[];
-export declare const events: EventData[];
-export declare const config: ServerConfig;`;
-
-    writeFileSync(".dressed/index.js", outputContent);
-    writeFileSync(".dressed/index.mjs", mjsContent);
-    writeFileSync(".dressed/index.d.ts", typeContent);
-
-    buildLoader.succeed("Assembled generated build");
-    exit(0);
-  });
-
-const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>
-  addInstance || registerCommands
+${
+  instance || register
     ? `import { ${
-        addInstance
-          ? `createServer${registerCommands ? ", installCommands" : ""}`
-          : registerCommands
+        instance
+          ? `createServer${register ? ", installCommands" : ""}`
+          : register
             ? "installCommands"
             : ""
       } } from "dressed/server";`
-    : "";
+    : ""
+}
+import config from "./dressed.config.mjs";
+${[categories.map((c) => c.map(importString)), categoryExports(categories, "null")].flat(2).join("")}
+export { config };
+${register ? "\ninstallCommands(commands);" : ""}
+${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
+    const jsContent = 'export * from "./index.mjs";';
+    const typeContent =
+      'import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
+
+    writeFileSync(".dressed/tmp/index.ts", outputContent);
+    await bundleFiles(".dressed/tmp/index.ts", ".dressed");
+    writeFileSync(".dressed/index.js", jsContent);
+    writeFileSync(".dressed/index.d.ts", typeContent);
+    rmSync(".dressed/tmp", { recursive: true, force: true });
+
+    buildLoader.succeed("Assembled generated build");
+    exit();
+  });
 
 program
   .command("create")
@@ -140,6 +128,7 @@ program
     const envVars: Record<string, string> = {};
 
     for (const [k, v] of Object.entries(parsed)) {
+      if (k === "DISCORD_APP_ID" || k === "DISCORD_PUBLIC_KEY") continue;
       envVars[k] = await input({ message: k, default: v });
     }
 
@@ -193,7 +182,7 @@ program
     mkdirLoader.succeed();
 
     console.log("\x1b[32m%s", "Project created successfully.");
-    exit(0);
+    exit();
   });
 
 program.parse();

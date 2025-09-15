@@ -2,8 +2,6 @@ import logTree from "../log-tree.ts";
 import type { WalkEntry } from "../../../types/walk.ts";
 import ora from "ora";
 import { stdout } from "node:process";
-import { createHash } from "node:crypto";
-import { pathToFileURL } from "node:url";
 import type { Promisable } from "../../../types/utilities.ts";
 import type { BaseData } from "../../../types/config.ts";
 
@@ -20,15 +18,16 @@ interface ParserItemMessages {
 
 export function createHandlerParser<
   T extends BaseData<Partial<Record<keyof T["data"], unknown>>>,
+  F extends WalkEntry = WalkEntry & { exports?: NonNullable<T["exports"]> },
 >(options: {
   col1Name: string;
   col2Name?: string;
   uniqueKeys?: (keyof T["data"])[];
   messages: ParserMessages;
-  itemMessages: ((file: WalkEntry) => ParserItemMessages) | ParserItemMessages;
-  createData: (file: WalkEntry) => Promisable<T["data"]>;
+  itemMessages: ((file: F) => ParserItemMessages) | ParserItemMessages;
+  createData: (file: F) => Promisable<T["data"]>;
   postMortem?: (items: T[]) => Promisable<T[]>;
-}): (files: WalkEntry[]) => Promise<T[]> {
+}): (files: F[]) => Promise<T[]> {
   return async (files) => {
     if (files.length === 0) return [];
     const generatingLoader = ora({
@@ -41,6 +40,10 @@ export function createHandlerParser<
       let items: T[] = [];
 
       for (const file of files) {
+        // @ts-expect-error Technically, type F should extend `& { default: AnyFn }`. Shouldn't skip if exports aren't even included
+        if ("exports" in file && typeof file.exports.default !== "function") {
+          continue;
+        }
         let data: T["data"];
         let itemMessages = options.itemMessages;
 
@@ -48,10 +51,7 @@ export function createHandlerParser<
           if (typeof itemMessages === "function") {
             itemMessages = itemMessages(file);
           }
-          data = await options.createData({
-            ...file,
-            path: pathToFileURL(file.path).href,
-          });
+          data = await options.createData(file);
           const hasConflict = items.some((c) => {
             if (c.name !== file.name) return false;
             return options.uniqueKeys?.every((k) => data[k] === c.data[k]);
@@ -64,8 +64,8 @@ export function createHandlerParser<
           items.push({
             name: file.name,
             path: file.path,
+            uid: file.uid,
             data,
-            uid: createHash("sha1").update(file.path).digest("hex"),
             exports: null,
           } as T);
           tree.push(file.name, itemMessages.col2);

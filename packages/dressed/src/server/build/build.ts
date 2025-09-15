@@ -6,10 +6,9 @@ import {
   writeFileSync,
   readdirSync,
   mkdirSync,
-  rmSync,
 } from "node:fs";
 import { cwd, stdout } from "node:process";
-import { basename, extname, join, relative, resolve } from "node:path";
+import { basename, extname, relative, resolve } from "node:path";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";
 import { parseEvents } from "./parsers/events.ts";
@@ -23,7 +22,21 @@ import type { WalkEntry } from "../../types/walk.ts";
 import { botEnv } from "../../utils/env.ts";
 import { getApp } from "../../resources/application.ts";
 import bundleFiles from "./bundle.ts";
-import { pathToFileURL } from "node:url";
+import { createHash } from "node:crypto";
+
+export function importString(file: WalkEntry) {
+  return `import * as h${file.uid} from "${relative(".dressed/tmp", file.path).replace(/\\/g, "/")}";`;
+}
+
+export function categoryExports(
+  categories: WalkEntry[][],
+  exports: "null" | "append",
+) {
+  return categories.map(
+    (c, i) =>
+      `export const ${["commands", "components", "events"][i]} = [${c.map((f) => (exports === "append" ? `${JSON.stringify(f).slice(0, -1)},exports:h${f.uid}}` : JSON.stringify(f).replace('"exports":null', `"exports":h${f.uid}`)))}];`,
+  );
+}
 
 function override<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
   const result = { ...a };
@@ -51,56 +64,56 @@ function override<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
 /**
  * Builds the bot imports and other variables.
  */
-export default async function build(config: ServerConfig = {}): Promise<{
+export default async function build(
+  config: ServerConfig = {},
+  { bundle = bundleFiles }: { bundle?: typeof bundleFiles } = {},
+): Promise<{
   commands: CommandData[];
   components: ComponentData[];
   events: EventData[];
   config: ServerConfig;
 }> {
-  rmSync(".dressed/cache", { recursive: true, force: true });
-  mkdirSync(".dressed/cache", { recursive: true });
+  mkdirSync(".dressed/tmp", { recursive: true });
   await fetchMissingVars();
   const configPath = readdirSync(".").find(
     (f) => basename(f, extname(f)) === "dressed.config",
   );
+  const configOutPath = ".dressed/tmp/dressed.config.mjs";
 
   if (configPath) {
-    await bundleFiles([{ in: configPath, out: "dressed.config" }]);
-    const { default: importedConfig } = await import(
-      pathToFileURL(".dressed/cache/dressed.config.js").href
-    );
+    await bundle(configPath, ".dressed/tmp");
+    const { default: importedConfig } = await import(resolve(configOutPath));
     config = override(importedConfig, config);
   } else {
-    writeFileSync(
-      ".dressed/cache/dressed.config.js",
-      `export default ${JSON.stringify(config)}`,
-    );
+    writeFileSync(configOutPath, `export default ${JSON.stringify(config)}`);
   }
 
   const root = config.build?.root ?? "src";
-
-  const [commandFiles, componentFiles, eventFiles] = await Promise.all(
-    ["commands", "components", "events"].map((d) =>
+  const categories = ["commands", "components", "events"];
+  const files = await Promise.all(
+    categories.map((d) =>
       fetchFiles(root, d, config.build?.extensions ?? ["js", "ts", "mjs"]),
     ),
   );
-  await bundleFiles(
-    [...commandFiles, ...componentFiles, ...eventFiles].map((f) => ({
-      in: f.path,
-      out: relative(
-        ".dressed/cache",
-        (f.path = join(
-          ".dressed/cache",
-          relative(root, f.path.slice(0, -extname(f.path).length) + ".js"),
-        )),
-      ).slice(0, -3),
-    })),
-  );
-  const commands = await parseCommands(commandFiles);
-  const components = await parseComponents(componentFiles);
-  const events = await parseEvents(eventFiles);
+  const entriesPath = ".dressed/tmp/entries.ts";
 
-  return { commands, components, events, config };
+  writeFileSync(
+    entriesPath,
+    [files.map((c) => c.map(importString)), categoryExports(files, "append")]
+      .flat(2)
+      .join(""),
+  );
+  await bundle(entriesPath, ".dressed/tmp");
+  const { commands, components, events } = await import(
+    resolve(entriesPath.replace(".ts", ".mjs"))
+  );
+
+  return {
+    commands: await parseCommands(commands),
+    components: await parseComponents(components),
+    events: await parseEvents(events),
+    config,
+  };
 }
 
 async function fetchFiles(
@@ -121,10 +134,11 @@ async function fetchFiles(
   for await (const file of walkFiles(dirPath, {
     filterFile: (f) => extensions.includes(extname(f.name).slice(1)),
   })) {
-    const relativePath = relative(cwd(), file.path);
+    const path = relative(cwd(), file.path);
     filesArray.push({
-      name: basename(file.file.name, extname(file.file.name)),
-      path: relativePath,
+      name: basename(path, extname(path)),
+      uid: createHash("sha1").update(path).digest("hex"),
+      path,
     });
   }
 

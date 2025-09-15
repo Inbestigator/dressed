@@ -7,7 +7,7 @@ import type {
   Snowflake,
   PermissionFlagsBits,
 } from "discord-api-types/v10";
-import type { Promisable } from "./utilities.ts";
+import type { AnyFn, Promisable } from "./utilities.ts";
 import type {
   CommandHandler,
   ComponentHandler,
@@ -121,9 +121,6 @@ export type CommandConfig =
   | ContextMenuConfig
   | PrimaryEntryPointConfig;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyFn = (...args: any[]) => Promisable<unknown>;
-
 export interface BaseData<T, M extends object = object> {
   name: string;
   path: string;
@@ -145,11 +142,14 @@ export type CommandData = BaseData<
 /**
  * Component data object in the `components` array outputted from `build()`
  */
-export type ComponentData = BaseData<{
-  regex: string;
-  category: string;
-  score: number;
-}>;
+export type ComponentData = BaseData<
+  {
+    regex: string;
+    category: string;
+    score: number;
+  },
+  { pattern?: string | RegExp }
+>;
 
 /**
  * Event data object in the `events` array outputted from `build()`
