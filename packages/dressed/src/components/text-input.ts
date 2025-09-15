@@ -1,8 +1,4 @@
-import {
-  type APITextInputComponent,
-  ComponentType,
-  TextInputStyle,
-} from "discord-api-types/v10";
+import { type APITextInputComponent, ComponentType, TextInputStyle } from "discord-api-types/v10";
 
 /**
  * Creates a text input component

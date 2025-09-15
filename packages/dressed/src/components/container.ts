@@ -1,8 +1,4 @@
-import {
-  type APIComponentInContainer,
-  type APIContainerComponent,
-  ComponentType,
-} from "discord-api-types/v10";
+import { type APIComponentInContainer, type APIContainerComponent, ComponentType } from "discord-api-types/v10";
 
 /**
  * Creates a container component
@@ -14,9 +10,7 @@ import {
  * **IMPORTANT**:
  * In order to use this component, you must add the `MessageFlags.IsComponentsV2` flag to your message
  */
-export function Container(
-  ...components: APIComponentInContainer[]
-): APIContainerComponent;
+export function Container(...components: APIComponentInContainer[]): APIContainerComponent;
 
 export function Container(
   components: APIComponentInContainer[],
@@ -24,12 +18,7 @@ export function Container(
 ): APIContainerComponent;
 
 export function Container(
-  ...args:
-    | [
-        APIComponentInContainer[],
-        Omit<APIContainerComponent, "components" | "type">,
-      ]
-    | APIComponentInContainer[]
+  ...args: [APIComponentInContainer[], Omit<APIContainerComponent, "components" | "type">] | APIComponentInContainer[]
 ): APIContainerComponent {
   if (Array.isArray(args[0]) && args.length === 2) {
     const [components, config] = args as [

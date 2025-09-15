@@ -24,9 +24,7 @@ export function Section(
 ): APISectionComponent {
   return {
     ...config,
-    components: components.map((c) =>
-      typeof c === "string" ? TextDisplay(c) : c,
-    ),
+    components: components.map((c) => (typeof c === "string" ? TextDisplay(c) : c)),
     accessory,
     type: ComponentType.Section,
   };

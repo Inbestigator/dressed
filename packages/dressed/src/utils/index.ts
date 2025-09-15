@@ -4,7 +4,7 @@
  * @module
  */
 
+export * from "./call-discord.ts";
 // Utils
 export * from "./env.ts";
-export * from "./call-discord.ts";
 export * from "./snowflakes.ts";

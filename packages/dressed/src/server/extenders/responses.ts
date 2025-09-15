@@ -1,26 +1,19 @@
 import {
   type APIInteraction,
   type APIInteractionResponseCallbackData,
+  type APIUser,
   MessageFlags,
 } from "discord-api-types/v10";
+import { createInteractionCallback } from "../../resources/interactions.ts";
+import { editWebhookMessage, executeWebhook } from "../../resources/webhooks.ts";
+import type { RawFile } from "../../types/file.ts";
 import type { BaseInteractionMethods } from "../../types/interaction.ts";
 import { botEnv } from "../../utils/env.ts";
-import type { RawFile } from "../../types/file.ts";
-import {
-  editWebhookMessage,
-  executeWebhook,
-} from "../../resources/webhooks.ts";
-import { createInteractionCallback } from "../../resources/interactions.ts";
 
-export const baseInteractionMethods = (
-  interaction: APIInteraction,
-): BaseInteractionMethods => ({
+export const baseInteractionMethods = (interaction: APIInteraction): BaseInteractionMethods => ({
   async reply(data) {
     if (typeof data === "string") {
-      data = { content: data } as Extract<
-        Parameters<BaseInteractionMethods["reply"]>[0],
-        { content: string }
-      >;
+      data = { content: data } as Extract<Parameters<BaseInteractionMethods["reply"]>[0], { content: string }>;
     }
 
     if (data.ephemeral) {
@@ -30,14 +23,9 @@ export const baseInteractionMethods = (
     const files = data.files;
     delete data.files;
 
-    return createInteractionCallback(
-      interaction.id,
-      interaction.token,
-      "ChannelMessageWithSource",
-      data,
-      files,
-      { with_response: data?.with_response },
-    ) as never;
+    return createInteractionCallback(interaction.id, interaction.token, "ChannelMessageWithSource", data, files, {
+      with_response: data?.with_response,
+    }) as never;
   },
   async deferReply(data) {
     if (data?.ephemeral) {
@@ -55,23 +43,15 @@ export const baseInteractionMethods = (
   },
   async update(data) {
     if (typeof data === "string") {
-      data = { content: data } as Extract<
-        Parameters<BaseInteractionMethods["update"]>[0],
-        { content: string }
-      >;
+      data = { content: data } as Extract<Parameters<BaseInteractionMethods["update"]>[0], { content: string }>;
     }
 
     const files = data.files;
     delete data.files;
 
-    return createInteractionCallback(
-      interaction.id,
-      interaction.token,
-      "UpdateMessage",
-      data,
-      files,
-      { with_response: data.with_response },
-    ) as never;
+    return createInteractionCallback(interaction.id, interaction.token, "UpdateMessage", data, files, {
+      with_response: data.with_response,
+    }) as never;
   },
   deferUpdate: (options) =>
     createInteractionCallback(
@@ -82,13 +62,7 @@ export const baseInteractionMethods = (
       undefined,
       options,
     ),
-  editReply: (data) =>
-    editWebhookMessage(
-      botEnv.DISCORD_APP_ID,
-      interaction.token,
-      "@original",
-      data,
-    ),
+  editReply: (data) => editWebhookMessage(botEnv.DISCORD_APP_ID, interaction.token, "@original", data),
   async followUp(
     data:
       | string
@@ -105,14 +79,7 @@ export const baseInteractionMethods = (
     });
   },
   showModal: (data, options) =>
-    createInteractionCallback(
-      interaction.id,
-      interaction.token,
-      "Modal",
-      data,
-      undefined,
-      options,
-    ),
+    createInteractionCallback(interaction.id, interaction.token, "Modal", data, undefined, options),
   sendChoices: (choices, options) =>
     createInteractionCallback(
       interaction.id,
@@ -122,5 +89,5 @@ export const baseInteractionMethods = (
       undefined,
       options,
     ),
-  user: interaction.member?.user ?? interaction.user!,
+  user: interaction.member?.user ?? (interaction.user as APIUser),
 });

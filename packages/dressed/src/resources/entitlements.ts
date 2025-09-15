@@ -14,9 +14,7 @@ import { botEnv } from "../utils/env.ts";
  * Returns all entitlements for the app, active and expired.
  * @param options Optional parameters for the request
  */
-export async function listEntitlements(
-  options?: RESTGetAPIEntitlementsQuery,
-): Promise<RESTGetAPIEntitlementsResult> {
+export async function listEntitlements(options?: RESTGetAPIEntitlementsQuery): Promise<RESTGetAPIEntitlementsResult> {
   const res = await callDiscord(Routes.entitlements(botEnv.DISCORD_APP_ID), {
     method: "GET",
     params: options,
@@ -29,15 +27,10 @@ export async function listEntitlements(
  * Returns an entitlements.
  * @param entitlement The entitlement to get
  */
-export async function getEntitlement(
-  entitlement: Snowflake,
-): Promise<RESTGetAPIEntitlementResult> {
-  const res = await callDiscord(
-    Routes.entitlement(botEnv.DISCORD_APP_ID, entitlement),
-    {
-      method: "GET",
-    },
-  );
+export async function getEntitlement(entitlement: Snowflake): Promise<RESTGetAPIEntitlementResult> {
+  const res = await callDiscord(Routes.entitlement(botEnv.DISCORD_APP_ID, entitlement), {
+    method: "GET",
+  });
 
   return res.json();
 }
@@ -46,15 +39,10 @@ export async function getEntitlement(
  * For One-Time Purchase consumable SKUs, marks a given entitlement for the user as consumed.
  * @param entitlement The entitlement to consume
  */
-export async function consumeEntitlement(
-  entitlement: Snowflake,
-): Promise<void> {
-  await callDiscord(
-    Routes.consumeEntitlement(botEnv.DISCORD_APP_ID, entitlement),
-    {
-      method: "POST",
-    },
-  );
+export async function consumeEntitlement(entitlement: Snowflake): Promise<void> {
+  await callDiscord(Routes.consumeEntitlement(botEnv.DISCORD_APP_ID, entitlement), {
+    method: "POST",
+  });
 }
 
 /**
@@ -76,9 +64,7 @@ export async function createTestEntitlement(
  * Deletes a currently-active test entitlement. Discord will act as though that user or guild no longer has entitlement to your premium offering.
  * @param entitlement The entitlement to delete
  */
-export async function deleteTestEntitlement(
-  entitlement: Snowflake,
-): Promise<void> {
+export async function deleteTestEntitlement(entitlement: Snowflake): Promise<void> {
   await callDiscord(Routes.entitlement(botEnv.DISCORD_APP_ID, entitlement), {
     method: "DELETE",
   });

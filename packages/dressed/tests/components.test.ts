@@ -1,3 +1,4 @@
+import { expect, test } from "bun:test";
 import {
   ActionRow,
   Button,
@@ -14,7 +15,6 @@ import {
   TextInput,
   Thumbnail,
 } from "dressed";
-import { expect, test } from "bun:test";
 
 test("Button component", () => {
   expect(
@@ -108,9 +108,7 @@ test("Text input component", () => {
 });
 
 test("Section component", () => {
-  expect(
-    Section(["test"], Button({ label: "Click me", custom_id: "button_id" })),
-  ).toMatchSnapshot();
+  expect(Section(["test"], Button({ label: "Click me", custom_id: "button_id" }))).toMatchSnapshot();
 });
 
 test("Text display component", () => {
@@ -122,9 +120,7 @@ test("Thumbnail component", () => {
 });
 
 test("Media gallery component", () => {
-  expect(
-    MediaGallery([MediaGalleryItem("https://example.com")], { id: 1 }),
-  ).toMatchSnapshot();
+  expect(MediaGallery([MediaGalleryItem("https://example.com")], { id: 1 })).toMatchSnapshot();
 });
 
 test("File component", () => {
@@ -138,10 +134,7 @@ test("Separator component", () => {
 test("Container component", () => {
   expect(
     Container(
-      ActionRow(
-        Button({ label: "Click me", custom_id: "1" }),
-        Button({ label: "Click me", custom_id: "2" }),
-      ),
+      ActionRow(Button({ label: "Click me", custom_id: "1" }), Button({ label: "Click me", custom_id: "2" })),
       Separator(),
     ),
   ).toMatchSnapshot();

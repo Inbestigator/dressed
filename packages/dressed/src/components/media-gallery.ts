@@ -1,8 +1,4 @@
-import {
-  type APIMediaGalleryComponent,
-  type APIMediaGalleryItem,
-  ComponentType,
-} from "discord-api-types/v10";
+import { type APIMediaGalleryComponent, type APIMediaGalleryItem, ComponentType } from "discord-api-types/v10";
 import { Thumbnail } from "./thumbnail.ts";
 
 /**
@@ -20,20 +16,13 @@ export function MediaGallery(
   config: Omit<APIMediaGalleryComponent, "items" | "type">,
 ): APIMediaGalleryComponent;
 
-export function MediaGallery(
-  ...items: APIMediaGalleryItem[]
-): APIMediaGalleryComponent;
+export function MediaGallery(...items: APIMediaGalleryItem[]): APIMediaGalleryComponent;
 
 export function MediaGallery(
-  ...args:
-    | [APIMediaGalleryItem[], Omit<APIMediaGalleryComponent, "items" | "type">]
-    | APIMediaGalleryItem[]
+  ...args: [APIMediaGalleryItem[], Omit<APIMediaGalleryComponent, "items" | "type">] | APIMediaGalleryItem[]
 ): APIMediaGalleryComponent {
   if (Array.isArray(args[0]) && args.length === 2) {
-    const [items, config] = args as [
-      APIMediaGalleryItem[],
-      Omit<APIMediaGalleryComponent, "items" | "type">,
-    ];
+    const [items, config] = args as [APIMediaGalleryItem[], Omit<APIMediaGalleryComponent, "items" | "type">];
     return {
       ...config,
       items,
@@ -51,10 +40,8 @@ export function MediaGallery(
 /**
  * Creates a media item to be used in a media gallery
  */
-export function MediaGalleryItem(
-  ...config: Parameters<typeof Thumbnail>
-): APIMediaGalleryItem {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function MediaGalleryItem(...config: Parameters<typeof Thumbnail>): APIMediaGalleryItem {
+  // biome-ignore lint/correctness/noUnusedVariables: Type and ID are unused
   const { type, id, ...item } = Thumbnail(...config);
   return item;
 }

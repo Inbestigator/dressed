@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import DocsMD from "@/components/docs-md";
 import {
   Breadcrumb,
@@ -9,7 +10,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { readdirSync, readFileSync, statSync } from "node:fs";
 
 export function generateStaticParams() {
   return readDir("content").map((s) => ({ slug: s.slug }));

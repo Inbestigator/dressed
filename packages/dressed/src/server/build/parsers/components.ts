@@ -1,7 +1,7 @@
 import { sep } from "node:path";
-import type { ComponentData } from "../../../types/config.ts";
-import ora from "ora";
 import { patternToRegex, scorePattern } from "@dressed/matcher";
+import ora from "ora";
+import type { ComponentData } from "../../../types/config.ts";
 import { createHandlerParser } from "./index.ts";
 
 const validComponentCategories = ["buttons", "modals", "selects"];

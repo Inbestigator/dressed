@@ -1,6 +1,6 @@
-import type { EventData } from "../../../types/config.ts";
-import ora from "ora";
 import { ApplicationWebhookEventType } from "discord-api-types/v10";
+import ora from "ora";
+import type { EventData } from "../../../types/config.ts";
 import { createHandlerParser } from "./index.ts";
 
 export const parseEvents = createHandlerParser<EventData>({
@@ -15,10 +15,7 @@ export const parseEvents = createHandlerParser<EventData>({
     confict: `"${name}" conflicts with another event, skipping the duplicate`,
   }),
   async createData({ name }) {
-    const type =
-      ApplicationWebhookEventType[
-        name as keyof typeof ApplicationWebhookEventType
-      ];
+    const type = ApplicationWebhookEventType[name as keyof typeof ApplicationWebhookEventType];
 
     if (!type) {
       ora(`Event type of "${name}" could not be determined, skipping`).warn();

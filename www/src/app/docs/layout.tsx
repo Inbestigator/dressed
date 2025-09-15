@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { DocsSidebar } from "@/components/docs-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export const metadata: Metadata = {
   title: "Dressed Docs",

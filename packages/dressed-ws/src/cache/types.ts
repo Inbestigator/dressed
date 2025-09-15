@@ -1,10 +1,5 @@
-export type CachedFunctions = Record<
-  string,
-  (...args: never[]) => Promise<unknown>
->;
-export type CacheResponse =
-  | { value: unknown; state: "hit" | "stale" }
-  | { state: "miss" };
+export type CachedFunctions = Record<string, (...args: never[]) => Promise<unknown>>;
+export type CacheResponse = { value: unknown; state: "hit" | "stale" } | { state: "miss" };
 
 export interface CacheLogic<F extends CachedFunctions, D = unknown> {
   /** Get a key from the cache */

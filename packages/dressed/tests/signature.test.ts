@@ -1,8 +1,8 @@
-import nacl from "tweetnacl";
-import { verifySignature } from "dressed/server";
+import { expect, test } from "bun:test";
 import { Buffer } from "node:buffer";
-import { test, expect } from "bun:test";
 import { env } from "node:process";
+import { verifySignature } from "dressed/server";
+import nacl from "tweetnacl";
 
 export function generateXSignature(timestamp: string, content: string) {
   const keyPair = nacl.sign.keyPair();
@@ -16,21 +16,13 @@ export function generateXSignature(timestamp: string, content: string) {
 const stamp = Date.now().toString();
 
 test("Don't verify invalid signature", () => {
-  const result = verifySignature(
-    "different test",
-    generateXSignature(stamp, "test"),
-    stamp,
-  );
+  const result = verifySignature("different test", generateXSignature(stamp, "test"), stamp);
 
   expect(result).toBeFalse();
 });
 
 test("Verify valid signature", () => {
-  const result = verifySignature(
-    "test",
-    generateXSignature(stamp, "test"),
-    stamp,
-  );
+  const result = verifySignature("test", generateXSignature(stamp, "test"), stamp);
 
   expect(result).toBeTrue();
 });

@@ -8,17 +8,13 @@
   "scripts": {
     "format": "prettier -w .",
     "format:check": "prettier -c .",
-    "checks": "turbo dist && bun eslint && bun format && turbo test",
+    "checks": "turbo dist && bun --bun biome check --write && turbo test",
     "outdated": "for pkg in packages/*; do (cd \"$pkg\" && bun outdated); done"
   },
   "devDependencies": {
-    "@eslint/js": "^9.35.0",
-    "eslint": "^9.35.0",
-    "globals": "^16.3.0",
-    "prettier": "^3.6.2",
+    "@biomejs/biome": "2.2.4",
     "turbo": "^2.5.6",
-    "typescript": "^5.9.2",
-    "typescript-eslint": "^8.42.0"
+    "typescript": "^5.9.2"
   },
   "packageManager": "bun@1.2.13",
   "dependencies": {

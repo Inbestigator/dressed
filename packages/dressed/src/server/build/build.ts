@@ -1,37 +1,23 @@
-import { walkFiles } from "walk-it";
-import ora from "ora";
-import {
-  appendFileSync,
-  existsSync,
-  writeFileSync,
-  readdirSync,
-  mkdirSync,
-} from "node:fs";
-import { cwd, stdout } from "node:process";
+import { createHash } from "node:crypto";
+import { appendFileSync, existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, extname, relative, resolve } from "node:path";
+import { cwd, stdout } from "node:process";
+import ora from "ora";
+import { walkFiles } from "walk-it";
+import { getApp } from "../../resources/application.ts";
+import type { CommandData, ComponentData, EventData, ServerConfig } from "../../types/config.ts";
+import type { WalkEntry } from "../../types/walk.ts";
+import { botEnv } from "../../utils/env.ts";
+import bundleFiles from "./bundle.ts";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";
 import { parseEvents } from "./parsers/events.ts";
-import type {
-  CommandData,
-  ComponentData,
-  EventData,
-  ServerConfig,
-} from "../../types/config.ts";
-import type { WalkEntry } from "../../types/walk.ts";
-import { botEnv } from "../../utils/env.ts";
-import { getApp } from "../../resources/application.ts";
-import bundleFiles from "./bundle.ts";
-import { createHash } from "node:crypto";
 
 export function importString(file: WalkEntry) {
   return `import * as h${file.uid} from "${relative(".dressed/tmp", file.path).replace(/\\/g, "/")}";`;
 }
 
-export function categoryExports(
-  categories: WalkEntry[][],
-  exports: "null" | "append",
-) {
+export function categoryExports(categories: WalkEntry[][], exports: "null" | "append") {
   return categories.map(
     (c, i) =>
       `export const ${["commands", "components", "events"][i]} = [${c.map((f) => (exports === "append" ? `${JSON.stringify(f).slice(0, -1)},exports:h${f.uid}}` : JSON.stringify(f).replace('"exports":null', `"exports":h${f.uid}`)))}];`,
@@ -46,12 +32,7 @@ function override<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
     const bv = b[k];
     const av = a[k];
 
-    if (
-      bv !== undefined &&
-      typeof bv === "object" &&
-      bv !== null &&
-      !Array.isArray(bv)
-    ) {
+    if (bv !== undefined && typeof bv === "object" && bv !== null && !Array.isArray(bv)) {
       result[k] = override(av ?? {}, bv) as T[typeof k];
     } else if (bv !== undefined) {
       result[k] = bv as T[typeof k];
@@ -75,9 +56,7 @@ export default async function build(
 }> {
   mkdirSync(".dressed/tmp", { recursive: true });
   await fetchMissingVars();
-  const configPath = readdirSync(".").find(
-    (f) => basename(f, extname(f)) === "dressed.config",
-  );
+  const configPath = readdirSync(".").find((f) => basename(f, extname(f)) === "dressed.config");
   const configOutPath = ".dressed/tmp/dressed.config.mjs";
 
   if (configPath) {
@@ -91,22 +70,16 @@ export default async function build(
   const root = config.build?.root ?? "src";
   const categories = ["commands", "components", "events"];
   const files = await Promise.all(
-    categories.map((d) =>
-      fetchFiles(root, d, config.build?.extensions ?? ["js", "ts", "mjs"]),
-    ),
+    categories.map((d) => fetchFiles(root, d, config.build?.extensions ?? ["js", "ts", "mjs"])),
   );
   const entriesPath = ".dressed/tmp/entries.ts";
 
   writeFileSync(
     entriesPath,
-    [files.map((c) => c.map(importString)), categoryExports(files, "append")]
-      .flat(2)
-      .join(""),
+    [files.map((c) => c.map(importString)), categoryExports(files, "append")].flat(2).join(""),
   );
   await bundle(entriesPath, ".dressed/tmp");
-  const { commands, components, events } = await import(
-    resolve(entriesPath.replace(".ts", ".mjs"))
-  );
+  const { commands, components, events } = await import(resolve(entriesPath.replace(".ts", ".mjs")));
 
   return {
     commands: await parseCommands(commands),
@@ -116,17 +89,11 @@ export default async function build(
   };
 }
 
-async function fetchFiles(
-  root: string,
-  dir: string,
-  extensions: string[],
-): Promise<WalkEntry[]> {
+async function fetchFiles(root: string, dir: string, extensions: string[]): Promise<WalkEntry[]> {
   const dirPath = resolve(root, dir);
 
   if (!existsSync(dirPath)) {
-    ora(
-      `${dir.slice(0, 1).toUpperCase() + dir.slice(1)} directory not found`,
-    ).warn();
+    ora(`${dir.slice(0, 1).toUpperCase() + dir.slice(1)} directory not found`).warn();
     return [];
   }
 
@@ -181,9 +148,7 @@ async function fetchMissingVars() {
 
       appendFileSync(".env", `\n${envLines.join("\n")}`);
 
-      varLoader.succeed(
-        `Fetched missing variables (${missingVars.join(", ")})`,
-      );
+      varLoader.succeed(`Fetched missing variables (${missingVars.join(", ")})`);
     }
   } catch {
     //

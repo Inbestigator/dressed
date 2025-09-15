@@ -1,9 +1,9 @@
-import logTree from "../log-tree.ts";
-import type { WalkEntry } from "../../../types/walk.ts";
-import ora from "ora";
 import { stdout } from "node:process";
-import type { Promisable } from "../../../types/utilities.ts";
+import ora from "ora";
 import type { BaseData } from "../../../types/config.ts";
+import type { Promisable } from "../../../types/utilities.ts";
+import type { WalkEntry } from "../../../types/walk.ts";
+import logTree from "../log-tree.ts";
 
 interface ParserMessages {
   pending: string;
@@ -74,7 +74,6 @@ export function createHandlerParser<
             ora(`Failed to parse ${file.path}:`).fail();
             console.error(e);
           }
-          continue;
         }
       }
 
@@ -82,11 +81,7 @@ export function createHandlerParser<
         items = await options.postMortem(items);
       }
 
-      generatingLoader.succeed(
-        items.length > 0
-          ? options.messages.generated
-          : options.messages.noItems,
-      );
+      generatingLoader.succeed(items.length > 0 ? options.messages.generated : options.messages.noItems);
 
       if (items.length > 0) {
         tree.log();

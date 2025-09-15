@@ -1,10 +1,10 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { BookDashed } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
+import Link from "next/link";
 import JSRLogo from "@/components/jsr-logo";
 import NPMLogo from "@/components/npm-logo";
-import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
   return (

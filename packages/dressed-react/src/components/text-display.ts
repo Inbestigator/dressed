@@ -11,9 +11,6 @@ export function TextDisplay({ children, ...rest }: TextDisplayProps) {
   return createElement("dressed-node", props, children);
 }
 
-export function parseTextDisplay<T extends APITextDisplayComponent>(
-  props: T,
-  children: string,
-): T {
+export function parseTextDisplay<T extends APITextDisplayComponent>(props: T, children: string): T {
   return { ...props, content: children };
 }

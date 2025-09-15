@@ -1,28 +1,23 @@
 #!/usr/bin/env node
 
-import ora from "ora";
-import { Command } from "commander";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { cwd, exit, stdout } from "node:process";
-import { select, input, confirm } from "@inquirer/prompts";
+import { confirm, input, select } from "@inquirer/prompts";
+import { Command } from "commander";
 import { parse } from "dotenv";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import ora from "ora";
 import build, { categoryExports, importString } from "../server/build/build.ts";
 import bundleFiles from "../server/build/bundle.ts";
 
-const program = new Command()
-  .name("dressed")
-  .description("A sleek, serverless-ready Discord bot framework.");
+const program = new Command().name("dressed").description("A sleek, serverless-ready Discord bot framework.");
 
 program
   .command("build")
   .description("Builds the bot and writes to .dressed")
   .option("-i, --instance", "Include an instance create in the generated file")
   .option("-r, --register", "Register slash commands")
-  .option(
-    "-e, --endpoint <endpoint>",
-    "The endpoint to listen on, defaults to `/`",
-  )
+  .option("-e, --endpoint <endpoint>", "The endpoint to listen on, defaults to `/`")
   .option("-p, --port <port>", "The port to listen on, defaults to `8000`")
   .option("-R, --root <root>", "Source root for the bot, defaults to `src`")
   .option(
@@ -30,7 +25,7 @@ program
     "Comma separated list of file extensions to include when bundling handlers, defaults to `js, ts, mjs`",
   )
   .action(async ({ instance, register, endpoint, port, root, extensions }) => {
-    if (port && isNaN(Number(port))) {
+    if (port && Number.isNaN(Number(port))) {
       ora("Port must be a valid number").fail();
       return;
     }
@@ -52,11 +47,7 @@ program
 ${
   instance || register
     ? `import { ${
-        instance
-          ? `createServer${register ? ", installCommands" : ""}`
-          : register
-            ? "installCommands"
-            : ""
+        instance ? `createServer${register ? ", installCommands" : ""}` : register ? "installCommands" : ""
       } } from "dressed/server";`
     : ""
 }
@@ -91,25 +82,20 @@ program
         required: true,
       });
     }
-    if (
-      !template ||
-      (!template.startsWith("node/") && !template.startsWith("deno/"))
-    ) {
+    if (!template || (!template.startsWith("node/") && !template.startsWith("deno/"))) {
       const isDeno = await confirm({
         message: "Would you like to use a Deno specific template?",
         default: false,
       });
       const res = await fetch(
-        `https://api.github.com/repos/inbestigator/dressed-examples/contents/${
-          isDeno ? "deno" : "node"
-        }`,
+        `https://api.github.com/repos/inbestigator/dressed-examples/contents/${isDeno ? "deno" : "node"}`,
       );
       if (!res.ok) {
         throw new Error("Failed to list templates.");
       }
-      const files = (
-        (await res.json()) as { name: string; path: string; type: string }[]
-      ).filter((f) => f.type === "dir");
+      const files = ((await res.json()) as { name: string; path: string; type: string }[]).filter(
+        (f) => f.type === "dir",
+      );
       template = await select({
         message: "Select the template to use",
         choices: files.map((f) => ({

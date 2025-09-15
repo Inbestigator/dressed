@@ -14,9 +14,7 @@ import { callDiscord } from "../utils/call-discord.ts";
  * Get a list of a guild's automod rules.
  * @param guild The guild to get the rules from
  */
-export async function listAutomodRules(
-  guild: Snowflake,
-): Promise<RESTGetAPIAutoModerationRulesResult> {
+export async function listAutomodRules(guild: Snowflake): Promise<RESTGetAPIAutoModerationRulesResult> {
   const res = await callDiscord(Routes.guildAutoModerationRules(guild), {
     method: "GET",
   });
@@ -29,10 +27,7 @@ export async function listAutomodRules(
  * @param guild The guild to get the rule from
  * @param rule The rule to get
  */
-export async function getAutomodRule(
-  guild: Snowflake,
-  rule: string,
-): Promise<RESTGetAPIAutoModerationRuleResult> {
+export async function getAutomodRule(guild: Snowflake, rule: string): Promise<RESTGetAPIAutoModerationRuleResult> {
   const res = await callDiscord(Routes.guildAutoModerationRule(guild, rule), {
     method: "GET",
   });
@@ -81,10 +76,7 @@ export async function modifyAutomodRule(
  * @param guild The guild to delete the rule from
  * @param rule The rule to delete
  */
-export async function deleteAutomodRule(
-  guild: Snowflake,
-  rule: string,
-): Promise<void> {
+export async function deleteAutomodRule(guild: Snowflake, rule: string): Promise<void> {
   await callDiscord(Routes.guildAutoModerationRule(guild, rule), {
     method: "DELETE",
   });

@@ -91,10 +91,7 @@ export async function modifyScheduledEvent(
  * @param guild The guild to delete the scheduled event from
  * @param event The event to delete
  */
-export async function deleteScheduledEvent(
-  guild: Snowflake,
-  event: Snowflake,
-): Promise<void> {
+export async function deleteScheduledEvent(guild: Snowflake, event: Snowflake): Promise<void> {
   await callDiscord(Routes.guildScheduledEvent(guild, event), {
     method: "DELETE",
   });

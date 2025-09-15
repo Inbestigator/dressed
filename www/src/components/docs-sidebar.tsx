@@ -1,16 +1,18 @@
 "use client";
 
-import * as React from "react";
 import {
+  Book,
   Cog,
+  Ear,
   Home,
+  Network,
   Puzzle,
   Reply,
   Terminal,
-  Ear,
-  Book,
-  Network,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import * as React from "react";
 import { NavMain } from "@/components/nav-main";
 import {
   Sidebar,
@@ -20,8 +22,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
-import Image from "next/image";
 
 const data = [
   {

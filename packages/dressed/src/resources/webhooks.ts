@@ -20,8 +20,8 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../utils/call-discord.ts";
 import type { RawFile } from "../types/file.ts";
+import { callDiscord } from "../utils/call-discord.ts";
 
 /**
  * Creates a new webhook.
@@ -44,9 +44,7 @@ export async function createWebhook(
  * Returns a list of channel webhook objects.
  * @param channel The channel to get the webhooks from
  */
-export async function listChannelWebhooks(
-  channel: Snowflake,
-): Promise<RESTGetAPIChannelWebhooksResult> {
+export async function listChannelWebhooks(channel: Snowflake): Promise<RESTGetAPIChannelWebhooksResult> {
   const res = await callDiscord(Routes.channelWebhooks(channel), {
     method: "GET",
   });
@@ -58,9 +56,7 @@ export async function listChannelWebhooks(
  * Returns a list of guild webhook objects.
  * @param guild The guild to get the webhooks from
  */
-export async function listGuildWebhooks(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildWebhooksResult> {
+export async function listGuildWebhooks(guild: Snowflake): Promise<RESTGetAPIGuildWebhooksResult> {
   const res = await callDiscord(Routes.guildWebhooks(guild), {
     method: "GET",
   });
@@ -76,9 +72,7 @@ export async function listGuildWebhooks(
 export async function getWebhook<T extends string | undefined = undefined>(
   webhook: Snowflake,
   token?: T,
-): Promise<
-  T extends string ? RESTGetAPIWebhookWithTokenResult : RESTGetAPIWebhookResult
-> {
+): Promise<T extends string ? RESTGetAPIWebhookWithTokenResult : RESTGetAPIWebhookResult> {
   const res = await callDiscord(Routes.webhook(webhook, token), {
     method: "GET",
   });
@@ -94,15 +88,9 @@ export async function getWebhook<T extends string | undefined = undefined>(
  */
 export async function modifyWebhook<T extends string | undefined = undefined>(
   webhook: Snowflake,
-  data: T extends string
-    ? RESTPatchAPIWebhookWithTokenJSONBody
-    : RESTPatchAPIWebhookJSONBody,
+  data: T extends string ? RESTPatchAPIWebhookWithTokenJSONBody : RESTPatchAPIWebhookJSONBody,
   token?: T,
-): Promise<
-  T extends string
-    ? RESTPatchAPIWebhookWithTokenResult
-    : RESTPatchAPIWebhookResult
-> {
+): Promise<T extends string ? RESTPatchAPIWebhookWithTokenResult : RESTPatchAPIWebhookResult> {
   const res = await callDiscord(Routes.webhook(webhook, token), {
     method: "PATCH",
     body: data,
@@ -116,10 +104,7 @@ export async function modifyWebhook<T extends string | undefined = undefined>(
  * @param webhook The webhook to delete
  * @param token The webhook token
  */
-export async function deleteWebhook(
-  webhook: Snowflake,
-  token?: string,
-): Promise<void> {
+export async function deleteWebhook(webhook: Snowflake, token?: string): Promise<void> {
   await callDiscord(Routes.webhook(webhook, token), {
     method: "DELETE",
   });
@@ -132,16 +117,12 @@ export async function deleteWebhook(
  * @param data The message data
  * @param options Optional parameters for the request
  */
-export async function executeWebhook<
-  T extends RESTPostAPIWebhookWithTokenQuery,
->(
+export async function executeWebhook<T extends RESTPostAPIWebhookWithTokenQuery>(
   webhook: Snowflake,
   token: string,
   data: string | (RESTPostAPIWebhookWithTokenJSONBody & { files?: RawFile[] }),
   options?: T,
-): Promise<
-  T["wait"] extends true ? RESTPostAPIWebhookWithTokenWaitResult : void
-> {
+): Promise<T["wait"] extends true ? RESTPostAPIWebhookWithTokenWaitResult : void> {
   if (typeof data === "string") {
     data = { content: data };
   }
@@ -172,13 +153,10 @@ export async function getWebhookMessage(
   message: Snowflake,
   options?: RESTGetAPIWebhookWithTokenMessageQuery,
 ): Promise<RESTGetAPIWebhookWithTokenMessageResult> {
-  const res = await callDiscord(
-    Routes.webhookMessage(webhook, token, message),
-    {
-      method: "GET",
-      params: options,
-    },
-  );
+  const res = await callDiscord(Routes.webhookMessage(webhook, token, message), {
+    method: "GET",
+    params: options,
+  });
 
   return res.json();
 }
@@ -195,9 +173,7 @@ export async function editWebhookMessage(
   webhook: Snowflake,
   token: string,
   message: Snowflake,
-  data:
-    | string
-    | (RESTPatchAPIWebhookWithTokenMessageJSONBody & { files?: RawFile[] }),
+  data: string | (RESTPatchAPIWebhookWithTokenMessageJSONBody & { files?: RawFile[] }),
   options?: RESTPatchAPIWebhookWithTokenMessageQuery,
 ): Promise<RESTPatchAPIWebhookWithTokenMessageResult> {
   if (typeof data === "string") {
@@ -207,15 +183,12 @@ export async function editWebhookMessage(
   const files = data.files;
   delete data.files;
 
-  const res = await callDiscord(
-    Routes.webhookMessage(webhook, token, message),
-    {
-      method: "PATCH",
-      body: data,
-      params: options,
-      files,
-    },
-  );
+  const res = await callDiscord(Routes.webhookMessage(webhook, token, message), {
+    method: "PATCH",
+    body: data,
+    params: options,
+    files,
+  });
 
   return res.json();
 }

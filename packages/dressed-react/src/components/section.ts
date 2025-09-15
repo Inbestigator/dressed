@@ -1,17 +1,11 @@
-import type {
-  APISectionAccessoryComponent,
-  APISectionComponent,
-} from "discord-api-types/v10";
+import type { APISectionAccessoryComponent, APISectionComponent } from "discord-api-types/v10";
 import { Section as DressedComponent } from "dressed";
 import { createElement, isValidElement, type ReactNode } from "react";
-import { renderNode, type ComponentNode } from "../react/renderer.ts";
-import { type Node } from "../react/node.ts";
 import { render } from "../index.ts";
+import type { Node } from "../react/node.ts";
+import { type ComponentNode, renderNode } from "../react/renderer.ts";
 
-type SectionProps = Omit<
-  APISectionComponent,
-  "accessory" | "components" | "type"
-> & {
+type SectionProps = Omit<APISectionComponent, "accessory" | "components" | "type"> & {
   children: ReactNode;
   accessory: ReactNode;
 };
@@ -21,10 +15,7 @@ export function Section({ children, accessory, ...rest }: SectionProps) {
   return createElement("dressed-node", props, children);
 }
 
-export async function parseSection<T extends APISectionComponent>(
-  props: T,
-  children: ComponentNode[],
-): Promise<T> {
+export async function parseSection<T extends APISectionComponent>(props: T, children: ComponentNode[]): Promise<T> {
   let accessory: Node<APISectionAccessoryComponent> = props.accessory as never;
 
   if (isValidElement(accessory)) {

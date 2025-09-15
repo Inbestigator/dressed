@@ -33,17 +33,10 @@ export async function sendSound(
  * Returns an array of soundboard sound objects that can be used by all users.
  * @param guild Returns a list of this guild's soundboard sounds instead.
  */
-export async function listSounds(
-  guild?: Snowflake,
-): Promise<RESTGetAPISoundboardDefaultSoundsResult> {
-  const res = await callDiscord(
-    guild
-      ? Routes.guildSoundboardSounds(guild)
-      : Routes.soundboardDefaultSounds(),
-    {
-      method: "GET",
-    },
-  );
+export async function listSounds(guild?: Snowflake): Promise<RESTGetAPISoundboardDefaultSoundsResult> {
+  const res = await callDiscord(guild ? Routes.guildSoundboardSounds(guild) : Routes.soundboardDefaultSounds(), {
+    method: "GET",
+  });
 
   if (guild) {
     return (await res.json()).items;
@@ -57,10 +50,7 @@ export async function listSounds(
  * @param guild The guild to get the sound from
  * @param sound The sound to get
  */
-export async function getSound(
-  guild: Snowflake,
-  sound: Snowflake,
-): Promise<RESTGetAPIGuildSoundboardSoundResult> {
+export async function getSound(guild: Snowflake, sound: Snowflake): Promise<RESTGetAPIGuildSoundboardSoundResult> {
   const res = await callDiscord(Routes.guildSoundboardSound(guild, sound), {
     method: "GET",
   });
@@ -109,10 +99,7 @@ export async function modifySound(
  * @param guild The guild to delete the sound from
  * @param sound The sound to delete
  */
-export async function deleteSound(
-  guild: Snowflake,
-  sound: Snowflake,
-): Promise<void> {
+export async function deleteSound(guild: Snowflake, sound: Snowflake): Promise<void> {
   await callDiscord(Routes.guildSoundboardSound(guild, sound), {
     method: "DELETE",
   });

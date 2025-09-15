@@ -1,7 +1,4 @@
-import {
-  type APIApplicationCommandOption,
-  ApplicationCommandOptionType,
-} from "discord-api-types/v10";
+import { type APIApplicationCommandOption, ApplicationCommandOptionType } from "discord-api-types/v10";
 
 type CommandOptionMap = {
   [Key in keyof typeof ApplicationCommandOptionType]: Extract<
@@ -13,9 +10,7 @@ type CommandOptionMap = {
 /**
  * Creates an application command option
  */
-export function CommandOption<
-  K extends keyof typeof ApplicationCommandOptionType,
->(
+export function CommandOption<K extends keyof typeof ApplicationCommandOptionType>(
   config: Omit<CommandOptionMap[K], "type"> & {
     type: K;
   },

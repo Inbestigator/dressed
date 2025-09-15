@@ -1,14 +1,9 @@
+import { Buffer } from "node:buffer";
+import { type RESTError, type RESTErrorData, type RESTRateLimit, RouteBases } from "discord-api-types/v10";
 import ora from "ora";
 import type { RawFile } from "../types/file.ts";
-import { checkLimit, headerUpdateLimit, updateLimit } from "./ratelimit.ts";
-import {
-  RouteBases,
-  type RESTError,
-  type RESTRateLimit,
-  type RESTErrorData,
-} from "discord-api-types/v10";
 import { botEnv } from "./env.ts";
-import { Buffer } from "node:buffer";
+import { checkLimit, headerUpdateLimit, updateLimit } from "./ratelimit.ts";
 
 export async function callDiscord(
   endpoint: string,
@@ -31,10 +26,7 @@ export async function callDiscord(
   if (params) {
     for (const [key, value] of Object.entries(params)) {
       if (!value) continue;
-      url.searchParams.append(
-        key,
-        typeof value === "string" ? value : JSON.stringify(value),
-      );
+      url.searchParams.append(key, typeof value === "string" ? value : JSON.stringify(value));
     }
   }
   if (files?.length) {
@@ -44,16 +36,9 @@ export async function callDiscord(
       const fileKey = file.key ?? `files[${index}]`;
       formData.append(
         fileKey,
-        new Blob(
-          [
-            Buffer.isBuffer(file.data)
-              ? Buffer.from(file.data)
-              : file.data.toString(),
-          ],
-          {
-            type: file.contentType,
-          },
-        ),
+        new Blob([Buffer.isBuffer(file.data) ? Buffer.from(file.data) : file.data.toString()], {
+          type: file.contentType,
+        }),
         file.name,
       );
     }
@@ -91,11 +76,7 @@ export async function callDiscord(
 
     if (res.status === 429) {
       const ratelimit = error as RESTRateLimit;
-      updateLimit(
-        ratelimit.global ? "global" : endpoint,
-        0,
-        Date.now() + ratelimit.retry_after * 1000,
-      );
+      updateLimit(ratelimit.global ? "global" : endpoint, 0, Date.now() + ratelimit.retry_after * 1000);
     }
 
     throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`);

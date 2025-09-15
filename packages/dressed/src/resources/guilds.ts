@@ -68,9 +68,7 @@ import { callDiscord } from "../utils/call-discord.ts";
  * Create a new guild.
  * @param guild The guild data
  */
-export async function createGuild(
-  data: RESTPostAPIGuildsJSONBody,
-): Promise<RESTPostAPIGuildsResult> {
+export async function createGuild(data: RESTPostAPIGuildsJSONBody): Promise<RESTPostAPIGuildsResult> {
   const res = await callDiscord(Routes.guilds(), {
     method: "POST",
     body: data,
@@ -84,10 +82,7 @@ export async function createGuild(
  * @param guild The guild to fetch
  * @param options Optional parameters for the request
  */
-export async function getGuild(
-  guild: Snowflake,
-  options?: RESTGetAPIGuildQuery,
-): Promise<RESTGetAPIGuildResult> {
+export async function getGuild(guild: Snowflake, options?: RESTGetAPIGuildQuery): Promise<RESTGetAPIGuildResult> {
   const res = await callDiscord(Routes.guild(guild), {
     method: "GET",
     params: options,
@@ -100,9 +95,7 @@ export async function getGuild(
  * Returns the guild preview object for the given id.
  * @param guild The guild to fetch
  */
-export async function getGuildPreview(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildPreviewResult> {
+export async function getGuildPreview(guild: Snowflake): Promise<RESTGetAPIGuildPreviewResult> {
   const res = await callDiscord(Routes.guildPreview(guild), {
     method: "GET",
   });
@@ -115,10 +108,7 @@ export async function getGuildPreview(
  * @param guild The guild to modify
  * @param data The new data for the guild
  */
-export async function modifyGuild(
-  guild: Snowflake,
-  data: RESTPatchAPIGuildJSONBody,
-): Promise<RESTPatchAPIGuildResult> {
+export async function modifyGuild(guild: Snowflake, data: RESTPatchAPIGuildJSONBody): Promise<RESTPatchAPIGuildResult> {
   const res = await callDiscord(Routes.guild(guild), {
     method: "PATCH",
     body: data,
@@ -141,9 +131,7 @@ export async function deleteGuild(guild: Snowflake): Promise<void> {
  * Get a list of channels in a guild, does not include threads
  * @param guild The guild to get the channels from
  */
-export async function listChannels(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildChannelsResult> {
+export async function listChannels(guild: Snowflake): Promise<RESTGetAPIGuildChannelsResult> {
   const res = await callDiscord(Routes.guildChannels(guild), {
     method: "GET",
   });
@@ -187,9 +175,7 @@ export async function modifyChannelPositions(
  * Returns all active threads in the guild, including public and private threads.
  * @param guild The guild to get the active threads from
  */
-export async function listActiveThreads(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildThreadsResult> {
+export async function listActiveThreads(guild: Snowflake): Promise<RESTGetAPIGuildThreadsResult> {
   const res = await callDiscord(Routes.guildActiveThreads(guild), {
     method: "GET",
   });
@@ -202,16 +188,10 @@ export async function listActiveThreads(
  * @param guild The guild to get the member from
  * @param member The member to get (defaults to self)
  */
-export async function getMember(
-  guild: Snowflake,
-  member?: Snowflake,
-): Promise<RESTGetAPIGuildMemberResult> {
-  const res = await callDiscord(
-    member ? Routes.guildMember(guild, member) : Routes.userGuildMember(guild),
-    {
-      method: "GET",
-    },
-  );
+export async function getMember(guild: Snowflake, member?: Snowflake): Promise<RESTGetAPIGuildMemberResult> {
+  const res = await callDiscord(member ? Routes.guildMember(guild, member) : Routes.userGuildMember(guild), {
+    method: "GET",
+  });
 
   return res.json();
 }
@@ -294,11 +274,7 @@ export async function modifyMember(
  * @param member The member to give the role to
  * @param role The role to give
  */
-export async function addMemberRole(
-  guild: Snowflake,
-  member: Snowflake,
-  role: Snowflake,
-): Promise<void> {
+export async function addMemberRole(guild: Snowflake, member: Snowflake, role: Snowflake): Promise<void> {
   await callDiscord(Routes.guildMemberRole(guild, member, role), {
     method: "PUT",
   });
@@ -310,11 +286,7 @@ export async function addMemberRole(
  * @param member The member to remove the role from
  * @param role The role to remove
  */
-export async function removeMemberRole(
-  guild: Snowflake,
-  member: Snowflake,
-  role: Snowflake,
-): Promise<void> {
+export async function removeMemberRole(guild: Snowflake, member: Snowflake, role: Snowflake): Promise<void> {
   await callDiscord(Routes.guildMemberRole(guild, member, role), {
     method: "DELETE",
   });
@@ -325,10 +297,7 @@ export async function removeMemberRole(
  * @param guild The guild to remove the member from
  * @param member The member to remove
  */
-export async function removeMember(
-  guild: Snowflake,
-  member: Snowflake,
-): Promise<void> {
+export async function removeMember(guild: Snowflake, member: Snowflake): Promise<void> {
   await callDiscord(Routes.guildMember(guild, member), {
     method: "DELETE",
   });
@@ -356,10 +325,7 @@ export async function listBans(
  * @param guild The guild to get the ban from
  * @param user The user to get the ban for
  */
-export async function getBan(
-  guild: Snowflake,
-  user: Snowflake,
-): Promise<RESTGetAPIGuildBanResult> {
+export async function getBan(guild: Snowflake, user: Snowflake): Promise<RESTGetAPIGuildBanResult> {
   const res = await callDiscord(Routes.guildBan(guild, user), {
     method: "GET",
   });
@@ -373,11 +339,7 @@ export async function getBan(
  * @param user The user to ban
  * @param data The data for the ban
  */
-export async function createBan(
-  guild: Snowflake,
-  user: Snowflake,
-  data: RESTPutAPIGuildBanJSONBody,
-): Promise<void> {
+export async function createBan(guild: Snowflake, user: Snowflake, data: RESTPutAPIGuildBanJSONBody): Promise<void> {
   await callDiscord(Routes.guildBan(guild, user), {
     method: "PUT",
     body: data,
@@ -389,10 +351,7 @@ export async function createBan(
  * @param guild The guild to ban from
  * @param user The user to ban
  */
-export async function deleteBan(
-  guild: Snowflake,
-  user: Snowflake,
-): Promise<void> {
+export async function deleteBan(guild: Snowflake, user: Snowflake): Promise<void> {
   await callDiscord(Routes.guildBan(guild, user), {
     method: "DELETE",
   });
@@ -419,9 +378,7 @@ export async function bulkCreateBan(
  * Get a list of roles in a guild
  * @param guild The guild to get the roles from
  */
-export async function listRoles(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildRolesResult> {
+export async function listRoles(guild: Snowflake): Promise<RESTGetAPIGuildRolesResult> {
   const res = await callDiscord(Routes.guildRoles(guild), {
     method: "GET",
   });
@@ -434,10 +391,7 @@ export async function listRoles(
  * @param guild The guild to get the role from
  * @param role The role to get
  */
-export async function getRole(
-  guild: Snowflake,
-  role: Snowflake,
-): Promise<RESTGetAPIGuildRoleResult> {
+export async function getRole(guild: Snowflake, role: Snowflake): Promise<RESTGetAPIGuildRoleResult> {
   const res = await callDiscord(Routes.guildRole(guild, role), {
     method: "GET",
   });
@@ -519,10 +473,7 @@ export async function modifyMFALevel(
  * @param guild The guild to delete the role from
  * @param role The role to delete
  */
-export async function deleteRole(
-  guild: Snowflake,
-  role: Snowflake,
-): Promise<void> {
+export async function deleteRole(guild: Snowflake, role: Snowflake): Promise<void> {
   await callDiscord(Routes.guildRole(guild, role), {
     method: "DELETE",
   });
@@ -566,9 +517,7 @@ export async function startPrune(
  * Returns a list of voice region objects for the guild.
  * @param guild The guild to get the voice regions for
  */
-export async function listGuildVoiceRegions(
-  guild: Snowflake,
-): Promise<RESTGetAPIVoiceRegionsResult> {
+export async function listGuildVoiceRegions(guild: Snowflake): Promise<RESTGetAPIVoiceRegionsResult> {
   const res = await callDiscord(Routes.guildVoiceRegions(guild), {
     method: "GET",
   });
@@ -580,9 +529,7 @@ export async function listGuildVoiceRegions(
  * Returns a list of invite objects (with invite metadata) for the guild.
  * @param guild The guild to get the invites for
  */
-export async function listInvites(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildInvitesResult> {
+export async function listInvites(guild: Snowflake): Promise<RESTGetAPIGuildInvitesResult> {
   const res = await callDiscord(Routes.guildInvites(guild), {
     method: "GET",
   });
@@ -594,9 +541,7 @@ export async function listInvites(
  * Returns a list of integration objects for the guild.
  * @param guild The guild to get the integrations for
  */
-export async function listIntegrations(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildIntegrationsResult> {
+export async function listIntegrations(guild: Snowflake): Promise<RESTGetAPIGuildIntegrationsResult> {
   const res = await callDiscord(Routes.guildIntegrations(guild), {
     method: "GET",
   });
@@ -609,10 +554,7 @@ export async function listIntegrations(
  * @param guild The guild to delete the integration from
  * @param integration The integration to delete
  */
-export async function deleteIntegration(
-  guild: Snowflake,
-  integration: Snowflake,
-): Promise<void> {
+export async function deleteIntegration(guild: Snowflake, integration: Snowflake): Promise<void> {
   await callDiscord(Routes.guildIntegration(guild, integration), {
     method: "DELETE",
   });
@@ -622,9 +564,7 @@ export async function deleteIntegration(
  * Returns a guild widget settings object.
  * @param guild The guild to get the widget settings from
  */
-export async function getWidgetSettings(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildWidgetSettingsResult> {
+export async function getWidgetSettings(guild: Snowflake): Promise<RESTGetAPIGuildWidgetSettingsResult> {
   const res = await callDiscord(Routes.guildWidgetSettings(guild), {
     method: "GET",
   });
@@ -653,9 +593,7 @@ export async function modifyWidgetSettinga(
  * Returns the widget for the guild.
  * @param guild The guild to get the widget from
  */
-export async function getWidgetJSON(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildWidgetJSONResult> {
+export async function getWidgetJSON(guild: Snowflake): Promise<RESTGetAPIGuildWidgetJSONResult> {
   const res = await callDiscord(Routes.guildWidgetJSON(guild), {
     method: "GET",
   });
@@ -667,9 +605,7 @@ export async function getWidgetJSON(
  * Returns a partial invite object for guilds with that feature enabled.
  * @param guild The guild to get the invite from
  */
-export async function getVanityInvite(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildVanityUrlResult> {
+export async function getVanityInvite(guild: Snowflake): Promise<RESTGetAPIGuildVanityUrlResult> {
   const res = await callDiscord(Routes.guildVanityUrl(guild), {
     method: "GET",
   });
@@ -698,9 +634,7 @@ export async function getWidgetImage(
  * Returns the Welcome Screen object for the guild.
  * @param guild The guild to get the welcome screen from
  */
-export async function getWelcomeScreen(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildWelcomeScreenResult> {
+export async function getWelcomeScreen(guild: Snowflake): Promise<RESTGetAPIGuildWelcomeScreenResult> {
   const res = await callDiscord(Routes.guildWelcomeScreen(guild), {
     method: "GET",
   });
@@ -729,9 +663,7 @@ export async function modifyWelcomeScreen(
  * Returns the Onboarding object for the guild.
  * @param guild The guild to get the onboarding from
  */
-export async function getOnboarding(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildOnboardingResult> {
+export async function getOnboarding(guild: Snowflake): Promise<RESTGetAPIGuildOnboardingResult> {
   const res = await callDiscord(Routes.guildOnboarding(guild), {
     method: "GET",
   });
