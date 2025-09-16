@@ -1,10 +1,7 @@
-import type { ComponentData } from "../../types/config.ts";
 import { matchOptimal } from "@dressed/matcher";
+import type { ComponentData } from "../../types/config.ts";
+import type { MessageComponentInteraction, ModalSubmitInteraction } from "../../types/interaction.ts";
 import { createHandlerSetup } from "./index.ts";
-import type {
-  MessageComponentInteraction,
-  ModalSubmitInteraction,
-} from "../../types/interaction.ts";
 
 type Data = MessageComponentInteraction | ModalSubmitInteraction;
 
@@ -34,9 +31,7 @@ export const setupComponents: ReturnType<
       middlewareKey: "components",
       pending: (item, props) =>
         `Running ${category} "${item.name}"${
-          Object.keys(props[1]).length > 0
-            ? " with args: " + JSON.stringify(props[1])
-            : ""
+          Object.keys(props[1]).length > 0 ? ` with args: ${JSON.stringify(props[1])}` : ""
         }`,
     };
   },

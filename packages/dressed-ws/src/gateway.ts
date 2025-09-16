@@ -1,20 +1,17 @@
+import { env } from "node:process";
+import { Worker } from "node:worker_threads";
 import type {
-  GatewayIdentifyData,
-  GatewayDispatchPayload,
-  GatewaySendPayload,
-  GatewayOpcodes,
   APIGatewayBotInfo,
+  GatewayDispatchPayload,
+  GatewayIdentifyData,
+  GatewayOpcodes,
+  GatewaySendPayload,
 } from "discord-api-types/v10";
-import {
-  GatewayDispatchEvents,
-  GatewayIntentBits,
-} from "discord-api-types/v10";
+import { GatewayDispatchEvents, GatewayIntentBits } from "discord-api-types/v10";
 import { getGatewayBot } from "dressed";
 import { botEnv } from "dressed/utils";
-import { env } from "node:process";
-import { createCache, type Cache } from "./cache/index.ts";
+import { type Cache, createCache } from "./cache/index.ts";
 import { startAutoResharder } from "./resharder.ts";
-import { Worker } from "node:worker_threads";
 
 type EventKey = keyof typeof GatewayDispatchEvents;
 interface ListenerConfig {
@@ -49,16 +46,10 @@ export type ConnectionActions = {
    * @param payload The data to send
    */
   emit: <
-    K extends keyof Omit<
-      typeof GatewayOpcodes,
-      "Dispatch" | "Reconnect" | "InvalidSession" | "Hello" | "HeartbeatAck"
-    >,
+    K extends keyof Omit<typeof GatewayOpcodes, "Dispatch" | "Reconnect" | "InvalidSession" | "Hello" | "HeartbeatAck">,
   >(
     opcode: K,
-    payload: Extract<
-      GatewaySendPayload,
-      { op: (typeof GatewayOpcodes)[K] }
-    >["d"],
+    payload: Extract<GatewaySendPayload, { op: (typeof GatewayOpcodes)[K] }>["d"],
   ) => void;
   shards: {
     /**
@@ -84,10 +75,7 @@ export type ConnectionActions = {
  * @returns Functions for interacting with the connection and resharding
  */
 export function createConnection(
-  config: Omit<
-    Partial<GatewayIdentifyData>,
-    "intents" | "properties" | "compress" | "large_threshold" | "shard"
-  > & {
+  config: Omit<Partial<GatewayIdentifyData>, "intents" | "properties" | "compress" | "large_threshold" | "shard"> & {
     intents?: (keyof typeof GatewayIntentBits)[];
     shards?: {
       /**
@@ -113,17 +101,9 @@ export function createConnection(
     };
   } = {},
 ): ConnectionActions {
-  const {
-    intents = [],
-    token = botEnv.DISCORD_TOKEN,
-    shards = {},
-    ...rest
-  } = config;
+  const { intents = [], token = botEnv.DISCORD_TOKEN, shards = {}, ...rest } = config;
 
-  const listeners = new Map<
-    string,
-    Map<string, { callback: (data: unknown) => void; config: ListenerConfig }>
-  >();
+  const listeners = new Map<string, Map<string, { callback: (data: unknown) => void; config: ListenerConfig }>>();
   const workers: Worker[] = [];
   let bot: APIGatewayBotInfo | undefined;
 
@@ -137,7 +117,7 @@ export function createConnection(
           const id = crypto.randomUUID();
           const eventName = GatewayDispatchEvents[k as EventKey];
           if (!listeners.has(eventName)) listeners.set(eventName, new Map());
-          listeners.get(eventName)!.set(id, { callback, config });
+          listeners.get(eventName)?.set(id, { callback, config });
           return () => listeners.get(eventName)?.delete(id);
         },
       ]),
@@ -173,18 +153,11 @@ export function createConnection(
 
         for (let bucketId = 0; bucketId < numBuckets; ++bucketId) {
           for (let i = 0; i < maxConcurrency; ++i) {
-            let worker =
-              workers[
-                Math.floor((bucketId * maxConcurrency + i) / shardsPerWorker)
-              ];
+            let worker = workers[Math.floor((bucketId * maxConcurrency + i) / shardsPerWorker)];
             if (!worker) {
               worker = new Worker(new URL("./worker.js", import.meta.url));
               worker.on("message", ({ type, t, d, shard }: ParentMsg) => {
-                if (
-                  type === "dispatch" &&
-                  t &&
-                  shard[1] === connection.shards.numShards
-                ) {
+                if (type === "dispatch" && t && shard[1] === connection.shards.numShards) {
                   const eventListeners = listeners.get(t);
                   if (eventListeners) {
                     for (const [id, callback] of eventListeners) {
@@ -203,10 +176,7 @@ export function createConnection(
               type: "addShard",
               config: {
                 token,
-                intents: intents.reduce(
-                  (p, intent) => p | GatewayIntentBits[intent],
-                  0,
-                ),
+                intents: intents.reduce((p, intent) => p | GatewayIntentBits[intent], 0),
                 ...rest,
                 bot,
                 shard: [bucketId * maxConcurrency + i, newShardCount],
@@ -234,11 +204,7 @@ export function createConnection(
     },
   } as ReturnType<typeof createConnection>;
 
-  connection.shards.reshardInterval = startAutoResharder(
-    connection,
-    shards.reshardInterval,
-    shards.shardCapacity,
-  );
+  connection.shards.reshardInterval = startAutoResharder(connection, shards.reshardInterval, shards.shardCapacity);
 
   return connection;
 }

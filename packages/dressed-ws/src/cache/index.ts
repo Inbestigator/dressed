@@ -18,10 +18,7 @@ export type Cache<
     ? (
         ...a: Parameters<F[K]>
       ) => Promise<
-        Pick<
-          Awaited<ReturnType<F[K]>>,
-          (D[K] extends string[] ? D[K] : [])[number]
-        > &
+        Pick<Awaited<ReturnType<F[K]>>, (D[K] extends string[] ? D[K] : [])[number]> &
           Partial<Awaited<ReturnType<F[K]>>>
       >
     : F[K]) & {
@@ -50,16 +47,9 @@ export function createCache<
   const revalidating = new Set<string>();
   function set(key: keyof F, cacheKey: string, value: unknown) {
     let storedValue = value;
-    if (
-      desiredProps &&
-      key in desiredProps &&
-      typeof value === "object" &&
-      value !== null
-    ) {
+    if (desiredProps && key in desiredProps && typeof value === "object" && value !== null) {
       storedValue = Object.fromEntries(
-        Object.entries(value).filter(([k]) =>
-          desiredProps[key as keyof typeof desiredProps]!.includes(k),
-        ),
+        Object.entries(value).filter(([k]) => desiredProps[key as keyof typeof desiredProps]?.includes(k)),
       );
     }
     logic.set(cacheKey, storedValue);
@@ -78,13 +68,13 @@ export function createCache<
               set(k, key, value);
               return value;
             }
+            // biome-ignore lint/suspicious/noFallthroughSwitchClause: Intended to fall through
             case "stale": {
               if (!revalidating.has(key)) {
                 revalidating.add(key);
                 v(...args).then((v) => set(k, key, v));
               }
             }
-            // eslint-disable-next-line no-fallthrough
             case "hit":
               return res.value;
           }

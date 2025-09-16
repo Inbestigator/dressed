@@ -12,12 +12,12 @@ export type {
   EventData,
   ServerConfig,
 } from "../types/config.ts";
+export type * from "../types/file.ts";
 export type {
   CommandHandler,
   ComponentHandler,
   EventHandler,
 } from "../types/handlers.ts";
-export type * from "../types/file.ts";
 
 // Core
 export * from "./extenders/interaction.ts";
@@ -25,7 +25,6 @@ export * from "./handlers/commands.ts";
 export * from "./handlers/components.ts";
 export * from "./handlers/events.ts";
 export * from "./handlers/index.ts";
-
+export * from "./server.ts";
 // Server
 export { verifySignature } from "./signature.ts";
-export * from "./server.ts";

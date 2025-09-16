@@ -1,16 +1,6 @@
-import {
-  handleRequest,
-  setupCommands,
-  setupComponents,
-  setupEvents,
-} from "dressed/server";
-import type {
-  CommandData,
-  ComponentData,
-  EventData,
-  ServerConfig,
-} from "dressed/server";
 import { waitUntil } from "@vercel/functions";
+import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";
+import { handleRequest, setupCommands, setupComponents, setupEvents } from "dressed/server";
 
 /**
  * Creates a request handler for Next.js routes that processes commands, components, and events.

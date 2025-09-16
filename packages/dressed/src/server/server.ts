@@ -1,5 +1,5 @@
-import ora from "ora";
-import { verifySignature } from "./signature.ts";
+import { createServer as createHttpServer, type Server } from "node:http";
+import { stdout } from "node:process";
 import {
   type APIApplicationCommandAutocompleteInteraction,
   type APIApplicationCommandInteraction,
@@ -9,23 +9,14 @@ import {
   ApplicationWebhookType,
   InteractionType,
 } from "discord-api-types/v10";
-import type {
-  CommandRunner,
-  ComponentRunner,
-  EventRunner,
-} from "../types/handlers.ts";
-import type {
-  CommandData,
-  ComponentData,
-  EventData,
-  ServerConfig,
-} from "../types/config.ts";
-import { createServer as createHttpServer, type Server } from "node:http";
-import { stdout } from "node:process";
+import ora from "ora";
+import type { CommandData, ComponentData, EventData, ServerConfig } from "../types/config.ts";
+import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
 import { createInteraction } from "./extenders/interaction.ts";
 import { setupCommands } from "./handlers/commands.ts";
 import { setupComponents } from "./handlers/components.ts";
 import { setupEvents } from "./handlers/events.ts";
+import { verifySignature } from "./signature.ts";
 
 /**
  * Starts a server to handle interactions.
@@ -37,10 +28,7 @@ export function createServer(
   events: EventRunner | EventData[],
   config: ServerConfig,
 ): Server {
-  const endpoint = new URL(
-    config.endpoint ?? "/",
-    `http://localhost:${config.port ?? 8000}`,
-  );
+  const endpoint = new URL(config.endpoint ?? "/", `http://localhost:${config.port ?? 8000}`);
   const server = createHttpServer(async (req, res) => {
     if (req.url !== endpoint.pathname) {
       return res.writeHead(404).end();
@@ -76,7 +64,7 @@ export function createServer(
     console.log("Bot is now listening on", endpoint.href);
   });
 
-  const shutdown = () => server.close(() => process.exit(0));
+  const shutdown = () => server.close(() => process.exit());
 
   process.on("SIGTERM", shutdown);
   process.on("SIGINT", shutdown);
@@ -106,13 +94,7 @@ export async function handleRequest(
   }).start();
   const body = await req.text();
 
-  if (
-    !verifySignature(
-      body,
-      req.headers.get("x-signature-ed25519"),
-      req.headers.get("x-signature-timestamp"),
-    )
-  ) {
+  if (!verifySignature(body, req.headers.get("x-signature-ed25519"), req.headers.get("x-signature-timestamp"))) {
     reqLoader.fail("Invalid signature");
     return new Response(null, { status: 401 });
   }
@@ -124,12 +106,7 @@ export async function handleRequest(
     let status = 500;
     // The interaction response token
     if ("token" in json) {
-      status = await handleInteraction(
-        commands,
-        components,
-        json,
-        config?.middleware,
-      );
+      status = await handleInteraction(commands, components, json, config?.middleware);
     } else {
       status = await handleEvent(events, json, config?.middleware);
     }
@@ -157,35 +134,21 @@ export async function handleInteraction(
       return 200;
     }
     case InteractionType.ApplicationCommand: {
-      const interaction = createInteraction(
-        json as APIApplicationCommandInteraction,
-      );
-      const runCommand =
-        typeof commands === "function" ? commands : setupCommands(commands);
-      await runCommand(
-        interaction,
-        middleware?.commands as Parameters<typeof runCommand>[1],
-      );
+      const interaction = createInteraction(json as APIApplicationCommandInteraction);
+      const runCommand = typeof commands === "function" ? commands : setupCommands(commands);
+      await runCommand(interaction, middleware?.commands as Parameters<typeof runCommand>[1]);
       return 202;
     }
     case InteractionType.ApplicationCommandAutocomplete: {
-      const interaction = createInteraction(
-        json as APIApplicationCommandAutocompleteInteraction,
-      );
-      const runCommand =
-        typeof commands === "function" ? commands : setupCommands(commands);
+      const interaction = createInteraction(json as APIApplicationCommandAutocompleteInteraction);
+      const runCommand = typeof commands === "function" ? commands : setupCommands(commands);
       await runCommand(interaction, undefined, "autocomplete");
       return 202;
     }
     case InteractionType.MessageComponent:
     case InteractionType.ModalSubmit: {
-      const interaction = createInteraction(
-        json as APIMessageComponentInteraction | APIModalSubmitInteraction,
-      );
-      const runComponent =
-        typeof components === "function"
-          ? components
-          : setupComponents(components);
+      const interaction = createInteraction(json as APIMessageComponentInteraction | APIModalSubmitInteraction);
+      const runComponent = typeof components === "function" ? components : setupComponents(components);
       await runComponent(interaction, middleware?.components);
       return 202;
     }
@@ -210,8 +173,7 @@ export async function handleEvent(
       return 200;
     }
     case ApplicationWebhookType.Event: {
-      const runEvent =
-        typeof events === "function" ? events : setupEvents(events);
+      const runEvent = typeof events === "function" ? events : setupEvents(events);
       await runEvent(json.event as APIWebhookEventBody, middleware?.events);
       return 202;
     }

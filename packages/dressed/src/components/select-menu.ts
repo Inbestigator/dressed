@@ -1,8 +1,4 @@
-import type {
-  APISelectMenuComponent,
-  APISelectMenuOption,
-  ComponentType,
-} from "discord-api-types/v10";
+import type { APISelectMenuComponent, APISelectMenuOption, ComponentType } from "discord-api-types/v10";
 
 const SelectType = {
   Channel: 8,
@@ -13,10 +9,7 @@ const SelectType = {
 };
 
 type SelectMap = {
-  [Key in keyof typeof ComponentType]: Extract<
-    APISelectMenuComponent,
-    { type: (typeof ComponentType)[Key] }
-  >;
+  [Key in keyof typeof ComponentType]: Extract<APISelectMenuComponent, { type: (typeof ComponentType)[Key] }>;
 };
 
 /**

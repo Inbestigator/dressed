@@ -1,8 +1,4 @@
-import {
-  ComponentType,
-  type APILabelComponent,
-  type APIComponentInLabel,
-} from "discord-api-types/v10";
+import { type APIComponentInLabel, type APILabelComponent, ComponentType } from "discord-api-types/v10";
 
 /**
  * Creates a label component
@@ -17,10 +13,7 @@ export function Label(
   label: string,
   component: APIComponentInLabel,
   description?: string,
-  config?: Omit<
-    APILabelComponent,
-    "label" | "component" | "description" | "type"
-  >,
+  config?: Omit<APILabelComponent, "label" | "component" | "description" | "type">,
 ): APILabelComponent {
   return {
     ...config,

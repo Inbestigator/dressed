@@ -18,9 +18,7 @@ import { callDiscord } from "../utils/call-discord.ts";
  * Returns a guild template object for the given code.
  * @param template The template code to get
  */
-export async function getTemplate(
-  template: string,
-): Promise<RESTGetAPITemplateResult> {
+export async function getTemplate(template: string): Promise<RESTGetAPITemplateResult> {
   const res = await callDiscord(Routes.template(template), {
     method: "GET",
   });
@@ -49,9 +47,7 @@ export async function createFromTemplate(
  * Returns an array of guild template objects.
  * @param guild The guild to get the templates from
  */
-export async function listTemplates(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildTemplatesResult> {
+export async function listTemplates(guild: Snowflake): Promise<RESTGetAPIGuildTemplatesResult> {
   const res = await callDiscord(Routes.guildTemplates(guild), {
     method: "GET",
   });
@@ -81,10 +77,7 @@ export async function createTemplate(
  * @param guild The guild to sync the template to
  * @param template The template to sync
  */
-export async function syncTemplate(
-  guild: Snowflake,
-  template: string,
-): Promise<RESTPutAPIGuildTemplateSyncResult> {
+export async function syncTemplate(guild: Snowflake, template: string): Promise<RESTPutAPIGuildTemplateSyncResult> {
   const res = await callDiscord(Routes.guildTemplate(guild, template), {
     method: "PUT",
   });
@@ -116,10 +109,7 @@ export async function modifyTemplate(
  * @param guild The guild to delete the template in
  * @param template The template to delete
  */
-export async function deleteTemplate(
-  guild: Snowflake,
-  template: string,
-): Promise<RESTDeleteAPIGuildTemplateResult> {
+export async function deleteTemplate(guild: Snowflake, template: string): Promise<RESTDeleteAPIGuildTemplateResult> {
   const res = await callDiscord(Routes.guildTemplate(guild, template), {
     method: "DELETE",
   });

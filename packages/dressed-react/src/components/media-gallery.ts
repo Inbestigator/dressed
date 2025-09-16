@@ -1,11 +1,5 @@
-import type {
-  APIMediaGalleryItem,
-  APIMediaGalleryComponent,
-} from "discord-api-types/v10";
-import {
-  MediaGallery as DressedComponent,
-  MediaGalleryItem as DressedItem,
-} from "dressed";
+import type { APIMediaGalleryComponent, APIMediaGalleryItem } from "discord-api-types/v10";
+import { MediaGallery as DressedComponent, MediaGalleryItem as DressedItem } from "dressed";
 import { createElement, type ReactNode } from "react";
 import type { Node } from "../react/node.ts";
 

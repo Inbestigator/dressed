@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import DocsMD from "@/components/docs-md";
 import {
   Breadcrumb,
@@ -10,7 +11,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Metadata } from "next";
-import { readdirSync, readFileSync, statSync } from "node:fs";
 
 export function generateStaticParams() {
   return readDir("content").map((s) => ({ slug: s.slug }));
@@ -31,9 +31,7 @@ function readDir(path: string) {
       files.push(...readDir(`${path}/${file}`));
     } else {
       files.push({
-        slug: `${path.split("content/")[1] ?? ""}/${file.split(".")[0]}`
-          .split("/")
-          .filter((v) => v !== ""),
+        slug: `${path.split("content/")[1] ?? ""}/${file.split(".")[0]}`.split("/").filter((v) => v !== ""),
         content: banner + readFileSync(`${path}/${file}`, "utf-8"),
       });
     }
@@ -71,9 +69,7 @@ export default async function DocsPage({
   if (!doc) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-center gap-10 max-w-5xl mx-auto">
-        <h1 className="z-10 text-3xl font-black leading-tight sm:text-7xl sm:leading-tight">
-          404
-        </h1>
+        <h1 className="z-10 text-3xl font-black leading-tight sm:text-7xl sm:leading-tight">404</h1>
         <p>Page not found.</p>
       </div>
     );
@@ -103,9 +99,7 @@ export default async function DocsPage({
                 return (
                   <div key={i} className=" gap-2.5 items-center hidden md:flex">
                     <BreadcrumbItem>
-                      <BreadcrumbLink
-                        href={"/docs/" + doc.slug.slice(0, i + 1).join("/")}
-                      >
+                      <BreadcrumbLink href={`/docs/${doc.slug.slice(0, i + 1).join("/")}`}>
                         {s
                           .split("-")
                           .map((s) => s.charAt(0).toUpperCase() + s.slice(1))

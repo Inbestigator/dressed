@@ -15,27 +15,17 @@ export async function checkLimit(endpoint: string, method = "") {
     }
     const displayed = endpoint === "global" ? "all endpoints" : endpoint;
     if (limit.remaining === 0) {
-      const waiting = ora(
-        `Rate limit for ${displayed} reached! - waiting to try again...`,
-      ).start();
-      await new Promise((r) =>
-        setTimeout(r, Math.max(0, limit.resetAt - Date.now())),
-      );
+      const waiting = ora(`Rate limit for ${displayed} reached! - waiting to try again...`).start();
+      await new Promise((r) => setTimeout(r, Math.max(0, limit.resetAt - Date.now())));
       buckets.delete(bucket);
-      waiting.warn(
-        `A request was delayed because you hit the rate limit for ${displayed}`,
-      );
+      waiting.warn(`A request was delayed because you hit the rate limit for ${displayed}`);
     } else if (limit.remaining === 1) {
       ora(`You are about to hit the rate limit for ${displayed}`).warn();
     }
   }
 }
 
-export function headerUpdateLimit(
-  endpoint: string,
-  res: Response,
-  method = "",
-) {
+export function headerUpdateLimit(endpoint: string, res: Response, method = "") {
   const remaining = res.headers.get("x-ratelimit-remaining");
   const resetAt = res.headers.get("x-ratelimit-reset");
   const bucket = res.headers.get("x-ratelimit-bucket");
@@ -45,10 +35,6 @@ export function headerUpdateLimit(
   }
 }
 
-export function updateLimit(
-  bucket: string,
-  remaining: number,
-  resetAt: number,
-) {
+export function updateLimit(bucket: string, remaining: number, resetAt: number) {
   buckets.set(bucket, { remaining, resetAt });
 }

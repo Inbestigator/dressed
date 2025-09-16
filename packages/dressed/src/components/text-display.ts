@@ -1,7 +1,4 @@
-import {
-  type APITextDisplayComponent,
-  ComponentType,
-} from "discord-api-types/v10";
+import { type APITextDisplayComponent, ComponentType } from "discord-api-types/v10";
 
 /**
  * Creates a text display component

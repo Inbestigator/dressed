@@ -22,33 +22,19 @@ export const metadata: Metadata = {
   description: "A sleek, serverless-ready Discord bot framework.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh flex flex-col`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh flex flex-col`}>
         {children}
         <footer className="text-sm text-muted-foreground h-8 mt-auto gap-8 flex justify-end px-8">
           <Link href="/docs" className="hover:underline">
             Docs
           </Link>
-          <Link
-            href="https://github.com/Inbestigator/dressed"
-            target="_blank"
-            className="hover:underline"
-          >
+          <Link href="https://github.com/Inbestigator/dressed" target="_blank" className="hover:underline">
             GitHub
           </Link>
-          <Link
-            href="https://discord.gg/Crj9wW863c"
-            target="_blank"
-            className="hover:underline"
-          >
+          <Link href="https://discord.gg/AJTkvuCpZu" target="_blank" className="hover:underline">
             Discord
           </Link>
         </footer>

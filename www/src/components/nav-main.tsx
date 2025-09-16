@@ -1,12 +1,9 @@
 "use client";
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
-
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarMenu,
@@ -14,11 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
 
 interface Item {
   title: string;
@@ -42,12 +35,7 @@ export function NavMain({ items }: { items: Item[] }) {
 function Item({ item }: { item: Item }) {
   const path = usePathname().split("/");
   return (
-    <Collapsible
-      asChild
-      defaultOpen={path.some(
-        (p) => p.toLowerCase() === item.title.toLowerCase(),
-      )}
-    >
+    <Collapsible asChild defaultOpen={path.some((p) => p.toLowerCase() === item.title.toLowerCase())}>
       <SidebarMenuItem>
         <SidebarMenuButton asChild tooltip={item.title}>
           <Link href={item.url}>

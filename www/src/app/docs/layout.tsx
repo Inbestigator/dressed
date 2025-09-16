@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { DocsSidebar } from "@/components/docs-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export const metadata: Metadata = {
   title: {
@@ -9,11 +9,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function DocsLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <div className="fixed inset-0 bg-sidebar -z-1" />

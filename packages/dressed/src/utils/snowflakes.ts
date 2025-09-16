@@ -14,12 +14,7 @@ interface DecodedSnowflake {
 }
 
 /** Serialize data into a snowflake */
-export function encodeSnowflake({
-  timestamp,
-  worker,
-  process,
-  increment,
-}: DecodedSnowflake): Snowflake {
+export function encodeSnowflake({ timestamp, worker, process, increment }: DecodedSnowflake): Snowflake {
   const snowflake =
     ((BigInt(timestamp) - DISCORD_EPOCH) << BigInt(22)) |
     (BigInt(worker & 0b11111) << BigInt(17)) |

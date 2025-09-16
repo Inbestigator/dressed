@@ -1,27 +1,23 @@
 #!/usr/bin/env node
 
-import ora from "ora";
-import { Command } from "commander";
-import { dirname, join, relative } from "node:path";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { cwd, exit, stdout } from "node:process";
-import { select, input, confirm } from "@inquirer/prompts";
+import { confirm, input, select } from "@inquirer/prompts";
+import { Command } from "commander";
 import { parse } from "dotenv";
-import { mkdirSync, writeFileSync } from "node:fs";
-import build from "../server/build/build.ts";
+import ora from "ora";
+import build, { categoryExports, importString } from "../server/build/build.ts";
+import bundleFiles from "../server/build/bundle.ts";
 
-const program = new Command()
-  .name("dressed")
-  .description("A sleek, serverless-ready Discord bot framework.");
+const program = new Command().name("dressed").description("A sleek, serverless-ready Discord bot framework.");
 
 program
   .command("build")
   .description("Builds the bot and writes to .dressed")
   .option("-i, --instance", "Include an instance create in the generated file")
   .option("-r, --register", "Register slash commands")
-  .option(
-    "-e, --endpoint <endpoint>",
-    "The endpoint to listen on, defaults to `/`",
-  )
+  .option("-e, --endpoint <endpoint>", "The endpoint to listen on, defaults to `/`")
   .option("-p, --port <port>", "The port to listen on, defaults to `8000`")
   .option("-R, --root <root>", "Source root for the bot, defaults to `src`")
   .option(
@@ -29,7 +25,7 @@ program
     "Comma separated list of file extensions to include when bundling handlers, defaults to `js, ts, mjs`",
   )
   .action(async ({ instance, register, endpoint, port, root, extensions }) => {
-    if (port && isNaN(Number(port))) {
+    if (port && Number.isNaN(Number(port))) {
       ora("Port must be a valid number").fail();
       return;
     }
@@ -45,51 +41,34 @@ program
       stream: stdout,
       text: "Assembling generated build",
     }).start();
+    const categories = [commands, components, events];
 
     const outputContent = `
-${generateImports(instance, register)}
-import config from "./cache/dressed.config.js";${[commands, components, events]
-      .flat()
-      .map(
-        (v) =>
-          `\nimport * as h${v.uid} from "./${relative(".dressed", v.path)}";`,
-      )
-      .join("")}
-
-export const commands = [ ${commands.map((c) => JSON.stringify(c).replace("null", `h${c.uid}`))} ];
-export const components = [ ${components.map((c) => JSON.stringify(c).replace("null", `h${c.uid}`))} ];
-export const events = [ ${events.map((e) => JSON.stringify(e).replace("null", `h${e.uid}`))} ];
+${
+  instance || register
+    ? `import { ${
+        instance ? `createServer${register ? ", installCommands" : ""}` : register ? "installCommands" : ""
+      } } from "dressed/server";`
+    : ""
+}
+import config from "./dressed.config.mjs";
+${[categories.map((c) => c.map(importString)), categoryExports(categories, "null")].flat(2).join("")}
 export { config };
 ${register ? "\ninstallCommands(commands);" : ""}
 ${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
-    const mjsContent = `// This is generated for compatibility with previous versions of Dressed, you should import from \`index.js\` instead
-export * from "./index.js";`; // TODO Remove mjs file before next major release
-    const typeContent = `
-import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";
+    const jsContent = 'export * from "./index.mjs";';
+    const typeContent =
+      'import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
 
-export declare const commands: CommandData[];
-export declare const components: ComponentData[];
-export declare const events: EventData[];
-export declare const config: ServerConfig;`;
-
-    writeFileSync(".dressed/index.js", outputContent);
-    writeFileSync(".dressed/index.mjs", mjsContent);
+    writeFileSync(".dressed/tmp/index.ts", outputContent);
+    await bundleFiles(".dressed/tmp/index.ts", ".dressed");
+    writeFileSync(".dressed/index.js", jsContent);
     writeFileSync(".dressed/index.d.ts", typeContent);
+    rmSync(".dressed/tmp", { recursive: true, force: true });
 
     buildLoader.succeed("Assembled generated build");
-    exit(0);
+    exit();
   });
-
-const generateImports = (addInstance?: boolean, registerCommands?: boolean) =>
-  addInstance || registerCommands
-    ? `import { ${
-        addInstance
-          ? `createServer${registerCommands ? ", installCommands" : ""}`
-          : registerCommands
-            ? "installCommands"
-            : ""
-      } } from "dressed/server";`
-    : "";
 
 program
   .command("create")
@@ -103,25 +82,20 @@ program
         required: true,
       });
     }
-    if (
-      !template ||
-      (!template.startsWith("node/") && !template.startsWith("deno/"))
-    ) {
+    if (!template || (!template.startsWith("node/") && !template.startsWith("deno/"))) {
       const isDeno = await confirm({
         message: "Would you like to use a Deno specific template?",
         default: false,
       });
       const res = await fetch(
-        `https://api.github.com/repos/inbestigator/dressed-examples/contents/${
-          isDeno ? "deno" : "node"
-        }`,
+        `https://api.github.com/repos/inbestigator/dressed-examples/contents/${isDeno ? "deno" : "node"}`,
       );
       if (!res.ok) {
         throw new Error("Failed to list templates.");
       }
-      const files = (
-        (await res.json()) as { name: string; path: string; type: string }[]
-      ).filter((f) => f.type === "dir");
+      const files = ((await res.json()) as { name: string; path: string; type: string }[]).filter(
+        (f) => f.type === "dir",
+      );
       template = await select({
         message: "Select the template to use",
         choices: files.map((f) => ({
@@ -140,6 +114,7 @@ program
     const envVars: Record<string, string> = {};
 
     for (const [k, v] of Object.entries(parsed)) {
+      if (k === "DISCORD_APP_ID" || k === "DISCORD_PUBLIC_KEY") continue;
       envVars[k] = await input({ message: k, default: v });
     }
 
@@ -193,7 +168,7 @@ program
     mkdirLoader.succeed();
 
     console.log("\x1b[32m%s", "Project created successfully.");
-    exit(0);
+    exit();
   });
 
 program.parse();

@@ -1,7 +1,4 @@
-import type {
-  APISeparatorComponent,
-  SeparatorSpacingSize,
-} from "discord-api-types/v10";
+import type { APISeparatorComponent, SeparatorSpacingSize } from "discord-api-types/v10";
 import { Separator as DressedComponent } from "dressed";
 import { createElement } from "react";
 

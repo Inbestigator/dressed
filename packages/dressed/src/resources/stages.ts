@@ -13,9 +13,7 @@ import { callDiscord } from "../utils/call-discord.ts";
  * Creates a new Stage instance associated to a Stage channel.
  * @param data The data to create the Stage instance with
  */
-export async function createStage(
-  data: RESTPostAPIStageInstanceJSONBody,
-): Promise<RESTPostAPIStageInstanceResult> {
+export async function createStage(data: RESTPostAPIStageInstanceJSONBody): Promise<RESTPostAPIStageInstanceResult> {
   const res = await callDiscord(Routes.stageInstances(), {
     method: "POST",
     body: data,
@@ -28,9 +26,7 @@ export async function createStage(
  * Gets the stage instance associated with the Stage channel, if it exists.
  * @param channel The channel to get the Stage instance for
  */
-export async function getStage(
-  channel: Snowflake,
-): Promise<RESTGetAPIStageInstanceResult> {
+export async function getStage(channel: Snowflake): Promise<RESTGetAPIStageInstanceResult> {
   const res = await callDiscord(Routes.stageInstance(channel), {
     method: "GET",
   });

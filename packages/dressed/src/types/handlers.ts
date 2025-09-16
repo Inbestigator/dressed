@@ -1,20 +1,14 @@
+import type { setupCommands, setupComponents, setupEvents } from "../server/index.ts";
 import type { AnyEvent } from "./event.ts";
 import type {
-  CommandInteraction,
   CommandAutocompleteInteraction,
+  CommandInteraction,
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "./interaction.ts";
-import type {
-  setupCommands,
-  setupComponents,
-  setupEvents,
-} from "../server/index.ts";
 
 export type CommandHandler = (interaction: CommandInteraction) => Promise<void>;
-export type CommandAutocompleteHandler = (
-  interaction: CommandAutocompleteInteraction,
-) => Promise<void>;
+export type CommandAutocompleteHandler = (interaction: CommandAutocompleteInteraction) => Promise<void>;
 export type ComponentHandler = (
   interaction: MessageComponentInteraction | ModalSubmitInteraction,
   args?: Record<string, string>,

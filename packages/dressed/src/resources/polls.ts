@@ -20,13 +20,10 @@ export async function listAnswerVoters(
   answer: number,
   options?: RESTGetAPIPollAnswerVotersQuery,
 ): Promise<RESTGetAPIPollAnswerVotersResult> {
-  const res = await callDiscord(
-    Routes.pollAnswerVoters(channel, message, answer),
-    {
-      method: "GET",
-      params: options,
-    },
-  );
+  const res = await callDiscord(Routes.pollAnswerVoters(channel, message, answer), {
+    method: "GET",
+    params: options,
+  });
 
   return res.json();
 }
@@ -36,10 +33,7 @@ export async function listAnswerVoters(
  * @param channel The channel to get the message from
  * @param message The message containing the poll
  */
-export async function endPoll(
-  channel: Snowflake,
-  message: Snowflake,
-): Promise<RESTPostAPIPollExpireResult> {
+export async function endPoll(channel: Snowflake, message: Snowflake): Promise<RESTPostAPIPollExpireResult> {
   const res = await callDiscord(Routes.expirePoll(channel, message), {
     method: "POST",
   });

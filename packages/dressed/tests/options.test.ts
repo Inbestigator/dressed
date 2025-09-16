@@ -1,4 +1,4 @@
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import type { APIApplicationCommandInteraction } from "discord-api-types/v10";
 import { createInteraction } from "dressed/server";
 
@@ -22,9 +22,7 @@ test("Check for existing option", () => {
 });
 
 test("Check for non existing option", () => {
-  expect(() => interaction.getOption("option2", true)).toThrowError(
-    new Error(`Required option "option2" not found`),
-  );
+  expect(() => interaction.getOption("option2", true)).toThrowError(new Error(`Required option "option2" not found`));
   const option = interaction.getOption("option3");
   expect(option).toBeUndefined();
 });

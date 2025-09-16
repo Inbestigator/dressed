@@ -1,5 +1,3 @@
-import type { CommandConfig, CommandData } from "../../types/config.ts";
-import ora from "ora";
 import { stdout } from "node:process";
 import {
   ApplicationCommandType,
@@ -11,15 +9,11 @@ import {
   type RESTPutAPIApplicationCommandsJSONBody,
   type RESTPutAPIApplicationGuildCommandsJSONBody,
 } from "discord-api-types/v10";
+import ora from "ora";
+import { bulkOverwriteGlobalCommands, bulkOverwriteGuildCommands } from "../../resources/application-commands.ts";
+import type { CommandConfig, CommandData } from "../../types/config.ts";
+import type { CommandAutocompleteInteraction, CommandInteraction } from "../../types/interaction.ts";
 import { createHandlerSetup } from "./index.ts";
-import type {
-  CommandAutocompleteInteraction,
-  CommandInteraction,
-} from "../../types/interaction.ts";
-import {
-  bulkOverwriteGlobalCommands,
-  bulkOverwriteGuildCommands,
-} from "../../resources/application-commands.ts";
 
 /**
  * Installs commands to the Discord API
@@ -30,11 +24,9 @@ export async function installCommands(commands: CommandData[]) {
     text: "Registering commands",
   }).start();
 
-  const scopes = new Map<
-    string,
-    | RESTPutAPIApplicationCommandsJSONBody
-    | RESTPutAPIApplicationGuildCommandsJSONBody
-  >([["global", []]]);
+  const scopes = new Map<string, RESTPutAPIApplicationCommandsJSONBody | RESTPutAPIApplicationGuildCommandsJSONBody>([
+    ["global", []],
+  ]);
 
   for (const command of commands) {
     if (command.exports === null) return;
@@ -62,17 +54,11 @@ export async function installCommands(commands: CommandData[]) {
     }
 
     if (config.contexts) {
-      config.contexts = [
-        ...new Set(
-          config.contexts.map((c) => InteractionContextType[c] as never),
-        ),
-      ];
+      config.contexts = [...new Set(config.contexts.map((c) => InteractionContextType[c] as never))];
     }
 
     if (config.integration_type) {
-      config.integration_types = [
-        ApplicationIntegrationType[`${config.integration_type}Install`],
-      ];
+      config.integration_types = [ApplicationIntegrationType[`${config.integration_type}Install`]];
     }
 
     for (const guild of config.guilds ?? ["global"]) {
@@ -103,10 +89,7 @@ export async function installCommands(commands: CommandData[]) {
  * @returns A function that runs a command
  */
 export const setupCommands: ReturnType<
-  typeof createHandlerSetup<
-    CommandData,
-    CommandInteraction | CommandAutocompleteInteraction
-  >
+  typeof createHandlerSetup<CommandData, CommandInteraction | CommandAutocompleteInteraction>
 > = createHandlerSetup({
   itemMessages: (interaction) => ({
     noItem: `No command handler for "${interaction.data.name}"`,

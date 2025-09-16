@@ -15,8 +15,8 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../utils/call-discord.ts";
 import type { RawFile } from "../types/file.ts";
+import { callDiscord } from "../utils/call-discord.ts";
 
 /**
  * Lists the messages in a channel.
@@ -40,10 +40,7 @@ export async function listMessages(
  * @param channel The channel to get the message from
  * @param message The snowflake of the message to get
  */
-export async function getMessage(
-  channel: Snowflake,
-  message: Snowflake,
-): Promise<RESTGetAPIChannelMessageResult> {
+export async function getMessage(channel: Snowflake, message: Snowflake): Promise<RESTGetAPIChannelMessageResult> {
   const res = await callDiscord(Routes.channelMessage(channel, message), {
     method: "GET",
   });
@@ -85,12 +82,9 @@ export async function crosspostMessage(
   channel: Snowflake,
   message: Snowflake,
 ): Promise<RESTPostAPIChannelMessageCrosspostResult> {
-  const res = await callDiscord(
-    Routes.channelMessageCrosspost(channel, message),
-    {
-      method: "POST",
-    },
-  );
+  const res = await callDiscord(Routes.channelMessageCrosspost(channel, message), {
+    method: "POST",
+  });
 
   return res.json();
 }
@@ -101,11 +95,7 @@ export async function crosspostMessage(
  * @param message The message to add the reaction to
  * @param emoji The emoji to react with
  */
-export async function createReaction(
-  channel: Snowflake,
-  message: Snowflake,
-  emoji: string,
-): Promise<void> {
+export async function createReaction(channel: Snowflake, message: Snowflake, emoji: string): Promise<void> {
   await callDiscord(Routes.channelMessageOwnReaction(channel, message, emoji), {
     method: "PUT",
   });
@@ -124,12 +114,9 @@ export async function deleteReaction(
   emoji: string,
   user?: Snowflake,
 ): Promise<void> {
-  await callDiscord(
-    Routes.channelMessageUserReaction(channel, message, emoji, user ?? "@me"),
-    {
-      method: "DELETE",
-    },
-  );
+  await callDiscord(Routes.channelMessageUserReaction(channel, message, emoji, user ?? "@me"), {
+    method: "DELETE",
+  });
 }
 
 /**
@@ -145,13 +132,10 @@ export async function listReactions(
   emoji: string,
   options?: RESTGetAPIChannelMessageReactionUsersQuery,
 ): Promise<RESTGetAPIChannelMessageReactionUsersResult> {
-  const res = await callDiscord(
-    Routes.channelMessageReaction(channel, message, emoji),
-    {
-      method: "GET",
-      params: options,
-    },
-  );
+  const res = await callDiscord(Routes.channelMessageReaction(channel, message, emoji), {
+    method: "GET",
+    params: options,
+  });
 
   return res.json();
 }
@@ -161,10 +145,7 @@ export async function listReactions(
  * @param channel The channel to delete the reactions in
  * @param message The message to delete the reactions from
  */
-export async function deleteAllReactions(
-  channel: Snowflake,
-  message: Snowflake,
-): Promise<void> {
+export async function deleteAllReactions(channel: Snowflake, message: Snowflake): Promise<void> {
   await callDiscord(Routes.channelMessageAllReactions(channel, message), {
     method: "DELETE",
   });
@@ -176,17 +157,10 @@ export async function deleteAllReactions(
  * @param message The message to delete the reactions from
  * @param emoji The emoji to delete
  */
-export async function deleteAllEmojiReactions(
-  channel: Snowflake,
-  message: Snowflake,
-  emoji: string,
-): Promise<void> {
-  await callDiscord(
-    Routes.channelMessageReaction(channel, message, encodeURIComponent(emoji)),
-    {
-      method: "DELETE",
-    },
-  );
+export async function deleteAllEmojiReactions(channel: Snowflake, message: Snowflake, emoji: string): Promise<void> {
+  await callDiscord(Routes.channelMessageReaction(channel, message, encodeURIComponent(emoji)), {
+    method: "DELETE",
+  });
 }
 
 /**
@@ -221,10 +195,7 @@ export async function editMessage(
  * @param channel The channel to delete the message from
  * @param message The snowflake of the message to delete
  */
-export async function deleteMessage(
-  channel: Snowflake,
-  message: Snowflake,
-): Promise<void> {
+export async function deleteMessage(channel: Snowflake, message: Snowflake): Promise<void> {
   await callDiscord(Routes.channelMessage(channel, message), {
     method: "DELETE",
   });
@@ -235,10 +206,7 @@ export async function deleteMessage(
  * @param channel The channel to delete messages from
  * @param messages An array of snowflakes
  */
-export async function bulkDelete(
-  channel: Snowflake,
-  messages: Snowflake[],
-): Promise<void> {
+export async function bulkDelete(channel: Snowflake, messages: Snowflake[]): Promise<void> {
   await callDiscord(Routes.channelBulkDelete(channel), {
     method: "DELETE",
     body: { messages },
@@ -250,9 +218,7 @@ export async function bulkDelete(
  * @param channel The channel to find the pins for
  * @deprecated Use `listChannelPins`
  */
-export async function listPins(
-  channel: Snowflake,
-): Promise<RESTGetAPIChannelPinsResult> {
+export async function listPins(channel: Snowflake): Promise<RESTGetAPIChannelPinsResult> {
   const res = await callDiscord(Routes.channelPins(channel), {
     method: "GET",
   });
@@ -282,10 +248,7 @@ export async function listChannelPins(
  * @param channel The channel to pin the message in
  * @param message The message to pin
  */
-export async function createPin(
-  channel: Snowflake,
-  message: Snowflake,
-): Promise<void> {
+export async function createPin(channel: Snowflake, message: Snowflake): Promise<void> {
   await callDiscord(Routes.channelMessagesPin(channel, message), {
     method: "PUT",
   });
@@ -296,10 +259,7 @@ export async function createPin(
  * @param channel The channel to unpin the message in
  * @param message The message to unpin
  */
-export async function deletePin(
-  channel: Snowflake,
-  message: Snowflake,
-): Promise<void> {
+export async function deletePin(channel: Snowflake, message: Snowflake): Promise<void> {
   await callDiscord(Routes.channelMessagesPin(channel, message), {
     method: "DELETE",
   });

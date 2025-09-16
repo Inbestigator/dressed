@@ -1,14 +1,11 @@
 import {
-  createMessage as dressedCreateMessage,
-  editMessage as dressedEditMessage,
-} from "dressed";
-import type { RawFile } from "dressed/server";
-import {
   MessageFlags,
   type RESTPatchAPIChannelMessageJSONBody,
   type RESTPostAPIChannelMessageJSONBody,
   type Snowflake,
 } from "discord-api-types/v10";
+import { createMessage as dressedCreateMessage, editMessage as dressedEditMessage } from "dressed";
+import type { RawFile } from "dressed/server";
 import type { ReactNode } from "react";
 import { render } from "./index.ts";
 

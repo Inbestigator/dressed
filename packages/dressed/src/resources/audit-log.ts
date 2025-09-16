@@ -1,8 +1,4 @@
-import type {
-  RESTGetAPIAuditLogQuery,
-  RESTGetAPIAuditLogResult,
-  Snowflake,
-} from "discord-api-types/v10";
+import type { RESTGetAPIAuditLogQuery, RESTGetAPIAuditLogResult, Snowflake } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../utils/call-discord.ts";
 

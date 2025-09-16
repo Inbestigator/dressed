@@ -3,11 +3,7 @@ export type { Params } from "./types.ts";
 export interface Token {
   prefix: string;
   suffix?: string;
-  handler: (
-    str: string,
-    pos: number,
-    tokens: Token[],
-  ) => [string, number] | null;
+  handler: (str: string, pos: number, tokens: Token[]) => [string, number] | null;
 }
 
 /** Default tokens used in `parsePattern` */
@@ -50,19 +46,14 @@ export const defaultTokens: Token[] = [
   },
 ];
 
-const escapeRegex = (str: string): string =>
-  str.replace(/[/\\^$*+?.()|[\]{}]/g, "\\$&");
+const escapeRegex = (str: string): string => str.replace(/[/\\^$*+?.()|[\]{}]/g, "\\$&");
 
 const patternCache: Record<string, string> = {};
 
 /** Pattern is expected to already be sliced such that pattern[0] is the token prefix */
-function parseToken(
-  pattern: string,
-  { handler, prefix, suffix }: Token,
-  tokens: Token[],
-) {
+function parseToken(pattern: string, { handler, prefix, suffix }: Token, tokens: Token[]) {
   if (pattern[0] !== prefix) return null;
-  let end;
+  let end = null;
 
   if (suffix) {
     let depth = 1;
@@ -80,7 +71,7 @@ function parseToken(
     if (!end) return null;
   }
 
-  return handler(pattern.slice(1, end), end ?? 0, tokens);
+  return handler(pattern.slice(1, end ?? undefined), end ?? 0, tokens);
 }
 
 /** Generates the contents of the regex */
@@ -110,10 +101,7 @@ export function parsePattern(
     }
 
     if (!matched) {
-      if (
-        config?.preservedOperators === true ||
-        config?.preservedOperators?.includes(char)
-      ) {
+      if (config?.preservedOperators === true || config?.preservedOperators?.includes(char)) {
         result += char;
       } else {
         result += escapeRegex(char);
@@ -127,8 +115,7 @@ export function parsePattern(
   return result;
 }
 
-export const patternToRegex = (pattern: string): RegExp =>
-  new RegExp(`^${parsePattern(pattern)}$`);
+export const patternToRegex = (pattern: string): RegExp => new RegExp(`^${parsePattern(pattern)}$`);
 
 /** Scores dynamic-ness, higher is less dynamic */
 export function scorePattern(pattern: string): number {

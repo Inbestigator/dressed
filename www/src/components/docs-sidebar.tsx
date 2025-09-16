@@ -22,8 +22,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
-import Image from "next/image";
 
 const data = [
   {
@@ -116,9 +114,7 @@ const data = [
   },
 ];
 
-export function DocsSidebar({
-  ...props
-}: React.ComponentProps<typeof Sidebar>) {
+export function DocsSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -126,13 +122,7 @@ export function DocsSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/" className="font-semibold">
-                <Image
-                  src="/dressed_small.webp"
-                  width={32}
-                  height={32}
-                  alt="Dressed logo"
-                  className="rounded-lg"
-                />
+                <Image src="/dressed_small.webp" width={32} height={32} alt="Dressed logo" className="rounded-lg" />
                 Dressed
               </Link>
             </SidebarMenuButton>

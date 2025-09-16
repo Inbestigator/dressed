@@ -1,28 +1,18 @@
 import type {
   ApplicationCommandType,
   InteractionContextType,
+  PermissionFlagsBits,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
   RESTPostAPIContextMenuApplicationCommandsJSONBody,
   RESTPostAPIPrimaryEntryPointApplicationCommandJSONBody,
   Snowflake,
-  PermissionFlagsBits,
 } from "discord-api-types/v10";
-import type { Promisable } from "./utilities.ts";
-import type {
-  CommandHandler,
-  ComponentHandler,
-  EventHandler,
-} from "./handlers.ts";
+import type { CommandHandler, ComponentHandler, EventHandler } from "./handlers.ts";
+import type { AnyFn, Promisable } from "./utilities.ts";
 
-export type CommandMiddleware = (
-  ...p: Parameters<CommandHandler>
-) => Promisable<unknown[]>;
-export type ComponentMiddleware = (
-  ...p: Parameters<ComponentHandler>
-) => Promisable<unknown[]>;
-export type EventMiddleware = (
-  ...p: Parameters<EventHandler>
-) => Promisable<unknown[]>;
+export type CommandMiddleware = (...p: Parameters<CommandHandler>) => Promisable<unknown[]>;
+export type ComponentMiddleware = (...p: Parameters<ComponentHandler>) => Promisable<unknown[]>;
+export type EventMiddleware = (...p: Parameters<EventHandler>) => Promisable<unknown[]>;
 
 /**
  * The configuration for the server.
@@ -84,18 +74,11 @@ interface BaseCommandConfig {
   default_member_permissions?: (keyof typeof PermissionFlagsBits)[] | string;
 }
 
-type CommandTypeConfig<T, K extends PropertyKey, A> = Omit<
-  T,
-  keyof BaseCommandConfig | "name" | K
-> &
+type CommandTypeConfig<T, K extends PropertyKey, A> = Omit<T, keyof BaseCommandConfig | "name" | K> &
   A &
   BaseCommandConfig;
 
-type ChatInputConfig = CommandTypeConfig<
-  RESTPostAPIChatInputApplicationCommandsJSONBody,
-  0,
-  { type?: "ChatInput" }
->;
+type ChatInputConfig = CommandTypeConfig<RESTPostAPIChatInputApplicationCommandsJSONBody, 0, { type?: "ChatInput" }>;
 
 type ContextMenuConfig = CommandTypeConfig<
   RESTPostAPIContextMenuApplicationCommandsJSONBody,
@@ -116,13 +99,7 @@ type PrimaryEntryPointConfig = CommandTypeConfig<
 /**
  * Configuration for a specific command.
  */
-export type CommandConfig =
-  | ChatInputConfig
-  | ContextMenuConfig
-  | PrimaryEntryPointConfig;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyFn = (...args: any[]) => Promisable<unknown>;
+export type CommandConfig = ChatInputConfig | ContextMenuConfig | PrimaryEntryPointConfig;
 
 export interface BaseData<T, M extends object = object> {
   name: string;
@@ -137,19 +114,19 @@ export interface BaseData<T, M extends object = object> {
 /**
  * Command data object in the `commands` array outputted from `build()`
  */
-export type CommandData = BaseData<
-  { config?: CommandConfig },
-  { autocomplete?: AnyFn; config?: CommandConfig }
->;
+export type CommandData = BaseData<{ config?: CommandConfig }, { autocomplete?: AnyFn; config?: CommandConfig }>;
 
 /**
  * Component data object in the `components` array outputted from `build()`
  */
-export type ComponentData = BaseData<{
-  regex: string;
-  category: string;
-  score: number;
-}>;
+export type ComponentData = BaseData<
+  {
+    regex: string;
+    category: string;
+    score: number;
+  },
+  { pattern?: string | RegExp }
+>;
 
 /**
  * Event data object in the `events` array outputted from `build()`

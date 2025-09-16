@@ -1,8 +1,4 @@
-import type {
-  RESTDeleteAPIInviteResult,
-  RESTGetAPIInviteQuery,
-  RESTGetAPIInviteResult,
-} from "discord-api-types/v10";
+import type { RESTDeleteAPIInviteResult, RESTGetAPIInviteQuery, RESTGetAPIInviteResult } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../utils/call-discord.ts";
 
@@ -11,10 +7,7 @@ import { callDiscord } from "../utils/call-discord.ts";
  * @param invite The invite code to get
  * @param options Optional parameters for the request
  */
-export async function getInvite(
-  invite: string,
-  options?: RESTGetAPIInviteQuery,
-): Promise<RESTGetAPIInviteResult> {
+export async function getInvite(invite: string, options?: RESTGetAPIInviteQuery): Promise<RESTGetAPIInviteResult> {
   const res = await callDiscord(Routes.invite(invite), {
     method: "GET",
     params: options,
@@ -27,9 +20,7 @@ export async function getInvite(
  * Delete an invite.
  * @param invite The invite code to delete
  */
-export async function deleteInvite(
-  invite: string,
-): Promise<RESTDeleteAPIInviteResult> {
+export async function deleteInvite(invite: string): Promise<RESTDeleteAPIInviteResult> {
   const res = await callDiscord(Routes.invite(invite), {
     method: "DELETE",
   });
