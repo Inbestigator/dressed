@@ -1,8 +1,4 @@
-import {
-  type APISeparatorComponent,
-  ComponentType,
-  SeparatorSpacingSize,
-} from "discord-api-types/v10";
+import { type APISeparatorComponent, ComponentType, SeparatorSpacingSize } from "discord-api-types/v10";
 
 /**
  * Creates a separator component

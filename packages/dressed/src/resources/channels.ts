@@ -23,16 +23,14 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
-import { callDiscord } from "../utils/call-discord.ts";
 import type { RawFile } from "../types/file.ts";
+import { callDiscord } from "../utils/call-discord.ts";
 
 /**
  * Get a channel by ID.
  * @param channel The channel to fetch
  */
-export async function getChannel(
-  channel: Snowflake,
-): Promise<RESTGetAPIChannelResult> {
+export async function getChannel(channel: Snowflake): Promise<RESTGetAPIChannelResult> {
   const res = await callDiscord(Routes.channel(channel), {
     method: "GET",
   });
@@ -61,9 +59,7 @@ export async function modifyChannel(
  * Delete a channel, or close a private message.
  * @param channel The channel to delete
  */
-export async function deleteChannel(
-  channel: Snowflake,
-): Promise<RESTDeleteAPIChannelResult> {
+export async function deleteChannel(channel: Snowflake): Promise<RESTDeleteAPIChannelResult> {
   const res = await callDiscord(Routes.channel(channel), {
     method: "DELETE",
   });
@@ -91,9 +87,7 @@ export async function modifyChannelPermissions(
  * Get a list of invites for a channel.
  * @param channel The channel to fetch from
  */
-export async function listChannelInvites(
-  channel: Snowflake,
-): Promise<RESTGetAPIChannelInvitesResult> {
+export async function listChannelInvites(channel: Snowflake): Promise<RESTGetAPIChannelInvitesResult> {
   const res = await callDiscord(Routes.channelInvites(channel), {
     method: "GET",
   });
@@ -122,10 +116,7 @@ export async function createChannelInvite(
  * @param channel The channel to affect
  * @param overwrite The permission overwrite to delete
  */
-export async function deleteChannelPermissions(
-  channel: Snowflake,
-  overwrite: Snowflake,
-): Promise<void> {
+export async function deleteChannelPermissions(channel: Snowflake, overwrite: Snowflake): Promise<void> {
   await callDiscord(Routes.channelPermission(channel, overwrite), {
     method: "DELETE",
   });
@@ -136,10 +127,7 @@ export async function deleteChannelPermissions(
  * @param channel The announcement channel to follow
  * @param target The target channel to send messages to
  */
-export async function followChannel(
-  channel: Snowflake,
-  target: Snowflake,
-): Promise<RESTPostAPIChannelFollowersResult> {
+export async function followChannel(channel: Snowflake, target: Snowflake): Promise<RESTPostAPIChannelFollowersResult> {
   const res = await callDiscord(Routes.channelFollowers(channel), {
     method: "POST",
     body: { webhook_channel_id: target },
@@ -179,10 +167,7 @@ export async function addGDMMember(
  * @param channel The channel to remove the recipient from
  * @param user The user remove
  */
-export async function removeGDMMember(
-  channel: Snowflake,
-  user: Snowflake,
-): Promise<void> {
+export async function removeGDMMember(channel: Snowflake, user: Snowflake): Promise<void> {
   await callDiscord(Routes.channelRecipient(channel, user), {
     method: "DELETE",
   });
@@ -225,9 +210,7 @@ export async function createThread(
 export async function createForumThread(
   channel: Snowflake,
   data: Omit<RESTPostAPIGuildForumThreadsJSONBody, "message"> & {
-    message:
-      | string
-      | (RESTPostAPIChannelMessageJSONBody & { files?: RawFile[] });
+    message: string | (RESTPostAPIChannelMessageJSONBody & { files?: RawFile[] });
   },
 ): Promise<APIThreadChannel & { message: APIMessage }> {
   if (typeof data.message === "string") {
@@ -251,10 +234,7 @@ export async function createForumThread(
  * @param thread The thread to add the user to
  * @param user The user to add to the thread (defaults to self)
  */
-export async function addThreadMember(
-  thread: Snowflake,
-  user?: Snowflake,
-): Promise<void> {
+export async function addThreadMember(thread: Snowflake, user?: Snowflake): Promise<void> {
   await callDiscord(Routes.threadMembers(thread, user), {
     method: "PUT",
   });
@@ -265,10 +245,7 @@ export async function addThreadMember(
  * @param thread The thread to remove the user from
  * @param user The user to remove from the thread (defaults to self)
  */
-export async function removeThreadMember(
-  thread: Snowflake,
-  user?: Snowflake,
-): Promise<void> {
+export async function removeThreadMember(thread: Snowflake, user?: Snowflake): Promise<void> {
   await callDiscord(Routes.threadMembers(thread, user), {
     method: "DELETE",
   });

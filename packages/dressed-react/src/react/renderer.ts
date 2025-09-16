@@ -1,4 +1,3 @@
-import type { Node } from "./node.ts";
 import {
   type APIMediaGalleryItem,
   type APIMessageComponent,
@@ -7,14 +6,15 @@ import {
   ComponentType,
 } from "discord-api-types/v10";
 import { TextDisplay } from "dressed";
-import { createTextNode } from "./text-node.ts";
 import { parseActionRow } from "../components/action-row.ts";
 import { parseContainer } from "../components/container.ts";
 import { parseLabel } from "../components/label.ts";
 import { parseMediaGallery } from "../components/media-gallery.ts";
-import { parseSelectMenu } from "../components/select-menu.ts";
 import { parseSection } from "../components/section.ts";
+import { parseSelectMenu } from "../components/select-menu.ts";
 import { parseTextDisplay } from "../components/text-display.ts";
+import type { Node } from "./node.ts";
+import { createTextNode } from "./text-node.ts";
 
 export interface Renderer {
   nodes: Node<unknown>[];
@@ -22,10 +22,7 @@ export interface Renderer {
   components: (APIMessageComponent | APIModalComponent)[];
 }
 
-export type ComponentNode = Node<
-  APIMessageComponent | APIModalComponent,
-  APIMessageComponent | APIModalComponent
->;
+export type ComponentNode = Node<APIMessageComponent | APIModalComponent, APIMessageComponent | APIModalComponent>;
 
 function mergeTextNodes<T>(nodes: Node<T>[]) {
   const merged = [];
@@ -67,9 +64,7 @@ export function createRenderer(): Renderer {
   };
 }
 
-export async function renderNode(
-  node: ComponentNode,
-): Promise<APIMessageComponent | APIModalComponent> {
+export async function renderNode(node: ComponentNode): Promise<APIMessageComponent | APIModalComponent> {
   switch (node.props.type) {
     case ComponentType.ActionRow: {
       return parseActionRow(node.props, node.children);
@@ -86,10 +81,7 @@ export async function renderNode(
     case ComponentType.RoleSelect:
     case ComponentType.MentionableSelect:
     case ComponentType.ChannelSelect: {
-      return parseSelectMenu(
-        node.props,
-        node.children as Node<APISelectMenuOption>[],
-      );
+      return parseSelectMenu(node.props, node.children as Node<APISelectMenuOption>[]);
     }
     case ComponentType.Section: {
       return parseSection(node.props, node.children);
@@ -98,10 +90,7 @@ export async function renderNode(
       return parseTextDisplay(node.props, node.text());
     }
     case ComponentType.MediaGallery: {
-      return parseMediaGallery(
-        node.props,
-        node.children as Node<APIMediaGalleryItem>[],
-      );
+      return parseMediaGallery(node.props, node.children as Node<APIMediaGalleryItem>[]);
     }
     case ComponentType.Container: {
       return parseContainer(node.props, node.children);

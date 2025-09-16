@@ -1,7 +1,4 @@
-import type {
-  APITextInputComponent,
-  TextInputStyle,
-} from "discord-api-types/v10";
+import type { APITextInputComponent, TextInputStyle } from "discord-api-types/v10";
 import { TextInput as DressedComponent } from "dressed";
 import { createElement } from "react";
 

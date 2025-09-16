@@ -1,5 +1,5 @@
-import nacl from "tweetnacl";
 import { Buffer } from "node:buffer";
+import nacl from "tweetnacl";
 import { botEnv } from "../utils/env.ts";
 
 /**
@@ -10,12 +10,7 @@ export function verifySignature(
   signature?: string | string[] | null,
   timestamp?: string | string[] | null,
 ): boolean {
-  if (
-    !signature ||
-    !timestamp ||
-    typeof signature !== "string" ||
-    typeof timestamp !== "string"
-  ) {
+  if (!signature || !timestamp || typeof signature !== "string" || typeof timestamp !== "string") {
     return false;
   }
 

@@ -1,11 +1,11 @@
 import {
-  ApplicationCommandOptionType,
   type APIApplicationCommandInteractionDataOption,
   type APIAttachment,
   type APIInteractionDataResolved,
   type APIInteractionDataResolvedChannel,
   type APIRole,
   type APIUser,
+  ApplicationCommandOptionType,
 } from "discord-api-types/v10";
 import type { CommandInteraction } from "../../types/interaction.ts";
 import type { Requirable } from "../../types/utilities.ts";
@@ -27,9 +27,7 @@ export interface OptionValueGetters<N> {
      * Get a subcommand from the group
      * @param name The name of the subcommand
      */
-    getSubcommand: <N extends string>(
-      name: N,
-    ) => ReturnType<OptionValueGetters<N>["subcommand"]> | undefined;
+    getSubcommand: <N extends string>(name: N) => ReturnType<OptionValueGetters<N>["subcommand"]> | undefined;
     name: N;
   };
   /** Return the option's value as a string - Option type must be `String` */
@@ -52,8 +50,20 @@ export interface OptionValueGetters<N> {
   attachment: () => APIAttachment;
 }
 
-// prettier-ignore
-const blurbs = [null, "a subcommand", "a subcommand group", "a string", "an integer", "a boolean", "a user", "a channel", "a role", "a mentionable", "a number", "an attachment"];
+const blurbs = [
+  null,
+  "a subcommand",
+  "a subcommand group",
+  "a string",
+  "an integer",
+  "a boolean",
+  "a user",
+  "a channel",
+  "a role",
+  "a mentionable",
+  "a number",
+  "an attachment",
+];
 
 export function getOption<N extends string, R extends boolean>(
   name: N,
@@ -68,15 +78,9 @@ export function getOption<N extends string, R extends boolean>(
   }
 
   const returnOption =
-    (
-      type: Exclude<ApplicationCommandOptionType, 1 | 2>,
-      resolvedKey?: keyof APIInteractionDataResolved,
-    ) =>
-    () => {
+    (type: Exclude<ApplicationCommandOptionType, 1 | 2>, resolvedKey?: keyof APIInteractionDataResolved) => () => {
       if (option.type !== type) {
-        throw new Error(
-          `The option ${name} is ${blurbs[option.type]}, not ${blurbs[type]}`,
-        );
+        throw new Error(`The option ${name} is ${blurbs[option.type]}, not ${blurbs[type]}`);
       }
       if (resolvedKey) {
         if (!resolved?.[resolvedKey]) {
@@ -90,26 +94,20 @@ export function getOption<N extends string, R extends boolean>(
   return {
     subcommand() {
       if (option.type !== ApplicationCommandOptionType.Subcommand) {
-        throw new Error(
-          `The option ${name} is ${blurbs[option.type]}, not a subcommand`,
-        );
+        throw new Error(`The option ${name} is ${blurbs[option.type]}, not a subcommand`);
       }
       return {
         name,
-        getOption: (n, r) =>
-          getOption(n, r ?? false, option.options ?? [], resolved),
+        getOption: (n, r) => getOption(n, r ?? false, option.options ?? [], resolved),
       };
     },
     subcommandGroup() {
       if (option.type !== ApplicationCommandOptionType.SubcommandGroup) {
-        throw new Error(
-          `The option ${option.name} is ${blurbs[option.type]}, not a subcommand group`,
-        );
+        throw new Error(`The option ${option.name} is ${blurbs[option.type]}, not a subcommand group`);
       }
       return {
         name,
-        getSubcommand: (n) =>
-          getOption(n, false, option.options, resolved)?.subcommand(),
+        getSubcommand: (n) => getOption(n, false, option.options, resolved)?.subcommand(),
       };
     },
     string: returnOption(ApplicationCommandOptionType.String),
@@ -120,9 +118,7 @@ export function getOption<N extends string, R extends boolean>(
     role: returnOption(ApplicationCommandOptionType.Role, "roles"),
     mentionable() {
       if (option.type !== ApplicationCommandOptionType.Mentionable) {
-        throw new Error(
-          `The option ${option.name} is ${blurbs[option.type]}, not a mentionable`,
-        );
+        throw new Error(`The option ${option.name} is ${blurbs[option.type]}, not a mentionable`);
       }
       if (!resolved?.users && !resolved?.roles) {
         throw new Error(`No mentionables found for option ${option.name}`);
@@ -130,9 +126,6 @@ export function getOption<N extends string, R extends boolean>(
       return resolved.users?.[option.value] ?? resolved.roles?.[option.value];
     },
     number: returnOption(ApplicationCommandOptionType.Number),
-    attachment: returnOption(
-      ApplicationCommandOptionType.Attachment,
-      "attachments",
-    ),
+    attachment: returnOption(ApplicationCommandOptionType.Attachment, "attachments"),
   } as ReturnType<typeof getOption<N, R>>;
 }

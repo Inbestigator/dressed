@@ -15,42 +15,27 @@ import type {
   RESTPostAPIInteractionCallbackQuery,
   RESTPostAPIInteractionCallbackWithResponseResult,
 } from "discord-api-types/v10";
-import type {
-  getOption,
-  OptionValueGetters,
-} from "../server/extenders/options.ts";
-import type { RawFile } from "./file.ts";
-import type { getField } from "../server/extenders/fields.ts";
 import type { createInteractionCallback } from "../resources/interactions.ts";
-import type {
-  editWebhookMessage,
-  executeWebhook,
-} from "../resources/webhooks.ts";
+import type { editWebhookMessage, executeWebhook } from "../resources/webhooks.ts";
+import type { getField } from "../server/extenders/fields.ts";
+import type { getOption, OptionValueGetters } from "../server/extenders/options.ts";
+import type { RawFile } from "./file.ts";
 
-export type InteractionCallbackResponse<
-  O extends RESTPostAPIInteractionCallbackQuery,
-> = Promise<
-  O["with_response"] extends true
-    ? RESTPostAPIInteractionCallbackWithResponseResult
-    : null
+export type InteractionCallbackResponse<O extends RESTPostAPIInteractionCallbackQuery> = Promise<
+  O["with_response"] extends true ? RESTPostAPIInteractionCallbackWithResponseResult : null
 >;
 
 /**
  * A command interaction, includes methods for responding to the interaction.
  */
-export type CommandInteraction<
-  T extends keyof typeof ApplicationCommandType = "ChatInput",
-> = (T extends "ChatInput"
+export type CommandInteraction<T extends keyof typeof ApplicationCommandType = "ChatInput"> = (T extends "ChatInput"
   ? APIChatInputApplicationCommandInteraction & {
       /**
        * Get an option from the interaction
        * @param name The name of the option
        * @param required Whether the option is required
        */
-      getOption: <N extends string, R extends boolean>(
-        name: N,
-        required?: R,
-      ) => ReturnType<typeof getOption<N, R>>;
+      getOption: <N extends string, R extends boolean>(name: N, required?: R) => ReturnType<typeof getOption<N, R>>;
     }
   : T extends "Message"
     ? APIMessageApplicationCommandInteraction
@@ -62,29 +47,21 @@ export type CommandInteraction<
 /**
  * A command autocomplete interaction, includes methods for responding to the interaction.
  */
-export type CommandAutocompleteInteraction =
-  APIApplicationCommandAutocompleteInteraction & {
-    /**
-     * Get an option from the interaction
-     * @param name The name of the option
-     */
-    getOption: <N extends string>(name: N) => OptionValueGetters<N> | undefined;
-  } & Omit<
-      BaseInteractionMethods,
-      | "deferReply"
-      | "deferUpdate"
-      | "editReply"
-      | "followUp"
-      | "reply"
-      | "showModal"
-      | "update"
-    >;
+export type CommandAutocompleteInteraction = APIApplicationCommandAutocompleteInteraction & {
+  /**
+   * Get an option from the interaction
+   * @param name The name of the option
+   */
+  getOption: <N extends string>(name: N) => OptionValueGetters<N> | undefined;
+} & Omit<
+    BaseInteractionMethods,
+    "deferReply" | "deferUpdate" | "editReply" | "followUp" | "reply" | "showModal" | "update"
+  >;
 
 /**
  * A message component interaction, includes methods for responding to the interaction.
  */
-export type MessageComponentInteraction = APIMessageComponentInteraction &
-  Omit<BaseInteractionMethods, "sendChoices">;
+export type MessageComponentInteraction = APIMessageComponentInteraction & Omit<BaseInteractionMethods, "sendChoices">;
 
 /**
  * A modal submit interaction, includes methods for responding to the interaction.
@@ -98,15 +75,12 @@ export type ModalSubmitInteraction = APIModalSubmitInteraction &
      *
      * **The returned string is deprecated, use `.textInput()` to fetch the value of a text input in the future**
      */
-    getField: <R extends boolean>(
-      custom_id: string,
-      required?: R,
-    ) => ReturnType<typeof getField<R>>;
+    getField: <R extends boolean>(custom_id: string, required?: R) => ReturnType<typeof getField<R>>;
   };
 
-type InteractionResponseCallbackData<
-  T extends keyof typeof InteractionResponseType,
-> = Parameters<typeof createInteractionCallback<T, object>>[3];
+type InteractionResponseCallbackData<T extends keyof typeof InteractionResponseType> = Parameters<
+  typeof createInteractionCallback<T, object>
+>[3];
 
 export interface BaseInteractionMethods {
   /**
@@ -150,17 +124,13 @@ export interface BaseInteractionMethods {
   /**
    * For components, ACK an interaction and edit the original message later; the user does not see a loading state
    */
-  deferUpdate: <Q extends RESTPostAPIInteractionCallbackQuery>(
-    options?: Q,
-  ) => InteractionCallbackResponse<Q>;
+  deferUpdate: <Q extends RESTPostAPIInteractionCallbackQuery>(options?: Q) => InteractionCallbackResponse<Q>;
 
   /**
    * Edit the initial interaction response
    * @param data The new data for the response message
    */
-  editReply: (
-    data: Parameters<typeof editWebhookMessage>[3],
-  ) => Promise<APIMessage>;
+  editReply: (data: Parameters<typeof editWebhookMessage>[3]) => Promise<APIMessage>;
   /**
    * Create another response to the interaction
    * @param data The data for the message
@@ -196,13 +166,12 @@ export interface BaseInteractionMethods {
   user: APIUser;
 }
 
-export type Interaction<T extends APIInteraction> =
-  T extends APIApplicationCommandInteraction
-    ? CommandInteraction
-    : T extends APIApplicationCommandAutocompleteInteraction
-      ? CommandAutocompleteInteraction
-      : T extends APIMessageComponentInteraction
-        ? MessageComponentInteraction
-        : T extends APIModalSubmitInteraction
-          ? ModalSubmitInteraction
-          : null;
+export type Interaction<T extends APIInteraction> = T extends APIApplicationCommandInteraction
+  ? CommandInteraction
+  : T extends APIApplicationCommandAutocompleteInteraction
+    ? CommandAutocompleteInteraction
+    : T extends APIMessageComponentInteraction
+      ? MessageComponentInteraction
+      : T extends APIModalSubmitInteraction
+        ? ModalSubmitInteraction
+        : null;

@@ -11,9 +11,7 @@ export const botEnv: BotEnvs = new Proxy({} as BotEnvs, {
   get(_, key: string) {
     const value = env[key];
     if (!value) {
-      throw new Error(
-        `Missing ${key}: please set it in your environment variables.`,
-      );
+      throw new Error(`Missing ${key}: please set it in your environment variables.`);
     }
     return value;
   },

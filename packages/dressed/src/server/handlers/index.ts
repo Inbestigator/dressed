@@ -1,5 +1,5 @@
-import ora from "ora";
 import { stdout } from "node:process";
+import ora from "ora";
 import type { BaseData, ServerConfig } from "../../types/config.ts";
 import type { Promisable } from "../../types/utilities.ts";
 
@@ -9,20 +9,12 @@ interface SetupItemMessages<T, P> {
   pending: (data: T, props: P) => string;
 }
 
-export function createHandlerSetup<
-  T extends BaseData<unknown>,
-  D,
-  P extends unknown[] = [D],
->(options: {
+export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unknown[] = [D]>(options: {
   itemMessages: ((d: D) => SetupItemMessages<T, P>) | SetupItemMessages<T, P>;
   findItem: (d: D, i: T[]) => [T, P] | undefined;
 }): (
   i: T[],
-) => (
-  d: D,
-  m?: (...props: P) => Promisable<unknown[]>,
-  k?: keyof NonNullable<T["exports"]>,
-) => Promise<void> {
+) => (d: D, m?: (...props: P) => Promisable<unknown[]>, k?: keyof NonNullable<T["exports"]>) => Promise<void> {
   return (items) =>
     async (data, middleware, key = "default") => {
       const [item, props] = options.findItem(data, items) ?? [];

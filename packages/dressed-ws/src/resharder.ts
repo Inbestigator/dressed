@@ -6,11 +6,7 @@ import type { ConnectionActions } from "./gateway.ts";
  * **This is used by default within `createConnection`**
  * @returns The reshard interval (for you to clear etc.)
  */
-export function startAutoResharder(
-  connection: ConnectionActions,
-  interval = 480,
-  capacity = 80,
-) {
+export function startAutoResharder(connection: ConnectionActions, interval = 480, capacity = 80) {
   if (interval < 0 || capacity === 0) return;
   async function calculateShards() {
     if (connection.shards.isResharding) return;

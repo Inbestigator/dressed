@@ -1,5 +1,5 @@
-import { test, expect } from "bun:test";
-import { patternToRegex, scorePattern, matchOptimal } from "@dressed/matcher";
+import { expect, test } from "bun:test";
+import { matchOptimal, patternToRegex, scorePattern } from "@dressed/matcher";
 
 test("patternToRegex: matches static", () => {
   const regex = patternToRegex("static");

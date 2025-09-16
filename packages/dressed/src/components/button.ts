@@ -6,8 +6,7 @@ import {
   ComponentType,
 } from "discord-api-types/v10";
 
-interface ButtonWithCustomId
-  extends Omit<APIButtonComponentWithCustomId, "type" | "style"> {
+interface ButtonWithCustomId extends Omit<APIButtonComponentWithCustomId, "type" | "style"> {
   style?: Exclude<keyof typeof ButtonStyle, "Link" | "Premium">;
 }
 
@@ -16,15 +15,9 @@ interface ButtonWithCustomId
  *
  * Button object
  */
-export function Button(
-  config: ButtonWithCustomId,
-): APIButtonComponentWithCustomId;
-export function Button(
-  config: Omit<APIButtonComponentWithSKUId, "type" | "style">,
-): APIButtonComponentWithSKUId;
-export function Button(
-  config: Omit<APIButtonComponentWithURL, "type" | "style">,
-): APIButtonComponentWithURL;
+export function Button(config: ButtonWithCustomId): APIButtonComponentWithCustomId;
+export function Button(config: Omit<APIButtonComponentWithSKUId, "type" | "style">): APIButtonComponentWithSKUId;
+export function Button(config: Omit<APIButtonComponentWithURL, "type" | "style">): APIButtonComponentWithURL;
 
 export function Button(
   config:

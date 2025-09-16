@@ -16,7 +16,7 @@ export default function logTree(total: number, title1: string, title2 = "") {
       col2[0] = `\x1b[4m${col2[0]}\x1b[24m`;
 
       const lines = col1.map((name, i) => {
-        let prefix;
+        let prefix = "";
 
         if (total === 1 && i === 1) {
           prefix = "-";
@@ -42,7 +42,7 @@ export default function logTree(total: number, title1: string, title2 = "") {
         return `${prefix} ${primaryFormatted}  ${secondaryFormatted}`;
       });
 
-      console.log("\n" + lines.join("\n") + "\n");
+      console.log(`\n${lines.join("\n")}\n`);
     },
   };
 }

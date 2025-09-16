@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { createRenderer } from "../react/renderer.ts";
 import { reconciler } from "../react/reconciler.ts";
+import { createRenderer } from "../react/renderer.ts";
 
 export async function render(children: ReactNode) {
   const container = createRenderer();
@@ -16,9 +16,7 @@ export async function render(children: ReactNode) {
   );
 
   if (root !== null) {
-    await new Promise<void>((r) =>
-      reconciler.updateContainer(children, root, null, r),
-    );
+    await new Promise<void>((r) => reconciler.updateContainer(children, root, null, r));
     await container.render();
   }
   return container;

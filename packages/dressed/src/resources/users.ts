@@ -31,9 +31,7 @@ export async function getUser(user?: Snowflake): Promise<RESTGetAPIUserResult> {
  * Modify the current user's account settings.
  * @param data The new user data
  */
-export async function modifyUser(
-  data: RESTPatchAPICurrentUserJSONBody,
-): Promise<RESTPatchAPICurrentUserResult> {
+export async function modifyUser(data: RESTPatchAPICurrentUserJSONBody): Promise<RESTPatchAPICurrentUserResult> {
   const res = await callDiscord(Routes.user(), {
     method: "PATCH",
     body: data,
@@ -71,9 +69,7 @@ export async function leaveGuild(guild: Snowflake): Promise<void> {
  * Create a new DM channel with a user.
  * @param user The recipient to open a DM channel with
  */
-export async function createDM(
-  user: Snowflake,
-): Promise<RESTPostAPICurrentUserCreateDMChannelResult> {
+export async function createDM(user: Snowflake): Promise<RESTPostAPICurrentUserCreateDMChannelResult> {
   const res = await callDiscord(Routes.userChannels(), {
     method: "POST",
     body: {
@@ -99,12 +95,9 @@ export async function listConnections(): Promise<RESTGetAPICurrentUserConnection
  * Returns the application role connection for the user.
  */
 export async function getRoleConnection(): Promise<RESTGetAPICurrentUserApplicationRoleConnectionResult> {
-  const res = await callDiscord(
-    Routes.userApplicationRoleConnection(botEnv.DISCORD_APP_ID),
-    {
-      method: "GET",
-    },
-  );
+  const res = await callDiscord(Routes.userApplicationRoleConnection(botEnv.DISCORD_APP_ID), {
+    method: "GET",
+  });
 
   return res.json();
 }
@@ -116,13 +109,10 @@ export async function getRoleConnection(): Promise<RESTGetAPICurrentUserApplicat
 export async function modifyRoleConnection(
   data: RESTPutAPICurrentUserApplicationRoleConnectionJSONBody,
 ): Promise<RESTPutAPICurrentUserApplicationRoleConnectionResult> {
-  const res = await callDiscord(
-    Routes.userApplicationRoleConnection(botEnv.DISCORD_APP_ID),
-    {
-      method: "PUT",
-      body: data,
-    },
-  );
+  const res = await callDiscord(Routes.userApplicationRoleConnection(botEnv.DISCORD_APP_ID), {
+    method: "PUT",
+    body: data,
+  });
 
   return res.json();
 }

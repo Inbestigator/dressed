@@ -1,9 +1,6 @@
-import ReactReconciler from "react-reconciler";
-import {
-  DefaultEventPriority,
-  NoEventPriority,
-} from "react-reconciler/constants.js";
 import type { HostConfig, ReactContext } from "react-reconciler";
+import ReactReconciler from "react-reconciler";
+import { DefaultEventPriority, NoEventPriority } from "react-reconciler/constants.js";
 import { createNode, isNode, type Node } from "./node.ts";
 import type { Renderer } from "./renderer.ts";
 import { createTextNode, type TextNode } from "./text-node.ts";
@@ -40,7 +37,7 @@ const config: HostConfig<
       throw new Error(`Unknown node type: ${type}`);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // biome-ignore lint/correctness/noUnusedVariables: Children are being filtered out
     const { children, ...rest } = props;
 
     const node = createNode(rest);
@@ -57,10 +54,11 @@ const config: HostConfig<
   afterActiveInstanceBlur() {},
   getInstanceFromNode: () => null,
   getInstanceFromScope: () => null,
-  clearContainer: (renderer) => (renderer.nodes.length = 0),
+  clearContainer: (renderer) => {
+    renderer.nodes.length = 0;
+  },
   appendChildToContainer: (renderer, child) => renderer.nodes.push(child),
-  removeChildFromContainer: (renderer, child) =>
-    renderer.nodes.filter((n) => n !== child),
+  removeChildFromContainer: (renderer, child) => renderer.nodes.filter((n) => n !== child),
   insertInContainerBefore: (renderer, child, before) => {
     let index = renderer.nodes.indexOf(before);
     if (index === -1) {
@@ -93,9 +91,7 @@ const config: HostConfig<
   },
   getCurrentUpdatePriority: () => currentUpdatePriority,
   resolveUpdatePriority: () =>
-    currentUpdatePriority !== NoEventPriority
-      ? currentUpdatePriority
-      : DefaultEventPriority,
+    currentUpdatePriority !== NoEventPriority ? currentUpdatePriority : DefaultEventPriority,
   maySuspendCommit: () => false,
   NotPendingTransition: null,
   HostTransitionContext: {

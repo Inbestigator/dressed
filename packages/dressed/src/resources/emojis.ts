@@ -17,9 +17,7 @@ import { botEnv } from "../utils/env.ts";
  * Returns a list of emoji objects for the given guild.
  * @param guild The guild to get the emojis from
  */
-export async function listEmojis(
-  guild: Snowflake,
-): Promise<RESTGetAPIGuildEmojisResult> {
+export async function listEmojis(guild: Snowflake): Promise<RESTGetAPIGuildEmojisResult> {
   const res = await callDiscord(Routes.guildEmojis(guild), {
     method: "GET",
   });
@@ -32,10 +30,7 @@ export async function listEmojis(
  * @param guild The guild to get the emoji from
  * @param emoji The emoji to get
  */
-export async function getEmoji(
-  guild: Snowflake,
-  emoji: Snowflake,
-): Promise<RESTGetAPIGuildEmojiResult> {
+export async function getEmoji(guild: Snowflake, emoji: Snowflake): Promise<RESTGetAPIGuildEmojiResult> {
   const res = await callDiscord(Routes.guildEmoji(guild, emoji), {
     method: "GET",
   });
@@ -84,10 +79,7 @@ export async function modifyEmoji(
  * @param guild The guild to delete the emoji from
  * @param emoji The emoji to delete
  */
-export async function deleteEmoji(
-  guild: Snowflake,
-  emoji: Snowflake,
-): Promise<void> {
+export async function deleteEmoji(guild: Snowflake, emoji: Snowflake): Promise<void> {
   await callDiscord(Routes.guildEmoji(guild, emoji), {
     method: "DELETE",
   });
@@ -96,15 +88,10 @@ export async function deleteEmoji(
 /**
  * Returns an object containing a list of emoji objects for the given application.
  */
-export async function listApplicationEmojis(): Promise<
-  RESTGetAPIApplicationEmojisResult["items"]
-> {
-  const res = await callDiscord(
-    Routes.applicationEmojis(botEnv.DISCORD_APP_ID),
-    {
-      method: "GET",
-    },
-  );
+export async function listApplicationEmojis(): Promise<RESTGetAPIApplicationEmojisResult["items"]> {
+  const res = await callDiscord(Routes.applicationEmojis(botEnv.DISCORD_APP_ID), {
+    method: "GET",
+  });
 
   return (await res.json()).items;
 }
@@ -113,15 +100,10 @@ export async function listApplicationEmojis(): Promise<
  * Returns an emoji object for the given application and emoji IDs.
  * @param emoji The emoji to get
  */
-export async function getApplicationEmoji(
-  emoji: Snowflake,
-): Promise<RESTGetAPIApplicationEmojiResult> {
-  const res = await callDiscord(
-    Routes.applicationEmoji(botEnv.DISCORD_APP_ID, emoji),
-    {
-      method: "GET",
-    },
-  );
+export async function getApplicationEmoji(emoji: Snowflake): Promise<RESTGetAPIApplicationEmojiResult> {
+  const res = await callDiscord(Routes.applicationEmoji(botEnv.DISCORD_APP_ID, emoji), {
+    method: "GET",
+  });
 
   return res.json();
 }
@@ -133,13 +115,10 @@ export async function getApplicationEmoji(
 export async function createApplicationEmoji(
   data: RESTPostAPIGuildEmojiJSONBody,
 ): Promise<RESTPostAPIGuildEmojiResult> {
-  const res = await callDiscord(
-    Routes.applicationEmojis(botEnv.DISCORD_APP_ID),
-    {
-      method: "POST",
-      body: data,
-    },
-  );
+  const res = await callDiscord(Routes.applicationEmojis(botEnv.DISCORD_APP_ID), {
+    method: "POST",
+    body: data,
+  });
 
   return res.json();
 }
@@ -153,13 +132,10 @@ export async function modifyApplicationEmoji(
   emoji: Snowflake,
   data: RESTPatchAPIGuildEmojiJSONBody,
 ): Promise<RESTPatchAPIGuildEmojiResult> {
-  const res = await callDiscord(
-    Routes.applicationEmoji(botEnv.DISCORD_APP_ID, emoji),
-    {
-      method: "PATCH",
-      body: data,
-    },
-  );
+  const res = await callDiscord(Routes.applicationEmoji(botEnv.DISCORD_APP_ID, emoji), {
+    method: "PATCH",
+    body: data,
+  });
 
   return res.json();
 }

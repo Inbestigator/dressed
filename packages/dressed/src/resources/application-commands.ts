@@ -1,26 +1,26 @@
 import type {
-  RESTGetAPIApplicationCommandsResult,
-  RESTGetAPIApplicationCommandsQuery,
-  RESTPostAPIApplicationCommandsJSONBody,
-  RESTPostAPIApplicationCommandsResult,
-  Snowflake,
+  RESTGetAPIApplicationCommandPermissionsResult,
   RESTGetAPIApplicationCommandResult,
+  RESTGetAPIApplicationCommandsQuery,
+  RESTGetAPIApplicationCommandsResult,
+  RESTGetAPIApplicationGuildCommandResult,
+  RESTGetAPIApplicationGuildCommandsQuery,
+  RESTGetAPIApplicationGuildCommandsResult,
+  RESTGetAPIGuildApplicationCommandsPermissionsResult,
   RESTPatchAPIApplicationCommandJSONBody,
   RESTPatchAPIApplicationCommandResult,
-  RESTPutAPIApplicationCommandsJSONBody,
-  RESTPutAPIApplicationCommandsResult,
-  RESTGetAPIApplicationGuildCommandsResult,
-  RESTGetAPIApplicationGuildCommandsQuery,
+  RESTPatchAPIApplicationGuildCommandJSONBody,
+  RESTPatchAPIApplicationGuildCommandResult,
+  RESTPostAPIApplicationCommandsJSONBody,
+  RESTPostAPIApplicationCommandsResult,
   RESTPostAPIApplicationGuildCommandsJSONBody,
   RESTPostAPIApplicationGuildCommandsResult,
-  RESTGetAPIApplicationGuildCommandResult,
-  RESTPatchAPIApplicationGuildCommandResult,
-  RESTPatchAPIApplicationGuildCommandJSONBody,
-  RESTPutAPIApplicationGuildCommandsResult,
-  RESTPutAPIApplicationGuildCommandsJSONBody,
-  RESTGetAPIGuildApplicationCommandsPermissionsResult,
-  RESTGetAPIApplicationCommandPermissionsResult,
   RESTPutAPIApplicationCommandPermissionsJSONBody,
+  RESTPutAPIApplicationCommandsJSONBody,
+  RESTPutAPIApplicationCommandsResult,
+  RESTPutAPIApplicationGuildCommandsJSONBody,
+  RESTPutAPIApplicationGuildCommandsResult,
+  Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
 import { callDiscord } from "../utils/call-discord.ts";
@@ -33,13 +33,10 @@ import { botEnv } from "../utils/env.ts";
 export async function listGlobalCommands(
   options?: RESTGetAPIApplicationCommandsQuery,
 ): Promise<RESTGetAPIApplicationCommandsResult> {
-  const res = await callDiscord(
-    Routes.applicationCommands(botEnv.DISCORD_APP_ID),
-    {
-      method: "GET",
-      params: options,
-    },
-  );
+  const res = await callDiscord(Routes.applicationCommands(botEnv.DISCORD_APP_ID), {
+    method: "GET",
+    params: options,
+  });
 
   return res.json();
 }
@@ -51,13 +48,10 @@ export async function listGlobalCommands(
 export async function createGlobalCommand(
   data: RESTPostAPIApplicationCommandsJSONBody,
 ): Promise<RESTPostAPIApplicationCommandsResult> {
-  const res = await callDiscord(
-    Routes.applicationCommands(botEnv.DISCORD_APP_ID),
-    {
-      method: "POST",
-      body: data,
-    },
-  );
+  const res = await callDiscord(Routes.applicationCommands(botEnv.DISCORD_APP_ID), {
+    method: "POST",
+    body: data,
+  });
 
   return res.json();
 }
@@ -66,15 +60,10 @@ export async function createGlobalCommand(
  * Fetch a global command for your application.
  * @param command The command to get
  */
-export async function getGlobalCommand(
-  command: Snowflake,
-): Promise<RESTGetAPIApplicationCommandResult> {
-  const res = await callDiscord(
-    Routes.applicationCommand(botEnv.DISCORD_APP_ID, command),
-    {
-      method: "GET",
-    },
-  );
+export async function getGlobalCommand(command: Snowflake): Promise<RESTGetAPIApplicationCommandResult> {
+  const res = await callDiscord(Routes.applicationCommand(botEnv.DISCORD_APP_ID, command), {
+    method: "GET",
+  });
 
   return res.json();
 }
@@ -88,13 +77,10 @@ export async function modifyGlobalCommand(
   command: Snowflake,
   data: RESTPatchAPIApplicationCommandJSONBody,
 ): Promise<RESTPatchAPIApplicationCommandResult> {
-  const res = await callDiscord(
-    Routes.applicationCommand(botEnv.DISCORD_APP_ID, command),
-    {
-      method: "PATCH",
-      body: data,
-    },
-  );
+  const res = await callDiscord(Routes.applicationCommand(botEnv.DISCORD_APP_ID, command), {
+    method: "PATCH",
+    body: data,
+  });
 
   return res.json();
 }
@@ -104,12 +90,9 @@ export async function modifyGlobalCommand(
  * @param command The command to delete
  */
 export async function deleteGlobalCommand(command: Snowflake): Promise<void> {
-  const res = await callDiscord(
-    Routes.applicationCommand(botEnv.DISCORD_APP_ID, command),
-    {
-      method: "DELETE",
-    },
-  );
+  const res = await callDiscord(Routes.applicationCommand(botEnv.DISCORD_APP_ID, command), {
+    method: "DELETE",
+  });
 
   return res.json();
 }
@@ -121,13 +104,10 @@ export async function deleteGlobalCommand(command: Snowflake): Promise<void> {
 export async function bulkOverwriteGlobalCommands(
   data: RESTPutAPIApplicationCommandsJSONBody,
 ): Promise<RESTPutAPIApplicationCommandsResult> {
-  const res = await callDiscord(
-    Routes.applicationCommands(botEnv.DISCORD_APP_ID),
-    {
-      method: "PUT",
-      body: data,
-    },
-  );
+  const res = await callDiscord(Routes.applicationCommands(botEnv.DISCORD_APP_ID), {
+    method: "PUT",
+    body: data,
+  });
 
   return res.json();
 }
@@ -141,13 +121,10 @@ export async function listGuildCommands(
   guild: Snowflake,
   options?: RESTGetAPIApplicationGuildCommandsQuery,
 ): Promise<RESTGetAPIApplicationGuildCommandsResult> {
-  const res = await callDiscord(
-    Routes.applicationGuildCommands(botEnv.DISCORD_APP_ID, guild),
-    {
-      method: "GET",
-      params: options,
-    },
-  );
+  const res = await callDiscord(Routes.applicationGuildCommands(botEnv.DISCORD_APP_ID, guild), {
+    method: "GET",
+    params: options,
+  });
 
   return res.json();
 }
@@ -161,13 +138,10 @@ export async function createGuildCommand(
   guild: Snowflake,
   data: RESTPostAPIApplicationGuildCommandsJSONBody,
 ): Promise<RESTPostAPIApplicationGuildCommandsResult> {
-  const res = await callDiscord(
-    Routes.applicationGuildCommands(botEnv.DISCORD_APP_ID, guild),
-    {
-      method: "POST",
-      body: data,
-    },
-  );
+  const res = await callDiscord(Routes.applicationGuildCommands(botEnv.DISCORD_APP_ID, guild), {
+    method: "POST",
+    body: data,
+  });
 
   return res.json();
 }
@@ -181,12 +155,9 @@ export async function getGuildCommand(
   guild: Snowflake,
   command: Snowflake,
 ): Promise<RESTGetAPIApplicationGuildCommandResult> {
-  const res = await callDiscord(
-    Routes.applicationGuildCommand(botEnv.DISCORD_APP_ID, guild, command),
-    {
-      method: "GET",
-    },
-  );
+  const res = await callDiscord(Routes.applicationGuildCommand(botEnv.DISCORD_APP_ID, guild, command), {
+    method: "GET",
+  });
 
   return res.json();
 }
@@ -202,13 +173,10 @@ export async function modifyGuildCommand(
   command: Snowflake,
   data: RESTPatchAPIApplicationGuildCommandJSONBody,
 ): Promise<RESTPatchAPIApplicationGuildCommandResult> {
-  const res = await callDiscord(
-    Routes.applicationGuildCommand(botEnv.DISCORD_APP_ID, guild, command),
-    {
-      method: "PATCH",
-      body: data,
-    },
-  );
+  const res = await callDiscord(Routes.applicationGuildCommand(botEnv.DISCORD_APP_ID, guild, command), {
+    method: "PATCH",
+    body: data,
+  });
 
   return res.json();
 }
@@ -218,16 +186,10 @@ export async function modifyGuildCommand(
  * @param guild The guild to delete the command from
  * @param command The command to delete
  */
-export async function deleteGuildCommand(
-  guild: Snowflake,
-  command: Snowflake,
-): Promise<void> {
-  const res = await callDiscord(
-    Routes.applicationGuildCommand(botEnv.DISCORD_APP_ID, guild, command),
-    {
-      method: "DELETE",
-    },
-  );
+export async function deleteGuildCommand(guild: Snowflake, command: Snowflake): Promise<void> {
+  const res = await callDiscord(Routes.applicationGuildCommand(botEnv.DISCORD_APP_ID, guild, command), {
+    method: "DELETE",
+  });
 
   return res.json();
 }
@@ -241,13 +203,10 @@ export async function bulkOverwriteGuildCommands(
   guild: Snowflake,
   data: RESTPutAPIApplicationGuildCommandsJSONBody,
 ): Promise<RESTPutAPIApplicationGuildCommandsResult> {
-  const res = await callDiscord(
-    Routes.applicationGuildCommands(botEnv.DISCORD_APP_ID, guild),
-    {
-      method: "PUT",
-      body: data,
-    },
-  );
+  const res = await callDiscord(Routes.applicationGuildCommands(botEnv.DISCORD_APP_ID, guild), {
+    method: "PUT",
+    body: data,
+  });
 
   return res.json();
 }
@@ -259,12 +218,9 @@ export async function bulkOverwriteGuildCommands(
 export async function listGuildCommandsPermissions(
   guild: Snowflake,
 ): Promise<RESTGetAPIGuildApplicationCommandsPermissionsResult> {
-  const res = await callDiscord(
-    Routes.guildApplicationCommandsPermissions(botEnv.DISCORD_APP_ID, guild),
-    {
-      method: "GET",
-    },
-  );
+  const res = await callDiscord(Routes.guildApplicationCommandsPermissions(botEnv.DISCORD_APP_ID, guild), {
+    method: "GET",
+  });
 
   return res.json();
 }
@@ -278,12 +234,9 @@ export async function getGuildCommandPermissions(
   guild: Snowflake,
   command: Snowflake,
 ): Promise<RESTGetAPIApplicationCommandPermissionsResult> {
-  const res = await callDiscord(
-    Routes.applicationCommandPermissions(botEnv.DISCORD_APP_ID, guild, command),
-    {
-      method: "GET",
-    },
-  );
+  const res = await callDiscord(Routes.applicationCommandPermissions(botEnv.DISCORD_APP_ID, guild, command), {
+    method: "GET",
+  });
 
   return res.json();
 }
@@ -299,13 +252,10 @@ export async function modifyGuildCommandPermissions(
   command: Snowflake,
   data: RESTPutAPIApplicationCommandPermissionsJSONBody,
 ): Promise<RESTGetAPIApplicationCommandPermissionsResult> {
-  const res = await callDiscord(
-    Routes.applicationCommandPermissions(botEnv.DISCORD_APP_ID, guild, command),
-    {
-      method: "PUT",
-      body: data,
-    },
-  );
+  const res = await callDiscord(Routes.applicationCommandPermissions(botEnv.DISCORD_APP_ID, guild, command), {
+    method: "PUT",
+    body: data,
+  });
 
   return res.json();
 }

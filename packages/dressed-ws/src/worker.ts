@@ -1,14 +1,14 @@
-import {
-  GatewayOpcodes,
-  GatewayCloseCodes,
-  type APIGatewayBotInfo,
-  type GatewayIdentifyData,
-  type GatewayReceivePayload,
-  GatewayDispatchEvents,
-} from "discord-api-types/v10";
 import assert from "node:assert";
 import { platform } from "node:process";
 import { parentPort } from "node:worker_threads";
+import {
+  type APIGatewayBotInfo,
+  GatewayCloseCodes,
+  GatewayDispatchEvents,
+  type GatewayIdentifyData,
+  GatewayOpcodes,
+  type GatewayReceivePayload,
+} from "discord-api-types/v10";
 
 assert(parentPort);
 
@@ -47,11 +47,7 @@ const WSCodes = {
   ResumeSession: 3001,
 } as const;
 
-function connectShard(
-  url: string,
-  config: ShardConfig,
-  resume?: { sessionId: string; seq: number },
-) {
+function connectShard(url: string, config: ShardConfig, resume?: { sessionId: string; seq: number }) {
   const ws = new WebSocket(url);
   const shardId = config.shard.toString();
   let seq = resume?.seq ?? null;
@@ -112,20 +108,14 @@ function connectShard(
         setTimeout(() => {
           beat();
           shard.state = "Ready";
-          shard.heartbeatInterval = setInterval(
-            beat,
-            payload.d.heartbeat_interval,
-          );
+          shard.heartbeatInterval = setInterval(beat, payload.d.heartbeat_interval);
         }, payload.d.heartbeat_interval * Math.random());
         break;
       }
       case GatewayOpcodes.InvalidSession:
       case GatewayOpcodes.Reconnect: {
         clearInterval(shard.heartbeatInterval);
-        if (
-          payload.op === GatewayOpcodes.InvalidSession &&
-          payload.d === false
-        ) {
+        if (payload.op === GatewayOpcodes.InvalidSession && payload.d === false) {
           shard.ws.close(WSCodes.NormalClose, "Initiating full reset");
         } else {
           shard.ws.close(WSCodes.ResumeSession, "Reconnect message received");
@@ -183,12 +173,8 @@ function connectShard(
         );
         break;
       }
-      case GatewayCloseCodes.UnknownError:
-      case GatewayCloseCodes.UnknownOpcode:
-      case GatewayCloseCodes.DecodeError:
-      case GatewayCloseCodes.AlreadyAuthenticated:
-      case GatewayCloseCodes.RateLimited:
-      case WSCodes.ResumeSession:
+      // biome-ignore lint/suspicious/noFallthroughSwitchClause: Intended to fall through
+      // biome-ignore lint/suspicious/useDefaultSwitchClauseLast: It's falling through
       default: {
         if (resumeData && seq !== null) {
           connectShard(resumeData.resume_gateway_url, config, {
@@ -198,7 +184,6 @@ function connectShard(
           break;
         }
       }
-      // eslint-disable-next-line no-fallthrough
       case GatewayCloseCodes.NotAuthenticated:
       case GatewayCloseCodes.InvalidSeq:
       case GatewayCloseCodes.SessionTimedOut:

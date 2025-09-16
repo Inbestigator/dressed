@@ -1,9 +1,9 @@
-import { baseInteractionMethods } from "./responses.ts";
 import type {
   APIChatInputApplicationCommandInteractionData,
   APIInteraction,
   ModalSubmitComponent,
 } from "discord-api-types/v10";
+import { ComponentType, InteractionType } from "discord-api-types/v10";
 import type {
   CommandAutocompleteInteraction,
   CommandInteraction,
@@ -11,13 +11,11 @@ import type {
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "../../types/interaction.ts";
-import { ComponentType, InteractionType } from "discord-api-types/v10";
-import { getOption } from "./options.ts";
 import { getField } from "./fields.ts";
+import { getOption } from "./options.ts";
+import { baseInteractionMethods } from "./responses.ts";
 
-export function createInteraction<T extends APIInteraction>(
-  input: T,
-): Interaction<T> {
+export function createInteraction<T extends APIInteraction>(input: T): Interaction<T> {
   if (!input.user && input.member) {
     input.user = input.member.user;
   }
@@ -32,8 +30,7 @@ export function createInteraction<T extends APIInteraction>(
             n,
             r ?? false,
             "options" in input.data ? (input.data.options ?? []) : [],
-            (input.data as APIChatInputApplicationCommandInteractionData)
-              .resolved,
+            (input.data as APIChatInputApplicationCommandInteractionData).resolved,
           ),
       } as CommandInteraction as Interaction<T>;
     }
@@ -41,8 +38,7 @@ export function createInteraction<T extends APIInteraction>(
       return {
         ...input,
         ...baseInteractionMethods(input),
-        getOption: (n) =>
-          getOption(n, false, input.data.options, input.data.resolved),
+        getOption: (n) => getOption(n, false, input.data.options, input.data.resolved),
       } as CommandAutocompleteInteraction as Interaction<T>;
     }
     case InteractionType.MessageComponent: {
@@ -68,8 +64,7 @@ export function createInteraction<T extends APIInteraction>(
       return {
         ...input,
         ...baseInteractionMethods(input),
-        getField: (c, r) =>
-          getField(c, r ?? false, components, input.data.resolved),
+        getField: (c, r) => getField(c, r ?? false, components, input.data.resolved),
       } as ModalSubmitInteraction as Interaction<T>;
     }
     default: {

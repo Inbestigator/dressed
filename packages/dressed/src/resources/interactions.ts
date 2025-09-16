@@ -1,11 +1,8 @@
-import type {
-  APIInteractionResponse,
-  RESTPostAPIInteractionCallbackQuery,
-} from "discord-api-types/v10";
+import type { APIInteractionResponse, RESTPostAPIInteractionCallbackQuery } from "discord-api-types/v10";
 import { InteractionResponseType, Routes } from "discord-api-types/v10";
-import { callDiscord } from "../utils/call-discord.ts";
 import type { RawFile } from "../types/file.ts";
 import type { InteractionCallbackResponse } from "../types/interaction.ts";
+import { callDiscord } from "../utils/call-discord.ts";
 
 /**
  * Respond to an interaction by sending a modal, message, or update the original.
@@ -19,10 +16,7 @@ import type { InteractionCallbackResponse } from "../types/interaction.ts";
 export async function createInteractionCallback<
   T extends keyof typeof InteractionResponseType,
   Q extends RESTPostAPIInteractionCallbackQuery,
-  E extends object = Extract<
-    APIInteractionResponse,
-    { type: (typeof InteractionResponseType)[T] }
-  >,
+  E extends object = Extract<APIInteractionResponse, { type: (typeof InteractionResponseType)[T] }>,
 >(
   interactionId: string,
   interactionToken: string,
@@ -34,18 +28,15 @@ export async function createInteractionCallback<
       [...(E extends { data: object } ? [D] : [D?]), RawFile[]?, Q?]
     : [undefined?, undefined?, Q?]
 ): InteractionCallbackResponse<Q> {
-  const res = await callDiscord(
-    Routes.interactionCallback(interactionId, interactionToken),
-    {
-      method: "POST",
-      body: {
-        type: InteractionResponseType[type],
-        data,
-      },
-      params: options,
-      files,
+  const res = await callDiscord(Routes.interactionCallback(interactionId, interactionToken), {
+    method: "POST",
+    body: {
+      type: InteractionResponseType[type],
+      data,
     },
-  );
+    params: options,
+    files,
+  });
 
   return options?.with_response ? res.json() : (null as never);
 }

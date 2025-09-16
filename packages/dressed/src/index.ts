@@ -1,12 +1,4 @@
 // Types
-export type { Event } from "./types/event.ts";
-export type { CommandConfig } from "./types/config.ts";
-export type {
-  CommandInteraction,
-  CommandAutocompleteInteraction,
-  MessageComponentInteraction,
-  ModalSubmitInteraction,
-} from "./types/interaction.ts";
 
 // Components
 export * from "./components/action-row.ts";
@@ -22,10 +14,9 @@ export * from "./components/separator.ts";
 export * from "./components/text-display.ts";
 export * from "./components/text-input.ts";
 export * from "./components/thumbnail.ts";
-
+export * from "./resources/application.ts";
 // API interactions
 export * from "./resources/application-commands.ts";
-export * from "./resources/application.ts";
 export * from "./resources/audit-log.ts";
 export * from "./resources/automod.ts";
 export * from "./resources/channels.ts";
@@ -47,3 +38,11 @@ export * from "./resources/stickers.ts";
 export * from "./resources/users.ts";
 export * from "./resources/voice.ts";
 export * from "./resources/webhooks.ts";
+export type { CommandConfig } from "./types/config.ts";
+export type { Event } from "./types/event.ts";
+export type {
+  CommandAutocompleteInteraction,
+  CommandInteraction,
+  MessageComponentInteraction,
+  ModalSubmitInteraction,
+} from "./types/interaction.ts";

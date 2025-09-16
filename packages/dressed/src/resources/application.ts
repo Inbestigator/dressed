@@ -21,9 +21,7 @@ export async function getApp(): Promise<RESTGetCurrentApplicationResult> {
  * Update the current bot application.
  * @param data New data for the application
  */
-export async function modifyApp(
-  data: RESTPatchCurrentApplicationJSONBody,
-): Promise<RESTPatchCurrentApplicationResult> {
+export async function modifyApp(data: RESTPatchCurrentApplicationJSONBody): Promise<RESTPatchCurrentApplicationResult> {
   const res = await callDiscord(Routes.currentApplication(), {
     method: "PATCH",
     body: data,

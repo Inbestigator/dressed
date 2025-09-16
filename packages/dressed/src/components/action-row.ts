@@ -12,9 +12,7 @@ import {
  */
 export function ActionRow<T extends APIComponentInActionRow>(
   ...components: (T extends APIButtonComponent ? APIButtonComponent : T)[]
-): APIActionRowComponent<
-  T extends APIButtonComponent ? APIButtonComponent : T
-> {
+): APIActionRowComponent<T extends APIButtonComponent ? APIButtonComponent : T> {
   return {
     components,
     type: ComponentType.ActionRow,

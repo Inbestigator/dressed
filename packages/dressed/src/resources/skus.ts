@@ -1,8 +1,8 @@
 import type {
-  RESTGetAPISKUsResult,
   RESTGetAPISKUSubscriptionResult,
   RESTGetAPISKUSubscriptionsQuery,
   RESTGetAPISKUSubscriptionsResult,
+  RESTGetAPISKUsResult,
   Snowflake,
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";

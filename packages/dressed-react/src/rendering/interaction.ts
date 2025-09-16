@@ -1,15 +1,15 @@
+import {
+  type APIInteractionResponseCallbackData,
+  type APIModalInteractionResponseCallbackData,
+  type ApplicationCommandType,
+  MessageFlags,
+} from "discord-api-types/v10";
 import type {
   CommandInteraction as DressedCommandInteraction,
   MessageComponentInteraction as DressedMessageComponentInteraction,
   ModalSubmitInteraction as DressedModalSubmitInteraction,
 } from "dressed";
 import type { createInteraction, RawFile } from "dressed/server";
-import {
-  ApplicationCommandType,
-  MessageFlags,
-  type APIInteractionResponseCallbackData,
-  type APIModalInteractionResponseCallbackData,
-} from "discord-api-types/v10";
 import type { ReactNode } from "react";
 import { render } from "./index.ts";
 
@@ -40,10 +40,7 @@ type FollowUpProps = [
     ephemeral?: boolean;
   },
 ];
-type ShowModalProps = [
-  components: ReactNode,
-  data: Omit<APIModalInteractionResponseCallbackData, "components">,
-];
+type ShowModalProps = [components: ReactNode, data: Omit<APIModalInteractionResponseCallbackData, "components">];
 
 type ReactivatedInteraction<T> = OverrideMethodParams<
   T,
@@ -58,40 +55,29 @@ type ReactivatedInteraction<T> = OverrideMethodParams<
 
 type OverrideMethodParams<T, Overrides extends Record<string, unknown[]>> = {
   [K in keyof T]: K extends keyof Overrides
-    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ? // biome-ignore lint/suspicious/noExplicitAny: We're overriding the types
       T[K] extends (...args: any) => any
       ? (...args: Overrides[K]) => ReturnType<T[K]>
       : T[K]
     : T[K];
 };
 
-export type CommandInteraction<
-  T extends keyof typeof ApplicationCommandType = "ChatInput",
-> = ReactivatedInteraction<DressedCommandInteraction<T>>;
-export type MessageComponentInteraction =
-  ReactivatedInteraction<DressedMessageComponentInteraction>;
-export type ModalSubmitInteraction =
-  ReactivatedInteraction<DressedModalSubmitInteraction>;
+export type CommandInteraction<T extends keyof typeof ApplicationCommandType = "ChatInput"> = ReactivatedInteraction<
+  DressedCommandInteraction<T>
+>;
+export type MessageComponentInteraction = ReactivatedInteraction<DressedMessageComponentInteraction>;
+export type ModalSubmitInteraction = ReactivatedInteraction<DressedModalSubmitInteraction>;
 
-export function patchInteraction<
-  T extends NonNullable<ReturnType<typeof createInteraction>>,
->(interaction: T): ReactivatedInteraction<T> {
+export function patchInteraction<T extends NonNullable<ReturnType<typeof createInteraction>>>(
+  interaction: T,
+): ReactivatedInteraction<T> {
   if (!interaction) throw new Error("No interaction");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: We're overriding the types
   const newInteraction = interaction as any;
-  for (const method of [
-    "reply",
-    "editReply",
-    "update",
-    "followUp",
-    "showModal",
-  ] as (keyof T)[]) {
+  for (const method of ["reply", "editReply", "update", "followUp", "showModal"] as (keyof T)[]) {
     if (!(method in interaction)) continue;
     const original = interaction[method] as (d: unknown) => unknown;
-    newInteraction[method] = async (
-      components: ReplyProps[0],
-      data: ReplyProps[1] = {},
-    ) => {
+    newInteraction[method] = async (components: ReplyProps[0], data: ReplyProps[1] = {}) => {
       const flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
       data.flags = flags;
       data.components = (await render(components)).components as never;
