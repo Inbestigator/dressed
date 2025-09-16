@@ -20,9 +20,9 @@
       },
       "dependencies": {
         "@dressed/matcher": "^1.4.0",
-        "@inquirer/prompts": "^7.8.4",
-        "commander": "^14.0.0",
-        "discord-api-types": "^0.38.23",
+        "@inquirer/prompts": "^7.8.6",
+        "commander": "^14.0.1",
+        "discord-api-types": "^0.38.25",
         "dotenv": "^17.2.2",
         "esbuild": "^0.25.9",
         "ora": "^8.2.0",
@@ -38,7 +38,7 @@
       "name": "@dressed/next",
       "version": "1.3.0",
       "dependencies": {
-        "@vercel/functions": "^3.0.0",
+        "@vercel/functions": "^3.1.0",
       },
       "peerDependencies": {
         "dressed": "^1.9.1",
@@ -48,11 +48,11 @@
       "name": "@dressed/react",
       "version": "1.5.0-rc.1.2",
       "dependencies": {
-        "discord-api-types": "^0.38.23",
+        "discord-api-types": "^0.38.25",
         "react-reconciler": "github:inbestigator/dressed-rr",
       },
       "devDependencies": {
-        "@types/react": "^19.1.12",
+        "@types/react": "^19.1.13",
         "@types/react-reconciler": "^0.32.1",
       },
       "peerDependencies": {
@@ -64,7 +64,7 @@
       "name": "@dressed/ws",
       "version": "0.4.4",
       "dependencies": {
-        "discord-api-types": "^0.38.23",
+        "discord-api-types": "^0.38.25",
       },
       "peerDependencies": {
         "dressed": "^1.9.1",
