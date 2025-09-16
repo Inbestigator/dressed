@@ -1,6 +1,8 @@
 "use client";
 
 import { Atom, Book, Cog, Ear, Home, Network, Puzzle, Reply, Server, Terminal } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import type * as React from "react";
 import { NavMain } from "@/components/nav-main";
 import {
