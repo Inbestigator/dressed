@@ -16,6 +16,6 @@
   },
   "packageManager": "bun@1.2.13",
   "dependencies": {
-    "@types/bun": "^1.2.21"
+    "@types/bun": "^1.2.22"
   }
 }

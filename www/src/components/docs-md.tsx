@@ -9,12 +9,7 @@ export default function DocsMD({ content }: { content: string }) {
   return (
     <div className="extended-prose">
       <MarkdownAsync
-        rehypePlugins={[
-          [rehypePrettyCode, { theme: "slack-dark" }],
-          rehypeSlug,
-          rehypeUnwrapImages,
-          rehypeCallouts,
-        ]}
+        rehypePlugins={[[rehypePrettyCode, { theme: "slack-dark" }], rehypeSlug, rehypeUnwrapImages, rehypeCallouts]}
         remarkPlugins={[remarkGfm]}
       >
         {content}

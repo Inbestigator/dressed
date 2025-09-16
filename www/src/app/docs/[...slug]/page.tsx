@@ -30,9 +30,7 @@ function readDir(path: string) {
       files.push(...readDir(`${path}/${file}`));
     } else {
       files.push({
-        slug: `${path.split("content/")[1] ?? ""}/${file.split(".")[0]}`
-          .split("/")
-          .filter((v) => v !== ""),
+        slug: `${path.split("content/")[1] ?? ""}/${file.split(".")[0]}`.split("/").filter((v) => v !== ""),
         content: banner + readFileSync(`${path}/${file}`, "utf-8"),
       });
     }
@@ -41,11 +39,7 @@ function readDir(path: string) {
   return files;
 }
 
-export default async function DocsPage({
-  params,
-}: {
-  params: Promise<{ slug: string[] }>;
-}) {
+export default async function DocsPage({ params }: { params: Promise<{ slug: string[] }> }) {
   const slug = (await params).slug;
   let doc: { slug: string[]; content: string } | undefined;
 
@@ -56,9 +50,7 @@ export default async function DocsPage({
   if (!doc) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-center gap-10 max-w-5xl mx-auto">
-        <h1 className="z-10 text-3xl font-black leading-tight sm:text-7xl sm:leading-tight">
-          404
-        </h1>
+        <h1 className="z-10 text-3xl font-black leading-tight sm:text-7xl sm:leading-tight">404</h1>
         <p>Page not found.</p>
       </div>
     );
@@ -88,9 +80,7 @@ export default async function DocsPage({
                 return (
                   <div key={s} className=" gap-2.5 items-center hidden md:flex">
                     <BreadcrumbItem>
-                      <BreadcrumbLink
-                        href={"/docs/" + doc.slug.slice(0, i + 1).join("/")}
-                      >
+                      <BreadcrumbLink href={`/docs/${doc.slug.slice(0, i + 1).join("/")}`}>
                         {s
                           .split("-")
                           .map((s) => s.charAt(0).toUpperCase() + s.slice(1))

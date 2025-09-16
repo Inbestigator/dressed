@@ -1,9 +1,9 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
   "vcs": {
-    "enabled": false,
+    "enabled": true,
     "clientKind": "git",
-    "useIgnoreFile": false
+    "useIgnoreFile": true
   },
   "files": {
     "ignoreUnknown": false
@@ -16,7 +16,11 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "suspicious": {
+        // TODO Remove when installing biome v2.3.x
+        "noUnknownAtRules": "off"
+      }
     }
   },
   "javascript": {
@@ -31,13 +35,5 @@
         "organizeImports": "on"
       }
     }
-  },
-  "overrides": [
-    {
-      "includes": ["**/.dressed/**", "**/.turbo/**", "www/**", "**/dist/**"],
-      "linter": { "enabled": false },
-      "formatter": { "enabled": false },
-      "assist": { "enabled": false }
-    }
-  ]
+  }
 }

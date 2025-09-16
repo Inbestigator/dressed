@@ -25,10 +25,7 @@
     counter-reset: line;
   }
 
-  figure[data-rehype-pretty-code-figure]:has(
-      > figcaption[data-rehype-pretty-code-title]
-    )
-    pre {
+  figure[data-rehype-pretty-code-figure]:has(> figcaption[data-rehype-pretty-code-title]) pre {
     @apply rounded-tl-none;
   }
 
