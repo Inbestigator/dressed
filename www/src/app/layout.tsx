@@ -25,9 +25,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh flex flex-col`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} flex min-h-dvh flex-col antialiased`}>
         {children}
-        <footer className="text-sm text-muted-foreground h-8 mt-auto gap-8 flex justify-end px-8">
+        <footer className="mt-auto flex h-8 justify-end gap-8 px-8 text-muted-foreground text-sm">
           <Link href="/docs" className="hover:underline">
             Docs
           </Link>

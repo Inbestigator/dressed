@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <div className="fixed inset-0 bg-sidebar -z-1" />
+      <div className="-z-1 fixed inset-0 bg-sidebar" />
       <DocsSidebar />
       <SidebarInset className="overflow-x-hidden">{children}</SidebarInset>
     </SidebarProvider>

@@ -1,18 +1,7 @@
 "use client";
 
-import * as React from "react";
-import {
-  Cog,
-  Home,
-  Puzzle,
-  Reply,
-  Terminal,
-  Ear,
-  Book,
-  Network,
-  Atom,
-  Server,
-} from "lucide-react";
+import { Atom, Book, Cog, Ear, Home, Network, Puzzle, Reply, Server, Terminal } from "lucide-react";
+import type * as React from "react";
 import { NavMain } from "@/components/nav-main";
 import {
   Sidebar,
