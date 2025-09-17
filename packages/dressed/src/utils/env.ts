@@ -1,11 +1,13 @@
-import "dotenv/config";
 import { env } from "node:process";
+import { loadEnvConfig } from "@next/env";
 
 interface BotEnvs {
   DISCORD_APP_ID: string;
   DISCORD_PUBLIC_KEY: string;
   DISCORD_TOKEN: string;
 }
+
+loadEnvConfig("./", process.env.NODE_ENV === "development");
 
 export const botEnv: BotEnvs = new Proxy({} as BotEnvs, {
   get(_, key: string) {

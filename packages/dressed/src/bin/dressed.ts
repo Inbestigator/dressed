@@ -4,8 +4,8 @@ import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { cwd, exit, stdout } from "node:process";
 import { confirm, input, select } from "@inquirer/prompts";
+import { processEnv } from "@next/env";
 import { Command } from "commander";
-import { parse } from "dotenv";
 import ora from "ora";
 import build, { categoryExports, importString } from "../server/build/build.ts";
 import bundleFiles from "../server/build/bundle.ts";
@@ -110,12 +110,17 @@ program
     if (!res.ok) {
       throw new Error("Failed to fetch template.");
     }
-    const parsed = parse(await res.text());
+    const env = {
+      path: ".",
+      env: {},
+      contents: await res.text(),
+    };
+    processEnv([env], "./", undefined, true);
     const envVars: Record<string, string> = {};
 
-    for (const [k, v] of Object.entries(parsed)) {
+    for (const [k, v] of Object.entries(env.env)) {
       if (k === "DISCORD_APP_ID" || k === "DISCORD_PUBLIC_KEY") continue;
-      envVars[k] = await input({ message: k, default: v });
+      envVars[k] = await input({ message: k, default: v as string });
     }
 
     const mkdirLoader = ora(`Creating files for project: ${name}`).start();
