@@ -12,7 +12,7 @@
     "@dressed/matcher": "^1.4.0",
     "@inquirer/prompts": "^7.8.6",
     "commander": "^14.0.1",
-    "discord-api-types": "^0.38.25",
+    "discord-api-types": "^0.38.26-next.93decca.1758147813",
     "dotenv": "^17.2.2",
     "esbuild": "^0.25.9",
     "ora": "^8.2.0",
