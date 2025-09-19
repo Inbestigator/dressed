@@ -10,14 +10,16 @@
   },
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
-    "@inquirer/prompts": "^7.8.6",
     "@next/env": "^15.5.3",
     "commander": "^14.0.1",
     "discord-api-types": "^0.38.25",
+    "enquirer": "^2.4.1",
     "ora": "^9.0.0",
     "tweetnacl": "^1.0.3",
-    "walk-it": "^6.0.1",
-    "esbuild": "^0.25.9"
+    "walk-it": "^6.0.1"
+  },
+  "peerDependencies": {
+    "esbuild": ""
   },
   "peerDependenciesMeta": {
     "esbuild": {

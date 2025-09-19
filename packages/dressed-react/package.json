@@ -32,7 +32,7 @@
   "types": "./dist/index.d.ts",
   "dependencies": {
     "discord-api-types": "^0.38.25",
-    "react-reconciler": "github:inbestigator/dressed-rr"
+    "react-reconciler": "npm:@dressed/react-reconciler"
   },
   "devDependencies": {
     "@types/react": "^19.1.13",
