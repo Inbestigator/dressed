@@ -50,20 +50,19 @@ export interface OptionValueGetters<N> {
   attachment: () => APIAttachment;
 }
 
-const blurbs = [
-  null,
-  "a subcommand",
-  "a subcommand group",
-  "a string",
-  "an integer",
-  "a boolean",
-  "a user",
-  "a channel",
-  "a role",
-  "a mentionable",
-  "a number",
-  "an attachment",
-];
+const blurbs = {
+  1: "a subcommand",
+  2: "a subcommand group",
+  3: "a string",
+  4: "an integer",
+  5: "a boolean",
+  6: "a user",
+  7: "a channel",
+  8: "a role",
+  9: "a mentionable",
+  10: "a number",
+  11: "an attachment",
+};
 
 export function getOption<N extends string, R extends boolean>(
   name: N,
