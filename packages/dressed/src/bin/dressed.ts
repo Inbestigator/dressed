@@ -79,11 +79,11 @@ program
     const { prompt } = Enquirer;
     if (!name) {
       name = (
-        (await prompt({
+        await prompt<{ name: string }>({
           type: "text",
           name: "name",
           message: "Project name:",
-        })) as { name: string }
+        })
       ).name;
     }
     if (!template || (!template.startsWith("node/") && !template.startsWith("deno/"))) {
@@ -94,15 +94,14 @@ program
       const files = ((await res.json()) as { name: string; path: string; type: string }[]).filter(
         (f) => f.type === "dir",
       );
-      console.log(files);
       template = `node/${
         (
-          (await prompt({
+          await prompt<{ template: string }>({
             name: "template",
             type: "select",
             message: "Select the template to use",
             choices: files.map((f) => f.name),
-          })) as { template: string }
+          })
         ).template
       }`;
     }
