@@ -11,6 +11,7 @@ export default async function bundleFiles(entry: string, outdir: string) {
     });
   }
   try {
+    // @ts-expect-error Esbuild is an optional peer dep
     const { build } = await import("esbuild");
     return build({
       entryPoints: [entry],
