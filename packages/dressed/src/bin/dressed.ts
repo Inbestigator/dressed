@@ -3,9 +3,9 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { cwd, exit, stdout } from "node:process";
-import { confirm, input, select } from "@inquirer/prompts";
 import { processEnv } from "@next/env";
 import { Command } from "commander";
+import Enquirer from "enquirer";
 import ora from "ora";
 import build, { categoryExports, importString } from "../server/build/build.ts";
 import bundleFiles from "../server/build/bundle.ts";
@@ -76,52 +76,58 @@ program
   .argument("[name]", "Project name")
   .argument("[template]", "Template name (node/deno)")
   .action(async (name, template) => {
+    const { prompt } = Enquirer;
     if (!name) {
-      name = await input({
-        message: "Project name:",
-        required: true,
-      });
+      name = (
+        await prompt<{ name: string }>({
+          type: "text",
+          name: "name",
+          message: "Project name:",
+        })
+      ).name;
     }
     if (!template || (!template.startsWith("node/") && !template.startsWith("deno/"))) {
-      const isDeno = await confirm({
-        message: "Would you like to use a Deno specific template?",
-        default: false,
-      });
-      const res = await fetch(
-        `https://api.github.com/repos/inbestigator/dressed-examples/contents/${isDeno ? "deno" : "node"}`,
-      );
+      const res = await fetch("https://api.github.com/repos/inbestigator/dressed-examples/contents/node");
       if (!res.ok) {
         throw new Error("Failed to list templates.");
       }
       const files = ((await res.json()) as { name: string; path: string; type: string }[]).filter(
         (f) => f.type === "dir",
       );
-      template = await select({
-        message: "Select the template to use",
-        choices: files.map((f) => ({
-          name: f.name,
-          value: f.path,
-        })),
-      });
+      template = `node/${
+        (
+          await prompt<{ template: string }>({
+            name: "template",
+            type: "select",
+            message: "Select the template to use",
+            choices: files.map((f) => f.name),
+          })
+        ).template
+      }`;
     }
     const res = await fetch(
       `https://raw.githubusercontent.com/inbestigator/dressed-examples/main/${template}/.env.example`,
     );
     if (!res.ok) {
-      throw new Error("Failed to fetch template.");
+      throw new Error("Failed to fetch env template.");
     }
+
     const env = {
       path: ".",
       env: {},
       contents: await res.text(),
     };
-    processEnv([env], "./", undefined, true);
-    const envVars: Record<string, string> = {};
 
-    for (const [k, v] of Object.entries(env.env)) {
-      if (k === "DISCORD_APP_ID" || k === "DISCORD_PUBLIC_KEY") continue;
-      envVars[k] = await input({ message: k, default: v as string });
-    }
+    processEnv([env], "./", undefined, true);
+
+    const envVars = await prompt(
+      Object.entries(env.env).map(([k, v]) => ({
+        type: /TOKEN|PASSWORD/.test(k) ? "password" : "text",
+        name: k,
+        message: k,
+        initial: v as string,
+      })),
+    );
 
     const mkdirLoader = ora(`Creating files for project: ${name}`).start();
 
@@ -164,7 +170,6 @@ program
 
     try {
       const path = `https://api.github.com/repos/inbestigator/dressed-examples/contents/${template}`;
-
       await createFiles(path, join(cwd(), name));
     } catch {
       mkdirLoader.fail();
