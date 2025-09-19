@@ -28,9 +28,12 @@ export default async function bundleFiles(entry: string, outdir: string) {
       logLevel: "error",
       packages: "external",
     });
-  } catch {
-    throw new Error(
-      "Dressed requires Esbuild to bundle files, but it is not installed. Please install 'esbuild' and try again.",
-    );
+  } catch (e) {
+    const { code, message } = e as { code: string; message: string };
+    if (code === "ERR_MODULE_NOT_FOUND" && message.includes("'esbuild'")) {
+      throw new Error(
+        "Dressed requires Esbuild to bundle files, but it is not installed. Please install 'esbuild' and try again.",
+      );
+    } else throw e;
   }
 }
