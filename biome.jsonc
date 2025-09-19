@@ -20,7 +20,8 @@
       "suspicious": {
         // TODO Remove when installing biome v2.3.x
         "noUnknownAtRules": "off"
-      }
+      },
+      "nursery": { "useSortedClasses": "on" }
     }
   },
   "javascript": {
