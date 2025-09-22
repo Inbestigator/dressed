@@ -1,0 +1,265 @@
+{
+  "$schema": "./schema.json",
+  "routes": [
+    {
+      "key": "GetAPIApplicationCommands",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "params?"],
+      "overrides": { "name": "listGlobalCommands" },
+      "docs": {
+        "description": "Fetch all of the global commands for your application.",
+        "warns": [
+          "The objects returned by this endpoint may be augmented with [additional fields if localization is active](/docs/interactions/application-commands#retrieving-localized-commands)."
+        ],
+        "see": "/docs/interactions/application-commands.mdx#get-global-application-commands"
+      }
+    },
+    {
+      "key": "PostAPIApplicationCommands",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
+      "overrides": { "name": "createGlobalCommand" },
+      "docs": {
+        "description": "Create a new global command.",
+        "warns": [
+          "Creating a command with the same name as an existing command for your application will overwrite the old command."
+        ],
+        "see": "/docs/interactions/application-commands#create-global-application-command"
+      }
+    },
+    {
+      "key": "GetAPIApplicationCommand",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.commandId"],
+      "overrides": { "name": "getGlobalCommand" },
+      "docs": {
+        "description": "Fetch a global command for your application.",
+        "see": "/docs/interactions/application-commands#get-global-application-command"
+      }
+    },
+    {
+      "key": "PatchAPIApplicationCommand",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.commandId", "data"],
+      "overrides": { "name": "modifyGlobalCommand" },
+      "docs": {
+        "description": "Edit a global command.",
+        "see": "/docs/interactions/application-commands#edit-global-application-command"
+      }
+    },
+    {
+      "key": "DeleteAPIApplicationCommand",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.commandId"],
+      "overrides": { "name": "deleteGlobalCommand" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Deletes a global command.",
+        "see": "/docs/interactions/application-commands#delete-global-application-command"
+      }
+    },
+    {
+      "key": "PutAPIApplicationCommands",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
+      "overrides": { "name": "bulkOverwriteGlobalCommands" },
+      "docs": {
+        "description": "Takes a list of application commands, overwriting the existing global command list for this application.",
+        "dangers": [
+          "This will overwrite all types of application commands: slash commands, user commands, and message commands."
+        ],
+        "see": "/docs/interactions/application-commands#bulk-overwrite-global-application-commands"
+      }
+    },
+    {
+      "key": "GetAPIApplicationGuildCommands",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "params?"],
+      "docs": {
+        "description": "Fetch all of the guild commands for your application for a specific guild.",
+        "warns": [
+          "The objects returned by this endpoint may be augmented with [additional fields if localization is active](/docs/interactions/application-commands#retrieving-localized-commands)."
+        ],
+        "see": "/docs/interactions/application-commands#get-guild-application-commands"
+      }
+    },
+    {
+      "key": "PostAPIApplicationGuildCommands",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "data"],
+      "docs": {
+        "description": "Create a new guild command. New guild commands will be available in the guild immediately.",
+        "dangers": [
+          "Creating a command with the same name as an existing command for your application will overwrite the old command."
+        ],
+        "see": "/docs/interactions/application-commands#create-guild-application-command"
+      }
+    },
+    {
+      "key": "GetAPIApplicationGuildCommand",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId"],
+      "docs": {
+        "description": "Fetch a guild command for your application.",
+        "see": "/docs/interactions/application-commands#get-guild-application-command"
+      }
+    },
+    {
+      "key": "PatchAPIApplicationGuildCommand",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId", "data"],
+      "docs": {
+        "description": "Edit a guild command. Updates for guild commands will be available immediately.",
+        "see": "/docs/interactions/application-commands#edit-guild-application-command"
+      }
+    },
+    {
+      "key": "DeleteAPIApplicationGuildCommand",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a guild command.",
+        "see": "/docs/interactions/application-commands#delete-guild-application-command"
+      }
+    },
+    {
+      "key": "PutAPIApplicationGuildCommands",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "data"],
+      "overrides": { "name": "bulkOverwriteGuildCommands" },
+      "docs": {
+        "description": "Takes a list of application commands, overwriting the existing command list for this application for the targeted guild.",
+        "dangers": [
+          "This will overwrite **all** types of application commands: slash commands, user commands, and message commands."
+        ],
+        "see": "/docs/interactions/application-commands#bulk-overwrite-guild-application-commands"
+      }
+    },
+    {
+      "key": "GetAPIGuildApplicationCommandsPermissions",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId"],
+      "docs": {
+        "description": "Fetches permissions for all commands for your application in a guild.",
+        "see": "/docs/interactions/application-commands#get-guild-application-command-permissions"
+      }
+    },
+    {
+      "key": "GetAPIApplicationCommandPermissions",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId"],
+      "overrides": { "name": "getGuildCommandPermissions" },
+      "docs": {
+        "description": "Fetches permissions for a specific command for your application in a guild.",
+        "see": "/docs/interactions/application-commands#get-application-command-permissions"
+      }
+    },
+    {
+      "key": "PutAPIApplicationCommandPermissions",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId", "data"],
+      "overrides": { "name": "modifyGuildCommandPermissions" },
+      "docs": {
+        "description": "Edits command permissions for a specific command for your application in a guild.",
+        "warns": [
+          "This endpoint will overwrite existing permissions for the command in that guild",
+          "Deleting or renaming a command will permanently delete all permissions for the command"
+        ],
+        "see": "/docs/interactions/application-commands#edit-application-command-permissions"
+      }
+    },
+    {
+      "key": "GetAPIApplicationRoleConnectionMetadata",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
+      "overrides": { "name": "listAppRoleConnectionMetadata" },
+      "docs": {
+        "description": "Returns a list of [application role connection metadata](/docs/resources/application-role-connection-metadata#application-role-connection-metadata-object) objects for the given application.",
+        "see": "/docs/resources/application-role-connection-metadata#get-application-role-connection-metadata-records"
+      }
+    },
+    {
+      "key": "PutAPIApplicationRoleConnectionMetadata",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
+      "overrides": { "name": "modifyAppRoleConnectionMetadata" },
+      "docs": {
+        "description": "Updates and returns a list of [application role connection metadata](/docs/resources/application-role-connection-metadata#application-role-connection-metadata-object) objects for the given application.",
+        "infos": ["An application can have a maximum of 5 metadata records."],
+        "see": "/docs/resources/application-role-connection-metadata#update-application-role-connection-metadata-records"
+      }
+    },
+    {
+      "key": "GetCurrentApplication",
+      "params": [],
+      "overrides": { "name": "getApp" },
+      "docs": {
+        "description": "Returns the [application](/docs/resources/application#application-object) object associated with the requesting bot user.",
+        "see": "/docs/resources/application#get-current-application"
+      }
+    },
+    {
+      "key": "PatchCurrentApplication",
+      "params": ["data"],
+      "overrides": { "name": "modifyApp" },
+      "docs": {
+        "description": "Edit properties of the app associated with the requesting bot user. Only properties that are passed will be updated.",
+        "see": "/docs/resources/application#edit-current-application"
+      }
+    },
+    {
+      "key": "GetAPIAuditLog",
+      "params": ["url.guildId", "params?"],
+      "overrides": { "apiRoute": "guildAuditLog" },
+      "docs": {
+        "description": "Returns an [audit log](/docs/resources/audit-log#audit-log-object) object for the guild.",
+        "see": "/docs/resources/audit-log#get-guild-audit-log"
+      }
+    },
+    {
+      "key": "GetAPIAutoModerationRules",
+      "params": ["url.guildId"],
+      "overrides": { "name": "listAutomodRules", "apiRoute": "guildAutoModerationRules" },
+      "docs": {
+        "description": "Get a list of all rules currently configured for the guild.",
+        "infos": [
+          "This endpoint requires the `MANAGE_GUILD` [permission](/docs/resources/auto-moderation#auto-moderation-permission-requirements)."
+        ],
+        "see": "/docs/resources/auto-moderation#list-auto-moderation-rules-for-guild"
+      }
+    },
+    {
+      "key": "GetAPIAutoModerationRule",
+      "params": ["url.guildId", "url.ruleId"],
+      "overrides": { "name": "getAutomodRule", "apiRoute": "guildAutoModerationRule" },
+      "docs": {
+        "description": "Get a single rule.",
+        "infos": [
+          "This endpoint requires the `MANAGE_GUILD` [permission](/docs/resources/auto-moderation#auto-moderation-permission-requirements)."
+        ],
+        "see": "/docs/resources/auto-moderation#get-auto-moderation-rule"
+      }
+    },
+    {
+      "key": "PostAPIAutoModerationRule",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "createAutomodRule", "apiRoute": "guildAutoModerationRules" },
+      "docs": {
+        "description": "Create a new rule.",
+        "infos": [
+          "This endpoint requires the `MANAGE_GUILD` [permission](/docs/resources/auto-moderation#auto-moderation-permission-requirements)."
+        ],
+        "see": "/docs/resources/auto-moderation#create-auto-moderation-rule"
+      }
+    },
+    {
+      "key": "PatchAPIAutoModerationRule",
+      "params": ["url.guildId", "url.ruleId", "data"],
+      "overrides": { "name": "modifyAutomodRule", "apiRoute": "guildAutoModerationRule" },
+      "docs": {
+        "description": "Modify an existing rule.",
+        "infos": [
+          "This endpoint requires the `MANAGE_GUILD` [permission](/docs/resources/auto-moderation#auto-moderation-permission-requirements)."
+        ],
+        "see": "/docs/resources/auto-moderation#modify-auto-moderation-rule"
+      }
+    },
+    {
+      "key": "DeleteAPIAutoModerationRule",
+      "params": ["url.guildId", "url.ruleId"],
+      "overrides": { "name": "deleteAutomodRule", "apiRoute": "guildAutoModerationRule" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a rule.",
+        "infos": [
+          "This endpoint requires the `MANAGE_GUILD` [permission](/docs/resources/auto-moderation#auto-moderation-permission-requirements)."
+        ],
+        "see": "/docs/resources/auto-moderation#delete-auto-moderation-rule"
+      }
+    }
+  ]
+}

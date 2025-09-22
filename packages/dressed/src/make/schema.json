@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "routes": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "params": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "title": "Data",
+                  "enum": ["data", "data?"]
+                },
+                {
+                  "type": "string",
+                  "title": "Params",
+                  "enum": ["params", "params?"]
+                },
+                {
+                  "type": "string",
+                  "title": "URL parameter",
+                  "pattern": "^url\\.[^<?]+(?:<[^?]+)?\\??$",
+                  "examples": ["url.key", "url.key?", "url.key<value", "url.key<value?"]
+                }
+              ]
+            },
+            "uniqueItems": true
+          },
+          "overrides": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "apiRoute": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "flags": {
+            "type": "array",
+            "items": {
+              "enum": ["returnVoid", "deprecated"]
+            },
+            "uniqueItems": true
+          },
+          "docs": {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "infos": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "warns": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "dangers": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "see": {
+                "type": "string"
+              }
+            },
+            "required": ["description", "see"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["key", "params", "docs"],
+        "additionalProperties": false
+      }
+    }
+  }
+}
