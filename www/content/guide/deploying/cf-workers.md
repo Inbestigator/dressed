@@ -17,7 +17,7 @@ If you don't have a workers project yet, create one using `bun create cloudflare
    ```jsonc title="wrangler.jsonc"
    {
       "main": "src/index.ts",
-	   "build": { "command": "dressed build" },
+	  "build": { "command": "dressed build" },
       "compatibility_flags": ["nodejs_compat"]
    }
    ```
