@@ -615,6 +615,201 @@
         "description": "Delete the given emoji.",
         "see": "/docs/resources/emoji#delete-application-emoji"
       }
+    },
+    {
+      "key": "GetAPIEntitlements",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "params?"],
+      "docs": {
+        "description": "Returns all entitlements for a given app, active and expired.",
+        "see": "/docs/resources/entitlement#list-entitlements"
+      }
+    },
+    {
+      "key": "GetAPIEntitlement",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
+      "docs": {
+        "description": "Returns an entitlement.",
+        "see": "/docs/resources/entitlement#get-entitlement"
+      }
+    },
+    {
+      "key": "PostAPIEntitlement",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
+      "overrides": { "name": "consumeEntitlement" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "For One-Time Purchase consumable SKUs, marks a given entitlement for the user as consumed.",
+        "infos": [
+          "The entitlement will have `consumed: true` when using [List Entitlements](/docs/resources/entitlement#list-entitlements)."
+        ],
+        "see": "/docs/resources/entitlement#consume-entitlement"
+      }
+    },
+    {
+      "key": "PostAPIEntitlement",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
+      "overrides": { "apiRoute": "entitlements", "name": "createTestEntitlement" },
+      "docs": {
+        "description": "Creates a test entitlement to a given SKU for a given guild or user. Discord will act as though that user or guild has entitlement to your premium offering.",
+        "infos": [
+          "After creating a test entitlement, you'll need to reload your Discord client. After doing so, you'll see that your server or user now has premium access."
+        ],
+        "see": "/docs/resources/entitlement#create-test-entitlement"
+      }
+    },
+    {
+      "key": "DeleteAPIEntitlement",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
+      "overrides": { "name": "deleteTestEntitlement" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Creates a test entitlement to a given SKU for a given guild or user. Discord will act as though that user or guild has entitlement to your premium offering.",
+        "infos": [
+          "After creating a test entitlement, you'll need to reload your Discord client. After doing so, you'll see that your server or user now has premium access."
+        ],
+        "see": "/docs/resources/entitlement#create-test-entitlement"
+      }
+    },
+    {
+      "key": "GetAPIGateway",
+      "params": [],
+      "docs": {
+        "description": "Returns an object with a valid WSS URL which the app can use when [Connecting](/docs/events/gateway#connecting) to the Gateway. Apps should cache this value and only call this endpoint to retrieve a new URL when they are unable to properly establish a connection using the cached one.",
+        "infos": ["This endpoint does not require authentication."],
+        "see": "/docs/events/gateway#get-gateway"
+      }
+    },
+    {
+      "key": "GetAPIGatewayBot",
+      "params": [],
+      "docs": {
+        "description": "Returns an object based on the information in [Get Gateway](/docs/events/gateway#get-gateway), plus additional metadata that can help during the operation of large or [sharded](/docs/events/gateway#sharding) bots. Unlike the [Get Gateway](/docs/events/gateway#get-gateway), this route should not be cached for extended periods of time as the value is not guaranteed to be the same per-call, and changes as the bot joins/leaves guilds.",
+        "warns": ["This endpoint requires authentication using a valid bot token."],
+        "see": "/docs/events/gateway#get-gateway-bot"
+      }
+    },
+    {
+      "key": "GetAPIGuildScheduledEvents",
+      "params": ["url.guildId", "params?"],
+      "overrides": { "name": "listScheduledEvents" },
+      "docs": {
+        "description": "Returns a list of [guild scheduled event](/docs/resources/guild-scheduled-event#guild-scheduled-event-object) objects for the given guild.",
+        "see": "/docs/resources/guild-scheduled-event#list-guild-scheduled-events"
+      }
+    },
+    {
+      "key": "PostAPIGuildScheduledEvent",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildScheduledEvents", "name": "createScheduledEvent" },
+      "docs": {
+        "description": "Create a guild scheduled event in the guild.",
+        "infos": ["A guild can have a maximum of 100 events with `SCHEDULED` or `ACTIVE` status at any time."],
+        "see": "/docs/resources/guild-scheduled-event#create-guild-scheduled-event"
+      }
+    },
+    {
+      "key": "GetAPIGuildScheduledEvent",
+      "params": ["url.guildId", "url.guildScheduledEventId", "params?"],
+      "overrides": { "name": "getScheduledEvent" },
+      "docs": {
+        "description": "Get a guild scheduled event.",
+        "see": "/docs/resources/guild-scheduled-event#get-guild-scheduled-event"
+      }
+    },
+    {
+      "key": "PatchAPIGuildScheduledEvent",
+      "params": ["url.guildId", "url.guildScheduledEventId", "data"],
+      "overrides": { "name": "modifyScheduledEvent" },
+      "docs": {
+        "description": "Modify a guild scheduled event.",
+        "infos": [
+          "To start or end an event, use this endpoint to modify the event's [status](/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-status) field.",
+          "This endpoint silently discards `entity_metadata` for non-`EXTERNAL` events."
+        ],
+        "see": "/docs/resources/guild-scheduled-event#modify-guild-scheduled-event"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildScheduledEvent",
+      "params": ["url.guildId", "url.guildScheduledEventId"],
+      "overrides": { "name": "deleteScheduledEvent" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a guild scheduled event.",
+        "see": "/docs/resources/guild-scheduled-event#delete-guild-scheduled-event"
+      }
+    },
+    {
+      "key": "GetAPIGuildScheduledEventUsers",
+      "params": ["url.guildId", "url.guildScheduledEventId", "params?"],
+      "overrides": { "name": "getScheduledEventUsers" },
+      "docs": {
+        "description": "Get a list of guild scheduled event users subscribed to a guild scheduled event.",
+        "see": "/docs/resources/guild-scheduled-event#get-guild-scheduled-event-users"
+      }
+    },
+    {
+      "key": "GetAPITemplate",
+      "params": ["url.code"],
+      "overrides": { "name": "getTemplate" },
+      "docs": {
+        "description": "Returns a [guild template](/docs/resources/guild-template#guild-template-object) object for the given code.",
+        "see": "/docs/resources/guild-template#get-guild-template"
+      }
+    },
+    {
+      "key": "GetAPIGuildTemplates",
+      "params": ["url.guildId"],
+      "overrides": { "name": "listTemplates" },
+      "docs": {
+        "description": "Returns an array of [guild template](/docs/resources/guild-template#guild-template-object) objects.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild-template#get-guild-templates"
+      }
+    },
+    {
+      "key": "PostAPIGuildTemplates",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "createTemplate" },
+      "docs": {
+        "description": "Creates a template for the guild.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild-template#create-guild-template"
+      }
+    },
+    {
+      "key": "PutAPIGuildTemplate",
+      "params": ["url.guildId", "url.code"],
+      "overrides": {
+        "imports": ["type RESTPutAPIGuildTemplateSyncResult"],
+        "name": "syncTemplate",
+        "returnType": "RESTPutAPIGuildTemplateSyncResult"
+      },
+      "docs": {
+        "description": "Syncs the template to the guild's current state.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild-template#sync-guild-template"
+      }
+    },
+    {
+      "key": "PatchAPIGuildTemplate",
+      "params": ["url.guildId", "url.code", "data"],
+      "overrides": { "name": "modifyTemplate" },
+      "docs": {
+        "description": "Modifies the template's metadata.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild-template#modify-guild-template"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildTemplate",
+      "params": ["url.guildId", "url.code"],
+      "overrides": { "name": "deleteTemplate" },
+      "docs": {
+        "description": "Deletes the template.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild-template#delete-guild-template"
+      }
     }
   ]
 }
