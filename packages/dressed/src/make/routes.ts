@@ -86,4 +86,4 @@ export async function ${name}(${params.filter((p) => !p.includes("<")).map((p) =
 `.trim(),
 );
 
-await $`bun --bun biome check --write`;
+await $`bun --bun biome check --write --vcs-enabled=false`;
