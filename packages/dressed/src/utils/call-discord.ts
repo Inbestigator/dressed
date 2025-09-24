@@ -80,11 +80,11 @@ export async function callDiscord(
     }
 
     if (res.status === 429) {
-      const ratelimit = error as RESTRateLimit;
-      updateLimit(ratelimit.global ? "global" : endpoint, 0, Date.now() + ratelimit.retry_after * 1000);
+      const { global, retry_after } = error as RESTRateLimit;
+      updateLimit(global ? "global" : endpoint, 0, Date.now() + retry_after * 1000);
     }
 
-    throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`);
+    throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`, { cause: res });
   }
 
   headerUpdateLimit(endpoint, res, options.method);
