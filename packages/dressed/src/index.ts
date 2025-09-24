@@ -1,3 +1,4 @@
+// TODO Add resources back after
 // Types
 
 // Components
@@ -14,12 +15,7 @@ export * from "./components/separator.ts";
 export * from "./components/text-display.ts";
 export * from "./components/text-input.ts";
 export * from "./components/thumbnail.ts";
-export * from "./resources/application.ts";
 // API interactions
-export * from "./resources/application-commands.ts";
-export * from "./resources/audit-log.ts";
-export * from "./resources/automod.ts";
-export * from "./resources/channels.ts";
 export * from "./resources/emojis.ts";
 export * from "./resources/entitlements.ts";
 export * from "./resources/gateway.ts";
