@@ -10,7 +10,7 @@ import {
   type RESTPutAPIApplicationGuildCommandsJSONBody,
 } from "discord-api-types/v10";
 import ora from "ora";
-import { bulkOverwriteGlobalCommands, bulkOverwriteGuildCommands } from "../../resources/application-commands.ts";
+import { bulkOverwriteGlobalCommands, bulkOverwriteGuildCommands } from "../../generated.resources.ts";
 import type { CommandConfig, CommandData } from "../../types/config.ts";
 import type { CommandAutocompleteInteraction, CommandInteraction } from "../../types/interaction.ts";
 import { createHandlerSetup } from "./index.ts";

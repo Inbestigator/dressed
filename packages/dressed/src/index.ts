@@ -16,7 +16,7 @@ export * from "./components/text-display.ts";
 export * from "./components/text-input.ts";
 export * from "./components/thumbnail.ts";
 // API interactions
-export * from "./resources/emojis.ts";
+export * from "./generated.resources.ts";
 export * from "./resources/entitlements.ts";
 export * from "./resources/gateway.ts";
 export * from "./resources/guild-events.ts";
@@ -26,7 +26,6 @@ export * from "./resources/interactions.ts";
 export * from "./resources/invites.ts";
 export * from "./resources/messages.ts";
 export * from "./resources/polls.ts";
-export * from "./resources/role-connections.ts";
 export * from "./resources/skus.ts";
 export * from "./resources/soundboards.ts";
 export * from "./resources/stages.ts";

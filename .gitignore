@@ -43,5 +43,4 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 bot.gen.ts
 .dressed
 
-# TODO Remove this
-**/make/out.ts
+generated.resources.ts

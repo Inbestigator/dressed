@@ -1,9 +1,8 @@
 import { writeFileSync } from "node:fs";
-import { $ } from "bun";
 import data from "./data.json" with { type: "json" };
 
 writeFileSync(
-  "out.ts",
+  "./src/generated.resources.ts",
   `
 import {
   Routes,
@@ -25,9 +24,9 @@ import {
     ),
   ).filter(Boolean)}
 } from "discord-api-types/v10";
-import type { RawFile } from "../types/file.ts";
-import { callDiscord } from "../utils/call-discord.ts";
-import { botEnv } from "../utils/env.ts";
+import type { RawFile } from "./types/file.ts";
+import { callDiscord } from "./utils/call-discord.ts";
+import { botEnv } from "./utils/env.ts";
 
 ${data.routes
   .map(
@@ -86,4 +85,5 @@ export async function ${name}(${params.filter((p) => !p.includes("<")).map((p) =
 `.trim(),
 );
 
-await $`bun --bun biome check --write --vcs-enabled=false`;
+// import { $ } from "bun";
+// await $`bun --bun biome check --write --vcs-enabled=false`;
