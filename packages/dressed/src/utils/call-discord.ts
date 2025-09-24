@@ -23,6 +23,11 @@ export async function callDiscord(
   const url = new URL(RouteBases.api + endpoint);
   options.method ??= "GET";
 
+  if (typeof options.body === "object" && options.body !== null) {
+    if ("files" in options.body) delete options.body.files;
+    if ("file" in options.body) delete options.body.file;
+  }
+
   if (params) {
     for (const [key, value] of Object.entries(params)) {
       if (!value) continue;

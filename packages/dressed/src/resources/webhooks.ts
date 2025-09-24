@@ -127,14 +127,11 @@ export async function executeWebhook<T extends RESTPostAPIWebhookWithTokenQuery>
     data = { content: data };
   }
 
-  const files = data.files;
-  delete data.files;
-
   const res = await callDiscord(Routes.webhook(webhook, token), {
     method: "POST",
     body: data,
     params: options,
-    files,
+    files: data.files,
   });
 
   return res.json();
@@ -180,14 +177,11 @@ export async function editWebhookMessage(
     data = { content: data };
   }
 
-  const files = data.files;
-  delete data.files;
-
   const res = await callDiscord(Routes.webhookMessage(webhook, token, message), {
     method: "PATCH",
     body: data,
     params: options,
-    files,
+    files: data.files,
   });
 
   return res.json();

@@ -28,6 +28,12 @@
                   "title": "URL parameter",
                   "pattern": "^url\\.[^<?]+(?:<[^?]+)?\\??$",
                   "examples": ["url.key", "url.key?", "url.key<value", "url.key<value?"]
+                },
+                {
+                  "type": "string",
+                  "title": "Var parameter",
+                  "pattern": "^var\\..+$",
+                  "examples": ["var.key", "var.key?"]
                 }
               ]
             },
@@ -36,10 +42,23 @@
           "overrides": {
             "type": "object",
             "properties": {
+              "apiRoute": {
+                "type": "string"
+              },
+              "dangerousExtraLogic": {
+                "type": "string"
+              },
+              "dataType": {
+                "type": "string"
+              },
+              "imports": { "type": "array", "items": { "type": "string" } },
+              "messageKey": {
+                "type": "string"
+              },
               "name": {
                 "type": "string"
               },
-              "apiRoute": {
+              "returnType": {
                 "type": "string"
               }
             },
@@ -48,7 +67,7 @@
           "flags": {
             "type": "array",
             "items": {
-              "enum": ["returnVoid", "deprecated"]
+              "enum": ["deprecated", "hasFiles", "hasStringableContent", "singlefile", "returnVoid"]
             },
             "uniqueItems": true
           },

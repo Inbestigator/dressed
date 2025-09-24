@@ -260,6 +260,235 @@
         ],
         "see": "/docs/resources/auto-moderation#delete-auto-moderation-rule"
       }
+    },
+    {
+      "key": "GetAPIChannel",
+      "params": ["url.channelId"],
+      "docs": {
+        "description": "Get a channel by ID.",
+        "see": "/docs/resources/channel#get-channel"
+      }
+    },
+    {
+      "key": "PatchAPIChannel",
+      "params": ["url.channelId", "data"],
+      "docs": {
+        "description": "Update a channel's settings.",
+        "see": "/docs/resources/channel#modify-channel"
+      }
+    },
+    {
+      "key": "DeleteAPIChannel",
+      "params": ["url.channelId"],
+      "docs": {
+        "description": "Delete a channel, or close a private message.",
+        "infos": [
+          "Requires the `MANAGE_CHANNELS` permission for the guild, or `MANAGE_THREADS` if the channel is a thread.",
+          "For Community guilds, the Rules or Guidelines channel and the Community Updates channel cannot be deleted."
+        ],
+        "warns": [
+          "Deleting a guild channel cannot be undone. Use this with caution, as it is impossible to undo this action when performed on a guild channel. In contrast, when used with a private message, it is possible to undo the action by opening a private message with the recipient again."
+        ],
+        "see": "/docs/resources/channel#deleteclose-channel"
+      }
+    },
+    {
+      "key": "PutAPIChannelPermission",
+      "params": ["url.channelId", "url.overwriteId"],
+      "overrides": { "name": "modifyChannelPermissions" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Edit the channel permission overwrites for a user or role in a channel.",
+        "infos": [
+          "Only usable for guild channels.",
+          "Requires the `MANAGE_ROLES` permission.",
+          "Only permissions your bot has in the guild or parent channel (if applicable) can be allowed/denied (unless your bot has a `MANAGE_ROLES` overwrite in the channel)."
+        ],
+        "see": "/docs/resources/channel#edit-channel-permissions"
+      }
+    },
+    {
+      "key": "GetAPIChannelInvites",
+      "params": ["url.channelId"],
+      "docs": {
+        "description": "Returns a list of [invite](/docs/resources/invite#invite-object) objects (with [invite metadata](/docs/resources/invite#invite-metadata-object)) for the channel.",
+        "infos": ["Only usable for guild channels.", "Requires the `MANAGE_CHANNELS` permission."],
+        "see": "/docs/resources/channel#get-channel-invites"
+      }
+    },
+    {
+      "key": "PostAPIChannelInvite",
+      "params": ["url.channelId", "data"],
+      "overrides": { "apiRoute": "channelInvites" },
+      "docs": {
+        "description": "Create a new [invite](/docs/resources/invite#invite-object) object for the channel.",
+        "infos": ["Only usable for guild channels.", "Requires the `CREATE_INSTANT_INVITE` permission."],
+        "see": "/docs/resources/channel#create-channel-invite"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelPermission",
+      "params": ["url.channelId", "url.overwriteId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a channel permission overwrite for a user or role in a channel.",
+        "infos": ["Only usable for guild channels.", "Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/channel#delete-channel-permission"
+      }
+    },
+    {
+      "key": "PostAPIChannelFollowers",
+      "params": ["url.channelId", "data"],
+      "overrides": { "name": "followChannel" },
+      "docs": {
+        "description": "Follow an Announcement Channel to send messages to a target channel.",
+        "infos": ["Requires the `MANAGE_WEBHOOKS` permission in the target channel."],
+        "see": "/docs/resources/channel#follow-announcement-channel"
+      }
+    },
+    {
+      "key": "PostAPIChannelTyping",
+      "params": ["url.channelId"],
+      "overrides": { "name": "createTypingIndicator" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Post a typing indicator for the specified channel, which expires after 10 seconds.",
+        "infos": ["Generally bots should **not** use this route."],
+        "see": "/docs/resources/channel#trigger-typing-indicator"
+      }
+    },
+    {
+      "key": "PutAPIChannelRecipient",
+      "params": ["url.channelId", "url.userId"],
+      "overrides": { "name": "addGDMMember" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Adds a recipient to a Group DM using their access token.",
+        "see": "/docs/resources/channel#group-dm-add-recipient"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelRecipient",
+      "params": ["url.channelId", "url.userId"],
+      "overrides": { "name": "removeGDMMember" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Removes a recipient from a Group DM.",
+        "see": "/docs/resources/channel#group-dm-remove-recipient"
+      }
+    },
+    {
+      "key": "PostAPIChannelThreads",
+      "params": ["url.channelId", "data", "url.messageId?"],
+      "overrides": {
+        "name": "createThread",
+        "apiRoute": "threads",
+        "dataType": "Omit<RESTPostAPIChannelThreadsJSONBody, \"type\"> & { type?: \"Public\" | \"Private\" | number; }",
+        "dangerousExtraLogic": "data.type = Number.isNaN(Number(data.type)) ? Number(data.type === \"Public\")+11 : data.type;"
+      },
+      "docs": {
+        "description": "Creates a new thread, include a message ID to start the thread from an existing message.",
+        "infos": [
+          "When called on a `GUILD_TEXT` channel, creates a `PUBLIC_THREAD`. When called on a `GUILD_ANNOUNCEMENT` channel, creates a `ANNOUNCEMENT_THREAD`.",
+          "Does not work on a [`GUILD_FORUM`](/docs/resources/channel#start-thread-in-forum-or-media-channel) or a `GUILD_MEDIA` channel.",
+          "The id of the created thread will be the same as the id of the source message, and as such a message can only have a single thread created from it."
+        ],
+        "see": "/docs/resources/channel#start-thread-from-message"
+      }
+    },
+    {
+      "key": "PostAPIGuildForumThreads",
+      "params": ["url.channelId", "data"],
+      "overrides": {
+        "name": "createForumThread",
+        "apiRoute": "threads",
+        "dataType": "Omit<RESTPostAPIGuildForumThreadsJSONBody, \"message\"> & { message: string | (RESTPostAPIChannelMessageJSONBody & { files?: RawFile[] }) }",
+        "imports": ["type RESTPostAPIChannelMessageJSONBody", "type APIThreadChannel", "type APIMessage"],
+        "returnType": "APIThreadChannel & { message: APIMessage }",
+        "messageKey": ".message"
+      },
+      "flags": ["hasFiles", "hasStringableContent"],
+      "docs": {
+        "description": "Creates a new thread in a forum or a media channel, and sends a message within the created thread.",
+        "infos": [
+          "The type of the created thread is `PUBLIC_THREAD`.",
+          "The current user must have the `SEND_MESSAGES` permission (`CREATE_PUBLIC_THREADS` is ignored)."
+        ],
+        "see": "/docs/resources/channel#start-thread-in-forum-or-media-channel"
+      }
+    },
+    {
+      "key": "PutAPIChannelThreadMembers",
+      "params": ["url.threadId", "url.userId?"],
+      "overrides": { "name": "addThreadMember", "apiRoute": "threadMembers" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Adds a member to a thread.\n * @param memberId Member to add, defaults to self",
+        "infos": ["Adding another member requires the ability to send messages in the thread."],
+        "see": "/docs/resources/channel#add-thread-member"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelThreadMembers",
+      "params": ["url.threadId", "url.userId?"],
+      "overrides": { "name": "removeThreadMember", "apiRoute": "threadMembers" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Removes a member from a thread.\n * @param memberId Member to remove, defaults to self",
+        "infos": [
+          "Requires the ability to send messages in the thread.",
+          "Removing another member also requires the thread is not archived."
+        ],
+        "see": "/docs/resources/channel#remove-thread-member"
+      }
+    },
+    {
+      "key": "GetAPIChannelThreadMember",
+      "params": ["url.threadId", "url.userId", "params?"],
+      "overrides": {
+        "name": "getThreadMember",
+        "apiRoute": "threadMembers"
+      },
+      "docs": {
+        "description": "Returns a [thread member](/docs/resources/channel#thread-member-object) object for the specified user if they are a member of the thread.",
+        "infos": [
+          "When `with_member` is set to `true`, the thread member object will include a `member` field containing a [guild member](/docs/resources/guild#guild-member-object) object."
+        ],
+        "see": "/docs/resources/channel#get-thread-member"
+      }
+    },
+    {
+      "key": "GetAPIChannelThreadMembers",
+      "params": ["url.threadId", "params?"],
+      "overrides": {
+        "name": "listThreadMembers",
+        "apiRoute": "threadMembers"
+      },
+      "docs": {
+        "description": "Returns array of [thread members](/docs/resources/channel#thread-member-object) objects that are members of the thread.",
+        "infos": [
+          "When `with_member` is set to `true`, the results will be paginated and each thread member object will include a `member` field containing a [guild member](/docs/resources/guild#guild-member-object) object."
+        ],
+        "warns": [
+          "Starting in API v11, this endpoint will always return paginated results. Paginated results can be enabled before API v11 by setting `with_member` to `true`. Read [the changelog](/docs/change-log#thread-member-details-and-pagination) for details.",
+          "This endpoint is restricted according to whether the `GUILD_MEMBERS` [Privileged Intent](/docs/events/gateway#privileged-intents) is enabled for your application."
+        ],
+        "see": "/docs/resources/channel#list-thread-members"
+      }
+    },
+    {
+      "key": "GetAPIChannelThreadsArchived",
+      "params": ["url.channelId", "url.archivedStatus:\"public\"|\"private\"", "var.joinedOnly?:boolean", "params?"],
+      "overrides": {
+        "apiRoute": "[joinedOnly ? \"channelJoinedArchivedThreads\" : \"channelThreads\"]",
+        "name": "listArchivedThreads",
+        "returnType": "RESTGetAPIChannelUsersThreadsArchivedResult",
+        "imports": ["type RESTGetAPIChannelUsersThreadsArchivedResult"]
+      },
+      "docs": {
+        "description": "Returns a list of archived threads in the channel. Alternatively, returns a list of joined private threads in the channel.",
+        "see": "/docs/resources/channel#list-private-archived-threads"
+      }
     }
   ]
 }
