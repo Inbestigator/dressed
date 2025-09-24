@@ -4,25 +4,24 @@ This guide walks you through deploying a Discord bot built with Dressed to [Clou
 
 Deploying is the last step in building your bot, it will be where Discord can send interactions and events even when you're not developing it.
 
-## Workers Project
-If you don't have a workers project yet, create one using `bun create cloudflare` with these options:
-* Hello World example
-* Worker only
-* TypeScript
-
 ## Setup
-
-1. Add the following to your `wrangler.jsonc` file:
-
-   ```jsonc title="wrangler.jsonc"
-   {
-      "main": "src/index.ts",
-	  "build": { "command": "dressed build" },
-      "compatibility_flags": ["nodejs_compat"]
-   }
+1. If you don't have a workers project yet, create a [`wrangler.jsonc`](https://developers.cloudflare.com/workers/wrangler/configuration/) file:
+	```jsonc title="wrangler.jsonc"
+   	{
+		"name": "", // The name of your worker. Alphanumeric characters and dashes only
+ 		"compatibility_date": "", // Today's date as: yyyy-mm-dd
+   	}
    ```
+2. Add the following to your `wrangler.jsonc`:
 
-2. Update your `src/index.ts` file:
+	```jsonc title="wrangler.jsonc"
+	"main": "src/index.ts",
+	"build": { "command": "dressed build" },
+	"compatibility_flags": ["nodejs_compat"]
+	```
+
+3. Create or update `src/index.ts`:
+
    ```ts title="src / index.ts"
    // @ts-ignore Generated after build
    import { commands, components, events, config } from "../.dressed";
