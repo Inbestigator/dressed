@@ -1,4 +1,5 @@
 import { writeFileSync } from "node:fs";
+import { $ } from "bun";
 import data from "./data.json" with { type: "json" };
 
 writeFileSync(
@@ -85,5 +86,4 @@ export async function ${name}(${params.filter((p) => !p.includes("<")).map((p) =
 `.trim(),
 );
 
-// import { $ } from "bun";
-// await $`bun --bun biome check --write --vcs-enabled=false`;
+await $`bun --bun biome check ./src/generated.resources.ts --write --vcs-enabled=false`;
