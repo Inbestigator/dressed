@@ -1,6 +1,3 @@
-// TODO Add resources back after
-// Types
-
 // Components
 export * from "./components/action-row.ts";
 export * from "./components/button.ts";
@@ -17,7 +14,6 @@ export * from "./components/text-input.ts";
 export * from "./components/thumbnail.ts";
 // API interactions
 export * from "./generated.resources.ts";
-export * from "./resources/guilds.ts";
 export * from "./resources/interactions.ts";
 export * from "./resources/invites.ts";
 export * from "./resources/messages.ts";
@@ -29,6 +25,7 @@ export * from "./resources/stickers.ts";
 export * from "./resources/users.ts";
 export * from "./resources/voice.ts";
 export * from "./resources/webhooks.ts";
+// Types
 export type { CommandConfig } from "./types/config.ts";
 export type { Event } from "./types/event.ts";
 export type {

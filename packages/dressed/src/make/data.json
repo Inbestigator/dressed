@@ -426,7 +426,7 @@
       "overrides": { "name": "addThreadMember", "apiRoute": "threadMembers" },
       "flags": ["returnVoid"],
       "docs": {
-        "description": "Adds a member to a thread.\n * @param memberId Member to add, defaults to self",
+        "description": "Adds a member to a thread.\n * @param userId Member to add, defaults to self",
         "infos": ["Adding another member requires the ability to send messages in the thread."],
         "see": "/docs/resources/channel#add-thread-member"
       }
@@ -437,7 +437,7 @@
       "overrides": { "name": "removeThreadMember", "apiRoute": "threadMembers" },
       "flags": ["returnVoid"],
       "docs": {
-        "description": "Removes a member from a thread.\n * @param memberId Member to remove, defaults to self",
+        "description": "Removes a member from a thread.\n * @param userId Member to remove, defaults to self",
         "infos": [
           "Requires the ability to send messages in the thread.",
           "Removing another member also requires the thread is not archived."
@@ -809,6 +809,471 @@
         "description": "Deletes the template.",
         "infos": ["Requires the `MANAGE_GUILD` permission."],
         "see": "/docs/resources/guild-template#delete-guild-template"
+      }
+    },
+    {
+      "key": "GetAPIGuild",
+      "params": ["url.guildId", "params?"],
+      "docs": {
+        "description": "Returns the [guild](/docs/resources/guild#guild-object) object for the given id.",
+        "infos": [
+          "If `with_counts` is set to `true`, this endpoint will also return `approximate_member_count` and `approximate_presence_count` for the guild."
+        ],
+        "see": "/docs/resources/guild#get-guild"
+      }
+    },
+    {
+      "key": "GetAPIGuildPreview",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns the [guild preview](/docs/resources/guild#guild-preview-object) object for the given id.",
+        "infos": [
+          "If the user is not in the guild, then the guild must be [discoverable](/docs/resources/guild#guild-object-guild-features)."
+        ],
+        "see": "/docs/resources/guild#get-guild-preview"
+      }
+    },
+    {
+      "key": "PatchAPIGuild",
+      "params": ["url.guildId", "data"],
+      "docs": {
+        "description": "Modify a guild's settings.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "warns": [
+          "Attempting to add or remove the `COMMUNITY` [guild feature](/docs/resources/guild#guild-object-guild-features) requires the `ADMINISTRATOR` permission."
+        ],
+        "see": "/docs/resources/guild#modify-guild"
+      }
+    },
+    {
+      "key": "GetAPIGuildChannels",
+      "params": ["url.guildId"],
+      "overrides": { "name": "listChannels" },
+      "docs": {
+        "description": "Returns a list of guild [channel](/docs/resources/channel#channel-object) objects.",
+        "infos": ["Does not include threads."],
+        "see": "/docs/resources/guild#get-guild-channels"
+      }
+    },
+    {
+      "key": "PostAPIGuildChannel",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildChannels", "name": "createChannel" },
+      "docs": {
+        "description": "Create a new [channel](/docs/resources/channel#channel-object) object for the guild.",
+        "infos": [
+          "Requires the `MANAGE_CHANNELS` permission. If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.",
+          "Setting `MANAGE_ROLES` permission in channels is only possible for guild administrators."
+        ],
+        "see": "/docs/resources/guild#create-guild-channel"
+      }
+    },
+    {
+      "key": "PatchAPIGuildChannelPositions",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildChannels", "name": "modifyChannelPositions" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Modify the positions of a set of [channel](/docs/resources/channel#channel-object) objects for the guild.",
+        "infos": ["Requires the `MANAGE_GUILD` permission.", "Only channels to be modified are required."],
+        "see": "/docs/resources/guild#modify-guild-channel-positions"
+      }
+    },
+    {
+      "key": "GetAPIGuildThreads",
+      "params": ["url.guildId"],
+      "overrides": { "apiRoute": "guildActiveThreads", "name": "listActiveThreads" },
+      "docs": {
+        "description": "Returns all active threads in the guild, including public and private threads.",
+        "infos": ["Threads are ordered by their `id`, in descending order."],
+        "see": "/docs/resources/guild#list-active-guild-threads"
+      }
+    },
+    {
+      "key": "GetAPIGuildMember",
+      "params": ["url.guildId", "url.memberId"],
+      "overrides": { "name": "getMember" },
+      "docs": {
+        "description": "Returns a [guild member](/docs/resources/guild#guild-member-object) object for the specified user.",
+        "see": "/docs/resources/guild#get-guild-member"
+      }
+    },
+    {
+      "key": "GetAPIGuildMembers",
+      "params": ["url.guildId", "params?"],
+      "overrides": { "name": "listMembers" },
+      "docs": {
+        "description": "Returns a list of [guild member](/docs/resources/guild#guild-member-object) objects that are members of the guild.",
+        "warns": [
+          "This endpoint is restricted according to whether the `GUILD_MEMBERS` [Privileged Intent](/docs/events/gateway#privileged-intents) is enabled for your application."
+        ],
+        "see": "/docs/resources/guild#list-guild-members"
+      }
+    },
+    {
+      "key": "GetAPIGuildMembersSearch",
+      "params": ["url.guildId", "params?"],
+      "overrides": { "name": "searchMembers" },
+      "docs": {
+        "description": "Returns a list of [guild member](/docs/resources/guild#guild-member-object) objects whose username or nickname starts with a provided string.",
+        "see": "/docs/resources/guild#search-guild-members"
+      }
+    },
+    {
+      "key": "PutAPIGuildMember",
+      "params": ["url.guildId", "url.userId", "data"],
+      "overrides": { "name": "addMember" },
+      "docs": {
+        "description": "Adds a user to the guild, provided you have a valid oauth2 access token for the user with the `guilds.join` scope.",
+        "infos": [
+          "The Authorization header must be a Bot token (belonging to the same application used for authorization), and the bot must be a member of the guild with `CREATE_INSTANT_INVITE` permission."
+        ],
+        "see": "/docs/resources/guild#add-guild-member"
+      }
+    },
+    {
+      "key": "PatchAPIGuildMember",
+      "params": ["url.guildId", "url.userId", "data"],
+      "overrides": { "name": "modifyMember" },
+      "docs": {
+        "description": "Modify attributes of a [guild member](/docs/resources/guild#guild-member-object).",
+        "see": "/docs/resources/guild#modify-guild-member"
+      }
+    },
+    {
+      "key": "PatchAPIGuildMember",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "modifyCurrentMember" },
+      "docs": {
+        "description": "Modifies the current member in a guild.",
+        "see": "/docs/resources/guild#modify-current-member"
+      }
+    },
+    {
+      "key": "PutAPIGuildMemberRole",
+      "params": ["url.guildId", "url.userId", "url.roleId"],
+      "overrides": { "name": "addMemberRole" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Adds a role to a [guild member](/docs/resources/guild#guild-member-object).",
+        "infos": ["Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/guild#add-guild-member-role"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildMemberRole",
+      "params": ["url.guildId", "url.userId", "url.roleId"],
+      "overrides": { "name": "removeMemberRole" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Removes a role from a [guild member](/docs/resources/guild#guild-member-object).",
+        "infos": ["Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/guild#remove-guild-member-role"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildMember",
+      "params": ["url.guildId", "url.userId"],
+      "overrides": { "name": "removeMember" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Remove a member from a guild.",
+        "infos": ["Requires `KICK_MEMBERS` permission."],
+        "see": "/docs/resources/guild#remove-guild-member"
+      }
+    },
+    {
+      "key": "GetAPIGuildBans",
+      "params": ["url.guildId", "params?"],
+      "overrides": { "name": "listBans" },
+      "docs": {
+        "description": "Returns a list of [ban](/docs/resources/guild#ban-object) objects for the users banned from this guild.",
+        "infos": ["Requires `BAN_MEMBERS` permission."],
+        "see": "/docs/resources/guild#get-guild-bans"
+      }
+    },
+    {
+      "key": "GetAPIGuildBan",
+      "params": ["url.guildId", "url.userId"],
+      "overrides": { "name": "getBan" },
+      "docs": {
+        "description": "Returns a [ban](/docs/resources/guild#ban-object) object for the given user or a 404 not found if the ban cannot be found.",
+        "infos": ["Requires `BAN_MEMBERS` permission."],
+        "see": "/docs/resources/guild#get-guild-ban"
+      }
+    },
+    {
+      "key": "PutAPIGuildBan",
+      "params": ["url.guildId", "url.userId", "data"],
+      "overrides": { "name": "createBan" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Create a guild ban, and optionally delete previous messages sent by the banned user.",
+        "infos": ["Requires `BAN_MEMBERS` permission."],
+        "see": "/docs/resources/guild#create-guild-ban"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildBan",
+      "params": ["url.guildId", "url.userId"],
+      "overrides": { "name": "deleteBan" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Remove the ban for a user.",
+        "infos": ["Requires `BAN_MEMBERS` permission."],
+        "see": "/docs/resources/guild#remove-guild-ban"
+      }
+    },
+    {
+      "key": "PostAPIGuildBulkBan",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "bulkCreateBan" },
+      "docs": {
+        "description": "Ban up to 200 users from a guild, and optionally delete previous messages sent by the banned users.",
+        "infos": [
+          "Requires both the `BAN_MEMBERS` and `MANAGE_GUILD` permissions.",
+          "If none of the users could be banned, an error response code `500000: Failed to ban users` is returned instead."
+        ],
+        "see": "/docs/resources/guild#bulk-guild-ban"
+      }
+    },
+    {
+      "key": "GetAPIGuildRoles",
+      "params": ["url.guildId"],
+      "overrides": { "name": "listRoles" },
+      "docs": {
+        "description": "Returns a list of [role](/docs/topics/permissions#role-object) objects for the guild.",
+        "see": "/docs/resources/guild#get-guild-roles"
+      }
+    },
+    {
+      "key": "GetAPIGuildRole",
+      "params": ["url.guildId", "url.roleId"],
+      "overrides": { "name": "getRole" },
+      "docs": {
+        "description": "Returns a [role](/docs/topics/permissions#role-object) object for the specified role.",
+        "see": "/docs/resources/guild#get-guild-role"
+      }
+    },
+    {
+      "key": "PostAPIGuildRole",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildRoles", "name": "createRole" },
+      "docs": {
+        "description": "Create a new [role](/docs/topics/permissions#role-object) for the guild.",
+        "infos": ["Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/guild#create-guild-role"
+      }
+    },
+    {
+      "key": "PatchAPIGuildRolePositions",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildRoles", "name": "modifyRolePositions" },
+      "docs": {
+        "description": "Modify the positions of a set of [role](/docs/topics/permissions#role-object) objects for the guild.",
+        "infos": ["Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/guild#modify-guild-role-positions"
+      }
+    },
+    {
+      "key": "PatchAPIGuildRole",
+      "params": ["url.guildId", "url.roleId", "data"],
+      "overrides": { "name": "modifyRole" },
+      "docs": {
+        "description": "Modify a guild role.",
+        "infos": ["Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/guild#modify-guild-role"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildRole",
+      "params": ["url.guildId", "url.roleId"],
+      "overrides": { "name": "deleteRole" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a guild role.",
+        "infos": ["Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/guild#delete-guild-role"
+      }
+    },
+    {
+      "key": "GetAPIGuildPruneCount",
+      "params": ["url.guildId", "params?"],
+      "overrides": { "apiRoute": "guildPrune", "name": "getPruneCount" },
+      "docs": {
+        "description": "Returns an object with one `pruned` key indicating the number of members that would be removed in a prune operation.",
+        "infos": [
+          "By default, prune will not remove users with roles. You can optionally include specific roles in your prune by providing the `include_roles` parameter. Any inactive user that has a subset of the provided role(s) will be counted in the prune and users with additional roles will not."
+        ],
+        "see": "/docs/resources/guild#get-guild-prune-count"
+      }
+    },
+    {
+      "key": "PostAPIGuildPrune",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "startPrune" },
+      "docs": {
+        "description": "Begin a prune operation.",
+        "infos": [
+          "Requires the `MANAGE_GUILD` and `KICK_MEMBERS` permissions.",
+          "By default, prune will not remove users with roles. You can optionally include specific roles in your prune by providing the `include_roles` parameter. Any inactive user that has a subset of the provided role(s) will be included in the prune and users with additional roles will not."
+        ],
+        "see": "/docs/resources/guild#begin-guild-prune"
+      }
+    },
+    {
+      "key": "GetAPIGuildVoiceRegions",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns a list of [voice region](/docs/resources/voice#voice-region-object) objects for the guild.",
+        "infos": ["Unlike the similar `/voice` route, this returns VIP servers when the guild is VIP-enabled."],
+        "see": "/docs/resources/guild#get-guild-voice-regions"
+      }
+    },
+    {
+      "key": "GetAPIGuildInvites",
+      "params": ["url.guildId"],
+      "overrides": { "name": "listInvites" },
+      "docs": {
+        "description": "Returns a list of [invite](/docs/resources/invite#invite-object) objects.",
+        "infos": [
+          "Requires the `MANAGE_GUILD` or `VIEW_AUDIT_LOG` permission.",
+          "[Invite Metadata](/docs/resources/invite#invite-metadata-object) is included with the `MANAGE_GUILD` permission."
+        ],
+        "see": "/docs/resources/guild#get-guild-invites"
+      }
+    },
+    {
+      "key": "GetAPIGuildIntegrations",
+      "params": ["url.guildId"],
+      "overrides": { "name": "listIntegrations" },
+      "docs": {
+        "description": "Returns a list of [integration](/docs/resources/guild#integration-object) objects for the guild.",
+        "infos": [
+          "Requires the `MANAGE_GUILD` permission.",
+          "This endpoint returns a maximum of 50 integrations. If a guild has more integrations, they cannot be accessed."
+        ],
+        "see": "/docs/resources/guild#get-guild-integrations"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildIntegration",
+      "params": ["url.guildId", "url.integrationId"],
+      "overrides": { "name": "deleteIntegration" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete the attached [integration](/docs/resources/guild#integration-object) object for the guild. Deletes any associated webhooks and kicks the associated bot if there is one.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild#delete-guild-integration"
+      }
+    },
+    {
+      "key": "GetAPIGuildWidgetSettings",
+      "params": ["url.guildId"],
+      "overrides": { "name": "getWidgetSettings" },
+      "docs": {
+        "description": "Returns a [guild widget settings](/docs/resources/guild#guild-widget-settings-object) object.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild#get-guild-widget-settings"
+      }
+    },
+    {
+      "key": "PatchAPIGuildWidgetSettings",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "modifyWidgetSettings" },
+      "docs": {
+        "description": "Modify a [guild widget settings](/docs/resources/guild#guild-widget-settings-object) object for the guild. All attributes may be passed in with JSON and modified.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild#modify-guild-widget-settings"
+      }
+    },
+    {
+      "key": "GetAPIGuildWidgetJSON",
+      "params": ["url.guildId"],
+      "overrides": { "name": "getWidgetJSON" },
+      "docs": {
+        "description": "Returns the [widget](/docs/resources/guild#guild-widget-object) for the guild.",
+        "see": "/docs/resources/guild#get-guild-widget"
+      }
+    },
+    {
+      "key": "GetAPIGuildVanityUrl",
+      "params": ["url.guildId"],
+      "overrides": { "name": "getVanityInvite" },
+      "docs": {
+        "description": "Returns a partial [invite](/docs/resources/invite#invite-object) object for guilds with that feature enabled.",
+        "infos": [
+          "Requires the `MANAGE_GUILD` permission.",
+          "`code` will be null if a vanity url for the guild is not set.",
+          "This endpoint is required to get the usage count of the vanity invite, but the invite code can be accessed as `vanity_url_code` in the [guild object](/docs/resources/guild#guild-object) without having the `MANAGE_GUILD` permission."
+        ],
+        "see": "/docs/resources/guild#get-guild-vanity-url"
+      }
+    },
+    {
+      "key": "GetAPIGuildWidgetImage",
+      "params": ["url.guildId", "params?"],
+      "overrides": { "name": "getWidgetImage" },
+      "docs": {
+        "description": "Returns a PNG image widget for the guild.",
+        "infos": ["Requires no permissions or authentication."],
+        "see": "/docs/resources/guild#get-guild-widget-image"
+      }
+    },
+    {
+      "key": "GetAPIGuildWelcomeScreen",
+      "params": ["url.guildId"],
+      "overrides": { "name": "getWelcomeScreen" },
+      "docs": {
+        "description": "Returns the [Welcome Screen](/docs/resources/guild#welcome-screen-object) object for the guild.",
+        "infos": ["If the welcome screen is not enabled, the `MANAGE_GUILD` permission is required."],
+        "see": "/docs/resources/guild#get-guild-welcome-screen"
+      }
+    },
+    {
+      "key": "PatchAPIGuildWelcomeScreen",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "modifyWelcomeScreen" },
+      "docs": {
+        "description": "Modify the guild's [Welcome Screen](/docs/resources/guild#welcome-screen-object).",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild#modify-guild-welcome-screen"
+      }
+    },
+    {
+      "key": "GetAPIGuildOnboarding",
+      "params": ["url.guildId"],
+      "overrides": { "name": "getOnboarding" },
+      "docs": {
+        "description": "Returns the [Onboarding](/docs/resources/guild#guild-onboarding-object) object for the guild.",
+        "see": "/docs/resources/guild#get-guild-onboarding"
+      }
+    },
+    {
+      "key": "PutAPIGuildOnboarding",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "modifyOnboarding" },
+      "docs": {
+        "description": "Modifies the onboarding configuration of the guild.",
+        "infos": [
+          "Requires the `MANAGE_GUILD` and `MANAGE_ROLES` permissions.",
+          "Onboarding enforces constraints when enabled. These constraints are that there must be at least 7 Default Channels and at least 5 of them must allow sending messages to the @everyone role. The `mode` field modifies what is considered when enforcing these constraints."
+        ],
+        "see": "/docs/resources/guild#modify-guild-onboarding"
+      }
+    },
+    {
+      "key": "PutAPIGuildIncidentActions",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "modifyGuildIncidentActions" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Modifies the incident actions of the guild.",
+        "infos": [
+          "Requires the `MANAGE_GUILD` permission.",
+          "Both `invites_disabled_until` and `dms_disabled_until` can be enabled for a maximal timespan of 24 hours in the future."
+        ],
+        "see": "/docs/resources/guild#modify-incident-actions"
       }
     }
   ]
