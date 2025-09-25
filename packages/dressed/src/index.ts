@@ -15,13 +15,9 @@ export * from "./components/thumbnail.ts";
 // API interactions
 export * from "./generated.resources.ts";
 export * from "./resources/interactions.ts";
-export * from "./resources/invites.ts";
-export * from "./resources/messages.ts";
-export * from "./resources/polls.ts";
-export * from "./resources/skus.ts";
-export * from "./resources/soundboards.ts";
 export * from "./resources/stages.ts";
 export * from "./resources/stickers.ts";
+export * from "./resources/subscriptions.ts";
 export * from "./resources/users.ts";
 export * from "./resources/voice.ts";
 export * from "./resources/webhooks.ts";

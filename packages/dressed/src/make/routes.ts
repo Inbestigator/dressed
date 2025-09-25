@@ -9,21 +9,27 @@ import {
   Routes,
   ${Array.from(
     new Set(
-      data.routes.flatMap(({ key, params, flags, overrides }) => {
-        const defaultDataType = `type REST${key}JSONBody`;
-        const defaultReturnType = `type REST${key}Result`;
-        return [
-          params.some((p) => p.startsWith("data")) ? defaultDataType : undefined,
-          params.some((p) => p.startsWith("params")) ? `type REST${key}Query` : undefined,
-          params.some((p) => p.startsWith("url.") && !p.includes("<")) ? "type Snowflake" : undefined,
-          !flags?.includes("returnVoid") && (!overrides?.returnType || overrides.returnType.includes(defaultReturnType))
-            ? defaultReturnType
-            : undefined,
-          overrides?.imports,
-        ];
-      }),
+      data.routes
+        .flatMap(({ key, params, flags, overrides }) => {
+          const defaultDataType = `REST${key}JSONBody`;
+          const defaultReturnType = `REST${key}Result`;
+          return [
+            params.some((p) => p.startsWith("data")) &&
+            (!overrides?.dataType || overrides.dataType.includes(defaultDataType))
+              ? `type ${defaultDataType}`
+              : undefined,
+            params.some((p) => p.startsWith("params")) ? `type REST${key}Query` : undefined,
+            params.some((p) => p.startsWith("url.") && !p.includes("<")) ? "type Snowflake" : undefined,
+            !flags?.includes("returnVoid") &&
+            (!overrides?.returnType || overrides.returnType.includes(defaultReturnType))
+              ? `type ${defaultReturnType}`
+              : undefined,
+            overrides?.imports,
+          ];
+        })
+        .filter(Boolean),
     ),
-  ).filter(Boolean)}
+  )}
 } from "discord-api-types/v10";
 import type { RawFile } from "./types/file.ts";
 import { callDiscord } from "./utils/call-discord.ts";
@@ -57,7 +63,7 @@ ${data.routes
       const splitRoutes = routeKey.match(/[A-Z][a-z]+/g) ?? [];
       apiRoute ??= routeKey;
       dangerousExtraLogic ??= "";
-      dataType ??= `REST${key}JSONBody${flags?.includes("hasFiles") ? ` & { file${flags.includes("singlefile") ? "" : "s"}?: RawFile${flags.includes("singlefile") ? "" : "[]"} }` : ""}`;
+      dataType ??= `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}JSONBody${flags?.includes("hasFiles") ? ` & { file${flags.includes("singlefile") ? "" : "s"}?: RawFile${flags.includes("singlefile") ? "" : "[]"} }` : ""}`;
       messageKey ??= "";
       name ??=
         prefix +

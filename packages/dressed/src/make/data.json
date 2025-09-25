@@ -268,12 +268,18 @@
     {
       "key": "GetAPIChannel",
       "params": ["url.channelId"],
-      "docs": { "description": "Get a channel by ID.", "see": "/docs/resources/channel#get-channel" }
+      "docs": {
+        "description": "Get a channel by ID.",
+        "see": "/docs/resources/channel#get-channel"
+      }
     },
     {
       "key": "PatchAPIChannel",
       "params": ["url.channelId", "data"],
-      "docs": { "description": "Update a channel's settings.", "see": "/docs/resources/channel#modify-channel" }
+      "docs": {
+        "description": "Update a channel's settings.",
+        "see": "/docs/resources/channel#modify-channel"
+      }
     },
     {
       "key": "DeleteAPIChannel",
@@ -400,8 +406,8 @@
       "params": ["url.channelId", "data"],
       "overrides": {
         "apiRoute": "threads",
-        "dataType": "Omit<RESTPostAPIGuildForumThreadsJSONBody, \"message\"> & { message: string | (RESTPostAPIChannelMessageJSONBody & { files?: RawFile[] }) }",
-        "imports": ["type RESTPostAPIChannelMessageJSONBody", "type APIThreadChannel", "type APIMessage"],
+        "dataType": "Omit<RESTPostAPIGuildForumThreadsJSONBody, \"message\"> & { message: string | (RESTPostAPIGuildForumThreadsJSONBody[\"message\"] & { files?: RawFile[] }) }",
+        "imports": ["type APIThreadChannel", "type APIMessage"],
         "returnType": "APIThreadChannel & { message: APIMessage }",
         "messageKey": ".message"
       },
@@ -586,14 +592,20 @@
       "key": "PatchAPIApplicationEmoji",
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId", "data"],
       "overrides": { "name": "modifyApplicationEmoji" },
-      "docs": { "description": "Modify the given emoji.", "see": "/docs/resources/emoji#modify-application-emoji" }
+      "docs": {
+        "description": "Modify the given emoji.",
+        "see": "/docs/resources/emoji#modify-application-emoji"
+      }
     },
     {
       "key": "DeleteAPIApplicationEmoji",
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId"],
       "overrides": { "name": "deleteApplicationEmoji" },
       "flags": ["returnVoid"],
-      "docs": { "description": "Delete the given emoji.", "see": "/docs/resources/emoji#delete-application-emoji" }
+      "docs": {
+        "description": "Delete the given emoji.",
+        "see": "/docs/resources/emoji#delete-application-emoji"
+      }
     },
     {
       "key": "GetAPIEntitlements",
@@ -606,7 +618,10 @@
     {
       "key": "GetAPIEntitlement",
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
-      "docs": { "description": "Returns an entitlement.", "see": "/docs/resources/entitlement#get-entitlement" }
+      "docs": {
+        "description": "Returns an entitlement.",
+        "see": "/docs/resources/entitlement#get-entitlement"
+      }
     },
     {
       "key": "PostAPIEntitlement",
@@ -723,7 +738,7 @@
     },
     {
       "key": "GetAPITemplate",
-      "params": ["url.code"],
+      "params": ["url.code: string"],
       "docs": {
         "description": "Returns a [guild template](/docs/resources/guild-template#guild-template-object) object for the given code.",
         "see": "/docs/resources/guild-template#get-guild-template"
@@ -749,7 +764,7 @@
     },
     {
       "key": "PutAPIGuildTemplate",
-      "params": ["url.guildId", "url.code"],
+      "params": ["url.guildId", "url.code: string"],
       "overrides": {
         "imports": ["type RESTPutAPIGuildTemplateSyncResult"],
         "name": "syncTemplate",
@@ -763,7 +778,7 @@
     },
     {
       "key": "PatchAPIGuildTemplate",
-      "params": ["url.guildId", "url.code", "data"],
+      "params": ["url.guildId", "url.code: string", "data"],
       "docs": {
         "description": "Modifies the template's metadata.",
         "infos": ["Requires the `MANAGE_GUILD` permission."],
@@ -772,7 +787,7 @@
     },
     {
       "key": "DeleteAPIGuildTemplate",
-      "params": ["url.guildId", "url.code"],
+      "params": ["url.guildId", "url.code: string"],
       "docs": {
         "description": "Deletes the template.",
         "infos": ["Requires the `MANAGE_GUILD` permission."],
@@ -1228,6 +1243,348 @@
           "Both `invites_disabled_until` and `dms_disabled_until` can be enabled for a maximal timespan of 24 hours in the future."
         ],
         "see": "/docs/resources/guild#modify-incident-actions"
+      }
+    },
+    {
+      "key": "GetAPIInvite",
+      "params": ["url.code: string", "params?"],
+      "docs": {
+        "description": "Returns an [invite](/docs/resources/invite#invite-object) object for the given code.",
+        "see": "/docs/resources/invite#get-invite"
+      }
+    },
+    {
+      "key": "DeleteAPIInvite",
+      "params": ["url.code: string"],
+      "docs": {
+        "description": "Delete an invite.",
+        "infos": [
+          "Requires the `MANAGE_CHANNELS` permission on the channel this invite belongs to, or `MANAGE_GUILD` to remove any invite across the guild."
+        ],
+        "see": "/docs/resources/invite#delete-invite"
+      }
+    },
+    {
+      "key": "GetAPIChannelMessages",
+      "params": ["url.channelId", "params?"],
+      "docs": {
+        "description": "Retrieves the messages in a channel.",
+        "infos": [
+          "If operating on a guild channel, this endpoint requires the current user to have the `VIEW_CHANNEL` permission. If the channel is a voice channel, they must _also_ have the `CONNECT` permission.",
+          "If the current user is missing the `READ_MESSAGE_HISTORY` permission in the channel, then no messages will be returned.",
+          "The `before`, `after`, and `around` parameters are mutually exclusive, only one may be passed at a time."
+        ],
+        "see": "/docs/resources/message#get-channel-messages"
+      }
+    },
+    {
+      "key": "GetAPIChannelMessage",
+      "params": ["url.channelId", "url.messageId"],
+      "docs": {
+        "description": "Retrieves a specific message in the channel.",
+        "infos": [
+          "If operating on a guild channel, this endpoint requires the current user to have the `VIEW_CHANNEL` and `READ_MESSAGE_HISTORY` permissions. If the channel is a voice channel, they must _also_ have the `CONNECT` permission."
+        ],
+        "see": "/docs/resources/message#get-channel-message"
+      }
+    },
+    {
+      "key": "PostAPIChannelMessage",
+      "params": ["url.channelId", "data"],
+      "overrides": { "apiRoute": "channelMessages" },
+      "flags": ["hasFiles", "hasStringableContent"],
+      "docs": {
+        "description": "Post a message to a guild text or DM channel.",
+        "infos": [
+          "To create a message as a reply or forward of another message, apps can include a [`message_reference`](/docs/resources/message#message-reference-structure)."
+        ],
+        "warns": [
+          "Discord may strip certain characters from message content, like invalid unicode characters or characters which cause unexpected message formatting. If you are passing user-generated strings into message content, consider sanitizing the data to prevent unexpected behavior and using `allowed_mentions` to prevent unexpected mentions."
+        ],
+        "see": "/docs/resources/message#create-message"
+      }
+    },
+    {
+      "key": "PostAPIChannelMessageCrosspost",
+      "params": ["url.channelId", "url.messageId"],
+      "overrides": { "name": "crosspostMessage" },
+      "docs": {
+        "description": "Crosspost a message in an Announcement Channel to following channels.",
+        "infos": [
+          "This endpoint requires the `SEND_MESSAGES` permission, if the current user sent the message, or additionally the `MANAGE_MESSAGES` permission, for all other messages, to be present for the current user."
+        ],
+        "see": "/docs/resources/message#crosspost-message"
+      }
+    },
+    {
+      "key": "PutAPIChannelMessageOwnReaction",
+      "params": ["url.channelId", "url.messageId", "url.emoji: string"],
+      "overrides": {
+        "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)",
+        "name": "createReaction"
+      },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Create a reaction for the message.",
+        "infos": [
+          "This endpoint requires the `READ_MESSAGE_HISTORY` permission to be present on the current user. Additionally, if nobody else has reacted to the message using this emoji, this endpoint requires the `ADD_REACTIONS` permission to be present on the current user."
+        ],
+        "see": "/docs/resources/message#create-reaction"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelMessageUserReaction",
+      "params": ["url.channelId", "url.messageId", "url.emoji: string", "url.userId?"],
+      "overrides": {
+        "dangerousExtraLogic": "emoji=encodeURIComponent(emoji); userId??=\"@me\"",
+        "name": "deleteReaction"
+      },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a user's reaction, defaults to removing the current user's reaction for a message.",
+        "see": "/docs/resources/message#delete-reaction"
+      }
+    },
+    {
+      "key": "GetAPIChannelMessageReactionUsers",
+      "params": ["url.channelId", "url.messageId", "url.emoji: string", "params?"],
+      "overrides": {
+        "apiRoute": "channelMessageReaction",
+        "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)",
+        "name": "listReactions"
+      },
+      "docs": {
+        "description": "Get a list of users that reacted with this emoji.",
+        "see": "/docs/resources/message#get-reactions"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelAllMessageReactions",
+      "params": ["url.channelId", "url.messageId"],
+      "overrides": { "apiRoute": "channelMessageAllReactions", "name": "deleteAllReactions" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Deletes all reactions on a message.",
+        "infos": ["This endpoint requires the `MANAGE_MESSAGES` permission to be present on the current user."],
+        "see": "/docs/resources/message#delete-all-reactions"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelMessageReactionUsers",
+      "params": ["url.channelId", "url.messageId", "url.emoji: string"],
+      "overrides": {
+        "apiRoute": "channelMessageReaction",
+        "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)",
+        "name": "deleteAllEmojiReactions"
+      },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Deletes all the reactions for a given emoji on a message.",
+        "infos": ["This endpoint requires the `MANAGE_MESSAGES` permission to be present on the current user."],
+        "see": "/docs/resources/message#delete-all-reactions-for-emoji"
+      }
+    },
+    {
+      "key": "PatchAPIChannelMessage",
+      "params": ["url.channelId", "url.messageId", "data"],
+      "overrides": { "name": "editMessage" },
+      "flags": ["hasFiles", "hasStringableContent"],
+      "docs": {
+        "description": "Edit a previously sent message.",
+        "infos": [
+          "The fields `content`, `embeds`, `flags` and `components` can be edited by the original message author. Other users can only edit `flags` and only if they have the `MANAGE_MESSAGES` permission in the corresponding channel.",
+          "When specifying flags, ensure to include all previously set flags/bits in addition to ones that you are modifying.",
+          "When the `content` field is edited, the arrays `mentions` and `mention_roles` and the boolean `mention_everyone` in the message object will be reconstructed from scratch based on the new content.",
+          "When the message flag `IS_COMPONENTS_V2` is set, the reconstructed arrays and boolean are based on the edited content in the `components` array. The `allowed_mentions` field of the edit request controls how this happens. If there is no explicit `allowed_mentions` in the edit request, the content will be parsed with _default_ allowances, that is, without regard to whether or not an `allowed_mentions` was present in the request that originally created the message."
+        ],
+        "warns": [
+          "Starting with API v10, the `attachments` array must contain all attachments that should be present after edit, including **retained and new** attachments provided in the request body."
+        ],
+        "see": "/docs/resources/message#edit-message"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelMessage",
+      "params": ["url.channelId", "url.messageId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a message.",
+        "infos": [
+          "If operating on a guild channel and trying to delete a message that was not sent by the current user, this endpoint requires the `MANAGE_MESSAGES` permission."
+        ],
+        "see": "/docs/resources/message#delete-message"
+      }
+    },
+    {
+      "key": "PostAPIChannelMessagesBulkDelete",
+      "params": ["url.channelId", "data"],
+      "overrides": { "apiRoute": "channelBulkDelete", "name": "bulkDelete" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete multiple messages in a single request.",
+        "infos": ["This endpoint can only be used on guild channels and requires the `MANAGE_MESSAGES` permission."],
+        "warns": [
+          "This endpoint will not delete messages older than 2 weeks, and will fail with a 400 BAD REQUEST if any message provided is older than that or if any duplicate message IDs are provided."
+        ],
+        "see": "/docs/resources/message#bulk-delete-messages"
+      }
+    },
+    {
+      "key": "GetAPIChannelPins",
+      "params": ["url.channelId"],
+      "flags": ["deprecated"],
+      "docs": {
+        "description": "Gets the first 50 pinned messages in a channel, returning an array of [message](/docs/resources/message#message-object) objects on success.",
+        "infos": [
+          "Requires the `VIEW_CHANNEL` permission. If the user is missing the `READ_MESSAGE_HISTORY` permission in the channel, then no pins will be returned."
+        ],
+        "see": "/docs/resources/message#get-pinned-messages-deprecated"
+      }
+    },
+    {
+      "key": "GetAPIChannelMessagesPins",
+      "params": ["url.channelId", "params?"],
+      "overrides": { "name": "listChannelPins" },
+      "docs": {
+        "description": "Retrieves the list of pins in a channel.",
+        "infos": [
+          "Requires the `VIEW_CHANNEL` permission. If the user is missing the `READ_MESSAGE_HISTORY` permission in the channel, then no pins will be returned."
+        ],
+        "see": "/docs/resources/message#get-channel-pins"
+      }
+    },
+    {
+      "key": "PutAPIChannelMessagesPin",
+      "params": ["url.channelId", "url.messageId"],
+      "overrides": { "name": "createPin" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Pin a message in a channel.",
+        "infos": ["Requires the `PIN_MESSAGES` permission."],
+        "see": "/docs/resources/message#pin-message"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelMessagesPin",
+      "params": ["url.channelId", "url.messageId"],
+      "overrides": { "name": "deletePin" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Unpin a message in a channel.",
+        "infos": ["Requires the `PIN_MESSAGES` permission."],
+        "see": "/docs/resources/message#unpin-message"
+      }
+    },
+    {
+      "key": "GetAPIPollAnswerVoters",
+      "params": ["url.channelId", "url.messageId", "url.answerId: number", "params?"],
+      "docs": {
+        "description": "Get a list of users that voted for this specific answer.",
+        "see": "/docs/resources/poll#get-answer-voters"
+      }
+    },
+    {
+      "key": "PostAPIPollExpire",
+      "params": ["url.channelId", "url.messageId"],
+      "overrides": { "apiRoute": "expirePoll" },
+      "docs": {
+        "description": "Immediately ends the poll. You cannot end polls from other users.",
+        "see": "/docs/resources/poll#get-answer-voters"
+      }
+    },
+    {
+      "key": "GetAPISKUs",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
+      "overrides": { "apiRoute": "skus", "name": "listSKUs" },
+      "docs": {
+        "description": "Returns all SKUs for a given application.",
+        "infos": [
+          "Because of how our SKU and subscription systems work, you will see two SKUs for your subscription offering. For integration and testing entitlements for Subscriptions, you should use the SKU with `type: 5`."
+        ],
+        "see": "/docs/resources/sku#list-skus"
+      }
+    },
+    {
+      "key": "PostAPISendSoundboardSound",
+      "params": ["url.channelId", "data"],
+      "overrides": {
+        "dataType": "RESTPostAPISoundboardSendSoundJSONBody",
+        "imports": ["type RESTPostAPISoundboardSendSoundJSONBody"],
+        "name": "sendSound"
+      },
+      "docs": {
+        "description": "Send a soundboard sound to a voice channel the user is connected to.",
+        "infos": [
+          "Requires the `SPEAK` and `USE_SOUNDBOARD` permissions, and also the `USE_EXTERNAL_SOUNDS` permission if the sound is from a different server. Additionally, requires the user to be connected to the voice channel, having a [voice state](/docs/resources/voice#voice-state-object) without `deaf`, `self_deaf`, `mute`, or `suppress` enabled."
+        ],
+        "see": "/docs/resources/soundboard#send-soundboard-sound"
+      }
+    },
+    {
+      "key": "GetAPISoundboardDefaultSounds",
+      "params": ["url.guildId: Snowflake = \"\""],
+      "overrides": {
+        "apiRoute": "[guildId ? \"guildSoundboardSounds\":\"soundboardDefaultSounds\"]",
+        "name": "listSounds"
+      },
+      "docs": {
+        "description": "Returns an array of [soundboard sound](/docs/resources/soundboard#soundboard-sound-object) objects that can be used by all users.\n * @param guildId Returns a list of the guild's soundboard sounds.",
+        "infos": [
+          "Includes `user` fields if the bot has the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/soundboard#list-default-soundboard-sounds"
+      }
+    },
+    {
+      "key": "GetAPIGuildSoundboardSound",
+      "params": ["url.guildId", "url.soundId"],
+      "overrides": { "name": "getSound" },
+      "docs": {
+        "description": "Returns a [soundboard sound](/docs/resources/soundboard#soundboard-sound-object) object for the given sound id.",
+        "infos": [
+          "Includes the `user` field if the bot has the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/soundboard#get-guild-soundboard-sound"
+      }
+    },
+    {
+      "key": "PostAPIGuildSoundboardSound",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildSoundboardSounds", "name": "createSound" },
+      "docs": {
+        "description": "Create a new soundboard sound for the guild.",
+        "infos": [
+          "Requires the `CREATE_GUILD_EXPRESSIONS` permission.",
+          "Soundboard sounds have a max file size of 512kb and a max duration of 5.2 seconds."
+        ],
+        "see": "/docs/resources/soundboard#create-guild-soundboard-sound"
+      }
+    },
+    {
+      "key": "PatchAPIGuildSoundboardSound",
+      "params": ["url.guildId", "url.soundId", "data"],
+      "overrides": { "name": "modifySound" },
+      "docs": {
+        "description": "Modify the given soundboard sound.",
+        "infos": [
+          "For sounds created by the current user, requires either the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission.",
+          "For other sounds, requires the `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/soundboard#modify-guild-soundboard-sound"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildSoundboardSound",
+      "params": ["url.guildId", "url.soundId"],
+      "overrides": { "name": "deleteSound" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete the given soundboard sound.",
+        "infos": [
+          "For sounds created by the current user, requires either the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission.",
+          "For other sounds, requires the `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/soundboard#delete-guild-soundboard-sound"
       }
     }
   ]
