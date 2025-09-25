@@ -941,9 +941,13 @@
       }
     },
     {
-      "key": "PatchAPIGuildMember",
+      "key": "PatchAPICurrentGuildMember",
       "params": ["url.guildId", "data"],
-      "overrides": { "name": "modifyCurrentMember" },
+      "overrides": {
+        "apiRoute": "guildMember",
+        "name": "modifyCurrentMember",
+        "returnType": "RESTPatchAPIGuildMemberResult"
+      },
       "docs": {
         "description": "Modifies the current member in a guild.",
         "see": "/docs/resources/guild#modify-current-member"
@@ -1265,7 +1269,7 @@
     {
       "key": "PutAPIGuildIncidentActions",
       "params": ["url.guildId", "data"],
-      "overrides": { "name": "modifyGuildIncidentActions" },
+      "overrides": { "name": "modifyIncidentActions" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Modifies the incident actions of the guild.",
