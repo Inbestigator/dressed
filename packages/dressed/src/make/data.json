@@ -127,6 +127,7 @@
     {
       "key": "GetAPIGuildApplicationCommandsPermissions",
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId"],
+      "overrides": { "name": "listGuildCommandsPermissions" },
       "docs": {
         "description": "Fetches permissions for all commands for your application in a guild.",
         "see": "/docs/interactions/application-commands#get-guild-application-command-permissions"
@@ -194,7 +195,7 @@
     {
       "key": "GetAPIAuditLog",
       "params": ["url.guildId", "params?"],
-      "overrides": { "apiRoute": "guildAuditLog" },
+      "overrides": { "apiRoute": "guildAuditLog", "name": "getAuditLog" },
       "docs": {
         "description": "Returns an [audit log](/docs/resources/audit-log#audit-log-object) object for the guild.",
         "infos": [
@@ -267,18 +268,12 @@
     {
       "key": "GetAPIChannel",
       "params": ["url.channelId"],
-      "docs": {
-        "description": "Get a channel by ID.",
-        "see": "/docs/resources/channel#get-channel"
-      }
+      "docs": { "description": "Get a channel by ID.", "see": "/docs/resources/channel#get-channel" }
     },
     {
       "key": "PatchAPIChannel",
       "params": ["url.channelId", "data"],
-      "docs": {
-        "description": "Update a channel's settings.",
-        "see": "/docs/resources/channel#modify-channel"
-      }
+      "docs": { "description": "Update a channel's settings.", "see": "/docs/resources/channel#modify-channel" }
     },
     {
       "key": "DeleteAPIChannel",
@@ -313,6 +308,7 @@
     {
       "key": "GetAPIChannelInvites",
       "params": ["url.channelId"],
+      "overrides": { "name": "listChannelInvites" },
       "docs": {
         "description": "Returns a list of [invite](/docs/resources/invite#invite-object) objects (with [invite metadata](/docs/resources/invite#invite-metadata-object)) for the channel.",
         "infos": ["Only usable for guild channels.", "Requires the `MANAGE_CHANNELS` permission."],
@@ -322,7 +318,7 @@
     {
       "key": "PostAPIChannelInvite",
       "params": ["url.channelId", "data"],
-      "overrides": { "apiRoute": "channelInvites" },
+      "overrides": { "apiRoute": "channelInvites", "name": "createChannelInvite" },
       "docs": {
         "description": "Create a new [invite](/docs/resources/invite#invite-object) object for the channel.",
         "infos": ["Only usable for guild channels.", "Requires the `CREATE_INSTANT_INVITE` permission."],
@@ -332,6 +328,7 @@
     {
       "key": "DeleteAPIChannelPermission",
       "params": ["url.channelId", "url.overwriteId"],
+      "overrides": { "name": "deleteChannelPermission" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete a channel permission overwrite for a user or role in a channel.",
@@ -384,7 +381,6 @@
       "key": "PostAPIChannelThreads",
       "params": ["url.channelId", "data", "url.messageId?"],
       "overrides": {
-        "name": "createThread",
         "apiRoute": "threads",
         "dataType": "Omit<RESTPostAPIChannelThreadsJSONBody, \"type\"> & { type?: \"Public\" | \"Private\" | number; }",
         "dangerousExtraLogic": "data.type = Number.isNaN(Number(data.type)) ? Number(data.type === \"Public\")+11 : data.type;"
@@ -403,7 +399,6 @@
       "key": "PostAPIGuildForumThreads",
       "params": ["url.channelId", "data"],
       "overrides": {
-        "name": "createForumThread",
         "apiRoute": "threads",
         "dataType": "Omit<RESTPostAPIGuildForumThreadsJSONBody, \"message\"> & { message: string | (RESTPostAPIChannelMessageJSONBody & { files?: RawFile[] }) }",
         "imports": ["type RESTPostAPIChannelMessageJSONBody", "type APIThreadChannel", "type APIMessage"],
@@ -423,7 +418,7 @@
     {
       "key": "PutAPIChannelThreadMembers",
       "params": ["url.threadId", "url.userId?"],
-      "overrides": { "name": "addThreadMember", "apiRoute": "threadMembers" },
+      "overrides": { "apiRoute": "threadMembers" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Adds a member to a thread.\n * @param userId Member to add, defaults to self",
@@ -448,10 +443,7 @@
     {
       "key": "GetAPIChannelThreadMember",
       "params": ["url.threadId", "url.userId", "params?"],
-      "overrides": {
-        "name": "getThreadMember",
-        "apiRoute": "threadMembers"
-      },
+      "overrides": { "apiRoute": "threadMembers" },
       "docs": {
         "description": "Returns a [thread member](/docs/resources/channel#thread-member-object) object for the specified user if they are a member of the thread.",
         "infos": [
@@ -463,10 +455,7 @@
     {
       "key": "GetAPIChannelThreadMembers",
       "params": ["url.threadId", "params?"],
-      "overrides": {
-        "name": "listThreadMembers",
-        "apiRoute": "threadMembers"
-      },
+      "overrides": { "apiRoute": "threadMembers" },
       "docs": {
         "description": "Returns array of [thread members](/docs/resources/channel#thread-member-object) objects that are members of the thread.",
         "infos": [
@@ -496,7 +485,6 @@
     {
       "key": "GetAPIGuildEmojis",
       "params": ["url.guildId"],
-      "overrides": { "name": "listEmojis" },
       "docs": {
         "description": "Returns a list of [emoji](/docs/resources/emoji#emoji-object) objects for the given guild.",
         "infos": [
@@ -508,7 +496,6 @@
     {
       "key": "GetAPIGuildEmoji",
       "params": ["url.guildId", "url.emojiId"],
-      "overrides": { "name": "getEmoji" },
       "docs": {
         "description": "Returns an [emoji](/docs/resources/emoji#emoji-object) object for the given guild and emoji IDs.",
         "infos": [
@@ -520,7 +507,7 @@
     {
       "key": "PostAPIGuildEmoji",
       "params": ["url.guildId", "data"],
-      "overrides": { "apiRoute": "guildEmojis", "name": "createEmoji" },
+      "overrides": { "apiRoute": "guildEmojis" },
       "docs": {
         "description": "Create a new emoji for the guild.",
         "infos": [
@@ -536,7 +523,6 @@
     {
       "key": "PatchAPIGuildEmoji",
       "params": ["url.guildId", "url.emojiId", "data"],
-      "overrides": { "name": "modifyEmoji" },
       "docs": {
         "description": "Modify the given emoji.",
         "infos": [
@@ -549,7 +535,6 @@
     {
       "key": "DeleteAPIGuildEmoji",
       "params": ["url.guildId", "url.emojiId"],
-      "overrides": { "name": "deleteEmoji" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete the given emoji.",
@@ -601,20 +586,14 @@
       "key": "PatchAPIApplicationEmoji",
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId", "data"],
       "overrides": { "name": "modifyApplicationEmoji" },
-      "docs": {
-        "description": "Modify the given emoji.",
-        "see": "/docs/resources/emoji#modify-application-emoji"
-      }
+      "docs": { "description": "Modify the given emoji.", "see": "/docs/resources/emoji#modify-application-emoji" }
     },
     {
       "key": "DeleteAPIApplicationEmoji",
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId"],
       "overrides": { "name": "deleteApplicationEmoji" },
       "flags": ["returnVoid"],
-      "docs": {
-        "description": "Delete the given emoji.",
-        "see": "/docs/resources/emoji#delete-application-emoji"
-      }
+      "docs": { "description": "Delete the given emoji.", "see": "/docs/resources/emoji#delete-application-emoji" }
     },
     {
       "key": "GetAPIEntitlements",
@@ -627,10 +606,7 @@
     {
       "key": "GetAPIEntitlement",
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
-      "docs": {
-        "description": "Returns an entitlement.",
-        "see": "/docs/resources/entitlement#get-entitlement"
-      }
+      "docs": { "description": "Returns an entitlement.", "see": "/docs/resources/entitlement#get-entitlement" }
     },
     {
       "key": "PostAPIEntitlement",
@@ -682,6 +658,7 @@
     {
       "key": "GetAPIGatewayBot",
       "params": [],
+      "overrides": { "name": "getGatewayBot" },
       "docs": {
         "description": "Returns an object based on the information in [Get Gateway](/docs/events/gateway#get-gateway), plus additional metadata that can help during the operation of large or [sharded](/docs/events/gateway#sharding) bots. Unlike the [Get Gateway](/docs/events/gateway#get-gateway), this route should not be cached for extended periods of time as the value is not guaranteed to be the same per-call, and changes as the bot joins/leaves guilds.",
         "warns": ["This endpoint requires authentication using a valid bot token."],
@@ -691,7 +668,6 @@
     {
       "key": "GetAPIGuildScheduledEvents",
       "params": ["url.guildId", "params?"],
-      "overrides": { "name": "listScheduledEvents" },
       "docs": {
         "description": "Returns a list of [guild scheduled event](/docs/resources/guild-scheduled-event#guild-scheduled-event-object) objects for the given guild.",
         "see": "/docs/resources/guild-scheduled-event#list-guild-scheduled-events"
@@ -700,7 +676,7 @@
     {
       "key": "PostAPIGuildScheduledEvent",
       "params": ["url.guildId", "data"],
-      "overrides": { "apiRoute": "guildScheduledEvents", "name": "createScheduledEvent" },
+      "overrides": { "apiRoute": "guildScheduledEvents" },
       "docs": {
         "description": "Create a guild scheduled event in the guild.",
         "infos": ["A guild can have a maximum of 100 events with `SCHEDULED` or `ACTIVE` status at any time."],
@@ -710,7 +686,6 @@
     {
       "key": "GetAPIGuildScheduledEvent",
       "params": ["url.guildId", "url.guildScheduledEventId", "params?"],
-      "overrides": { "name": "getScheduledEvent" },
       "docs": {
         "description": "Get a guild scheduled event.",
         "see": "/docs/resources/guild-scheduled-event#get-guild-scheduled-event"
@@ -719,7 +694,6 @@
     {
       "key": "PatchAPIGuildScheduledEvent",
       "params": ["url.guildId", "url.guildScheduledEventId", "data"],
-      "overrides": { "name": "modifyScheduledEvent" },
       "docs": {
         "description": "Modify a guild scheduled event.",
         "infos": [
@@ -732,7 +706,6 @@
     {
       "key": "DeleteAPIGuildScheduledEvent",
       "params": ["url.guildId", "url.guildScheduledEventId"],
-      "overrides": { "name": "deleteScheduledEvent" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete a guild scheduled event.",
@@ -751,7 +724,6 @@
     {
       "key": "GetAPITemplate",
       "params": ["url.code"],
-      "overrides": { "name": "getTemplate" },
       "docs": {
         "description": "Returns a [guild template](/docs/resources/guild-template#guild-template-object) object for the given code.",
         "see": "/docs/resources/guild-template#get-guild-template"
@@ -760,7 +732,6 @@
     {
       "key": "GetAPIGuildTemplates",
       "params": ["url.guildId"],
-      "overrides": { "name": "listTemplates" },
       "docs": {
         "description": "Returns an array of [guild template](/docs/resources/guild-template#guild-template-object) objects.",
         "infos": ["Requires the `MANAGE_GUILD` permission."],
@@ -770,7 +741,6 @@
     {
       "key": "PostAPIGuildTemplates",
       "params": ["url.guildId", "data"],
-      "overrides": { "name": "createTemplate" },
       "docs": {
         "description": "Creates a template for the guild.",
         "infos": ["Requires the `MANAGE_GUILD` permission."],
@@ -794,7 +764,6 @@
     {
       "key": "PatchAPIGuildTemplate",
       "params": ["url.guildId", "url.code", "data"],
-      "overrides": { "name": "modifyTemplate" },
       "docs": {
         "description": "Modifies the template's metadata.",
         "infos": ["Requires the `MANAGE_GUILD` permission."],
@@ -804,7 +773,6 @@
     {
       "key": "DeleteAPIGuildTemplate",
       "params": ["url.guildId", "url.code"],
-      "overrides": { "name": "deleteTemplate" },
       "docs": {
         "description": "Deletes the template.",
         "infos": ["Requires the `MANAGE_GUILD` permission."],
@@ -825,6 +793,7 @@
     {
       "key": "GetAPIGuildPreview",
       "params": ["url.guildId"],
+      "overrides": { "name": "getGuildPreview" },
       "docs": {
         "description": "Returns the [guild preview](/docs/resources/guild#guild-preview-object) object for the given id.",
         "infos": [
@@ -848,7 +817,6 @@
     {
       "key": "GetAPIGuildChannels",
       "params": ["url.guildId"],
-      "overrides": { "name": "listChannels" },
       "docs": {
         "description": "Returns a list of guild [channel](/docs/resources/channel#channel-object) objects.",
         "infos": ["Does not include threads."],
@@ -858,7 +826,7 @@
     {
       "key": "PostAPIGuildChannel",
       "params": ["url.guildId", "data"],
-      "overrides": { "apiRoute": "guildChannels", "name": "createChannel" },
+      "overrides": { "apiRoute": "guildChannels" },
       "docs": {
         "description": "Create a new [channel](/docs/resources/channel#channel-object) object for the guild.",
         "infos": [
@@ -892,7 +860,6 @@
     {
       "key": "GetAPIGuildMember",
       "params": ["url.guildId", "url.memberId"],
-      "overrides": { "name": "getMember" },
       "docs": {
         "description": "Returns a [guild member](/docs/resources/guild#guild-member-object) object for the specified user.",
         "see": "/docs/resources/guild#get-guild-member"
@@ -901,7 +868,6 @@
     {
       "key": "GetAPIGuildMembers",
       "params": ["url.guildId", "params?"],
-      "overrides": { "name": "listMembers" },
       "docs": {
         "description": "Returns a list of [guild member](/docs/resources/guild#guild-member-object) objects that are members of the guild.",
         "warns": [
@@ -922,7 +888,6 @@
     {
       "key": "PutAPIGuildMember",
       "params": ["url.guildId", "url.userId", "data"],
-      "overrides": { "name": "addMember" },
       "docs": {
         "description": "Adds a user to the guild, provided you have a valid oauth2 access token for the user with the `guilds.join` scope.",
         "infos": [
@@ -934,7 +899,6 @@
     {
       "key": "PatchAPIGuildMember",
       "params": ["url.guildId", "url.userId", "data"],
-      "overrides": { "name": "modifyMember" },
       "docs": {
         "description": "Modify attributes of a [guild member](/docs/resources/guild#guild-member-object).",
         "see": "/docs/resources/guild#modify-guild-member"
@@ -956,7 +920,6 @@
     {
       "key": "PutAPIGuildMemberRole",
       "params": ["url.guildId", "url.userId", "url.roleId"],
-      "overrides": { "name": "addMemberRole" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Adds a role to a [guild member](/docs/resources/guild#guild-member-object).",
@@ -989,7 +952,6 @@
     {
       "key": "GetAPIGuildBans",
       "params": ["url.guildId", "params?"],
-      "overrides": { "name": "listBans" },
       "docs": {
         "description": "Returns a list of [ban](/docs/resources/guild#ban-object) objects for the users banned from this guild.",
         "infos": ["Requires `BAN_MEMBERS` permission."],
@@ -999,7 +961,6 @@
     {
       "key": "GetAPIGuildBan",
       "params": ["url.guildId", "url.userId"],
-      "overrides": { "name": "getBan" },
       "docs": {
         "description": "Returns a [ban](/docs/resources/guild#ban-object) object for the given user or a 404 not found if the ban cannot be found.",
         "infos": ["Requires `BAN_MEMBERS` permission."],
@@ -1020,7 +981,6 @@
     {
       "key": "DeleteAPIGuildBan",
       "params": ["url.guildId", "url.userId"],
-      "overrides": { "name": "deleteBan" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Remove the ban for a user.",
@@ -1044,7 +1004,6 @@
     {
       "key": "GetAPIGuildRoles",
       "params": ["url.guildId"],
-      "overrides": { "name": "listRoles" },
       "docs": {
         "description": "Returns a list of [role](/docs/topics/permissions#role-object) objects for the guild.",
         "see": "/docs/resources/guild#get-guild-roles"
@@ -1053,7 +1012,6 @@
     {
       "key": "GetAPIGuildRole",
       "params": ["url.guildId", "url.roleId"],
-      "overrides": { "name": "getRole" },
       "docs": {
         "description": "Returns a [role](/docs/topics/permissions#role-object) object for the specified role.",
         "see": "/docs/resources/guild#get-guild-role"
@@ -1062,7 +1020,7 @@
     {
       "key": "PostAPIGuildRole",
       "params": ["url.guildId", "data"],
-      "overrides": { "apiRoute": "guildRoles", "name": "createRole" },
+      "overrides": { "apiRoute": "guildRoles" },
       "docs": {
         "description": "Create a new [role](/docs/topics/permissions#role-object) for the guild.",
         "infos": ["Requires the `MANAGE_ROLES` permission."],
@@ -1082,7 +1040,6 @@
     {
       "key": "PatchAPIGuildRole",
       "params": ["url.guildId", "url.roleId", "data"],
-      "overrides": { "name": "modifyRole" },
       "docs": {
         "description": "Modify a guild role.",
         "infos": ["Requires the `MANAGE_ROLES` permission."],
@@ -1092,7 +1049,6 @@
     {
       "key": "DeleteAPIGuildRole",
       "params": ["url.guildId", "url.roleId"],
-      "overrides": { "name": "deleteRole" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete a guild role.",
@@ -1103,7 +1059,7 @@
     {
       "key": "GetAPIGuildPruneCount",
       "params": ["url.guildId", "params?"],
-      "overrides": { "apiRoute": "guildPrune", "name": "getPruneCount" },
+      "overrides": { "apiRoute": "guildPrune" },
       "docs": {
         "description": "Returns an object with one `pruned` key indicating the number of members that would be removed in a prune operation.",
         "infos": [
@@ -1128,6 +1084,7 @@
     {
       "key": "GetAPIGuildVoiceRegions",
       "params": ["url.guildId"],
+      "overrides": { "name": "listGuildVoiceRegions" },
       "docs": {
         "description": "Returns a list of [voice region](/docs/resources/voice#voice-region-object) objects for the guild.",
         "infos": ["Unlike the similar `/voice` route, this returns VIP servers when the guild is VIP-enabled."],
@@ -1137,7 +1094,6 @@
     {
       "key": "GetAPIGuildInvites",
       "params": ["url.guildId"],
-      "overrides": { "name": "listInvites" },
       "docs": {
         "description": "Returns a list of [invite](/docs/resources/invite#invite-object) objects.",
         "infos": [
@@ -1150,7 +1106,6 @@
     {
       "key": "GetAPIGuildIntegrations",
       "params": ["url.guildId"],
-      "overrides": { "name": "listIntegrations" },
       "docs": {
         "description": "Returns a list of [integration](/docs/resources/guild#integration-object) objects for the guild.",
         "infos": [
@@ -1163,7 +1118,6 @@
     {
       "key": "DeleteAPIGuildIntegration",
       "params": ["url.guildId", "url.integrationId"],
-      "overrides": { "name": "deleteIntegration" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete the attached [integration](/docs/resources/guild#integration-object) object for the guild. Deletes any associated webhooks and kicks the associated bot if there is one.",
@@ -1217,7 +1171,6 @@
     {
       "key": "GetAPIGuildWidgetImage",
       "params": ["url.guildId", "params?"],
-      "overrides": { "name": "getWidgetImage" },
       "docs": {
         "description": "Returns a PNG image widget for the guild.",
         "infos": ["Requires no permissions or authentication."],
@@ -1227,7 +1180,6 @@
     {
       "key": "GetAPIGuildWelcomeScreen",
       "params": ["url.guildId"],
-      "overrides": { "name": "getWelcomeScreen" },
       "docs": {
         "description": "Returns the [Welcome Screen](/docs/resources/guild#welcome-screen-object) object for the guild.",
         "infos": ["If the welcome screen is not enabled, the `MANAGE_GUILD` permission is required."],
@@ -1237,7 +1189,6 @@
     {
       "key": "PatchAPIGuildWelcomeScreen",
       "params": ["url.guildId", "data"],
-      "overrides": { "name": "modifyWelcomeScreen" },
       "docs": {
         "description": "Modify the guild's [Welcome Screen](/docs/resources/guild#welcome-screen-object).",
         "infos": ["Requires the `MANAGE_GUILD` permission."],
@@ -1247,7 +1198,6 @@
     {
       "key": "GetAPIGuildOnboarding",
       "params": ["url.guildId"],
-      "overrides": { "name": "getOnboarding" },
       "docs": {
         "description": "Returns the [Onboarding](/docs/resources/guild#guild-onboarding-object) object for the guild.",
         "see": "/docs/resources/guild#get-guild-onboarding"

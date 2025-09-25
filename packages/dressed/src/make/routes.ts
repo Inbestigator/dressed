@@ -40,12 +40,8 @@ ${data.routes
     }) => {
       const method = (key.match(/[A-Z][a-z]+/) ?? [])[0] ?? "";
       const routeKey = key.slice(method.length).replace("API", "");
-      apiRoute ??= routeKey;
-      dangerousExtraLogic ??= "";
-      dataType ??= `REST${key}JSONBody${flags?.includes("hasFiles") ? ` & { file${flags.includes("singlefile") ? "" : "s"}?: RawFile${flags.includes("singlefile") ? "" : "[]"} }` : ""}`;
-      messageKey ??= "";
-      name ??=
-        (method === "Get" && routeKey.endsWith("s")
+      const prefix =
+        method === "Get" && routeKey.endsWith("s")
           ? "list"
           : method === "Get"
             ? "get"
@@ -57,8 +53,17 @@ ${data.routes
                   ? "modify"
                   : method === "Delete"
                     ? "delete"
-                    : "") +
-        routeKey.replace("Application", "").slice(0, routeKey.endsWith("s") && method !== "Get" ? -1 : undefined);
+                    : "";
+      const splitRoutes = routeKey.match(/[A-Z][a-z]+/g) ?? [];
+      apiRoute ??= routeKey;
+      dangerousExtraLogic ??= "";
+      dataType ??= `REST${key}JSONBody${flags?.includes("hasFiles") ? ` & { file${flags.includes("singlefile") ? "" : "s"}?: RawFile${flags.includes("singlefile") ? "" : "[]"} }` : ""}`;
+      messageKey ??= "";
+      name ??=
+        prefix +
+        (splitRoutes.length > 1 ? splitRoutes.slice(1) : splitRoutes)
+          .join("")
+          .slice(0, routeKey.endsWith("s") && method !== "Get" ? -1 : undefined);
       returnType ??= flags?.includes("returnVoid") ? "void" : `REST${key}Result`;
       return `
 /**
