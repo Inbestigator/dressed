@@ -1,5 +1,5 @@
 import { env } from "node:process";
-import { loadEnvConfig } from "@next/env";
+import { loadEnvConfig } from "./dotenv.ts";
 
 interface BotEnvs {
   DISCORD_APP_ID: string;
@@ -7,7 +7,7 @@ interface BotEnvs {
   DISCORD_TOKEN: string;
 }
 
-loadEnvConfig("./", process.env.NODE_ENV === "development");
+loadEnvConfig();
 
 export const botEnv: BotEnvs = new Proxy({} as BotEnvs, {
   get(_, key: string) {

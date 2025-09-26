@@ -3,8 +3,8 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { cwd, exit, stdout } from "node:process";
-import { processEnv } from "@next/env";
 import { Command } from "commander";
+import { parse } from "dotenv";
 import Enquirer from "enquirer";
 import ora from "ora";
 import build, { categoryExports, importString } from "../server/build/build.ts";
@@ -111,17 +111,9 @@ program
     if (!res.ok) {
       throw new Error("Failed to fetch env template.");
     }
-
-    const env = {
-      path: ".",
-      env: {},
-      contents: await res.text(),
-    };
-
-    processEnv([env], "./", undefined, true);
-
+    const env = parse(await res.text());
     const envVars = await prompt(
-      Object.entries(env.env).map(([k, v]) => ({
+      Object.entries(env).map(([k, v]) => ({
         type: /TOKEN|PASSWORD/.test(k) ? "password" : "text",
         name: k,
         message: k,
