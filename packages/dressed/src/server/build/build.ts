@@ -4,7 +4,7 @@ import { basename, extname, relative, resolve } from "node:path";
 import { cwd, stdout } from "node:process";
 import ora from "ora";
 import { walkFiles } from "walk-it";
-import { getApp } from "../../resources/application.ts";
+import { getApp } from "../../resources/generated.resources.ts";
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../../types/config.ts";
 import type { WalkEntry } from "../../types/walk.ts";
 import { botEnv } from "../../utils/env.ts";

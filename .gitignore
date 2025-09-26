@@ -42,3 +42,5 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Dressed
 bot.gen.ts
 .dressed
+
+generated.resources.ts
