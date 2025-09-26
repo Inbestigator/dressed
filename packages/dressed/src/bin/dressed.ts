@@ -111,9 +111,8 @@ program
     if (!res.ok) {
       throw new Error("Failed to fetch env template.");
     }
-    const env = parse(await res.text());
     const envVars = await prompt(
-      Object.entries(env).map(([k, v]) => ({
+      Object.entries(parse(await res.text())).map(([k, v]) => ({
         type: /TOKEN|PASSWORD/.test(k) ? "password" : "text",
         name: k,
         message: k,
