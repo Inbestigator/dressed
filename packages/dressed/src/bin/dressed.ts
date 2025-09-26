@@ -6,7 +6,7 @@ import { cwd, exit, stdout } from "node:process";
 import { Command } from "commander";
 import { parse } from "dotenv";
 import Enquirer from "enquirer";
-import ora from "ora";
+import spinner from "yocto-spinner";
 import build, { categoryExports, importString } from "../server/build/build.ts";
 import bundleFiles from "../server/build/bundle.ts";
 
@@ -26,7 +26,7 @@ program
   )
   .action(async ({ instance, register, endpoint, port, root, extensions }) => {
     if (port && Number.isNaN(Number(port))) {
-      ora("Port must be a valid number").fail();
+      spinner().error("Port must be a valid number");
       return;
     }
     const { commands, components, events } = await build({
@@ -37,10 +37,7 @@ program
         extensions: extensions?.split(",").map((e: string) => e.trim()),
       },
     });
-    const buildLoader = ora({
-      stream: stdout,
-      text: "Assembling generated build",
-    }).start();
+    const buildLoader = spinner({ stream: stdout }).start("Assembling generated build");
     const categories = [commands, components, events];
 
     const outputContent = `
@@ -66,7 +63,7 @@ ${instance ? `createServer(commands, components, events, config);` : ""}`.trim()
     writeFileSync(".dressed/index.d.ts", typeContent);
     rmSync(".dressed/tmp", { recursive: true, force: true });
 
-    buildLoader.succeed("Assembled generated build");
+    buildLoader.success("Assembled generated build");
     exit();
   });
 
@@ -120,7 +117,7 @@ program
       })),
     );
 
-    const mkdirLoader = ora(`Creating files for project: ${name}`).start();
+    const mkdirLoader = spinner({ stream: stdout }).start(`Creating files for project: ${name}`);
 
     async function createFiles(path: string, dest: string) {
       mkdirSync(dest, { recursive: true });
@@ -163,10 +160,10 @@ program
       const path = `https://api.github.com/repos/inbestigator/dressed-examples/contents/${template}`;
       await createFiles(path, join(cwd(), name));
     } catch {
-      mkdirLoader.fail();
+      mkdirLoader.error();
       return;
     }
-    mkdirLoader.succeed();
+    mkdirLoader.success();
 
     console.log("\x1b[32m%s", "Project created successfully.");
     exit();

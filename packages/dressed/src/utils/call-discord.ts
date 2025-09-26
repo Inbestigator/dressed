@@ -1,6 +1,6 @@
 import { Buffer } from "node:buffer";
 import { type RESTError, type RESTErrorData, type RESTRateLimit, RouteBases } from "discord-api-types/v10";
-import ora from "ora";
+import spinner from "yocto-spinner";
 import type { RawFile } from "../types/file.ts";
 import { botEnv } from "./env.ts";
 import { checkLimit, headerUpdateLimit, updateLimit } from "./ratelimit.ts";
@@ -76,7 +76,7 @@ export async function callDiscord(
 
   if (!res.ok) {
     const error = (await res.json()) as RESTError;
-    ora(`${error.message} (${error.code})`).fail();
+    spinner().error(`${error.message} (${error.code})`);
 
     if (error.errors) {
       logErrorData(error.errors);

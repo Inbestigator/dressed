@@ -1,5 +1,5 @@
 import { stdout } from "node:process";
-import ora from "ora";
+import spinner from "yocto-spinner";
 import type { BaseData, ServerConfig } from "../../types/config.ts";
 import type { Promisable } from "../../types/utilities.ts";
 
@@ -24,14 +24,11 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
         itemMessages = itemMessages(data);
       }
       if (!item || !Array.isArray(props)) {
-        ora(itemMessages.noItem).warn();
+        spinner().warning(itemMessages.noItem);
         return;
       }
 
-      const loader = ora({
-        stream: stdout,
-        text: itemMessages.pending(item, props),
-      }).start();
+      const loader = spinner({ stream: stdout }).start(itemMessages.pending(item, props));
 
       try {
         let handler: T["run"] | undefined;
@@ -46,13 +43,13 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
         if (!handler) throw new Error("Unable to find a handler to execute");
         const args = middleware ? await middleware(...props) : props;
         await handler(...args);
-        loader.succeed();
+        loader.success();
       } catch (e) {
         const text = loader.text.replace("Running", "Failed to run");
         if (e instanceof Error) {
-          loader.fail(`${text} - ${e.message}`);
+          loader.error(`${text} - ${e.message}`);
         } else {
-          loader.fail(text);
+          loader.error(text);
           console.error(e);
         }
       }

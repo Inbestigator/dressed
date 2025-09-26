@@ -1,6 +1,6 @@
 import { sep } from "node:path";
 import { patternToRegex, scorePattern } from "@dressed/matcher";
-import ora from "ora";
+import spinner from "yocto-spinner";
 import type { ComponentData } from "../../../types/config.ts";
 import { createHandlerParser } from "./index.ts";
 
@@ -26,7 +26,7 @@ export const parseComponents = createHandlerParser<ComponentData>({
     const category = getCategory(path);
 
     if (!category) {
-      ora(`Category for "${name}" could not be determined, skipping`).warn();
+      spinner().warning(`Category for "${name}" could not be determined, skipping`);
       throw null;
     }
 

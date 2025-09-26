@@ -1,5 +1,5 @@
 import { ApplicationWebhookEventType } from "discord-api-types/v10";
-import ora from "ora";
+import spinner from "yocto-spinner";
 import type { EventData } from "../../../types/config.ts";
 import { createHandlerParser } from "./index.ts";
 
@@ -18,7 +18,7 @@ export const parseEvents = createHandlerParser<EventData>({
     const type = ApplicationWebhookEventType[name as keyof typeof ApplicationWebhookEventType];
 
     if (!type) {
-      ora(`Event type of "${name}" could not be determined, skipping`).warn();
+      spinner().warning(`Event type of "${name}" could not be determined, skipping`);
       throw null;
     }
 

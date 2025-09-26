@@ -1,5 +1,5 @@
 import { stdout } from "node:process";
-import ora from "ora";
+import spinner from "yocto-spinner";
 import type { BaseData } from "../../../types/config.ts";
 import type { Promisable } from "../../../types/utilities.ts";
 import type { WalkEntry } from "../../../types/walk.ts";
@@ -30,10 +30,7 @@ export function createHandlerParser<
 }): (files: F[]) => Promise<T[]> {
   return async (files) => {
     if (files.length === 0) return [];
-    const generatingLoader = ora({
-      stream: stdout,
-      text: options.messages.pending,
-    }).start();
+    const generatingLoader = spinner({ stream: stdout }).start(options.messages.pending);
     const tree = logTree(files.length, options.col1Name, options.col2Name);
 
     try {
@@ -57,7 +54,7 @@ export function createHandlerParser<
             return options.uniqueKeys?.every((k) => data[k] === c.data[k]);
           });
           if (hasConflict) {
-            ora(itemMessages.confict).warn();
+            spinner().warning(itemMessages.confict);
             throw null;
           }
 
@@ -71,7 +68,7 @@ export function createHandlerParser<
           tree.push(file.name, itemMessages.col2);
         } catch (e) {
           if (e && e instanceof Error) {
-            ora(`Failed to parse ${file.path}:`).fail();
+            spinner().error(`Failed to parse ${file.path}:`);
             console.error(e);
           }
         }
@@ -81,7 +78,7 @@ export function createHandlerParser<
         items = await options.postMortem(items);
       }
 
-      generatingLoader.succeed(items.length > 0 ? options.messages.generated : options.messages.noItems);
+      generatingLoader.success(items.length > 0 ? options.messages.generated : options.messages.noItems);
 
       if (items.length > 0) {
         tree.log();
@@ -89,7 +86,7 @@ export function createHandlerParser<
 
       return items;
     } catch (e) {
-      generatingLoader.fail();
+      generatingLoader.error();
       throw e;
     }
   };

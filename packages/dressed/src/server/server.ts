@@ -9,7 +9,7 @@ import {
   ApplicationWebhookType,
   InteractionType,
 } from "discord-api-types/v10";
-import ora from "ora";
+import spinner from "yocto-spinner";
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../types/config.ts";
 import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
 import { createInteraction } from "./extenders/interaction.ts";
@@ -88,14 +88,11 @@ export async function handleRequest(
   events: EventRunner | EventData[],
   config?: ServerConfig,
 ): Promise<Response> {
-  const reqLoader = ora({
-    stream: stdout,
-    text: "Validating new request",
-  }).start();
+  const reqLoader = spinner({ stream: stdout }).start("Validating new request");
   const body = await req.text();
 
   if (!verifySignature(body, req.headers.get("x-signature-ed25519"), req.headers.get("x-signature-timestamp"))) {
-    reqLoader.fail("Invalid signature");
+    reqLoader.error("Invalid signature");
     return new Response(null, { status: 401 });
   }
 

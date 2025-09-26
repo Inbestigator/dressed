@@ -1,4 +1,4 @@
-import ora from "ora";
+import spinner from "yocto-spinner";
 
 const buckets = new Map<string, { remaining: number; resetAt: number }>();
 const endpoints = new Map<string, string>();
@@ -15,12 +15,12 @@ export async function checkLimit(endpoint: string, method = "") {
     }
     const displayed = endpoint === "global" ? "all endpoints" : endpoint;
     if (limit.remaining === 0) {
-      const waiting = ora(`Rate limit for ${displayed} reached! - waiting to try again...`).start();
+      const waiting = spinner().start(`Rate limit for ${displayed} reached! - waiting to try again...`);
       await new Promise((r) => setTimeout(r, Math.max(0, limit.resetAt - Date.now())));
       buckets.delete(bucket);
-      waiting.warn(`A request was delayed because you hit the rate limit for ${displayed}`);
+      waiting.warning(`A request was delayed because you hit the rate limit for ${displayed}`);
     } else if (limit.remaining === 1) {
-      ora(`You are about to hit the rate limit for ${displayed}`).warn();
+      spinner().warning(`You are about to hit the rate limit for ${displayed}`);
     }
   }
 }
