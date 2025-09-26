@@ -268,18 +268,12 @@
     {
       "key": "GetAPIChannel",
       "params": ["url.channelId"],
-      "docs": {
-        "description": "Get a channel by ID.",
-        "see": "/docs/resources/channel#get-channel"
-      }
+      "docs": { "description": "Get a channel by ID.", "see": "/docs/resources/channel#get-channel" }
     },
     {
       "key": "PatchAPIChannel",
       "params": ["url.channelId", "data"],
-      "docs": {
-        "description": "Update a channel's settings.",
-        "see": "/docs/resources/channel#modify-channel"
-      }
+      "docs": { "description": "Update a channel's settings.", "see": "/docs/resources/channel#modify-channel" }
     },
     {
       "key": "DeleteAPIChannel",
@@ -592,20 +586,14 @@
       "key": "PatchAPIApplicationEmoji",
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId", "data"],
       "overrides": { "name": "modifyApplicationEmoji" },
-      "docs": {
-        "description": "Modify the given emoji.",
-        "see": "/docs/resources/emoji#modify-application-emoji"
-      }
+      "docs": { "description": "Modify the given emoji.", "see": "/docs/resources/emoji#modify-application-emoji" }
     },
     {
       "key": "DeleteAPIApplicationEmoji",
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId"],
       "overrides": { "name": "deleteApplicationEmoji" },
       "flags": ["returnVoid"],
-      "docs": {
-        "description": "Delete the given emoji.",
-        "see": "/docs/resources/emoji#delete-application-emoji"
-      }
+      "docs": { "description": "Delete the given emoji.", "see": "/docs/resources/emoji#delete-application-emoji" }
     },
     {
       "key": "GetAPIEntitlements",
@@ -618,10 +606,7 @@
     {
       "key": "GetAPIEntitlement",
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
-      "docs": {
-        "description": "Returns an entitlement.",
-        "see": "/docs/resources/entitlement#get-entitlement"
-      }
+      "docs": { "description": "Returns an entitlement.", "see": "/docs/resources/entitlement#get-entitlement" }
     },
     {
       "key": "PostAPIEntitlement",
@@ -1319,10 +1304,7 @@
     {
       "key": "PutAPIChannelMessageOwnReaction",
       "params": ["url.channelId", "url.messageId", "url.emoji: string"],
-      "overrides": {
-        "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)",
-        "name": "createReaction"
-      },
+      "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)", "name": "createReaction" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Create a reaction for the message.",
@@ -1785,10 +1767,7 @@
       "params": ["url.guildId"],
       "overrides": { "apiRoute": "userGuild", "name": "leaveGuild" },
       "flags": ["returnVoid"],
-      "docs": {
-        "description": "Leave a guild.",
-        "see": "/docs/resources/user#leave-member"
-      }
+      "docs": { "description": "Leave a guild.", "see": "/docs/resources/user#leave-member" }
     },
     {
       "key": "PostAPICurrentUserCreateDMChannel",
