@@ -1,4 +1,3 @@
-import { stdout } from "node:process";
 import {
   ApplicationCommandType,
   ApplicationIntegrationType,
@@ -9,17 +8,17 @@ import {
   type RESTPutAPIApplicationCommandsJSONBody,
   type RESTPutAPIApplicationGuildCommandsJSONBody,
 } from "discord-api-types/v10";
-import spinner from "yocto-spinner";
 import { bulkOverwriteGlobalCommands, bulkOverwriteGuildCommands } from "../../resources/generated.resources.ts";
 import type { CommandConfig, CommandData } from "../../types/config.ts";
 import type { CommandAutocompleteInteraction, CommandInteraction } from "../../types/interaction.ts";
+import { logDefer, logSuccess, logWarn } from "../../utils/log.ts";
 import { createHandlerSetup } from "./index.ts";
 
 /**
  * Installs commands to the Discord API
  */
 export async function installCommands(commands: CommandData[]) {
-  const registerLoader = spinner({ stream: stdout }).start("Registering commands");
+  logDefer("Registering commands");
 
   const scopes = new Map<string, RESTPutAPIApplicationCommandsJSONBody | RESTPutAPIApplicationGuildCommandsJSONBody>([
     ["global", []],
@@ -28,7 +27,7 @@ export async function installCommands(commands: CommandData[]) {
   for (const command of commands) {
     if (command.exports === null) return;
     if ("config" in command.data) {
-      spinner().warning(
+      logWarn(
         "In the next major version of Dressed, command config must be passed in using `command.exports` instead of `command.data`",
       );
       command.exports.config = command.data.config; // TODO Remove check before next major release
@@ -78,7 +77,7 @@ export async function installCommands(commands: CommandData[]) {
     }
   }
 
-  registerLoader.success("Registered commands");
+  logSuccess("Registered commands");
 }
 
 /**

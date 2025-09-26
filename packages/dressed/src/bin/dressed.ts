@@ -2,13 +2,13 @@
 
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { cwd, exit, stdout } from "node:process";
+import { cwd, exit } from "node:process";
 import { Command } from "commander";
 import { parse } from "dotenv";
 import Enquirer from "enquirer";
-import spinner from "yocto-spinner";
 import build, { categoryExports, importString } from "../server/build/build.ts";
 import bundleFiles from "../server/build/bundle.ts";
+import { logDefer, logError, logSuccess } from "../utils/log.ts";
 
 const program = new Command().name("dressed").description("A sleek, serverless-ready Discord bot framework.");
 
@@ -26,7 +26,7 @@ program
   )
   .action(async ({ instance, register, endpoint, port, root, extensions }) => {
     if (port && Number.isNaN(Number(port))) {
-      spinner().error("Port must be a valid number");
+      console.error("✖ Port must be a valid number");
       return;
     }
     const { commands, components, events } = await build({
@@ -37,7 +37,6 @@ program
         extensions: extensions?.split(",").map((e: string) => e.trim()),
       },
     });
-    const buildLoader = spinner({ stream: stdout }).start("Assembling generated build");
     const categories = [commands, components, events];
 
     const outputContent = `
@@ -63,7 +62,7 @@ ${instance ? `createServer(commands, components, events, config);` : ""}`.trim()
     writeFileSync(".dressed/index.d.ts", typeContent);
     rmSync(".dressed/tmp", { recursive: true, force: true });
 
-    buildLoader.success("Assembled generated build");
+    logSuccess("Assembled generated build");
     exit();
   });
 
@@ -117,7 +116,7 @@ program
       })),
     );
 
-    const mkdirLoader = spinner({ stream: stdout }).start(`Creating files for project: ${name}`);
+    logDefer(`Creating files for project: ${name}`);
 
     async function createFiles(path: string, dest: string) {
       mkdirSync(dest, { recursive: true });
@@ -159,13 +158,11 @@ program
     try {
       const path = `https://api.github.com/repos/inbestigator/dressed-examples/contents/${template}`;
       await createFiles(path, join(cwd(), name));
-    } catch {
-      mkdirLoader.error();
-      return;
+    } catch (e) {
+      logError(e);
     }
-    mkdirLoader.success();
 
-    console.log("\x1b[32m%s", "Project created successfully.");
+    logSuccess("Project created successfully!");
     exit();
   });
 

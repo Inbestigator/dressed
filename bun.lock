@@ -12,7 +12,7 @@
     },
     "packages/dressed": {
       "name": "dressed",
-      "version": "1.10.0-canary.7.2",
+      "version": "1.10.0-canary.8",
       "bin": {
         "dressed": "dist/bin/dressed.js",
       },
@@ -25,7 +25,6 @@
         "esbuild": "^0.25.9",
         "tweetnacl": "^1.0.3",
         "walk-it": "^6.0.1",
-        "yocto-spinner": "^1.0.0",
       },
     },
     "packages/dressed-matcher": {
@@ -816,10 +815,6 @@
     "web-namespaces": ["web-namespaces@2.0.1", "", {}, "sha512-bKr1DkiNa2krS7qxNtdrtHAmzuYGFQLiQ13TsorsdT6ULTkPLKuu5+GsFpDlg6JFjUTwX2DyhMPG2be8uPrqsQ=="],
 
     "yallist": ["yallist@5.0.0", "", {}, "sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw=="],
-
-    "yocto-spinner": ["yocto-spinner@1.0.0", "", { "dependencies": { "yoctocolors": "^2.1.1" } }, "sha512-VPX8P/+Z2Fnpx8PC/JELbxp3QRrBxjAekio6yulGtA5gKt9YyRc5ycCb+NHgZCbZ0kx9KxwZp7gC6UlrCcCdSQ=="],
-
-    "yoctocolors": ["yoctocolors@2.1.2", "", {}, "sha512-CzhO+pFNo8ajLM2d2IW/R93ipy99LWjtwblvC1RsoSUMZgyLbYFr221TnSNT7GjGdYui6P459mw9JH/g/zW2ug=="],
 
     "zwitch": ["zwitch@2.0.4", "", {}, "sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A=="],
 

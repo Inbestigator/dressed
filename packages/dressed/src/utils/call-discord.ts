@@ -1,8 +1,8 @@
 import { Buffer } from "node:buffer";
 import { type RESTError, type RESTErrorData, type RESTRateLimit, RouteBases } from "discord-api-types/v10";
-import spinner from "yocto-spinner";
 import type { RawFile } from "../types/file.ts";
 import { botEnv } from "./env.ts";
+import { logError } from "./log.ts";
 import { checkLimit, headerUpdateLimit, updateLimit } from "./ratelimit.ts";
 
 /** Optional extra config for the layer before fetch */
@@ -76,7 +76,7 @@ export async function callDiscord(
 
   if (!res.ok) {
     const error = (await res.json()) as RESTError;
-    spinner().error(`${error.message} (${error.code})`);
+    logError(`${error.message} (${error.code})`);
 
     if (error.errors) {
       logErrorData(error.errors);

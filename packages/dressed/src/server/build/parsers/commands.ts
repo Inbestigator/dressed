@@ -5,7 +5,6 @@ export const parseCommands = createHandlerParser<CommandData>({
   col1Name: "Command",
   messages: {
     pending: "Generating commands",
-    generated: "Generated commands",
     noItems: "No commands found",
   },
   itemMessages: ({ name }) => ({

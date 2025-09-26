@@ -1,7 +1,7 @@
 import { sep } from "node:path";
 import { patternToRegex, scorePattern } from "@dressed/matcher";
-import spinner from "yocto-spinner";
 import type { ComponentData } from "../../../types/config.ts";
+import { logWarn } from "../../../utils/log.ts";
 import { createHandlerParser } from "./index.ts";
 
 const validComponentCategories = ["buttons", "modals", "selects"];
@@ -11,7 +11,6 @@ export const parseComponents = createHandlerParser<ComponentData>({
   col2Name: "Category",
   messages: {
     pending: "Generating components",
-    generated: "Generated components",
     noItems: "No components found",
   },
   uniqueKeys: ["category"],
@@ -26,7 +25,7 @@ export const parseComponents = createHandlerParser<ComponentData>({
     const category = getCategory(path);
 
     if (!category) {
-      spinner().warning(`Category for "${name}" could not be determined, skipping`);
+      logWarn(`Category for "${name}" could not be determined, skipping`);
       throw null;
     }
 

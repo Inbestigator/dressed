@@ -1,13 +1,13 @@
 import { createHash } from "node:crypto";
 import { appendFileSync, existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, extname, relative, resolve } from "node:path";
-import { cwd, stdout } from "node:process";
+import { cwd } from "node:process";
 import { walkFiles } from "walk-it";
-import spinner from "yocto-spinner";
 import { getApp } from "../../resources/generated.resources.ts";
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../../types/config.ts";
 import type { WalkEntry } from "../../types/walk.ts";
 import { botEnv } from "../../utils/env.ts";
+import { logDefer, logWarn } from "../../utils/log.ts";
 import bundleFiles from "./bundle.ts";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";
@@ -93,7 +93,7 @@ async function fetchFiles(root: string, dir: string, extensions: string[]): Prom
   const dirPath = resolve(root, dir);
 
   if (!existsSync(dirPath)) {
-    spinner().warning(`${dir.slice(0, 1).toUpperCase() + dir.slice(1)} directory not found`);
+    logWarn(`${dir.slice(0, 1).toUpperCase() + dir.slice(1)} directory not found`);
     return [];
   }
 
@@ -129,7 +129,7 @@ async function fetchMissingVars() {
     }
 
     if (missingVars.length) {
-      const varLoader = spinner({ stream: stdout }).start(`Fetching missing variables (${missingVars.join(", ")})`);
+      logDefer(`Fetching missing variables (${missingVars.join(", ")})`);
 
       const app = await getApp();
 
@@ -144,8 +144,6 @@ async function fetchMissingVars() {
       }
 
       appendFileSync(".env", `\n${envLines.join("\n")}`);
-
-      varLoader.success(`Fetched missing variables (${missingVars.join(", ")})`);
     }
   } catch {
     //

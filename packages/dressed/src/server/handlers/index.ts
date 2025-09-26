@@ -1,7 +1,6 @@
-import { stdout } from "node:process";
-import spinner from "yocto-spinner";
 import type { BaseData, ServerConfig } from "../../types/config.ts";
 import type { Promisable } from "../../types/utilities.ts";
+import { logDefer, logError, logWarn } from "../../utils/log.ts";
 
 interface SetupItemMessages<T, P> {
   noItem: string;
@@ -24,11 +23,12 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
         itemMessages = itemMessages(data);
       }
       if (!item || !Array.isArray(props)) {
-        spinner().warning(itemMessages.noItem);
+        logWarn(itemMessages.noItem);
         return;
       }
 
-      const loader = spinner({ stream: stdout }).start(itemMessages.pending(item, props));
+      const pendingText = itemMessages.pending(item, props);
+      logDefer(pendingText);
 
       try {
         let handler: T["run"] | undefined;
@@ -43,13 +43,12 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
         if (!handler) throw new Error("Unable to find a handler to execute");
         const args = middleware ? await middleware(...props) : props;
         await handler(...args);
-        loader.success();
       } catch (e) {
-        const text = loader.text.replace("Running", "Failed to run");
+        const text = pendingText.replace("Running", "Failed to run");
         if (e instanceof Error) {
-          loader.error(`${text} - ${e.message}`);
+          logError(`${text} - ${e.message}`);
         } else {
-          loader.error(text);
+          logError(text);
           console.error(e);
         }
       }
