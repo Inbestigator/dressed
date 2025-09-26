@@ -5,15 +5,11 @@ import { createHandlerParser } from "./index.ts";
 
 export const parseEvents = createHandlerParser<EventData>({
   col1Name: "Event",
-  messages: {
-    pending: "Generating events",
-    noItems: "No events found",
-  },
   uniqueKeys: ["type"],
   itemMessages: ({ name }) => ({
     confict: `"${name}" conflicts with another event, skipping the duplicate`,
   }),
-  async createData({ name }) {
+  createData({ name }) {
     const type = ApplicationWebhookEventType[name as keyof typeof ApplicationWebhookEventType];
 
     if (!type) {

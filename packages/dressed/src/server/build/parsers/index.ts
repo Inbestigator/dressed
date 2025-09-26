@@ -1,13 +1,7 @@
 import type { BaseData } from "../../../types/config.ts";
-import type { Promisable } from "../../../types/utilities.ts";
 import type { WalkEntry } from "../../../types/walk.ts";
-import { logDefer, logError, logWarn } from "../../../utils/log.ts";
+import { logError, logWarn } from "../../../utils/log.ts";
 import logTree from "../log-tree.ts";
-
-interface ParserMessages {
-  pending: string;
-  noItems: string;
-}
 
 interface ParserItemMessages {
   confict: string;
@@ -21,14 +15,12 @@ export function createHandlerParser<
   col1Name: string;
   col2Name?: string;
   uniqueKeys?: (keyof T["data"])[];
-  messages: ParserMessages;
   itemMessages: ((file: F) => ParserItemMessages) | ParserItemMessages;
-  createData: (file: F) => Promisable<T["data"]>;
-  postMortem?: (items: T[]) => Promisable<T[]>;
-}): (files: F[]) => Promise<T[]> {
-  return async (files) => {
+  createData: (file: F) => T["data"];
+  postMortem?: (items: T[]) => T[];
+}): (files: F[]) => T[] {
+  return (files) => {
     if (files.length === 0) return [];
-    logDefer(options.messages.pending);
     const tree = logTree(files.length, options.col1Name, options.col2Name);
 
     let items: T[] = [];
@@ -45,7 +37,7 @@ export function createHandlerParser<
         if (typeof itemMessages === "function") {
           itemMessages = itemMessages(file);
         }
-        data = await options.createData(file);
+        data = options.createData(file);
         const hasConflict = items.some((c) => {
           if (c.name !== file.name) return false;
           return options.uniqueKeys?.every((k) => data[k] === c.data[k]);
@@ -72,11 +64,11 @@ export function createHandlerParser<
     }
 
     if (options.postMortem) {
-      items = await options.postMortem(items);
+      items = options.postMortem(items);
     }
 
     if (items.length === 0) {
-      logWarn(options.messages.noItems);
+      logWarn(`No ${options.col1Name.toLowerCase()}s found`);
     }
 
     if (items.length > 0) {

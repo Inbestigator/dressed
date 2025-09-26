@@ -9,10 +9,6 @@ const validComponentCategories = ["buttons", "modals", "selects"];
 export const parseComponents = createHandlerParser<ComponentData>({
   col1Name: "Component",
   col2Name: "Category",
-  messages: {
-    pending: "Generating components",
-    noItems: "No components found",
-  },
   uniqueKeys: ["category"],
   itemMessages({ name, path }) {
     const category = getCategory(path);
@@ -21,7 +17,7 @@ export const parseComponents = createHandlerParser<ComponentData>({
       col2: category ?? "unknown",
     };
   },
-  async createData({ name, path, exports: { pattern = name } = {} }) {
+  createData({ name, path, exports: { pattern = name } = {} }) {
     const category = getCategory(path);
 
     if (!category) {

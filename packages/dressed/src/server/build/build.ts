@@ -78,13 +78,14 @@ export default async function build(
     entriesPath,
     [files.map((c) => c.map(importString)), categoryExports(files, "append")].flat(2).join(""),
   );
+  logDefer("Bundling handlers");
   await bundle(entriesPath, ".dressed/tmp");
   const { commands, components, events } = await import(resolve(entriesPath.replace(".ts", ".mjs")));
 
   return {
-    commands: await parseCommands(commands),
-    components: await parseComponents(components),
-    events: await parseEvents(events),
+    commands: parseCommands(commands),
+    components: parseComponents(components),
+    events: parseEvents(events),
     config,
   };
 }
