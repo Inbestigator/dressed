@@ -328,10 +328,10 @@
     {
       "key": "DeleteAPIChannelPermission",
       "params": ["url.channelId", "url.overwriteId"],
-      "overrides": { "name": "deleteChannelPermission" },
+      "overrides": { "name": "deleteChannelPermissions" },
       "flags": ["returnVoid"],
       "docs": {
-        "description": "Delete a channel permission overwrite for a user or role in a channel.",
+        "description": "Delete a channel permission overwrite for a user or role in a channel.\n * TODO rename to something like `deleteChannelPermission`",
         "infos": ["Only usable for guild channels.", "Requires the `MANAGE_ROLES` permission."],
         "see": "/docs/resources/channel#delete-channel-permission"
       }
@@ -730,6 +730,16 @@
       }
     },
     {
+      "key": "PostAPITemplateCreateGuild",
+      "params": ["url.code: string", "data"],
+      "overrides": { "apiRoute": "template", "name": "createFromTemplate" },
+      "flags": ["deprecated"],
+      "docs": {
+        "description": "Returns a [guild template](/docs/resources/guild-template#guild-template-object) object for the given code.",
+        "see": "/docs/change-log#guild-create-deprecation"
+      }
+    },
+    {
       "key": "GetAPIGuildTemplates",
       "params": ["url.guildId"],
       "docs": {
@@ -780,6 +790,16 @@
       }
     },
     {
+      "key": "PostAPIGuilds",
+      "params": ["data"],
+      "overrides": { "apiRoute": "guilds" },
+      "flags": ["deprecated"],
+      "docs": {
+        "description": "Create a new guild.",
+        "see": "/docs/change-log#guild-create-deprecation"
+      }
+    },
+    {
       "key": "GetAPIGuild",
       "params": ["url.guildId", "params?"],
       "docs": {
@@ -812,6 +832,15 @@
           "Attempting to add or remove the `COMMUNITY` [guild feature](/docs/resources/guild#guild-object-guild-features) requires the `ADMINISTRATOR` permission."
         ],
         "see": "/docs/resources/guild#modify-guild"
+      }
+    },
+    {
+      "key": "DeleteAPIGuild",
+      "params": ["url.guildId"],
+      "flags": ["deprecated", "returnVoid"],
+      "docs": {
+        "description": "Delete a guild.",
+        "see": "/docs/change-log#guild-create-deprecation"
       }
     },
     {
@@ -1047,6 +1076,17 @@
       }
     },
     {
+      "key": "PostAPIGuildsMFA",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildMFA", "name": "modifyMFALevel" },
+      "flags": ["deprecated"],
+      "docs": {
+        "description": "Modify a guild's MFA level.",
+        "infos": ["Requires guild ownership."],
+        "see": "/docs/change-log#guild-create-deprecation"
+      }
+    },
+    {
       "key": "DeleteAPIGuildRole",
       "params": ["url.guildId", "url.roleId"],
       "flags": ["returnVoid"],
@@ -1219,10 +1259,10 @@
     {
       "key": "PutAPIGuildIncidentActions",
       "params": ["url.guildId", "data"],
-      "overrides": { "name": "modifyIncidentActions" },
+      "overrides": { "name": "modifyGuildIncidentActions" },
       "flags": ["returnVoid"],
       "docs": {
-        "description": "Modifies the incident actions of the guild.",
+        "description": "Modifies the incident actions of the guild.\n * TODO rename to `modifyIncidentActions`",
         "infos": [
           "Requires the `MANAGE_GUILD` permission.",
           "Both `invites_disabled_until` and `dms_disabled_until` can be enabled for a maximal timespan of 24 hours in the future."
@@ -1468,7 +1508,7 @@
     {
       "key": "PostAPIPollExpire",
       "params": ["url.channelId", "url.messageId"],
-      "overrides": { "apiRoute": "expirePoll" },
+      "overrides": { "apiRoute": "expirePoll", "name": "endPoll" },
       "docs": {
         "description": "Immediately ends the poll. You cannot end polls from other users.",
         "see": "/docs/resources/poll#get-answer-voters"
