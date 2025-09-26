@@ -927,23 +927,15 @@
     },
     {
       "key": "PatchAPIGuildMember",
-      "params": ["url.guildId", "url.userId", "data"],
-      "docs": {
-        "description": "Modify attributes of a [guild member](/docs/resources/guild#guild-member-object).",
-        "see": "/docs/resources/guild#modify-guild-member"
-      }
-    },
-    {
-      "key": "PatchAPICurrentGuildMember",
-      "params": ["url.guildId", "data"],
+      "params": ["url.guildId", "url.userId: T", "data"],
       "overrides": {
-        "apiRoute": "guildMember",
-        "name": "modifyCurrentMember",
-        "returnType": "RESTPatchAPIGuildMemberResult"
+        "dataType": "T extends \"@me\" ? RESTPatchAPICurrentGuildMemberJSONBody : RESTPatchAPIGuildMemberJSONBody",
+        "generic": "T extends \"@me\" | Snowflake & {}",
+        "imports": ["type RESTPatchAPICurrentGuildMemberJSONBody"]
       },
       "docs": {
-        "description": "Modifies the current member in a guild.",
-        "see": "/docs/resources/guild#modify-current-member"
+        "description": "Modify attributes of a [guild member](/docs/resources/guild#guild-member-object), defaults to self.",
+        "see": "/docs/resources/guild#modify-guild-member"
       }
     },
     {
@@ -1795,10 +1787,15 @@
     {
       "key": "GetAPIUserGuildMember",
       "params": ["url.guildId"],
-      "overrides": { "imports": ["type APIGuildMember"], "name": "getCurrentMember", "returnType": "APIGuildMember" },
+      "overrides": {
+        "imports": ["type APIGuildMember"],
+        "name": "getCurrentUserMember",
+        "returnType": "APIGuildMember"
+      },
       "docs": {
         "description": "Returns a [guild member](/docs/resources/guild#guild-member-object) object for the current user.",
         "infos": ["Requires the `guilds.members.read` OAuth2 scope."],
+        "warns": ["Bots cannot use this endpoint"],
         "see": "/docs/resources/user#get-current-user-guild-member"
       }
     },
@@ -1947,7 +1944,7 @@
     },
     {
       "key": "DeleteAPIWebhook",
-      "params": ["url.webhookId", "url.webhookToken?"],
+      "params": ["url.webhookId", "url.webhookToken?: string"],
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete a webhook permanently.",
@@ -1957,7 +1954,7 @@
     },
     {
       "key": "PostAPIWebhookWithToken",
-      "params": ["url.webhookId", "url.webhookToken", "data", "params?"],
+      "params": ["url.webhookId", "url.webhookToken: string", "data", "params?"],
       "overrides": {
         "apiRoute": "webhook",
         "generic": "T extends RESTPostAPIWebhookWithTokenQuery",
@@ -1978,7 +1975,7 @@
     },
     {
       "key": "GetAPIWebhookWithTokenMessage",
-      "params": ["url.webhookId", "url.webhookToken", "url.messageId", "params?"],
+      "params": ["url.webhookId", "url.webhookToken: string", "url.messageId", "params?"],
       "overrides": { "apiRoute": "webhookMessage", "name": "getWebhookMessage" },
       "docs": {
         "description": "Returns a previously-sent webhook message from the same token.",
@@ -1987,7 +1984,7 @@
     },
     {
       "key": "PatchAPIWebhookWithTokenMessage",
-      "params": ["url.webhookId", "url.webhookToken", "url.messageId", "data", "params?"],
+      "params": ["url.webhookId", "url.webhookToken: string", "url.messageId", "data", "params?"],
       "overrides": { "apiRoute": "webhookMessage", "name": "editWebhookMessage" },
       "flags": ["hasFiles", "hasStringableContent"],
       "docs": {
@@ -2000,7 +1997,7 @@
     },
     {
       "key": "DeleteAPIWebhookWithTokenMessage",
-      "params": ["url.webhookId", "url.webhookToken", "url.messageId", "params?"],
+      "params": ["url.webhookId", "url.webhookToken: string", "url.messageId", "params?"],
       "overrides": {
         "apiRoute": "webhookMessage",
         "name": "deleteWebhookMessage",

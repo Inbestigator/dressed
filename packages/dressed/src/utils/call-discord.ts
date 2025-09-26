@@ -5,6 +5,12 @@ import type { RawFile } from "../types/file.ts";
 import { botEnv } from "./env.ts";
 import { checkLimit, headerUpdateLimit, updateLimit } from "./ratelimit.ts";
 
+/** Optional extra config for the layer before fetch */
+export interface CallConfig {
+  /** The authorization string to use, defaults to `Bot {env.DISCORD_TOKEN}` */
+  authorization?: string;
+}
+
 export async function callDiscord(
   endpoint: string,
   {
@@ -18,8 +24,8 @@ export async function callDiscord(
     files?: RawFile[];
     flattenBodyInForm?: boolean;
   },
+  { authorization = `Bot ${botEnv.DISCORD_TOKEN}` }: CallConfig = {},
 ): Promise<Response> {
-  const token = botEnv.DISCORD_TOKEN;
   const url = new URL(RouteBases.api + endpoint);
   options.method ??= "GET";
 
@@ -64,10 +70,7 @@ export async function callDiscord(
   await checkLimit(endpoint, options.method);
 
   const res = await fetch(url, {
-    headers: {
-      Authorization: `Bot ${token}`,
-      ...(!files?.length ? { "Content-Type": "application/json" } : {}),
-    },
+    headers: { authorization, ...(!files?.length ? { "content-type": "application/json" } : {}) },
     ...(options as RequestInit),
   });
 

@@ -36,7 +36,7 @@ import {
   )}
 } from "discord-api-types/v10";
 import type { RawFile } from "../types/file.ts";
-import { callDiscord } from "../utils/call-discord.ts";
+import { callDiscord, type CallConfig } from "../utils/call-discord.ts";
 import { botEnv } from "../utils/env.ts";
 
 ${data.routes
@@ -91,7 +91,13 @@ ${data.routes
  * ${docs.description}${docs.infos ? `\n${docs.infos.map((i) => ` * @info ${i}`).join("\n")}` : ""}${docs.warns ? `\n${docs.warns.map((w) => ` * @warn ${w}`).join("\n")}` : ""}${docs.dangers ? `\n${docs.dangers.map((d) => ` * @danger ${d}`).join("\n")}` : ""}
  * @see ${docs.see}${flags?.includes("deprecated") ? "\n * @deprecated" : ""}
  */
-export async function ${name}${generic ? `<${generic}>` : ""}(${params.filter((p) => !p.includes("<")).map((p) => `${/^(url|var)\./.test(p) ? p.slice(4) : p}${p.startsWith("params") ? `: ${paramsType}` : p.startsWith("data") ? `: ${dataType}` : !p.includes(":") ? ": Snowflake" : ""}`)}): Promise<${returnType}> {
+export async function ${name}${generic ? `<${generic}>` : ""}(${params
+        .concat("var.$req?: CallConfig")
+        .filter((p) => !p.includes("<"))
+        .map(
+          (p) =>
+            `${/^(url|var)\./.test(p) ? p.slice(4) : p}${p.startsWith("params") ? `: ${paramsType}` : p.startsWith("data") ? `: ${dataType}` : !p.includes(":") ? ": Snowflake" : ""}`,
+        )}): Promise<${returnType}> {
   ${dangerousExtraLogic}
   ${flags?.includes("hasStringableContent") ? `if (typeof data${messageKey} === "string") data${messageKey} = { content: data${messageKey} };` : ""}
   const ${!flags?.includes("returnVoid") ? "res" : "_res"} = await callDiscord(Routes${apiRoute.startsWith("[") ? apiRoute : `.${apiRoute[0].toLowerCase()}${apiRoute.slice(1)}`}(${params
@@ -103,7 +109,7 @@ export async function ${name}${generic ? `<${generic}>` : ""}(${params.filter((p
       ${Object.entries(fetchOptions ?? [])
         .map(([k, v]) => `,${k}: ${JSON.stringify(v)}`)
         .join("")}
-  });
+  }, $req);
   ${!flags?.includes("returnVoid") ? "return res.json()" : ""}
 }
 `

@@ -16,6 +16,8 @@ import { getOption } from "./options.ts";
 import { baseInteractionMethods } from "./responses.ts";
 
 export function createInteraction<T extends APIInteraction>(input: T): Interaction<T> {
+  const methods = baseInteractionMethods(input);
+
   if (!input.user && input.member) {
     input.user = input.member.user;
   }
@@ -24,7 +26,7 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
     case InteractionType.ApplicationCommand: {
       return {
         ...input,
-        ...baseInteractionMethods(input),
+        ...methods,
         getOption: (n, r) =>
           getOption(
             n,
@@ -37,15 +39,12 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
     case InteractionType.ApplicationCommandAutocomplete: {
       return {
         ...input,
-        ...baseInteractionMethods(input),
+        ...methods,
         getOption: (n) => getOption(n, false, input.data.options, input.data.resolved),
       } as CommandAutocompleteInteraction as Interaction<T>;
     }
     case InteractionType.MessageComponent: {
-      return {
-        ...input,
-        ...baseInteractionMethods(input),
-      } as MessageComponentInteraction as Interaction<T>;
+      return { ...input, ...methods } as MessageComponentInteraction as Interaction<T>;
     }
     case InteractionType.ModalSubmit: {
       const components: ModalSubmitComponent[] = [];
@@ -63,7 +62,7 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
       }
       return {
         ...input,
-        ...baseInteractionMethods(input),
+        ...methods,
         getField: (c, r) => getField(c, r ?? false, components, input.data.resolved),
       } as ModalSubmitInteraction as Interaction<T>;
     }
