@@ -16,5 +16,5 @@
     "rootDir": "src"
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["src/make"]
+  "exclude": ["src/resources/make"]
 }

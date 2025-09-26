@@ -15,28 +15,28 @@ import { callDiscord } from "../utils/call-discord.ts";
  */
 export async function createInteractionCallback<
   T extends keyof typeof InteractionResponseType,
-  Q extends RESTPostAPIInteractionCallbackQuery,
+  P extends RESTPostAPIInteractionCallbackQuery,
   E extends object = Extract<APIInteractionResponse, { type: (typeof InteractionResponseType)[T] }>,
 >(
   interactionId: string,
   interactionToken: string,
   type: T,
-  ...[data, files, options]: E extends {
+  ...[data, files, params]: E extends {
     data?: infer D;
   }
     ? // This accounts for the different types submitting data or not
-      [...(E extends { data: object } ? [D] : [D?]), RawFile[]?, Q?]
-    : [undefined?, undefined?, Q?]
-): InteractionCallbackResponse<Q> {
+      [...(E extends { data: object } ? [D] : [D?]), RawFile[]?, P?]
+    : [undefined?, undefined?, P?]
+): InteractionCallbackResponse<P> {
   const res = await callDiscord(Routes.interactionCallback(interactionId, interactionToken), {
     method: "POST",
     body: {
       type: InteractionResponseType[type],
       data,
     },
-    params: options,
+    params,
     files,
   });
 
-  return options?.with_response ? res.json() : (null as never);
+  return params?.with_response ? res.json() : (null as never);
 }

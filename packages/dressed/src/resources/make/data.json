@@ -1586,6 +1586,412 @@
         ],
         "see": "/docs/resources/soundboard#delete-guild-soundboard-sound"
       }
+    },
+    {
+      "key": "PostAPIStageInstance",
+      "params": ["data"],
+      "overrides": { "apiRoute": "stageInstances", "name": "createStage" },
+      "docs": {
+        "description": "Creates a new Stage instance associated to a Stage channel.",
+        "infos": ["Requires the user to be a moderator of the Stage channel."],
+        "see": "/docs/resources/stage-instance#create-stage-instance"
+      }
+    },
+    {
+      "key": "GetAPIStageInstance",
+      "params": ["url.channelId"],
+      "overrides": { "name": "getStage" },
+      "docs": {
+        "description": "Gets the stage instance associated with the Stage channel, if it exists.",
+        "see": "/docs/resources/stage-instance#get-stage-instance"
+      }
+    },
+    {
+      "key": "PatchAPIStageInstance",
+      "params": ["url.channelId", "data"],
+      "overrides": { "name": "modifyStage" },
+      "docs": {
+        "description": "Updates fields of an existing Stage instance.",
+        "infos": ["Requires the user to be a moderator of the Stage channel."],
+        "see": "/docs/resources/stage-instance#modify-stage-instance"
+      }
+    },
+    {
+      "key": "DeleteAPIStageInstance",
+      "params": ["url.channelId"],
+      "overrides": { "name": "deleteStage" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Deletes the Stage instance.",
+        "infos": ["Requires the user to be a moderator of the Stage channel."],
+        "see": "/docs/resources/stage-instance#delete-stage-instance"
+      }
+    },
+    {
+      "key": "GetAPIGuildSticker",
+      "params": ["url.stickerId"],
+      "overrides": { "apiRoute": "sticker" },
+      "docs": {
+        "description": "Returns a [sticker](/docs/resources/sticker#sticker-object) object for the given sticker ID.",
+        "see": "/docs/resources/sticker#get-sticker"
+      }
+    },
+    {
+      "key": "GetStickerPacks",
+      "params": [],
+      "overrides": { "name": "listStickerPacks" },
+      "docs": {
+        "description": "Returns a list of available sticker packs.",
+        "see": "/docs/resources/sticker#list-sticker-packs"
+      }
+    },
+    {
+      "key": "GetAPIStickerPack",
+      "params": ["url.packId"],
+      "overrides": { "name": "getStickerPack" },
+      "docs": {
+        "description": "Returns a [sticker pack](/docs/resources/sticker#sticker-pack-object) object for the given sticker pack ID.",
+        "see": "/docs/resources/sticker#get-sticker-pack"
+      }
+    },
+    {
+      "key": "GetAPIGuildStickers",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns an array of [sticker](/docs/resources/sticker#sticker-object) objects for the given guild.",
+        "infos": [
+          "Includes `user` fields if the bot has the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/sticker#list-guild-stickers"
+      }
+    },
+    {
+      "key": "GetAPIGuildSticker",
+      "params": ["url.guildId", "url.stickerId"],
+      "overrides": { "name": "getGuildSticker" },
+      "docs": {
+        "description": "Returns a [sticker](/docs/resources/sticker#sticker-object) object for the given guild and sticker IDs.",
+        "infos": [
+          "Includes the `user` field if the bot has the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/sticker#get-guild-sticker"
+      }
+    },
+    {
+      "key": "PostAPIGuildSticker",
+      "params": ["url.guildId", "data"],
+      "overrides": {
+        "apiRoute": "guildStickers",
+        "dataType": "RESTPostAPIGuildStickerFormDataBody & { file: RawFile }",
+        "fetchOptions": { "flattenBodyInForm": true },
+        "imports": ["type RESTPostAPIGuildStickerFormDataBody"]
+      },
+      "flags": ["hasFiles", "singlefile"],
+      "docs": {
+        "description": "Create a new sticker for the guild.",
+        "infos": ["Requires the `CREATE_GUILD_EXPRESSIONS` permission."],
+        "warns": [
+          "Lottie stickers can only be uploaded on guilds that have either the `VERIFIED` and/or the `PARTNERED` [guild feature](/docs/resources/guild#guild-object-guild-features).",
+          "Uploaded stickers are constrained to 5 seconds in length for animated stickers, and 320 x 320 pixels."
+        ],
+        "see": "/docs/resources/sticker#create-guild-sticker"
+      }
+    },
+    {
+      "key": "PatchAPIGuildSticker",
+      "params": ["url.guildId", "url.stickerId", "data"],
+      "docs": {
+        "description": "Modify the given sticker.",
+        "infos": [
+          "For stickers created by the current user, requires either the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission.",
+          "For other stickers, requires the `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/sticker#modify-guild-sticker"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildSticker",
+      "params": ["url.guildId", "url.stickerId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete the given sticker.",
+        "infos": [
+          "For stickers created by the current user, requires either the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission.",
+          "For other stickers, requires the `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/sticker#delete-guild-sticker"
+      }
+    },
+    {
+      "key": "GetAPISKUSubscriptions",
+      "params": ["url.skuId", "params?"],
+      "overrides": { "apiRoute": "skuSubscriptions" },
+      "docs": {
+        "description": "Returns all subscriptions containing the SKU, filtered by user.",
+        "see": "/docs/resources/subscription#list-sku-subscriptions"
+      }
+    },
+    {
+      "key": "GetAPISKUSubscription",
+      "params": ["url.skuId", "url.subscriptionId"],
+      "overrides": { "apiRoute": "skuSubscription" },
+      "docs": {
+        "description": "Get a subscription by its ID.",
+        "see": "/docs/resources/subscription#get-sku-subscription"
+      }
+    },
+    {
+      "key": "GetAPIUser",
+      "params": ["url.userId?"],
+      "docs": {
+        "description": "Returns a [user](/docs/resources/user#user-object) object for a given user ID, defaults to self.",
+        "see": "/docs/resources/user#get-user"
+      }
+    },
+    {
+      "key": "PatchAPICurrentUser",
+      "params": ["data"],
+      "overrides": { "apiRoute": "user" },
+      "docs": {
+        "description": "Modify the requester's user account settings.",
+        "see": "/docs/resources/user#modify-current-user"
+      }
+    },
+    {
+      "key": "GetAPICurrentUserGuilds",
+      "params": ["params?"],
+      "overrides": { "apiRoute": "userGuilds", "name": "listGuilds" },
+      "docs": {
+        "description": "Returns a list of partial [guild](/docs/resources/guild#guild-object) objects the current user is a member of.",
+        "infos": [
+          "For OAuth2, requires the `guilds` scope.",
+          "This endpoint returns 200 guilds by default, which is the maximum number of guilds a non-bot user can join. Therefore, pagination is **not needed** for integrations that need to get a list of the users' guilds."
+        ],
+        "see": "/docs/resources/user#get-current-user-guilds"
+      }
+    },
+    {
+      "key": "GetAPIUserGuildMember",
+      "params": ["url.guildId"],
+      "overrides": { "imports": ["type APIGuildMember"], "name": "getCurrentMember", "returnType": "APIGuildMember" },
+      "docs": {
+        "description": "Returns a [guild member](/docs/resources/guild#guild-member-object) object for the current user.",
+        "infos": ["Requires the `guilds.members.read` OAuth2 scope."],
+        "see": "/docs/resources/user#get-current-user-guild-member"
+      }
+    },
+    {
+      "key": "DeleteAPICurrentUserGuild",
+      "params": ["url.guildId"],
+      "overrides": { "apiRoute": "userGuild", "name": "leaveGuild" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Leave a guild.",
+        "see": "/docs/resources/user#leave-member"
+      }
+    },
+    {
+      "key": "PostAPICurrentUserCreateDMChannel",
+      "params": ["data"],
+      "overrides": {
+        "apiRoute": "userChannels",
+        "dangerousExtraLogic": "data = { recipient_id: data } as unknown as Snowflake",
+        "dataType": "Snowflake",
+        "name": "createDM"
+      },
+      "docs": {
+        "description": "Create a new DM channel with a user.",
+        "warns": [
+          "You should not use this endpoint to DM everyone in a server about something. DMs should generally be initiated by a user action. If you open a significant amount of DMs too quickly, your bot may be rate limited or blocked from opening new ones."
+        ],
+        "see": "/docs/resources/user#create-dm"
+      }
+    },
+    {
+      "key": "GetAPICurrentUserConnections",
+      "params": [],
+      "overrides": { "apiRoute": "userConnections", "name": "listConnections" },
+      "docs": {
+        "description": "Returns a list of [connection](/docs/resources/user#connection-object) objects.",
+        "infos": ["Requires the `connections` OAuth2 scope."],
+        "see": "/docs/resources/user#get-current-user-connections"
+      }
+    },
+    {
+      "key": "GetAPICurrentUserApplicationRoleConnection",
+      "params": ["url.applicationId: Snowflake = botEnv.DISCORD_APP_ID"],
+      "overrides": { "apiRoute": "userApplicationRoleConnection", "name": "getRoleConnection" },
+      "docs": {
+        "description": "Returns the [application role connection](/docs/resources/user#application-role-connection-object) for the user.",
+        "infos": ["Requires the `connections` OAuth2 scope."],
+        "see": "/docs/resources/user#get-current-user-application-role-connection"
+      }
+    },
+    {
+      "key": "PutAPICurrentUserApplicationRoleConnection",
+      "params": ["url.applicationId: Snowflake = botEnv.DISCORD_APP_ID", "data"],
+      "overrides": { "apiRoute": "userApplicationRoleConnection", "name": "modifyRoleConnection" },
+      "docs": {
+        "description": "Updates and returns the [application role connection](/docs/resources/user#application-role-connection-object) for the user.",
+        "infos": ["Requires the `connections` OAuth2 scope."],
+        "see": "/docs/resources/user#update-current-user-application-role-connection"
+      }
+    },
+    {
+      "key": "GetAPIVoiceRegions",
+      "params": [],
+      "overrides": { "name": "listVoiceRegions" },
+      "docs": {
+        "description": "Returns an array of [voice region](/docs/resources/voice#voice-region-object) objects that can be used when setting a voice or stage channel's [`rtc_region`](/docs/resources/channel#channel-object-channel-structure).",
+        "see": "/docs/resources/voice#list-voice-regions"
+      }
+    },
+    {
+      "key": "GetAPIGuildVoiceStateUser",
+      "params": ["url.guildId", "url.userId?"],
+      "overrides": { "apiRoute": "guildVoiceState", "name": "getVoiceState" },
+      "docs": {
+        "description": "Returns the specified user's [voice state](/docs/resources/voice#voice-state-object) in the guild, defaults to self.",
+        "see": "/docs/resources/voice#get-user-voice-state"
+      }
+    },
+    {
+      "key": "PatchAPIGuildVoiceStateCurrentMember",
+      "params": ["url.guildId", "data", "url.userId?"],
+      "overrides": { "apiRoute": "guildVoiceState", "name": "modifyVoiceState" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Updates a user's voice state, defaults to self.\n * @param data.request_to_speak_timestamp Not usable for other users",
+        "see": "/docs/resources/voice#modify-current-user-voice-state"
+      }
+    },
+    {
+      "key": "PostAPIChannelWebhook",
+      "params": ["url.channelId", "data"],
+      "overrides": { "apiRoute": "webhook" },
+      "docs": {
+        "description": "Creates a new webhook and returns a [webhook](/docs/resources/webhook#webhook-object) object on success.",
+        "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
+        "see": "/docs/resources/webhook#create-webhook"
+      }
+    },
+    {
+      "key": "GetAPIChannelWebhooks",
+      "params": ["url.channelId"],
+      "overrides": { "name": "listChannelWebhooks" },
+      "docs": {
+        "description": "Returns a list of channel [webhook](/docs/resources/webhook#webhook-object) objects.",
+        "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
+        "see": "/docs/resources/webhook#get-channel-webhooks"
+      }
+    },
+    {
+      "key": "GetAPIGuildWebhooks",
+      "params": ["url.guildId"],
+      "overrides": { "name": "listGuildWebhooks" },
+      "docs": {
+        "description": "Returns a list of guild [webhook](/docs/resources/webhook#webhook-object) objects.",
+        "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
+        "see": "/docs/resources/webhook#get-guild-webhooks"
+      }
+    },
+    {
+      "key": "GetAPIWebhook",
+      "params": ["url.webhookId", "url.webhookToken?: T"],
+      "overrides": {
+        "generic": "T extends string | undefined = undefined",
+        "imports": ["type RESTGetAPIWebhookWithTokenResult"],
+        "returnType": "T extends string ? RESTGetAPIWebhookWithTokenResult : RESTGetAPIWebhookResult"
+      },
+      "docs": {
+        "description": "Returns the new [webhook](/docs/resources/webhook#webhook-object) object for the given id.",
+        "infos": [
+          "This request requires the `MANAGE_WEBHOOKS` permission unless the application making the request owns the webhook. [(see: webhook.application_id)](/docs/resources/webhook#webhook-object)"
+        ],
+        "see": "/docs/resources/webhook#get-webhook"
+      }
+    },
+    {
+      "key": "PatchAPIWebhook",
+      "params": ["url.webhookId", "data", "url.webhookToken?: T"],
+      "overrides": {
+        "dataType": "T extends string ? RESTPatchAPIWebhookWithTokenJSONBody : RESTPatchAPIWebhookJSONBody",
+        "generic": "T extends string | undefined = undefined",
+        "imports": ["type RESTPatchAPIWebhookWithTokenJSONBody", "type RESTPatchAPIWebhookWithTokenResult"],
+        "returnType": "T extends string ? RESTPatchAPIWebhookWithTokenResult : RESTPatchAPIWebhookResult"
+      },
+      "docs": {
+        "description": "Modify a webhook.",
+        "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
+        "see": "/docs/resources/webhook#modify-webhook"
+      }
+    },
+    {
+      "key": "DeleteAPIWebhook",
+      "params": ["url.webhookId", "url.webhookToken?"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a webhook permanently.",
+        "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
+        "see": "/docs/resources/webhook#modify-webhook"
+      }
+    },
+    {
+      "key": "PostAPIWebhookWithToken",
+      "params": ["url.webhookId", "url.webhookToken", "data", "params?"],
+      "overrides": {
+        "apiRoute": "webhook",
+        "generic": "T extends RESTPostAPIWebhookWithTokenQuery",
+        "imports": ["type RESTPostAPIWebhookWithTokenQuery", "type RESTPostAPIWebhookWithTokenWaitResult"],
+        "name": "executeWebhook",
+        "paramsType": "T",
+        "returnType": "T[\"wait\"] extends true ? RESTPostAPIWebhookWithTokenWaitResult : void"
+      },
+      "flags": ["hasFiles", "hasStringableContent"],
+      "docs": {
+        "description": "Execute a webhook.",
+        "infos": [
+          "If the webhook channel is a forum or media channel, you must provide either `thread_id` in the query string params, or `thread_name` in the JSON/form params. If `thread_id` is provided, the message will send in that thread. If `thread_name` is provided, a thread with that name will be created in the channel.",
+          "For the webhook embed objects, you can set every field except `type` (it will be `rich` regardless of if you try to set it), `provider`, `video`, and any `height`, `width`, or `proxy_url` values for images."
+        ],
+        "see": "/docs/resources/webhook#execute-webhook"
+      }
+    },
+    {
+      "key": "GetAPIWebhookWithTokenMessage",
+      "params": ["url.webhookId", "url.webhookToken", "url.messageId", "params?"],
+      "overrides": { "apiRoute": "webhookMessage", "name": "getWebhookMessage" },
+      "docs": {
+        "description": "Returns a previously-sent webhook message from the same token.",
+        "see": "/docs/resources/webhook#get-webhook-message"
+      }
+    },
+    {
+      "key": "PatchAPIWebhookWithTokenMessage",
+      "params": ["url.webhookId", "url.webhookToken", "url.messageId", "data", "params?"],
+      "overrides": { "apiRoute": "webhookMessage", "name": "editWebhookMessage" },
+      "flags": ["hasFiles", "hasStringableContent"],
+      "docs": {
+        "description": "Edits a previously-sent webhook message from the same token.",
+        "warns": [
+          "Starting with API v10, the `attachments` array must contain all attachments that should be present after edit, including **retained and new** attachments provided in the request body."
+        ],
+        "see": "/docs/resources/webhook#edit-webhook-message"
+      }
+    },
+    {
+      "key": "DeleteAPIWebhookWithTokenMessage",
+      "params": ["url.webhookId", "url.webhookToken", "url.messageId", "params?"],
+      "overrides": {
+        "apiRoute": "webhookMessage",
+        "name": "deleteWebhookMessage",
+        "paramsType": "Pick<RESTPostAPIWebhookWithTokenQuery, \"thread_id\">"
+      },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Deletes a message that was created by the webhook.",
+        "see": "/docs/resources/webhook#delete-webhook-message"
+      }
     }
   ]
 }

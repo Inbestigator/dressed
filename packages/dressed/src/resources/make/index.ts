@@ -3,7 +3,7 @@ import { $ } from "bun";
 import data from "./data.json" with { type: "json" };
 
 writeFileSync(
-  "./src/generated.resources.ts",
+  "./src/resources/generated.resources.ts",
   `
 import {
   Routes,
@@ -13,12 +13,16 @@ import {
         .flatMap(({ key, params, flags, overrides }) => {
           const defaultDataType = `REST${key}JSONBody`;
           const defaultReturnType = `REST${key}Result`;
+          const defaultParamsType = `REST${key}Query`;
           return [
             params.some((p) => p.startsWith("data")) &&
             (!overrides?.dataType || overrides.dataType.includes(defaultDataType))
               ? `type ${defaultDataType}`
               : undefined,
-            params.some((p) => p.startsWith("params")) ? `type REST${key}Query` : undefined,
+            params.some((p) => p.startsWith("params")) &&
+            (!overrides?.paramsType || overrides.paramsType.includes(defaultParamsType))
+              ? `type ${defaultParamsType}`
+              : undefined,
             params.some((p) => p.startsWith("url.") && !p.includes("<")) ? "type Snowflake" : undefined,
             !flags?.includes("returnVoid") &&
             (!overrides?.returnType || overrides.returnType.includes(defaultReturnType))
@@ -31,9 +35,9 @@ import {
     ),
   )}
 } from "discord-api-types/v10";
-import type { RawFile } from "./types/file.ts";
-import { callDiscord } from "./utils/call-discord.ts";
-import { botEnv } from "./utils/env.ts";
+import type { RawFile } from "../types/file.ts";
+import { callDiscord } from "../utils/call-discord.ts";
+import { botEnv } from "../utils/env.ts";
 
 ${data.routes
   .map(
@@ -42,7 +46,17 @@ ${data.routes
       key,
       params,
       flags,
-      overrides: { apiRoute, dataType, dangerousExtraLogic, name, returnType, messageKey } = {},
+      overrides: {
+        apiRoute,
+        dataType,
+        dangerousExtraLogic,
+        name,
+        returnType,
+        messageKey,
+        fetchOptions,
+        generic,
+        paramsType,
+      } = {},
     }) => {
       const method = (key.match(/[A-Z][a-z]+/) ?? [])[0] ?? "";
       const routeKey = key.slice(method.length).replace("API", "");
@@ -64,6 +78,7 @@ ${data.routes
       apiRoute ??= routeKey;
       dangerousExtraLogic ??= "";
       dataType ??= `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}JSONBody${flags?.includes("hasFiles") ? ` & { file${flags.includes("singlefile") ? "" : "s"}?: RawFile${flags.includes("singlefile") ? "" : "[]"} }` : ""}`;
+      paramsType ??= `REST${key}Query`;
       messageKey ??= "";
       name ??=
         prefix +
@@ -76,15 +91,18 @@ ${data.routes
  * ${docs.description}${docs.infos ? `\n${docs.infos.map((i) => ` * @info ${i}`).join("\n")}` : ""}${docs.warns ? `\n${docs.warns.map((w) => ` * @warn ${w}`).join("\n")}` : ""}${docs.dangers ? `\n${docs.dangers.map((d) => ` * @danger ${d}`).join("\n")}` : ""}
  * @see ${docs.see}${flags?.includes("deprecated") ? "\n * @deprecated" : ""}
  */
-export async function ${name}(${params.filter((p) => !p.includes("<")).map((p) => `${/^(url|var)\./.test(p) ? p.slice(4) : p}${p.startsWith("params") ? `: REST${key}Query` : p.startsWith("data") ? `: ${dataType}` : !p.includes(":") ? ": Snowflake" : ""}`)}): Promise<${returnType}> {
+export async function ${name}${generic ? `<${generic}>` : ""}(${params.filter((p) => !p.includes("<")).map((p) => `${/^(url|var)\./.test(p) ? p.slice(4) : p}${p.startsWith("params") ? `: ${paramsType}` : p.startsWith("data") ? `: ${dataType}` : !p.includes(":") ? ": Snowflake" : ""}`)}): Promise<${returnType}> {
   ${dangerousExtraLogic}
   ${flags?.includes("hasStringableContent") ? `if (typeof data${messageKey} === "string") data${messageKey} = { content: data${messageKey} };` : ""}
   const ${!flags?.includes("returnVoid") ? "res" : "_res"} = await callDiscord(Routes${apiRoute.startsWith("[") ? apiRoute : `.${apiRoute[0].toLowerCase()}${apiRoute.slice(1)}`}(${params
     .filter((p) => p.startsWith("url."))
     .map((p) => (p.endsWith("?") ? p.slice(0, -1) : p))
     .map((p) => (p.includes("<") ? p.split("<")[1] : p.slice(4)))
-    .map((p) => (p.includes(":") ? p.split(":")[0] : p))}), {
+    .map((p) => (p.includes(":") ? p.split(/[?:]/)[0] : p))}), {
       ${[`method: "${method.toUpperCase()}"`, params.some((p) => p.startsWith("data")) ? "body: data" : undefined, params.some((p) => p.startsWith("params")) ? "params" : undefined, flags?.includes("hasFiles") ? `files: ${flags.includes("singlefile") ? `[{ ...data${messageKey}.file, key: "file" }]` : `data${messageKey}.files`}` : undefined].filter(Boolean)}
+      ${Object.entries(fetchOptions ?? [])
+        .map(([k, v]) => `,${k}: ${JSON.stringify(v)}`)
+        .join("")}
   });
   ${!flags?.includes("returnVoid") ? "return res.json()" : ""}
 }
@@ -97,4 +115,4 @@ export async function ${name}(${params.filter((p) => !p.includes("<")).map((p) =
 `.trim(),
 );
 
-await $`bun --bun biome check ./src/generated.resources.ts --write --vcs-enabled=false`;
+await $`bun --bun biome check ./src/resources/generated.resources.ts --write --vcs-enabled=false`;
