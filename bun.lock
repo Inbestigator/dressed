@@ -12,15 +12,15 @@
     },
     "packages/dressed": {
       "name": "dressed",
-      "version": "1.10.0-rc.1",
+      "version": "1.10.0-canary.7",
       "bin": {
         "dressed": "dist/bin/dressed.js",
       },
       "dependencies": {
         "@dressed/matcher": "^1.4.0",
-        "@next/env": "^15.5.3",
         "commander": "^14.0.1",
         "discord-api-types": "^0.38.25",
+        "dotenv": "^17.2.2",
         "enquirer": "^2.4.1",
         "esbuild": "^0.25.9",
         "ora": "^9.0.0",
@@ -472,6 +472,8 @@
     "devlop": ["devlop@1.1.0", "", { "dependencies": { "dequal": "^2.0.0" } }, "sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA=="],
 
     "discord-api-types": ["discord-api-types@0.38.26", "", {}, "sha512-xpmPviHjIJ6dFu1eNwNDIGQ3N6qmPUUYFVAx/YZ64h7ZgPkTcKjnciD8bZe8Vbeji7yS5uYljyciunpq0J5NSw=="],
+
+    "dotenv": ["dotenv@17.2.2", "", {}, "sha512-Sf2LSQP+bOlhKWWyhFsn0UsfdK/kCWRv1iuA2gXAwt3dyNabr6QSj00I2V10pidqz69soatm9ZwZvpQMTIOd5Q=="],
 
     "dressed": ["dressed@workspace:packages/dressed"],
 
