@@ -54,9 +54,9 @@ ${method === "Get" ? `const ${getVarName[0].toLowerCase()}${getVarName.slice(1)}
     .join(", ")});
 \`\`\`
 
-${docs.infos?.map((i) => `> [!INFO]\n> ${i}`).join("\n") ?? ""}
-${docs.warns?.map((i) => `> [!WARNING]\n> ${i}`).join("\n") ?? ""}
-${docs.dangers?.map((i) => `> [!DANGER]\n> ${i}`).join("\n") ?? ""}
+${docs.infos ? `\n> [!INFO]\n${docs.infos.map((i) => `>${docs.infos.length > 1 ? " - " : " "}${i}`).join("\n")}` : ""}
+${docs.warns ? `\n> [!WARNING]\n${docs.warns.map((w) => `>${docs.warns.length > 1 ? " - " : " "}${w}`).join("\n")}` : ""}
+${docs.dangers ? `\n> [!DANGER]\n${docs.dangers.map((d) => `>${docs.dangers.length > 1 ? " - " : " "}${d}`).join("\n")}` : ""}
 `
     .trim()
     .replace(/\/docs/g, "https://discord.com/developers$&");
@@ -65,7 +65,12 @@ ${docs.dangers?.map((i) => `> [!DANGER]\n> ${i}`).join("\n") ?? ""}
   const segments = url.pathname.split("/").filter(Boolean);
   const file = segments.pop() ?? "misc";
 
-  groups[file] ??= [];
+  groups[file] ??= [
+    `# ${file
+      .split("-")
+      .map((w) => `${w[0].toUpperCase()}${w.slice(1)}`)
+      .join(" ")}`,
+  ];
   groups[file].push(content);
 }
 
