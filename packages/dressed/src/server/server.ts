@@ -94,7 +94,7 @@ export async function handleRequest(
     req.headers.get("x-signature-timestamp") as string,
   );
 
-  if (verified) {
+  if (!verified) {
     logError("Invalid signature");
     return new Response(null, { status: 401 });
   }
