@@ -1,6 +1,6 @@
 "use client";
 
-import { Book, Cog, Ear, Home, Network, Puzzle, Reply, Terminal } from "lucide-react";
+import { Atom, Book, Cog, Ear, Home, Network, Puzzle, Reply, Server, Terminal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
@@ -36,7 +36,7 @@ const data = [
       {
         title: "Deploying",
         url: "/docs/guide/deploying",
-        icon: Network,
+        icon: Server,
         items: [
           {
             title: "Vercel",
@@ -92,6 +92,16 @@ const data = [
     title: "Interactions",
     url: "/docs/interactions",
     icon: Reply,
+  },
+  {
+    title: "Custom servers",
+    url: "/docs/custom-servers",
+    icon: Network,
+  },
+  {
+    title: "React",
+    url: "/docs/react",
+    icon: Atom,
   },
 ];
 
