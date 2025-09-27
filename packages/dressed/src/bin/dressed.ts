@@ -3,7 +3,7 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { cwd, exit } from "node:process";
-import { Command } from "commander";
+import { Command, InvalidArgumentError } from "commander";
 import { parse } from "dotenv";
 import Enquirer from "enquirer";
 import build, { categoryExports, importString } from "../server/build/build.ts";
@@ -18,28 +18,45 @@ program
   .option("-i, --instance", "Include an instance create in the generated file")
   .option("-r, --register", "Register slash commands")
   .option("-e, --endpoint <endpoint>", "The endpoint to listen on, defaults to `/`")
-  .option("-p, --port <port>", "The port to listen on, defaults to `8000`")
+  .option("-p, --port <port>", "The port to listen on, defaults to `8000`", (v) => {
+    const parsed = parseInt(v, 10);
+    if (Number.isNaN(parsed) || parsed < 0 || parsed > 65_535) {
+      throw new InvalidArgumentError("Port must be a valid TCP/IP network port number (0-65535)");
+    }
+    return parsed;
+  })
   .option("-R, --root <root>", "Source root for the bot, defaults to `src`")
   .option(
     "-E, --extensions <extensions>",
     "Comma separated list of file extensions to include when bundling handlers, defaults to `js, ts, mjs`",
   )
-  .action(async ({ instance, register, endpoint, port, root, extensions }) => {
-    if (port && Number.isNaN(Number(port))) {
-      console.error("✖ Port must be a valid number");
-      return;
-    }
-    const { commands, components, events } = await build({
+  .action(
+    async ({
+      instance,
+      register,
       endpoint,
-      port: port ? Number(port) : undefined,
-      build: {
-        root,
-        extensions: extensions?.split(",").map((e: string) => e.trim()),
-      },
-    });
-    const categories = [commands, components, events];
+      port,
+      root,
+      extensions,
+    }: {
+      instance?: boolean;
+      register?: boolean;
+      endpoint?: string;
+      port?: number;
+      root?: string;
+      extensions?: string;
+    }) => {
+      const { commands, components, events } = await build({
+        endpoint,
+        port,
+        build: {
+          root,
+          extensions: extensions?.split(",").map((e: string) => e.trim()),
+        },
+      });
+      const categories = [commands, components, events];
 
-    const outputContent = `
+      const outputContent = `
 ${
   instance || register
     ? `import { ${
@@ -52,26 +69,27 @@ ${[categories.map((c) => c.map(importString)), categoryExports(categories, "null
 export { config };
 ${register ? "\ninstallCommands(commands);" : ""}
 ${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
-    const jsContent = 'export * from "./index.mjs";';
-    const typeContent =
-      'import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
+      const jsContent = 'export * from "./index.mjs";';
+      const typeContent =
+        'import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
 
-    writeFileSync(".dressed/tmp/index.ts", outputContent);
-    await bundleFiles(".dressed/tmp/index.ts", ".dressed");
-    writeFileSync(".dressed/index.js", jsContent);
-    writeFileSync(".dressed/index.d.ts", typeContent);
-    rmSync(".dressed/tmp", { recursive: true, force: true });
+      writeFileSync(".dressed/tmp/index.ts", outputContent);
+      await bundleFiles(".dressed/tmp/index.ts", ".dressed");
+      writeFileSync(".dressed/index.js", jsContent);
+      writeFileSync(".dressed/index.d.ts", typeContent);
+      rmSync(".dressed/tmp", { recursive: true, force: true });
 
-    logSuccess("Assembled generated build");
-    exit();
-  });
+      logSuccess("Assembled generated build");
+      exit();
+    },
+  );
 
 program
   .command("create")
   .description("Clone a new bot from the examples repository")
   .argument("[name]", "Project name")
   .argument("[template]", "Template name (node/deno)")
-  .action(async (name, template) => {
+  .action(async (name?: string, template?: string) => {
     const { prompt } = Enquirer;
     if (!name) {
       name = (
