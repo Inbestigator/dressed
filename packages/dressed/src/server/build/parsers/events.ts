@@ -1,6 +1,6 @@
 import { ApplicationWebhookEventType } from "discord-api-types/v10";
 import type { EventData } from "../../../types/config.ts";
-import { logWarn } from "../../../utils/log.ts";
+import { warnSymbol } from "../../../utils/log.ts";
 import { createHandlerParser } from "./index.ts";
 
 export const parseEvents = createHandlerParser<EventData>({
@@ -13,8 +13,7 @@ export const parseEvents = createHandlerParser<EventData>({
     const type = ApplicationWebhookEventType[name as keyof typeof ApplicationWebhookEventType];
 
     if (!type) {
-      logWarn(`Event type of "${name}" could not be determined, skipping`);
-      throw null;
+      throw `${warnSymbol} Event type of "${name}" could not be determined, skipping`;
     }
 
     return { type };

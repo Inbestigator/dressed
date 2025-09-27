@@ -1,6 +1,6 @@
 import type { BaseData } from "../../../types/config.ts";
 import type { WalkEntry } from "../../../types/walk.ts";
-import { logError, logWarn } from "../../../utils/log.ts";
+import { errorSymbol, warnSymbol } from "../../../utils/log.ts";
 import logTree from "../log-tree.ts";
 
 interface ParserItemMessages {
@@ -16,64 +16,63 @@ export function createHandlerParser<
   col2Name?: string;
   uniqueKeys?: (keyof T["data"])[];
   itemMessages: ((file: F) => ParserItemMessages) | ParserItemMessages;
-  createData: (file: F) => T["data"];
+  createData: (file: F, tree: ReturnType<typeof logTree>) => T["data"];
   postMortem?: (items: T[]) => T[];
 }): (files: F[]) => T[] {
   return (files) => {
     if (files.length === 0) return [];
     const tree = logTree(files.length, options.col1Name, options.col2Name);
-
     let items: T[] = [];
 
-    for (const file of files) {
-      // @ts-expect-error Technically, type F should extend `& { default: AnyFn }`. Shouldn't skip if exports aren't even included
-      if ("exports" in file && typeof file.exports.default !== "function") {
-        continue;
-      }
+    for (const [i, file] of Object.entries(files)) {
       let data: T["data"];
       let itemMessages = options.itemMessages;
-
-      try {
-        if (typeof itemMessages === "function") {
-          itemMessages = itemMessages(file);
-        }
-        data = options.createData(file);
-        const hasConflict = items.some((c) => {
-          if (c.name !== file.name) return false;
-          return options.uniqueKeys?.every((k) => data[k] === c.data[k]);
-        });
-        if (hasConflict) {
-          logWarn(itemMessages.confict);
-          throw null;
-        }
-
-        items.push({
-          name: file.name,
-          path: file.path,
-          uid: file.uid,
-          data,
-          exports: null,
-        } as T);
-        tree.push(file.name, itemMessages.col2);
-      } catch (e) {
-        if (e && e instanceof Error) {
-          logError(`Failed to parse ${file.path}:`);
-          console.error(e);
-        }
+      if (typeof itemMessages === "function") {
+        itemMessages = itemMessages(file);
       }
+      try {
+        tree.push(
+          files.filter((f) => f.name === file.name).length > 1
+            ? `${file.name} \x1b[2m(${file.path})\x1b[0m`
+            : file.name,
+          itemMessages.col2,
+        );
+        data = options.createData(file, tree);
+        const hasConflict = items.some(
+          (item) => options.uniqueKeys?.every((k) => data[k] === item.data[k]) ?? item.name === file.name,
+        );
+        if (hasConflict) {
+          throw `${warnSymbol} ${itemMessages.confict}`;
+        }
+        // @ts-expect-error Technically, type F should extend `& { default: AnyFn }`. Shouldn't skip if exports aren't even included
+        if ("exports" in file && typeof file.exports.default !== "function") {
+          throw `${errorSymbol} Every handler must export a default function, skipping`;
+        }
+      } catch (e) {
+        const prefix = Number(i) !== files.length - 1 ? "│" : " ";
+        if (e && e instanceof Error) {
+          tree.aside(`${prefix} ${errorSymbol} Failed to parse ${file.path}: ${e.message}`);
+          tree.aside(e);
+        } else if (typeof e === "string") {
+          tree.aside(`${prefix} ${e}`);
+        }
+        tree.chop();
+        continue;
+      }
+      items.push({
+        name: file.name,
+        path: file.path,
+        uid: file.uid,
+        data,
+        exports: null,
+      } as T);
     }
 
     if (options.postMortem) {
       items = options.postMortem(items);
     }
 
-    if (items.length === 0) {
-      logWarn(`No ${options.col1Name.toLowerCase()}s found`);
-    }
-
-    if (items.length > 0) {
-      tree.log();
-    }
+    tree.log();
 
     return items;
   };

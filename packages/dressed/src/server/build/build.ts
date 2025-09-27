@@ -82,6 +82,7 @@ export default async function build(
   await bundle(entriesPath, ".dressed/tmp");
   const { commands, components, events } = await import(resolve(entriesPath.replace(".ts", ".mjs")));
 
+  console.log(); // This just adds a newline before the logged trees for consistency
   return {
     commands: parseCommands(commands),
     components: parseComponents(components),

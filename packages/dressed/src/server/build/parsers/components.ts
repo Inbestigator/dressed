@@ -1,7 +1,7 @@
 import { sep } from "node:path";
 import { patternToRegex, scorePattern } from "@dressed/matcher";
 import type { ComponentData } from "../../../types/config.ts";
-import { logWarn } from "../../../utils/log.ts";
+import { warnSymbol } from "../../../utils/log.ts";
 import { createHandlerParser } from "./index.ts";
 
 const validComponentCategories = ["buttons", "modals", "selects"];
@@ -9,11 +9,11 @@ const validComponentCategories = ["buttons", "modals", "selects"];
 export const parseComponents = createHandlerParser<ComponentData>({
   col1Name: "Component",
   col2Name: "Category",
-  uniqueKeys: ["category"],
+  uniqueKeys: ["category", "regex"],
   itemMessages({ name, path }) {
     const category = getCategory(path);
     return {
-      confict: `"${name}" conflicts with another ${category?.slice(0, -1)}, skipping the duplicate`,
+      confict: `"${name}" conflicts with another ${category?.slice(0, -1)}, skipping`,
       col2: category ?? "unknown",
     };
   },
@@ -21,8 +21,7 @@ export const parseComponents = createHandlerParser<ComponentData>({
     const category = getCategory(path);
 
     if (!category) {
-      logWarn(`Category for "${name}" could not be determined, skipping`);
-      throw null;
+      throw `${warnSymbol} Category for "${name}" could not be determined, skipping`;
     }
 
     return {
