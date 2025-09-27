@@ -15,7 +15,7 @@ These are some guides for helping you deploy your bots on various serverless pro
 >
 > ```ts
 > export default async function myCommand(interaction) {
->   interaction.reply("This may not finish because"); // ❌ There's nothing telling the server that something crucial is still happening
+>   interaction.reply("This may not finish"); // ❌ There's nothing telling the server that something crucial is still happening
 >   await interaction.reply("This will always work"); // ✅ // Awaiting makes the server wait for this to finish
 >   return interaction.reply("This too"); // ✅ Your handler function is awaited, so returning acts like `await`
 > }

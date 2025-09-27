@@ -10,7 +10,7 @@
         "warns": [
           "The objects returned by this endpoint may be augmented with [additional fields if localization is active](/docs/interactions/application-commands#retrieving-localized-commands)."
         ],
-        "see": "/docs/interactions/application-commands.mdx#get-global-application-commands"
+        "see": "/docs/interactions/application-commands#get-global-application-commands"
       }
     },
     {

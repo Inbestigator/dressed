@@ -1,6 +1,6 @@
 import { writeFileSync } from "node:fs";
 import { $ } from "bun";
-import data from "./data.json" with { type: "json" };
+import { routes } from "./data.json";
 
 writeFileSync(
   "./src/resources/generated.resources.ts",
@@ -9,7 +9,7 @@ import {
   Routes,
   ${Array.from(
     new Set(
-      data.routes
+      routes
         .flatMap(({ key, params, flags, overrides }) => {
           const defaultDataType = `REST${key}JSONBody`;
           const defaultReturnType = `REST${key}Result`;
@@ -39,7 +39,7 @@ import type { RawFile } from "../types/file.ts";
 import { callDiscord, type CallConfig } from "../utils/call-discord.ts";
 import { botEnv } from "../utils/env.ts";
 
-${data.routes
+${routes
   .map(
     ({
       docs,

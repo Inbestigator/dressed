@@ -1,9 +1,10 @@
 "use client";
 
-import { Book, Cog, Ear, Home, Network, Puzzle, Reply, Terminal } from "lucide-react";
+import { Book, Cog, Ear, FunctionSquare, Home, Network, Puzzle, Reply, Terminal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
+import { routes } from "@/../../packages/dressed/src/resources/make/data.json";
 import { NavMain } from "@/components/nav-main";
 import {
   Sidebar,
@@ -13,6 +14,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+
+const files = new Set<string>();
+for (const { docs } of routes) {
+  const url = new URL(docs.see, "http://0");
+  const segments = url.pathname.split("/").filter(Boolean);
+  files.add(segments.pop() ?? "misc");
+}
 
 const data = [
   {
@@ -77,6 +85,17 @@ const data = [
         url: "/docs/commands/options",
       },
     ],
+  },
+  {
+    title: "Resources",
+    icon: FunctionSquare,
+    items: Array.from(files).map((f) => ({
+      title: f
+        .split("-")
+        .map((w) => `${w[0].toUpperCase()}${w.slice(1)}`)
+        .join(" "),
+      url: `/docs/resources/${f}`,
+    })),
   },
   {
     title: "Components",
