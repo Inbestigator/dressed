@@ -15,7 +15,6 @@
     "dotenv": "^17.2.2",
     "enquirer": "^2.4.1",
     "esbuild": "^0.25.9",
-    "tweetnacl": "^1.0.3",
     "walk-it": "^6.0.1"
   },
   "exports": {
