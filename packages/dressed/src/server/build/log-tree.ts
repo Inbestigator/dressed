@@ -23,7 +23,6 @@ export default function logTree(total: number, title1: string, title2 = "") {
         if (i === 0) prefix = " ";
         else if (i === 1) prefix = total === 1 ? "-" : "┌";
         else if (i === col1.length - 1) prefix = "└";
-
         return [
           `${prefix} ${chopped.has(i) ? "\x1b[9m" : ""}${name}${title2.length ? `${" ".repeat(pad(name, m1) + pad(col2[i], m2))}${col2[i]}\x1b[0m` : ""}`,
           ...(asides[i] ?? []),
