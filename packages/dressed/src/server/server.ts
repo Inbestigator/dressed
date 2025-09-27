@@ -88,8 +88,13 @@ export async function handleRequest(
   config?: ServerConfig,
 ): Promise<Response> {
   const body = await req.text();
+  const verified = await verifySignature(
+    body,
+    req.headers.get("x-signature-ed25519") as string,
+    req.headers.get("x-signature-timestamp") as string,
+  );
 
-  if (!verifySignature(body, req.headers.get("x-signature-ed25519"), req.headers.get("x-signature-timestamp"))) {
+  if (!verified) {
     logError("Invalid signature");
     return new Response(null, { status: 401 });
   }
