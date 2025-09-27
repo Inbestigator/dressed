@@ -382,8 +382,9 @@
       "params": ["url.channelId", "data", "url.messageId?"],
       "overrides": {
         "apiRoute": "threads",
-        "dataType": "Omit<RESTPostAPIChannelThreadsJSONBody, \"type\"> & { type?: \"Public\" | \"Private\" | number; }",
-        "dangerousExtraLogic": "data.type = Number.isNaN(Number(data.type)) ? Number(data.type === \"Public\")+11 : data.type;"
+        "dataType": "Omit<RESTPostAPIChannelThreadsJSONBody, \"type\"> & { type?: \"Public\" | \"Private\" | \"Announcement\" | ThreadChannelType; }",
+        "dangerousExtraLogic": "if (typeof data.type === \"string\") data.type = ChannelType[`${data.type}Thread`];",
+        "imports": ["ChannelType", "type ThreadChannelType"]
       },
       "docs": {
         "description": "Creates a new thread, include a message ID to start the thread from an existing message.",
