@@ -84,9 +84,9 @@ export default async function build(
 
   console.log(); // This just adds a newline before the logged trees for consistency
   return {
-    commands: parseCommands(commands),
-    components: parseComponents(components),
-    events: parseEvents(events),
+    commands: parseCommands(commands, `${root}/commands`),
+    components: parseComponents(components, `${root}/components`),
+    events: parseEvents(events, `${root}/events`),
     config,
   };
 }

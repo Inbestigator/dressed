@@ -1,3 +1,4 @@
+import { relative } from "node:path";
 import type { BaseData } from "../../../types/config.ts";
 import type { WalkEntry } from "../../../types/walk.ts";
 import { errorSymbol, warnSymbol } from "../../../utils/log.ts";
@@ -18,8 +19,8 @@ export function createHandlerParser<
   itemMessages: ((file: F) => ParserItemMessages) | ParserItemMessages;
   createData: (file: F, tree: ReturnType<typeof logTree>) => T["data"];
   postMortem?: (items: T[]) => T[];
-}): (files: F[]) => T[] {
-  return (files) => {
+}): (files: F[], base?: string) => T[] {
+  return (files, base) => {
     if (files.length === 0) return [];
     const tree = logTree(files.length, options.col1Name, options.col2Name);
     let items: T[] = [];
@@ -33,7 +34,7 @@ export function createHandlerParser<
       try {
         tree.push(
           files.filter((f) => f.name === file.name).length > 1
-            ? `${file.name} \x1b[2m(${file.path})\x1b[0m`
+            ? `${file.name} \x1b[2m(${relative(base ?? "", file.path)})\x1b[22m`
             : file.name,
           itemMessages.col2,
         );
