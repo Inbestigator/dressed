@@ -4,7 +4,7 @@ import { Book, Cog, Ear, FunctionSquare, Home, Network, Puzzle, Reply, Terminal 
 import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
-import { routes } from "@/../../packages/dressed/src/resources/make/data.json";
+import routeData from "@/../../packages/dressed/src/resources/make/data.json";
 import { NavMain } from "@/components/nav-main";
 import {
   Sidebar,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const files = new Set<string>();
-for (const { docs } of routes) {
+for (const { docs } of routeData.routes) {
   const url = new URL(docs.see, "http://0");
   const segments = url.pathname.split("/").filter(Boolean);
   files.add(segments.pop() ?? "misc");

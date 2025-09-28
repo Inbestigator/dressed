@@ -37,7 +37,7 @@ function Item({ item }: { item: Item }) {
   return (
     <Collapsible asChild defaultOpen={path.some((p) => p.toLowerCase() === item.title.toLowerCase())}>
       <SidebarMenuItem>
-        <SidebarMenuButton asChild className="text-nowrap overflow-x-scroll" tooltip={item.title}>
+        <SidebarMenuButton asChild className="h-fit" tooltip={item.title}>
           <Link tabIndex={-1} className={!item.url ? "pointer-events-none select-none" : ""} href={item.url ?? "/docs"}>
             {item.icon && <item.icon />}
             {item.title}
