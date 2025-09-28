@@ -31,11 +31,11 @@
   "type": "module",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "discord-api-types": "^0.38.25",
+    "discord-api-types": "^0.38.26",
     "react-reconciler": "npm:@dressed/react-reconciler"
   },
   "devDependencies": {
-    "@types/react": "^19.1.13",
+    "@types/react": "^19.1.15",
     "@types/react-reconciler": "^0.32.1"
   }
 }
