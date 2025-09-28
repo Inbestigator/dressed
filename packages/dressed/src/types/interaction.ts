@@ -15,8 +15,8 @@ import type {
   RESTPostAPIInteractionCallbackQuery,
   RESTPostAPIInteractionCallbackWithResponseResult,
 } from "discord-api-types/v10";
+import type { editWebhookMessage, executeWebhook } from "../resources/generated.resources.ts";
 import type { createInteractionCallback } from "../resources/interactions.ts";
-import type { editWebhookMessage, executeWebhook } from "../resources/webhooks.ts";
 import type { getField } from "../server/extenders/fields.ts";
 import type { getOption, OptionValueGetters } from "../server/extenders/options.ts";
 import type { RawFile } from "./file.ts";

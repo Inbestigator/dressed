@@ -1,9 +1,15 @@
 import { Buffer } from "node:buffer";
 import { type RESTError, type RESTErrorData, type RESTRateLimit, RouteBases } from "discord-api-types/v10";
-import ora from "ora";
 import type { RawFile } from "../types/file.ts";
 import { botEnv } from "./env.ts";
+import { logError } from "./log.ts";
 import { checkLimit, headerUpdateLimit, updateLimit } from "./ratelimit.ts";
+
+/** Optional extra config for the layer before fetch */
+export interface CallConfig {
+  /** The authorization string to use, defaults to `Bot {env.DISCORD_TOKEN}` */
+  authorization?: string;
+}
 
 export async function callDiscord(
   endpoint: string,
@@ -18,10 +24,15 @@ export async function callDiscord(
     files?: RawFile[];
     flattenBodyInForm?: boolean;
   },
+  { authorization = `Bot ${botEnv.DISCORD_TOKEN}` }: CallConfig = {},
 ): Promise<Response> {
-  const token = botEnv.DISCORD_TOKEN;
   const url = new URL(RouteBases.api + endpoint);
   options.method ??= "GET";
+
+  if (typeof options.body === "object" && options.body !== null) {
+    if ("files" in options.body) delete options.body.files;
+    if ("file" in options.body) delete options.body.file;
+  }
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
@@ -59,16 +70,13 @@ export async function callDiscord(
   await checkLimit(endpoint, options.method);
 
   const res = await fetch(url, {
-    headers: {
-      Authorization: `Bot ${token}`,
-      ...(!files?.length ? { "Content-Type": "application/json" } : {}),
-    },
+    headers: { authorization, ...(!files?.length ? { "content-type": "application/json" } : {}) },
     ...(options as RequestInit),
   });
 
   if (!res.ok) {
     const error = (await res.json()) as RESTError;
-    ora(`${error.message} (${error.code})`).fail();
+    logError(`${error.message} (${error.code})`);
 
     if (error.errors) {
       logErrorData(error.errors);

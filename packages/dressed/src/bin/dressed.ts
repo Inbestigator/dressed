@@ -2,13 +2,13 @@
 
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { cwd, exit, stdout } from "node:process";
-import { processEnv } from "@next/env";
-import { Command } from "commander";
+import { cwd, exit } from "node:process";
+import { Command, InvalidArgumentError } from "commander";
+import { parse } from "dotenv";
 import Enquirer from "enquirer";
-import ora from "ora";
 import build, { categoryExports, importString } from "../server/build/build.ts";
 import bundleFiles from "../server/build/bundle.ts";
+import { logDefer, logError, logSuccess } from "../utils/log.ts";
 
 const program = new Command().name("dressed").description("A sleek, serverless-ready Discord bot framework.");
 
@@ -18,32 +18,45 @@ program
   .option("-i, --instance", "Include an instance create in the generated file")
   .option("-r, --register", "Register slash commands")
   .option("-e, --endpoint <endpoint>", "The endpoint to listen on, defaults to `/`")
-  .option("-p, --port <port>", "The port to listen on, defaults to `8000`")
+  .option("-p, --port <port>", "The port to listen on, defaults to `8000`", (v) => {
+    const parsed = parseInt(v, 10);
+    if (Number.isNaN(parsed) || parsed < 0 || parsed > 65_535) {
+      throw new InvalidArgumentError("Port must be a valid TCP/IP network port number (0-65535)");
+    }
+    return parsed;
+  })
   .option("-R, --root <root>", "Source root for the bot, defaults to `src`")
   .option(
     "-E, --extensions <extensions>",
     "Comma separated list of file extensions to include when bundling handlers, defaults to `js, ts, mjs`",
   )
-  .action(async ({ instance, register, endpoint, port, root, extensions }) => {
-    if (port && Number.isNaN(Number(port))) {
-      ora("Port must be a valid number").fail();
-      return;
-    }
-    const { commands, components, events } = await build({
+  .action(
+    async ({
+      instance,
+      register,
       endpoint,
-      port: port ? Number(port) : undefined,
-      build: {
-        root,
-        extensions: extensions?.split(",").map((e: string) => e.trim()),
-      },
-    });
-    const buildLoader = ora({
-      stream: stdout,
-      text: "Assembling generated build",
-    }).start();
-    const categories = [commands, components, events];
+      port,
+      root,
+      extensions,
+    }: {
+      instance?: boolean;
+      register?: boolean;
+      endpoint?: string;
+      port?: number;
+      root?: string;
+      extensions?: string;
+    }) => {
+      const { commands, components, events } = await build({
+        endpoint,
+        port,
+        build: {
+          root,
+          extensions: extensions?.split(",").map((e: string) => e.trim()),
+        },
+      });
+      const categories = [commands, components, events];
 
-    const outputContent = `
+      const outputContent = `
 ${
   instance || register
     ? `import { ${
@@ -56,26 +69,27 @@ ${[categories.map((c) => c.map(importString)), categoryExports(categories, "null
 export { config };
 ${register ? "\ninstallCommands(commands);" : ""}
 ${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
-    const jsContent = 'export * from "./index.mjs";';
-    const typeContent =
-      'import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
+      const jsContent = 'export * from "./index.mjs";';
+      const typeContent =
+        'import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
 
-    writeFileSync(".dressed/tmp/index.ts", outputContent);
-    await bundleFiles(".dressed/tmp/index.ts", ".dressed");
-    writeFileSync(".dressed/index.js", jsContent);
-    writeFileSync(".dressed/index.d.ts", typeContent);
-    rmSync(".dressed/tmp", { recursive: true, force: true });
+      writeFileSync(".dressed/tmp/index.ts", outputContent);
+      await bundleFiles(".dressed/tmp/index.ts", ".dressed");
+      writeFileSync(".dressed/index.js", jsContent);
+      writeFileSync(".dressed/index.d.ts", typeContent);
+      rmSync(".dressed/tmp", { recursive: true, force: true });
 
-    buildLoader.succeed("Assembled generated build");
-    exit();
-  });
+      logSuccess("Assembled generated build");
+      exit();
+    },
+  );
 
 program
   .command("create")
   .description("Clone a new bot from the examples repository")
   .argument("[name]", "Project name")
   .argument("[template]", "Template name (node/deno)")
-  .action(async (name, template) => {
+  .action(async (name?: string, template?: string) => {
     const { prompt } = Enquirer;
     if (!name) {
       name = (
@@ -111,17 +125,8 @@ program
     if (!res.ok) {
       throw new Error("Failed to fetch env template.");
     }
-
-    const env = {
-      path: ".",
-      env: {},
-      contents: await res.text(),
-    };
-
-    processEnv([env], "./", undefined, true);
-
     const envVars = await prompt(
-      Object.entries(env.env).map(([k, v]) => ({
+      Object.entries(parse(await res.text())).map(([k, v]) => ({
         type: /TOKEN|PASSWORD/.test(k) ? "password" : "text",
         name: k,
         message: k,
@@ -129,7 +134,7 @@ program
       })),
     );
 
-    const mkdirLoader = ora(`Creating files for project: ${name}`).start();
+    logDefer(`Creating files for project: ${name}`);
 
     async function createFiles(path: string, dest: string) {
       mkdirSync(dest, { recursive: true });
@@ -171,13 +176,11 @@ program
     try {
       const path = `https://api.github.com/repos/inbestigator/dressed-examples/contents/${template}`;
       await createFiles(path, join(cwd(), name));
-    } catch {
-      mkdirLoader.fail();
-      return;
+    } catch (e) {
+      logError(e);
     }
-    mkdirLoader.succeed();
 
-    console.log("\x1b[32m%s", "Project created successfully.");
+    logSuccess("Project created successfully!");
     exit();
   });
 

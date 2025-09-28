@@ -1,7 +1,7 @@
 import { sep } from "node:path";
 import { patternToRegex, scorePattern } from "@dressed/matcher";
-import ora from "ora";
 import type { ComponentData } from "../../../types/config.ts";
+import { warnSymbol } from "../../../utils/log.ts";
 import { createHandlerParser } from "./index.ts";
 
 const validComponentCategories = ["buttons", "modals", "selects"];
@@ -9,25 +9,19 @@ const validComponentCategories = ["buttons", "modals", "selects"];
 export const parseComponents = createHandlerParser<ComponentData>({
   col1Name: "Component",
   col2Name: "Category",
-  messages: {
-    pending: "Generating components",
-    generated: "Generated components",
-    noItems: "No components found",
-  },
-  uniqueKeys: ["category"],
+  uniqueKeys: ["category", "regex"],
   itemMessages({ name, path }) {
     const category = getCategory(path);
     return {
-      confict: `"${name}" conflicts with another ${category?.slice(0, -1)}, skipping the duplicate`,
+      confict: `"${name}" conflicts with another ${category?.slice(0, -1)}, skipping`,
       col2: category ?? "unknown",
     };
   },
-  async createData({ name, path, exports: { pattern = name } = {} }) {
+  createData({ name, path, exports: { pattern = name } = {} }) {
     const category = getCategory(path);
 
     if (!category) {
-      ora(`Category for "${name}" could not be determined, skipping`).warn();
-      throw null;
+      throw `${warnSymbol} Category for "${name}" could not be determined, skipping`;
     }
 
     return {

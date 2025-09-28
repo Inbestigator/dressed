@@ -1,0 +1,2014 @@
+{
+  "$schema": "./schema.json",
+  "routes": [
+    {
+      "key": "GetAPIApplicationCommands",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "params?"],
+      "overrides": { "name": "listGlobalCommands" },
+      "docs": {
+        "description": "Fetch all of the global commands for your application.",
+        "warns": [
+          "The objects returned by this endpoint may be augmented with [additional fields if localization is active](/docs/interactions/application-commands#retrieving-localized-commands)."
+        ],
+        "see": "/docs/interactions/application-commands#get-global-application-commands"
+      }
+    },
+    {
+      "key": "PostAPIApplicationCommands",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
+      "overrides": { "name": "createGlobalCommand" },
+      "docs": {
+        "description": "Create a new global command.",
+        "warns": [
+          "Creating a command with the same name as an existing command for your application will overwrite the old command."
+        ],
+        "see": "/docs/interactions/application-commands#create-global-application-command"
+      }
+    },
+    {
+      "key": "GetAPIApplicationCommand",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.commandId"],
+      "overrides": { "name": "getGlobalCommand" },
+      "docs": {
+        "description": "Fetch a global command for your application.",
+        "see": "/docs/interactions/application-commands#get-global-application-command"
+      }
+    },
+    {
+      "key": "PatchAPIApplicationCommand",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.commandId", "data"],
+      "overrides": { "name": "modifyGlobalCommand" },
+      "docs": {
+        "description": "Edit a global command.",
+        "see": "/docs/interactions/application-commands#edit-global-application-command"
+      }
+    },
+    {
+      "key": "DeleteAPIApplicationCommand",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.commandId"],
+      "overrides": { "name": "deleteGlobalCommand" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Deletes a global command.",
+        "see": "/docs/interactions/application-commands#delete-global-application-command"
+      }
+    },
+    {
+      "key": "PutAPIApplicationCommands",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
+      "overrides": { "name": "bulkOverwriteGlobalCommands" },
+      "docs": {
+        "description": "Takes a list of application commands, overwriting the existing global command list for this application.",
+        "dangers": [
+          "This will overwrite all types of application commands: slash commands, user commands, and message commands."
+        ],
+        "see": "/docs/interactions/application-commands#bulk-overwrite-global-application-commands"
+      }
+    },
+    {
+      "key": "GetAPIApplicationGuildCommands",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "params?"],
+      "docs": {
+        "description": "Fetch all of the guild commands for your application for a specific guild.",
+        "warns": [
+          "The objects returned by this endpoint may be augmented with [additional fields if localization is active](/docs/interactions/application-commands#retrieving-localized-commands)."
+        ],
+        "see": "/docs/interactions/application-commands#get-guild-application-commands"
+      }
+    },
+    {
+      "key": "PostAPIApplicationGuildCommands",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "data"],
+      "docs": {
+        "description": "Create a new guild command. New guild commands will be available in the guild immediately.",
+        "dangers": [
+          "Creating a command with the same name as an existing command for your application will overwrite the old command."
+        ],
+        "see": "/docs/interactions/application-commands#create-guild-application-command"
+      }
+    },
+    {
+      "key": "GetAPIApplicationGuildCommand",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId"],
+      "docs": {
+        "description": "Fetch a guild command for your application.",
+        "see": "/docs/interactions/application-commands#get-guild-application-command"
+      }
+    },
+    {
+      "key": "PatchAPIApplicationGuildCommand",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId", "data"],
+      "docs": {
+        "description": "Edit a guild command. Updates for guild commands will be available immediately.",
+        "see": "/docs/interactions/application-commands#edit-guild-application-command"
+      }
+    },
+    {
+      "key": "DeleteAPIApplicationGuildCommand",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a guild command.",
+        "see": "/docs/interactions/application-commands#delete-guild-application-command"
+      }
+    },
+    {
+      "key": "PutAPIApplicationGuildCommands",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "data"],
+      "overrides": { "name": "bulkOverwriteGuildCommands" },
+      "docs": {
+        "description": "Takes a list of application commands, overwriting the existing command list for this application for the targeted guild.",
+        "dangers": [
+          "This will overwrite **all** types of application commands: slash commands, user commands, and message commands."
+        ],
+        "see": "/docs/interactions/application-commands#bulk-overwrite-guild-application-commands"
+      }
+    },
+    {
+      "key": "GetAPIGuildApplicationCommandsPermissions",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId"],
+      "overrides": { "name": "listGuildCommandsPermissions" },
+      "docs": {
+        "description": "Fetches permissions for all commands for your application in a guild.",
+        "see": "/docs/interactions/application-commands#get-guild-application-command-permissions"
+      }
+    },
+    {
+      "key": "GetAPIApplicationCommandPermissions",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId"],
+      "overrides": { "name": "getGuildCommandPermissions" },
+      "docs": {
+        "description": "Fetches permissions for a specific command for your application in a guild.",
+        "see": "/docs/interactions/application-commands#get-application-command-permissions"
+      }
+    },
+    {
+      "key": "PutAPIApplicationCommandPermissions",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId", "data"],
+      "overrides": { "name": "modifyGuildCommandPermissions" },
+      "docs": {
+        "description": "Edits command permissions for a specific command for your application in a guild.",
+        "warns": [
+          "This endpoint will overwrite existing permissions for the command in that guild",
+          "Deleting or renaming a command will permanently delete all permissions for the command"
+        ],
+        "see": "/docs/interactions/application-commands#edit-application-command-permissions"
+      }
+    },
+    {
+      "key": "GetAPIApplicationRoleConnectionMetadata",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
+      "overrides": { "name": "listAppRoleConnectionMetadata" },
+      "docs": {
+        "description": "Returns a list of [application role connection metadata](/docs/resources/application-role-connection-metadata#application-role-connection-metadata-object) objects for the given application.",
+        "see": "/docs/resources/application-role-connection-metadata#get-application-role-connection-metadata-records"
+      }
+    },
+    {
+      "key": "PutAPIApplicationRoleConnectionMetadata",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
+      "overrides": { "name": "modifyAppRoleConnectionMetadata" },
+      "docs": {
+        "description": "Updates and returns a list of [application role connection metadata](/docs/resources/application-role-connection-metadata#application-role-connection-metadata-object) objects for the given application.",
+        "infos": ["An application can have a maximum of 5 metadata records."],
+        "see": "/docs/resources/application-role-connection-metadata#update-application-role-connection-metadata-records"
+      }
+    },
+    {
+      "key": "GetCurrentApplication",
+      "params": [],
+      "overrides": { "name": "getApp" },
+      "docs": {
+        "description": "Returns the [application](/docs/resources/application#application-object) object associated with the requesting bot user.",
+        "see": "/docs/resources/application#get-current-application"
+      }
+    },
+    {
+      "key": "PatchCurrentApplication",
+      "params": ["data"],
+      "overrides": { "name": "modifyApp" },
+      "docs": {
+        "description": "Edit properties of the app associated with the requesting bot user. Only properties that are passed will be updated.",
+        "see": "/docs/resources/application#edit-current-application"
+      }
+    },
+    {
+      "key": "GetAPIAuditLog",
+      "params": ["url.guildId", "params?"],
+      "overrides": { "apiRoute": "guildAuditLog", "name": "getAuditLog" },
+      "docs": {
+        "description": "Returns an [audit log](/docs/resources/audit-log#audit-log-object) object for the guild.",
+        "infos": [
+          "Requires the [`VIEW_AUDIT_LOG`](/docs/topics/permissions#permissions-bitwise-permission-flags) permission."
+        ],
+        "see": "/docs/resources/audit-log#get-guild-audit-log"
+      }
+    },
+    {
+      "key": "GetAPIAutoModerationRules",
+      "params": ["url.guildId"],
+      "overrides": { "name": "listAutomodRules", "apiRoute": "guildAutoModerationRules" },
+      "docs": {
+        "description": "Get a list of all rules currently configured for the guild.",
+        "infos": [
+          "This endpoint requires the `MANAGE_GUILD` [permission](/docs/resources/auto-moderation#auto-moderation-permission-requirements)."
+        ],
+        "see": "/docs/resources/auto-moderation#list-auto-moderation-rules-for-guild"
+      }
+    },
+    {
+      "key": "GetAPIAutoModerationRule",
+      "params": ["url.guildId", "url.ruleId"],
+      "overrides": { "name": "getAutomodRule", "apiRoute": "guildAutoModerationRule" },
+      "docs": {
+        "description": "Get a single rule.",
+        "infos": [
+          "This endpoint requires the `MANAGE_GUILD` [permission](/docs/resources/auto-moderation#auto-moderation-permission-requirements)."
+        ],
+        "see": "/docs/resources/auto-moderation#get-auto-moderation-rule"
+      }
+    },
+    {
+      "key": "PostAPIAutoModerationRule",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "createAutomodRule", "apiRoute": "guildAutoModerationRules" },
+      "docs": {
+        "description": "Create a new rule.",
+        "infos": [
+          "This endpoint requires the `MANAGE_GUILD` [permission](/docs/resources/auto-moderation#auto-moderation-permission-requirements)."
+        ],
+        "see": "/docs/resources/auto-moderation#create-auto-moderation-rule"
+      }
+    },
+    {
+      "key": "PatchAPIAutoModerationRule",
+      "params": ["url.guildId", "url.ruleId", "data"],
+      "overrides": { "name": "modifyAutomodRule", "apiRoute": "guildAutoModerationRule" },
+      "docs": {
+        "description": "Modify an existing rule.",
+        "infos": [
+          "This endpoint requires the `MANAGE_GUILD` [permission](/docs/resources/auto-moderation#auto-moderation-permission-requirements)."
+        ],
+        "see": "/docs/resources/auto-moderation#modify-auto-moderation-rule"
+      }
+    },
+    {
+      "key": "DeleteAPIAutoModerationRule",
+      "params": ["url.guildId", "url.ruleId"],
+      "overrides": { "name": "deleteAutomodRule", "apiRoute": "guildAutoModerationRule" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a rule.",
+        "infos": [
+          "This endpoint requires the `MANAGE_GUILD` [permission](/docs/resources/auto-moderation#auto-moderation-permission-requirements)."
+        ],
+        "see": "/docs/resources/auto-moderation#delete-auto-moderation-rule"
+      }
+    },
+    {
+      "key": "GetAPIChannel",
+      "params": ["url.channelId"],
+      "docs": { "description": "Get a channel by ID.", "see": "/docs/resources/channel#get-channel" }
+    },
+    {
+      "key": "PatchAPIChannel",
+      "params": ["url.channelId", "data"],
+      "docs": { "description": "Update a channel's settings.", "see": "/docs/resources/channel#modify-channel" }
+    },
+    {
+      "key": "DeleteAPIChannel",
+      "params": ["url.channelId"],
+      "docs": {
+        "description": "Delete a channel, or close a private message.",
+        "infos": [
+          "Requires the `MANAGE_CHANNELS` permission for the guild, or `MANAGE_THREADS` if the channel is a thread.",
+          "For Community guilds, the Rules or Guidelines channel and the Community Updates channel cannot be deleted."
+        ],
+        "warns": [
+          "Deleting a guild channel cannot be undone. Use this with caution, as it is impossible to undo this action when performed on a guild channel. In contrast, when used with a private message, it is possible to undo the action by opening a private message with the recipient again."
+        ],
+        "see": "/docs/resources/channel#deleteclose-channel"
+      }
+    },
+    {
+      "key": "PutAPIChannelPermission",
+      "params": ["url.channelId", "url.overwriteId"],
+      "overrides": { "name": "modifyChannelPermissions" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Edit the channel permission overwrites for a user or role in a channel.",
+        "infos": [
+          "Only usable for guild channels.",
+          "Requires the `MANAGE_ROLES` permission.",
+          "Only permissions your bot has in the guild or parent channel (if applicable) can be allowed/denied (unless your bot has a `MANAGE_ROLES` overwrite in the channel)."
+        ],
+        "see": "/docs/resources/channel#edit-channel-permissions"
+      }
+    },
+    {
+      "key": "GetAPIChannelInvites",
+      "params": ["url.channelId"],
+      "overrides": { "name": "listChannelInvites" },
+      "docs": {
+        "description": "Returns a list of [invite](/docs/resources/invite#invite-object) objects (with [invite metadata](/docs/resources/invite#invite-metadata-object)) for the channel.",
+        "infos": ["Only usable for guild channels.", "Requires the `MANAGE_CHANNELS` permission."],
+        "see": "/docs/resources/channel#get-channel-invites"
+      }
+    },
+    {
+      "key": "PostAPIChannelInvite",
+      "params": ["url.channelId", "data"],
+      "overrides": { "apiRoute": "channelInvites", "name": "createChannelInvite" },
+      "docs": {
+        "description": "Create a new [invite](/docs/resources/invite#invite-object) object for the channel.",
+        "infos": ["Only usable for guild channels.", "Requires the `CREATE_INSTANT_INVITE` permission."],
+        "see": "/docs/resources/channel#create-channel-invite"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelPermission",
+      "params": ["url.channelId", "url.overwriteId"],
+      "overrides": { "name": "deleteChannelPermissions" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a channel permission overwrite for a user or role in a channel.\n * TODO rename to something like `deleteChannelPermission`",
+        "infos": ["Only usable for guild channels.", "Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/channel#delete-channel-permission"
+      }
+    },
+    {
+      "key": "PostAPIChannelFollowers",
+      "params": ["url.channelId", "data"],
+      "overrides": { "name": "followChannel" },
+      "docs": {
+        "description": "Follow an Announcement Channel to send messages to a target channel.",
+        "infos": ["Requires the `MANAGE_WEBHOOKS` permission in the target channel."],
+        "see": "/docs/resources/channel#follow-announcement-channel"
+      }
+    },
+    {
+      "key": "PostAPIChannelTyping",
+      "params": ["url.channelId"],
+      "overrides": { "name": "createTypingIndicator" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Post a typing indicator for the specified channel, which expires after 10 seconds.",
+        "infos": ["Generally bots should **not** use this route."],
+        "see": "/docs/resources/channel#trigger-typing-indicator"
+      }
+    },
+    {
+      "key": "PutAPIChannelRecipient",
+      "params": ["url.channelId", "url.userId"],
+      "overrides": { "name": "addGDMMember" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Adds a recipient to a Group DM using their access token.",
+        "see": "/docs/resources/channel#group-dm-add-recipient"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelRecipient",
+      "params": ["url.channelId", "url.userId"],
+      "overrides": { "name": "removeGDMMember" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Removes a recipient from a Group DM.",
+        "see": "/docs/resources/channel#group-dm-remove-recipient"
+      }
+    },
+    {
+      "key": "PostAPIChannelThreads",
+      "params": ["url.channelId", "data", "url.messageId?"],
+      "overrides": {
+        "apiRoute": "threads",
+        "dataType": "Omit<RESTPostAPIChannelThreadsJSONBody, \"type\"> & { type?: \"Public\" | \"Private\" | \"Announcement\" | ThreadChannelType; }",
+        "dangerousExtraLogic": "if (typeof data.type === \"string\") data.type = ChannelType[`${data.type}Thread`];",
+        "imports": ["ChannelType", "type ThreadChannelType"]
+      },
+      "docs": {
+        "description": "Creates a new thread, include a message ID to start the thread from an existing message.",
+        "infos": [
+          "When called on a `GUILD_TEXT` channel, creates a `PUBLIC_THREAD`. When called on a `GUILD_ANNOUNCEMENT` channel, creates a `ANNOUNCEMENT_THREAD`.",
+          "Does not work on a [`GUILD_FORUM`](/docs/resources/channel#start-thread-in-forum-or-media-channel) or a `GUILD_MEDIA` channel.",
+          "The id of the created thread will be the same as the id of the source message, and as such a message can only have a single thread created from it."
+        ],
+        "see": "/docs/resources/channel#start-thread-from-message"
+      }
+    },
+    {
+      "key": "PostAPIGuildForumThreads",
+      "params": ["url.channelId", "data"],
+      "overrides": {
+        "apiRoute": "threads",
+        "dataType": "Omit<RESTPostAPIGuildForumThreadsJSONBody, \"message\"> & { message: string | (RESTPostAPIGuildForumThreadsJSONBody[\"message\"] & { files?: RawFile[] }) }",
+        "imports": ["type APIThreadChannel", "type APIMessage"],
+        "returnType": "APIThreadChannel & { message: APIMessage }",
+        "messageKey": ".message"
+      },
+      "flags": ["hasFiles", "hasStringableContent"],
+      "docs": {
+        "description": "Creates a new thread in a forum or a media channel, and sends a message within the created thread.",
+        "infos": [
+          "The type of the created thread is `PUBLIC_THREAD`.",
+          "The current user must have the `SEND_MESSAGES` permission (`CREATE_PUBLIC_THREADS` is ignored)."
+        ],
+        "see": "/docs/resources/channel#start-thread-in-forum-or-media-channel"
+      }
+    },
+    {
+      "key": "PutAPIChannelThreadMembers",
+      "params": ["url.threadId", "url.userId?"],
+      "overrides": { "apiRoute": "threadMembers" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Adds a member to a thread.\n * @param userId Member to add, defaults to self",
+        "infos": ["Adding another member requires the ability to send messages in the thread."],
+        "see": "/docs/resources/channel#add-thread-member"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelThreadMembers",
+      "params": ["url.threadId", "url.userId?"],
+      "overrides": { "name": "removeThreadMember", "apiRoute": "threadMembers" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Removes a member from a thread.\n * @param userId Member to remove, defaults to self",
+        "infos": [
+          "Requires the ability to send messages in the thread.",
+          "Removing another member also requires the thread is not archived."
+        ],
+        "see": "/docs/resources/channel#remove-thread-member"
+      }
+    },
+    {
+      "key": "GetAPIChannelThreadMember",
+      "params": ["url.threadId", "url.userId", "params?"],
+      "overrides": { "apiRoute": "threadMembers" },
+      "docs": {
+        "description": "Returns a [thread member](/docs/resources/channel#thread-member-object) object for the specified user if they are a member of the thread.",
+        "infos": [
+          "When `with_member` is set to `true`, the thread member object will include a `member` field containing a [guild member](/docs/resources/guild#guild-member-object) object."
+        ],
+        "see": "/docs/resources/channel#get-thread-member"
+      }
+    },
+    {
+      "key": "GetAPIChannelThreadMembers",
+      "params": ["url.threadId", "params?"],
+      "overrides": { "apiRoute": "threadMembers" },
+      "docs": {
+        "description": "Returns array of [thread members](/docs/resources/channel#thread-member-object) objects that are members of the thread.",
+        "infos": [
+          "When `with_member` is set to `true`, the results will be paginated and each thread member object will include a `member` field containing a [guild member](/docs/resources/guild#guild-member-object) object."
+        ],
+        "warns": [
+          "Starting in API v11, this endpoint will always return paginated results. Paginated results can be enabled before API v11 by setting `with_member` to `true`. Read [the changelog](/docs/change-log#thread-member-details-and-pagination) for details.",
+          "This endpoint is restricted according to whether the `GUILD_MEMBERS` [Privileged Intent](/docs/events/gateway#privileged-intents) is enabled for your application."
+        ],
+        "see": "/docs/resources/channel#list-thread-members"
+      }
+    },
+    {
+      "key": "GetAPIChannelThreadsArchived",
+      "params": ["url.channelId", "url.archivedStatus:\"public\"|\"private\"", "var.joinedOnly?:boolean", "params?"],
+      "overrides": {
+        "apiRoute": "[joinedOnly ? \"channelJoinedArchivedThreads\" : \"channelThreads\"]",
+        "name": "listArchivedThreads",
+        "returnType": "RESTGetAPIChannelUsersThreadsArchivedResult",
+        "imports": ["type RESTGetAPIChannelUsersThreadsArchivedResult"]
+      },
+      "docs": {
+        "description": "Returns a list of archived threads in the channel. Alternatively, returns a list of joined private threads in the channel.",
+        "see": "/docs/resources/channel#list-private-archived-threads"
+      }
+    },
+    {
+      "key": "GetAPIGuildEmojis",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns a list of [emoji](/docs/resources/emoji#emoji-object) objects for the given guild.",
+        "infos": [
+          "Includes `user` fields if the bot has the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/emoji#list-guild-emojis"
+      }
+    },
+    {
+      "key": "GetAPIGuildEmoji",
+      "params": ["url.guildId", "url.emojiId"],
+      "docs": {
+        "description": "Returns an [emoji](/docs/resources/emoji#emoji-object) object for the given guild and emoji IDs.",
+        "infos": [
+          "Includes the `user` field if the bot has the `MANAGE_GUILD_EXPRESSIONS` permission, or if the bot created the emoji and has the the `CREATE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/emoji#get-guild-emoji"
+      }
+    },
+    {
+      "key": "PostAPIGuildEmoji",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildEmojis" },
+      "docs": {
+        "description": "Create a new emoji for the guild.",
+        "infos": [
+          "Includes `user` fields if the bot has the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission.",
+          "We highly recommend that developers use the `.webp` extension when fetching emoji so they're rendered as WebP for maximum performance and compatibility. See the [Emoji Formats](/docs/resources/emoji#emoji-object-emoji-formats) section above for more details."
+        ],
+        "warns": [
+          "Emojis and animated emojis have a maximum file size of 256 KiB. Attempting to upload an emoji larger than this limit will fail and return 400 Bad Request and an error message, but not a [JSON status code](/docs/topics/opcodes-and-status-codes#json)."
+        ],
+        "see": "/docs/resources/emoji#create-guild-emoji"
+      }
+    },
+    {
+      "key": "PatchAPIGuildEmoji",
+      "params": ["url.guildId", "url.emojiId", "data"],
+      "docs": {
+        "description": "Modify the given emoji.",
+        "infos": [
+          "For emojis created by the current user, requires either the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission.",
+          "For other emojis, requires the `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/emoji#moify-guild-emoji"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildEmoji",
+      "params": ["url.guildId", "url.emojiId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete the given emoji.",
+        "infos": [
+          "For emojis created by the current user, requires either the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission.",
+          "For other emojis, requires the `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/emoji#delete-guild-emoji"
+      }
+    },
+    {
+      "key": "GetAPIApplicationEmojis",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
+      "overrides": { "name": "listApplicationEmojis" },
+      "docs": {
+        "description": "Returns an object containing a list of [emoji](/docs/resources/emoji#emoji-object) objects for the given application under the `items` key.",
+        "infos": [
+          "Includes a `user` object for the team member that uploaded the emoji from the app's settings, or for the bot user if uploaded using the API."
+        ],
+        "see": "/docs/resources/emoji#list-application-emojis"
+      }
+    },
+    {
+      "key": "GetAPIApplicationEmoji",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId"],
+      "overrides": { "name": "getApplicationEmoji" },
+      "docs": {
+        "description": "Returns an [emoji](/docs/resources/emoji#emoji-object) object for the given application and emoji IDs.",
+        "infos": ["Includes the `user` field."],
+        "see": "/docs/resources/emoji#get-application-emoji"
+      }
+    },
+    {
+      "key": "PostAPIApplicationEmoji",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
+      "overrides": { "apiRoute": "applicationEmojis", "name": "createApplicationEmoji" },
+      "docs": {
+        "description": "Create a new emoji for the application.",
+        "infos": [
+          "We highly recommend that developers use the `.webp` extension when fetching emoji so they're rendered as WebP for maximum performance and compatibility. See the [Emoji Formats](/docs/resources/emoji#emoji-object-emoji-formats) section above for more details."
+        ],
+        "warns": [
+          "Emojis and animated emojis have a maximum file size of 256 KiB. Attempting to upload an emoji larger than this limit will fail and return 400 Bad Request and an error message, but not a [JSON status code](/docs/topics/opcodes-and-status-codes#json)."
+        ],
+        "see": "/docs/resources/emoji#create-application-emoji"
+      }
+    },
+    {
+      "key": "PatchAPIApplicationEmoji",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId", "data"],
+      "overrides": { "name": "modifyApplicationEmoji" },
+      "docs": { "description": "Modify the given emoji.", "see": "/docs/resources/emoji#modify-application-emoji" }
+    },
+    {
+      "key": "DeleteAPIApplicationEmoji",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId"],
+      "overrides": { "name": "deleteApplicationEmoji" },
+      "flags": ["returnVoid"],
+      "docs": { "description": "Delete the given emoji.", "see": "/docs/resources/emoji#delete-application-emoji" }
+    },
+    {
+      "key": "GetAPIEntitlements",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "params?"],
+      "docs": {
+        "description": "Returns all entitlements for a given app, active and expired.",
+        "see": "/docs/resources/entitlement#list-entitlements"
+      }
+    },
+    {
+      "key": "GetAPIEntitlement",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
+      "docs": { "description": "Returns an entitlement.", "see": "/docs/resources/entitlement#get-entitlement" }
+    },
+    {
+      "key": "PostAPIEntitlement",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
+      "overrides": { "name": "consumeEntitlement" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "For One-Time Purchase consumable SKUs, marks a given entitlement for the user as consumed.",
+        "infos": [
+          "The entitlement will have `consumed: true` when using [List Entitlements](/docs/resources/entitlement#list-entitlements)."
+        ],
+        "see": "/docs/resources/entitlement#consume-entitlement"
+      }
+    },
+    {
+      "key": "PostAPIEntitlement",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
+      "overrides": { "apiRoute": "entitlements", "name": "createTestEntitlement" },
+      "docs": {
+        "description": "Creates a test entitlement to a given SKU for a given guild or user. Discord will act as though that user or guild has entitlement to your premium offering.",
+        "infos": [
+          "After creating a test entitlement, you'll need to reload your Discord client. After doing so, you'll see that your server or user now has premium access."
+        ],
+        "see": "/docs/resources/entitlement#create-test-entitlement"
+      }
+    },
+    {
+      "key": "DeleteAPIEntitlement",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
+      "overrides": { "name": "deleteTestEntitlement" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Creates a test entitlement to a given SKU for a given guild or user. Discord will act as though that user or guild has entitlement to your premium offering.",
+        "infos": [
+          "After creating a test entitlement, you'll need to reload your Discord client. After doing so, you'll see that your server or user now has premium access."
+        ],
+        "see": "/docs/resources/entitlement#create-test-entitlement"
+      }
+    },
+    {
+      "key": "GetAPIGateway",
+      "params": [],
+      "docs": {
+        "description": "Returns an object with a valid WSS URL which the app can use when [Connecting](/docs/events/gateway#connecting) to the Gateway. Apps should cache this value and only call this endpoint to retrieve a new URL when they are unable to properly establish a connection using the cached one.",
+        "infos": ["This endpoint does not require authentication."],
+        "see": "/docs/events/gateway#get-gateway"
+      }
+    },
+    {
+      "key": "GetAPIGatewayBot",
+      "params": [],
+      "overrides": { "name": "getGatewayBot" },
+      "docs": {
+        "description": "Returns an object based on the information in [Get Gateway](/docs/events/gateway#get-gateway), plus additional metadata that can help during the operation of large or [sharded](/docs/events/gateway#sharding) bots. Unlike the [Get Gateway](/docs/events/gateway#get-gateway), this route should not be cached for extended periods of time as the value is not guaranteed to be the same per-call, and changes as the bot joins/leaves guilds.",
+        "warns": ["This endpoint requires authentication using a valid bot token."],
+        "see": "/docs/events/gateway#get-gateway-bot"
+      }
+    },
+    {
+      "key": "GetAPIGuildScheduledEvents",
+      "params": ["url.guildId", "params?"],
+      "docs": {
+        "description": "Returns a list of [guild scheduled event](/docs/resources/guild-scheduled-event#guild-scheduled-event-object) objects for the given guild.",
+        "see": "/docs/resources/guild-scheduled-event#list-guild-scheduled-events"
+      }
+    },
+    {
+      "key": "PostAPIGuildScheduledEvent",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildScheduledEvents" },
+      "docs": {
+        "description": "Create a guild scheduled event in the guild.",
+        "infos": ["A guild can have a maximum of 100 events with `SCHEDULED` or `ACTIVE` status at any time."],
+        "see": "/docs/resources/guild-scheduled-event#create-guild-scheduled-event"
+      }
+    },
+    {
+      "key": "GetAPIGuildScheduledEvent",
+      "params": ["url.guildId", "url.guildScheduledEventId", "params?"],
+      "docs": {
+        "description": "Get a guild scheduled event.",
+        "see": "/docs/resources/guild-scheduled-event#get-guild-scheduled-event"
+      }
+    },
+    {
+      "key": "PatchAPIGuildScheduledEvent",
+      "params": ["url.guildId", "url.guildScheduledEventId", "data"],
+      "docs": {
+        "description": "Modify a guild scheduled event.",
+        "infos": [
+          "To start or end an event, use this endpoint to modify the event's [status](/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-status) field.",
+          "This endpoint silently discards `entity_metadata` for non-`EXTERNAL` events."
+        ],
+        "see": "/docs/resources/guild-scheduled-event#modify-guild-scheduled-event"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildScheduledEvent",
+      "params": ["url.guildId", "url.guildScheduledEventId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a guild scheduled event.",
+        "see": "/docs/resources/guild-scheduled-event#delete-guild-scheduled-event"
+      }
+    },
+    {
+      "key": "GetAPIGuildScheduledEventUsers",
+      "params": ["url.guildId", "url.guildScheduledEventId", "params?"],
+      "overrides": { "name": "getScheduledEventUsers" },
+      "docs": {
+        "description": "Get a list of guild scheduled event users subscribed to a guild scheduled event.",
+        "see": "/docs/resources/guild-scheduled-event#get-guild-scheduled-event-users"
+      }
+    },
+    {
+      "key": "GetAPITemplate",
+      "params": ["url.code: string"],
+      "docs": {
+        "description": "Returns a [guild template](/docs/resources/guild-template#guild-template-object) object for the given code.",
+        "see": "/docs/resources/guild-template#get-guild-template"
+      }
+    },
+    {
+      "key": "PostAPITemplateCreateGuild",
+      "params": ["url.code: string", "data"],
+      "overrides": { "apiRoute": "template", "name": "createFromTemplate" },
+      "flags": ["deprecated"],
+      "docs": {
+        "description": "Returns a [guild template](/docs/resources/guild-template#guild-template-object) object for the given code.",
+        "see": "/docs/change-log#guild-create-deprecation"
+      }
+    },
+    {
+      "key": "GetAPIGuildTemplates",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns an array of [guild template](/docs/resources/guild-template#guild-template-object) objects.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild-template#get-guild-templates"
+      }
+    },
+    {
+      "key": "PostAPIGuildTemplates",
+      "params": ["url.guildId", "data"],
+      "docs": {
+        "description": "Creates a template for the guild.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild-template#create-guild-template"
+      }
+    },
+    {
+      "key": "PutAPIGuildTemplate",
+      "params": ["url.guildId", "url.code: string"],
+      "overrides": {
+        "imports": ["type RESTPutAPIGuildTemplateSyncResult"],
+        "name": "syncTemplate",
+        "returnType": "RESTPutAPIGuildTemplateSyncResult"
+      },
+      "docs": {
+        "description": "Syncs the template to the guild's current state.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild-template#sync-guild-template"
+      }
+    },
+    {
+      "key": "PatchAPIGuildTemplate",
+      "params": ["url.guildId", "url.code: string", "data"],
+      "docs": {
+        "description": "Modifies the template's metadata.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild-template#modify-guild-template"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildTemplate",
+      "params": ["url.guildId", "url.code: string"],
+      "docs": {
+        "description": "Deletes the template.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild-template#delete-guild-template"
+      }
+    },
+    {
+      "key": "PostAPIGuilds",
+      "params": ["data"],
+      "overrides": { "apiRoute": "guilds" },
+      "flags": ["deprecated"],
+      "docs": {
+        "description": "Create a new guild.",
+        "see": "/docs/change-log#guild-create-deprecation"
+      }
+    },
+    {
+      "key": "GetAPIGuild",
+      "params": ["url.guildId", "params?"],
+      "docs": {
+        "description": "Returns the [guild](/docs/resources/guild#guild-object) object for the given id.",
+        "infos": [
+          "If `with_counts` is set to `true`, this endpoint will also return `approximate_member_count` and `approximate_presence_count` for the guild."
+        ],
+        "see": "/docs/resources/guild#get-guild"
+      }
+    },
+    {
+      "key": "GetAPIGuildPreview",
+      "params": ["url.guildId"],
+      "overrides": { "name": "getGuildPreview" },
+      "docs": {
+        "description": "Returns the [guild preview](/docs/resources/guild#guild-preview-object) object for the given id.",
+        "infos": [
+          "If the user is not in the guild, then the guild must be [discoverable](/docs/resources/guild#guild-object-guild-features)."
+        ],
+        "see": "/docs/resources/guild#get-guild-preview"
+      }
+    },
+    {
+      "key": "PatchAPIGuild",
+      "params": ["url.guildId", "data"],
+      "docs": {
+        "description": "Modify a guild's settings.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "warns": [
+          "Attempting to add or remove the `COMMUNITY` [guild feature](/docs/resources/guild#guild-object-guild-features) requires the `ADMINISTRATOR` permission."
+        ],
+        "see": "/docs/resources/guild#modify-guild"
+      }
+    },
+    {
+      "key": "DeleteAPIGuild",
+      "params": ["url.guildId"],
+      "flags": ["deprecated", "returnVoid"],
+      "docs": {
+        "description": "Delete a guild.",
+        "see": "/docs/change-log#guild-create-deprecation"
+      }
+    },
+    {
+      "key": "GetAPIGuildChannels",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns a list of guild [channel](/docs/resources/channel#channel-object) objects.",
+        "infos": ["Does not include threads."],
+        "see": "/docs/resources/guild#get-guild-channels"
+      }
+    },
+    {
+      "key": "PostAPIGuildChannel",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildChannels" },
+      "docs": {
+        "description": "Create a new [channel](/docs/resources/channel#channel-object) object for the guild.",
+        "infos": [
+          "Requires the `MANAGE_CHANNELS` permission. If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.",
+          "Setting `MANAGE_ROLES` permission in channels is only possible for guild administrators."
+        ],
+        "see": "/docs/resources/guild#create-guild-channel"
+      }
+    },
+    {
+      "key": "PatchAPIGuildChannelPositions",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildChannels", "name": "modifyChannelPositions" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Modify the positions of a set of [channel](/docs/resources/channel#channel-object) objects for the guild.",
+        "infos": ["Requires the `MANAGE_GUILD` permission.", "Only channels to be modified are required."],
+        "see": "/docs/resources/guild#modify-guild-channel-positions"
+      }
+    },
+    {
+      "key": "GetAPIGuildThreads",
+      "params": ["url.guildId"],
+      "overrides": { "apiRoute": "guildActiveThreads", "name": "listActiveThreads" },
+      "docs": {
+        "description": "Returns all active threads in the guild, including public and private threads.",
+        "infos": ["Threads are ordered by their `id`, in descending order."],
+        "see": "/docs/resources/guild#list-active-guild-threads"
+      }
+    },
+    {
+      "key": "GetAPIGuildMember",
+      "params": ["url.guildId", "url.memberId"],
+      "docs": {
+        "description": "Returns a [guild member](/docs/resources/guild#guild-member-object) object for the specified user.",
+        "see": "/docs/resources/guild#get-guild-member"
+      }
+    },
+    {
+      "key": "GetAPIGuildMembers",
+      "params": ["url.guildId", "params?"],
+      "docs": {
+        "description": "Returns a list of [guild member](/docs/resources/guild#guild-member-object) objects that are members of the guild.",
+        "warns": [
+          "This endpoint is restricted according to whether the `GUILD_MEMBERS` [Privileged Intent](/docs/events/gateway#privileged-intents) is enabled for your application."
+        ],
+        "see": "/docs/resources/guild#list-guild-members"
+      }
+    },
+    {
+      "key": "GetAPIGuildMembersSearch",
+      "params": ["url.guildId", "params?"],
+      "overrides": { "name": "searchMembers" },
+      "docs": {
+        "description": "Returns a list of [guild member](/docs/resources/guild#guild-member-object) objects whose username or nickname starts with a provided string.",
+        "see": "/docs/resources/guild#search-guild-members"
+      }
+    },
+    {
+      "key": "PutAPIGuildMember",
+      "params": ["url.guildId", "url.userId", "data"],
+      "docs": {
+        "description": "Adds a user to the guild, provided you have a valid oauth2 access token for the user with the `guilds.join` scope.",
+        "infos": [
+          "The Authorization header must be a Bot token (belonging to the same application used for authorization), and the bot must be a member of the guild with `CREATE_INSTANT_INVITE` permission."
+        ],
+        "see": "/docs/resources/guild#add-guild-member"
+      }
+    },
+    {
+      "key": "PatchAPIGuildMember",
+      "params": ["url.guildId", "url.userId: T", "data"],
+      "overrides": {
+        "dataType": "T extends \"@me\" ? RESTPatchAPICurrentGuildMemberJSONBody : RESTPatchAPIGuildMemberJSONBody",
+        "generic": "T extends \"@me\" | Snowflake & {}",
+        "imports": ["type RESTPatchAPICurrentGuildMemberJSONBody"]
+      },
+      "docs": {
+        "description": "Modify attributes of a [guild member](/docs/resources/guild#guild-member-object), defaults to self.",
+        "see": "/docs/resources/guild#modify-guild-member"
+      }
+    },
+    {
+      "key": "PutAPIGuildMemberRole",
+      "params": ["url.guildId", "url.userId", "url.roleId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Adds a role to a [guild member](/docs/resources/guild#guild-member-object).",
+        "infos": ["Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/guild#add-guild-member-role"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildMemberRole",
+      "params": ["url.guildId", "url.userId", "url.roleId"],
+      "overrides": { "name": "removeMemberRole" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Removes a role from a [guild member](/docs/resources/guild#guild-member-object).",
+        "infos": ["Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/guild#remove-guild-member-role"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildMember",
+      "params": ["url.guildId", "url.userId"],
+      "overrides": { "name": "removeMember" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Remove a member from a guild.",
+        "infos": ["Requires `KICK_MEMBERS` permission."],
+        "see": "/docs/resources/guild#remove-guild-member"
+      }
+    },
+    {
+      "key": "GetAPIGuildBans",
+      "params": ["url.guildId", "params?"],
+      "docs": {
+        "description": "Returns a list of [ban](/docs/resources/guild#ban-object) objects for the users banned from this guild.",
+        "infos": ["Requires `BAN_MEMBERS` permission."],
+        "see": "/docs/resources/guild#get-guild-bans"
+      }
+    },
+    {
+      "key": "GetAPIGuildBan",
+      "params": ["url.guildId", "url.userId"],
+      "docs": {
+        "description": "Returns a [ban](/docs/resources/guild#ban-object) object for the given user or a 404 not found if the ban cannot be found.",
+        "infos": ["Requires `BAN_MEMBERS` permission."],
+        "see": "/docs/resources/guild#get-guild-ban"
+      }
+    },
+    {
+      "key": "PutAPIGuildBan",
+      "params": ["url.guildId", "url.userId", "data"],
+      "overrides": { "name": "createBan" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Create a guild ban, and optionally delete previous messages sent by the banned user.",
+        "infos": ["Requires `BAN_MEMBERS` permission."],
+        "see": "/docs/resources/guild#create-guild-ban"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildBan",
+      "params": ["url.guildId", "url.userId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Remove the ban for a user.",
+        "infos": ["Requires `BAN_MEMBERS` permission."],
+        "see": "/docs/resources/guild#remove-guild-ban"
+      }
+    },
+    {
+      "key": "PostAPIGuildBulkBan",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "bulkCreateBan" },
+      "docs": {
+        "description": "Ban up to 200 users from a guild, and optionally delete previous messages sent by the banned users.",
+        "infos": [
+          "Requires both the `BAN_MEMBERS` and `MANAGE_GUILD` permissions.",
+          "If none of the users could be banned, an error response code `500000: Failed to ban users` is returned instead."
+        ],
+        "see": "/docs/resources/guild#bulk-guild-ban"
+      }
+    },
+    {
+      "key": "GetAPIGuildRoles",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns a list of [role](/docs/topics/permissions#role-object) objects for the guild.",
+        "see": "/docs/resources/guild#get-guild-roles"
+      }
+    },
+    {
+      "key": "GetAPIGuildRole",
+      "params": ["url.guildId", "url.roleId"],
+      "docs": {
+        "description": "Returns a [role](/docs/topics/permissions#role-object) object for the specified role.",
+        "see": "/docs/resources/guild#get-guild-role"
+      }
+    },
+    {
+      "key": "PostAPIGuildRole",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildRoles" },
+      "docs": {
+        "description": "Create a new [role](/docs/topics/permissions#role-object) for the guild.",
+        "infos": ["Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/guild#create-guild-role"
+      }
+    },
+    {
+      "key": "PatchAPIGuildRolePositions",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildRoles", "name": "modifyRolePositions" },
+      "docs": {
+        "description": "Modify the positions of a set of [role](/docs/topics/permissions#role-object) objects for the guild.",
+        "infos": ["Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/guild#modify-guild-role-positions"
+      }
+    },
+    {
+      "key": "PatchAPIGuildRole",
+      "params": ["url.guildId", "url.roleId", "data"],
+      "docs": {
+        "description": "Modify a guild role.",
+        "infos": ["Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/guild#modify-guild-role"
+      }
+    },
+    {
+      "key": "PostAPIGuildsMFA",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildMFA", "name": "modifyMFALevel" },
+      "flags": ["deprecated"],
+      "docs": {
+        "description": "Modify a guild's MFA level.",
+        "infos": ["Requires guild ownership."],
+        "see": "/docs/change-log#guild-create-deprecation"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildRole",
+      "params": ["url.guildId", "url.roleId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a guild role.",
+        "infos": ["Requires the `MANAGE_ROLES` permission."],
+        "see": "/docs/resources/guild#delete-guild-role"
+      }
+    },
+    {
+      "key": "GetAPIGuildPruneCount",
+      "params": ["url.guildId", "params?"],
+      "overrides": { "apiRoute": "guildPrune" },
+      "docs": {
+        "description": "Returns an object with one `pruned` key indicating the number of members that would be removed in a prune operation.",
+        "infos": [
+          "By default, prune will not remove users with roles. You can optionally include specific roles in your prune by providing the `include_roles` parameter. Any inactive user that has a subset of the provided role(s) will be counted in the prune and users with additional roles will not."
+        ],
+        "see": "/docs/resources/guild#get-guild-prune-count"
+      }
+    },
+    {
+      "key": "PostAPIGuildPrune",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "startPrune" },
+      "docs": {
+        "description": "Begin a prune operation.",
+        "infos": [
+          "Requires the `MANAGE_GUILD` and `KICK_MEMBERS` permissions.",
+          "By default, prune will not remove users with roles. You can optionally include specific roles in your prune by providing the `include_roles` parameter. Any inactive user that has a subset of the provided role(s) will be included in the prune and users with additional roles will not."
+        ],
+        "see": "/docs/resources/guild#begin-guild-prune"
+      }
+    },
+    {
+      "key": "GetAPIGuildVoiceRegions",
+      "params": ["url.guildId"],
+      "overrides": { "name": "listGuildVoiceRegions" },
+      "docs": {
+        "description": "Returns a list of [voice region](/docs/resources/voice#voice-region-object) objects for the guild.",
+        "infos": ["Unlike the similar `/voice` route, this returns VIP servers when the guild is VIP-enabled."],
+        "see": "/docs/resources/guild#get-guild-voice-regions"
+      }
+    },
+    {
+      "key": "GetAPIGuildInvites",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns a list of [invite](/docs/resources/invite#invite-object) objects.",
+        "infos": [
+          "Requires the `MANAGE_GUILD` or `VIEW_AUDIT_LOG` permission.",
+          "[Invite Metadata](/docs/resources/invite#invite-metadata-object) is included with the `MANAGE_GUILD` permission."
+        ],
+        "see": "/docs/resources/guild#get-guild-invites"
+      }
+    },
+    {
+      "key": "GetAPIGuildIntegrations",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns a list of [integration](/docs/resources/guild#integration-object) objects for the guild.",
+        "infos": [
+          "Requires the `MANAGE_GUILD` permission.",
+          "This endpoint returns a maximum of 50 integrations. If a guild has more integrations, they cannot be accessed."
+        ],
+        "see": "/docs/resources/guild#get-guild-integrations"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildIntegration",
+      "params": ["url.guildId", "url.integrationId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete the attached [integration](/docs/resources/guild#integration-object) object for the guild. Deletes any associated webhooks and kicks the associated bot if there is one.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild#delete-guild-integration"
+      }
+    },
+    {
+      "key": "GetAPIGuildWidgetSettings",
+      "params": ["url.guildId"],
+      "overrides": { "name": "getWidgetSettings" },
+      "docs": {
+        "description": "Returns a [guild widget settings](/docs/resources/guild#guild-widget-settings-object) object.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild#get-guild-widget-settings"
+      }
+    },
+    {
+      "key": "PatchAPIGuildWidgetSettings",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "modifyWidgetSettings" },
+      "docs": {
+        "description": "Modify a [guild widget settings](/docs/resources/guild#guild-widget-settings-object) object for the guild. All attributes may be passed in with JSON and modified.",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild#modify-guild-widget-settings"
+      }
+    },
+    {
+      "key": "GetAPIGuildWidgetJSON",
+      "params": ["url.guildId"],
+      "overrides": { "name": "getWidgetJSON" },
+      "docs": {
+        "description": "Returns the [widget](/docs/resources/guild#guild-widget-object) for the guild.",
+        "see": "/docs/resources/guild#get-guild-widget"
+      }
+    },
+    {
+      "key": "GetAPIGuildVanityUrl",
+      "params": ["url.guildId"],
+      "overrides": { "name": "getVanityInvite" },
+      "docs": {
+        "description": "Returns a partial [invite](/docs/resources/invite#invite-object) object for guilds with that feature enabled.",
+        "infos": [
+          "Requires the `MANAGE_GUILD` permission.",
+          "`code` will be null if a vanity url for the guild is not set.",
+          "This endpoint is required to get the usage count of the vanity invite, but the invite code can be accessed as `vanity_url_code` in the [guild object](/docs/resources/guild#guild-object) without having the `MANAGE_GUILD` permission."
+        ],
+        "see": "/docs/resources/guild#get-guild-vanity-url"
+      }
+    },
+    {
+      "key": "GetAPIGuildWidgetImage",
+      "params": ["url.guildId", "params?"],
+      "docs": {
+        "description": "Returns a PNG image widget for the guild.",
+        "infos": ["Requires no permissions or authentication."],
+        "see": "/docs/resources/guild#get-guild-widget-image"
+      }
+    },
+    {
+      "key": "GetAPIGuildWelcomeScreen",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns the [Welcome Screen](/docs/resources/guild#welcome-screen-object) object for the guild.",
+        "infos": ["If the welcome screen is not enabled, the `MANAGE_GUILD` permission is required."],
+        "see": "/docs/resources/guild#get-guild-welcome-screen"
+      }
+    },
+    {
+      "key": "PatchAPIGuildWelcomeScreen",
+      "params": ["url.guildId", "data"],
+      "docs": {
+        "description": "Modify the guild's [Welcome Screen](/docs/resources/guild#welcome-screen-object).",
+        "infos": ["Requires the `MANAGE_GUILD` permission."],
+        "see": "/docs/resources/guild#modify-guild-welcome-screen"
+      }
+    },
+    {
+      "key": "GetAPIGuildOnboarding",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns the [Onboarding](/docs/resources/guild#guild-onboarding-object) object for the guild.",
+        "see": "/docs/resources/guild#get-guild-onboarding"
+      }
+    },
+    {
+      "key": "PutAPIGuildOnboarding",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "modifyOnboarding" },
+      "docs": {
+        "description": "Modifies the onboarding configuration of the guild.",
+        "infos": [
+          "Requires the `MANAGE_GUILD` and `MANAGE_ROLES` permissions.",
+          "Onboarding enforces constraints when enabled. These constraints are that there must be at least 7 Default Channels and at least 5 of them must allow sending messages to the @everyone role. The `mode` field modifies what is considered when enforcing these constraints."
+        ],
+        "see": "/docs/resources/guild#modify-guild-onboarding"
+      }
+    },
+    {
+      "key": "PutAPIGuildIncidentActions",
+      "params": ["url.guildId", "data"],
+      "overrides": { "name": "modifyGuildIncidentActions" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Modifies the incident actions of the guild.\n * TODO rename to `modifyIncidentActions`",
+        "infos": [
+          "Requires the `MANAGE_GUILD` permission.",
+          "Both `invites_disabled_until` and `dms_disabled_until` can be enabled for a maximal timespan of 24 hours in the future."
+        ],
+        "see": "/docs/resources/guild#modify-incident-actions"
+      }
+    },
+    {
+      "key": "GetAPIInvite",
+      "params": ["url.code: string", "params?"],
+      "docs": {
+        "description": "Returns an [invite](/docs/resources/invite#invite-object) object for the given code.",
+        "see": "/docs/resources/invite#get-invite"
+      }
+    },
+    {
+      "key": "DeleteAPIInvite",
+      "params": ["url.code: string"],
+      "docs": {
+        "description": "Delete an invite.",
+        "infos": [
+          "Requires the `MANAGE_CHANNELS` permission on the channel this invite belongs to, or `MANAGE_GUILD` to remove any invite across the guild."
+        ],
+        "see": "/docs/resources/invite#delete-invite"
+      }
+    },
+    {
+      "key": "GetAPIChannelMessages",
+      "params": ["url.channelId", "params?"],
+      "docs": {
+        "description": "Retrieves the messages in a channel.",
+        "infos": [
+          "If operating on a guild channel, this endpoint requires the current user to have the `VIEW_CHANNEL` permission. If the channel is a voice channel, they must _also_ have the `CONNECT` permission.",
+          "If the current user is missing the `READ_MESSAGE_HISTORY` permission in the channel, then no messages will be returned.",
+          "The `before`, `after`, and `around` parameters are mutually exclusive, only one may be passed at a time."
+        ],
+        "see": "/docs/resources/message#get-channel-messages"
+      }
+    },
+    {
+      "key": "GetAPIChannelMessage",
+      "params": ["url.channelId", "url.messageId"],
+      "docs": {
+        "description": "Retrieves a specific message in the channel.",
+        "infos": [
+          "If operating on a guild channel, this endpoint requires the current user to have the `VIEW_CHANNEL` and `READ_MESSAGE_HISTORY` permissions. If the channel is a voice channel, they must _also_ have the `CONNECT` permission."
+        ],
+        "see": "/docs/resources/message#get-channel-message"
+      }
+    },
+    {
+      "key": "PostAPIChannelMessage",
+      "params": ["url.channelId", "data"],
+      "overrides": { "apiRoute": "channelMessages" },
+      "flags": ["hasFiles", "hasStringableContent"],
+      "docs": {
+        "description": "Post a message to a guild text or DM channel.",
+        "infos": [
+          "To create a message as a reply or forward of another message, apps can include a [`message_reference`](/docs/resources/message#message-reference-structure)."
+        ],
+        "warns": [
+          "Discord may strip certain characters from message content, like invalid unicode characters or characters which cause unexpected message formatting. If you are passing user-generated strings into message content, consider sanitizing the data to prevent unexpected behavior and using `allowed_mentions` to prevent unexpected mentions."
+        ],
+        "see": "/docs/resources/message#create-message"
+      }
+    },
+    {
+      "key": "PostAPIChannelMessageCrosspost",
+      "params": ["url.channelId", "url.messageId"],
+      "overrides": { "name": "crosspostMessage" },
+      "docs": {
+        "description": "Crosspost a message in an Announcement Channel to following channels.",
+        "infos": [
+          "This endpoint requires the `SEND_MESSAGES` permission, if the current user sent the message, or additionally the `MANAGE_MESSAGES` permission, for all other messages, to be present for the current user."
+        ],
+        "see": "/docs/resources/message#crosspost-message"
+      }
+    },
+    {
+      "key": "PutAPIChannelMessageOwnReaction",
+      "params": ["url.channelId", "url.messageId", "url.emoji: string"],
+      "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)", "name": "createReaction" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Create a reaction for the message.",
+        "infos": [
+          "This endpoint requires the `READ_MESSAGE_HISTORY` permission to be present on the current user. Additionally, if nobody else has reacted to the message using this emoji, this endpoint requires the `ADD_REACTIONS` permission to be present on the current user."
+        ],
+        "see": "/docs/resources/message#create-reaction"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelMessageUserReaction",
+      "params": ["url.channelId", "url.messageId", "url.emoji: string", "url.userId?"],
+      "overrides": {
+        "dangerousExtraLogic": "emoji=encodeURIComponent(emoji); userId??=\"@me\"",
+        "name": "deleteReaction"
+      },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a user's reaction, defaults to removing the current user's reaction for a message.",
+        "see": "/docs/resources/message#delete-reaction"
+      }
+    },
+    {
+      "key": "GetAPIChannelMessageReactionUsers",
+      "params": ["url.channelId", "url.messageId", "url.emoji: string", "params?"],
+      "overrides": {
+        "apiRoute": "channelMessageReaction",
+        "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)",
+        "name": "listReactions"
+      },
+      "docs": {
+        "description": "Get a list of users that reacted with this emoji.",
+        "see": "/docs/resources/message#get-reactions"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelAllMessageReactions",
+      "params": ["url.channelId", "url.messageId"],
+      "overrides": { "apiRoute": "channelMessageAllReactions", "name": "deleteAllReactions" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Deletes all reactions on a message.",
+        "infos": ["This endpoint requires the `MANAGE_MESSAGES` permission to be present on the current user."],
+        "see": "/docs/resources/message#delete-all-reactions"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelMessageReactionUsers",
+      "params": ["url.channelId", "url.messageId", "url.emoji: string"],
+      "overrides": {
+        "apiRoute": "channelMessageReaction",
+        "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)",
+        "name": "deleteAllEmojiReactions"
+      },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Deletes all the reactions for a given emoji on a message.",
+        "infos": ["This endpoint requires the `MANAGE_MESSAGES` permission to be present on the current user."],
+        "see": "/docs/resources/message#delete-all-reactions-for-emoji"
+      }
+    },
+    {
+      "key": "PatchAPIChannelMessage",
+      "params": ["url.channelId", "url.messageId", "data"],
+      "overrides": { "name": "editMessage" },
+      "flags": ["hasFiles", "hasStringableContent"],
+      "docs": {
+        "description": "Edit a previously sent message.",
+        "infos": [
+          "The fields `content`, `embeds`, `flags` and `components` can be edited by the original message author. Other users can only edit `flags` and only if they have the `MANAGE_MESSAGES` permission in the corresponding channel.",
+          "When specifying flags, ensure to include all previously set flags/bits in addition to ones that you are modifying.",
+          "When the `content` field is edited, the arrays `mentions` and `mention_roles` and the boolean `mention_everyone` in the message object will be reconstructed from scratch based on the new content.",
+          "When the message flag `IS_COMPONENTS_V2` is set, the reconstructed arrays and boolean are based on the edited content in the `components` array. The `allowed_mentions` field of the edit request controls how this happens. If there is no explicit `allowed_mentions` in the edit request, the content will be parsed with _default_ allowances, that is, without regard to whether or not an `allowed_mentions` was present in the request that originally created the message."
+        ],
+        "warns": [
+          "Starting with API v10, the `attachments` array must contain all attachments that should be present after edit, including **retained and new** attachments provided in the request body."
+        ],
+        "see": "/docs/resources/message#edit-message"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelMessage",
+      "params": ["url.channelId", "url.messageId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a message.",
+        "infos": [
+          "If operating on a guild channel and trying to delete a message that was not sent by the current user, this endpoint requires the `MANAGE_MESSAGES` permission."
+        ],
+        "see": "/docs/resources/message#delete-message"
+      }
+    },
+    {
+      "key": "PostAPIChannelMessagesBulkDelete",
+      "params": ["url.channelId", "data"],
+      "overrides": { "apiRoute": "channelBulkDelete", "name": "bulkDelete" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete multiple messages in a single request.",
+        "infos": ["This endpoint can only be used on guild channels and requires the `MANAGE_MESSAGES` permission."],
+        "warns": [
+          "This endpoint will not delete messages older than 2 weeks, and will fail with a 400 BAD REQUEST if any message provided is older than that or if any duplicate message IDs are provided."
+        ],
+        "see": "/docs/resources/message#bulk-delete-messages"
+      }
+    },
+    {
+      "key": "GetAPIChannelPins",
+      "params": ["url.channelId"],
+      "flags": ["deprecated"],
+      "docs": {
+        "description": "Gets the first 50 pinned messages in a channel, returning an array of [message](/docs/resources/message#message-object) objects on success.",
+        "infos": [
+          "Requires the `VIEW_CHANNEL` permission. If the user is missing the `READ_MESSAGE_HISTORY` permission in the channel, then no pins will be returned."
+        ],
+        "see": "/docs/resources/message#get-pinned-messages-deprecated"
+      }
+    },
+    {
+      "key": "GetAPIChannelMessagesPins",
+      "params": ["url.channelId", "params?"],
+      "overrides": { "name": "listChannelPins" },
+      "docs": {
+        "description": "Retrieves the list of pins in a channel.",
+        "infos": [
+          "Requires the `VIEW_CHANNEL` permission. If the user is missing the `READ_MESSAGE_HISTORY` permission in the channel, then no pins will be returned."
+        ],
+        "see": "/docs/resources/message#get-channel-pins"
+      }
+    },
+    {
+      "key": "PutAPIChannelMessagesPin",
+      "params": ["url.channelId", "url.messageId"],
+      "overrides": { "name": "createPin" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Pin a message in a channel.",
+        "infos": ["Requires the `PIN_MESSAGES` permission."],
+        "see": "/docs/resources/message#pin-message"
+      }
+    },
+    {
+      "key": "DeleteAPIChannelMessagesPin",
+      "params": ["url.channelId", "url.messageId"],
+      "overrides": { "name": "deletePin" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Unpin a message in a channel.",
+        "infos": ["Requires the `PIN_MESSAGES` permission."],
+        "see": "/docs/resources/message#unpin-message"
+      }
+    },
+    {
+      "key": "GetAPIPollAnswerVoters",
+      "params": ["url.channelId", "url.messageId", "url.answerId: number", "params?"],
+      "docs": {
+        "description": "Get a list of users that voted for this specific answer.",
+        "see": "/docs/resources/poll#get-answer-voters"
+      }
+    },
+    {
+      "key": "PostAPIPollExpire",
+      "params": ["url.channelId", "url.messageId"],
+      "overrides": { "apiRoute": "expirePoll", "name": "endPoll" },
+      "docs": {
+        "description": "Immediately ends the poll. You cannot end polls from other users.",
+        "see": "/docs/resources/poll#get-answer-voters"
+      }
+    },
+    {
+      "key": "GetAPISKUs",
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
+      "overrides": { "apiRoute": "skus", "name": "listSKUs" },
+      "docs": {
+        "description": "Returns all SKUs for a given application.",
+        "infos": [
+          "Because of how our SKU and subscription systems work, you will see two SKUs for your subscription offering. For integration and testing entitlements for Subscriptions, you should use the SKU with `type: 5`."
+        ],
+        "see": "/docs/resources/sku#list-skus"
+      }
+    },
+    {
+      "key": "PostAPISendSoundboardSound",
+      "params": ["url.channelId", "data"],
+      "overrides": {
+        "dataType": "RESTPostAPISoundboardSendSoundJSONBody",
+        "imports": ["type RESTPostAPISoundboardSendSoundJSONBody"],
+        "name": "sendSound"
+      },
+      "docs": {
+        "description": "Send a soundboard sound to a voice channel the user is connected to.",
+        "infos": [
+          "Requires the `SPEAK` and `USE_SOUNDBOARD` permissions, and also the `USE_EXTERNAL_SOUNDS` permission if the sound is from a different server. Additionally, requires the user to be connected to the voice channel, having a [voice state](/docs/resources/voice#voice-state-object) without `deaf`, `self_deaf`, `mute`, or `suppress` enabled."
+        ],
+        "see": "/docs/resources/soundboard#send-soundboard-sound"
+      }
+    },
+    {
+      "key": "GetAPISoundboardDefaultSounds",
+      "params": ["url.guildId: Snowflake = \"\""],
+      "overrides": {
+        "apiRoute": "[guildId ? \"guildSoundboardSounds\":\"soundboardDefaultSounds\"]",
+        "name": "listSounds"
+      },
+      "docs": {
+        "description": "Returns an array of [soundboard sound](/docs/resources/soundboard#soundboard-sound-object) objects that can be used by all users.\n * @param guildId Returns a list of the guild's soundboard sounds.",
+        "infos": [
+          "Includes `user` fields if the bot has the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/soundboard#list-default-soundboard-sounds"
+      }
+    },
+    {
+      "key": "GetAPIGuildSoundboardSound",
+      "params": ["url.guildId", "url.soundId"],
+      "overrides": { "name": "getSound" },
+      "docs": {
+        "description": "Returns a [soundboard sound](/docs/resources/soundboard#soundboard-sound-object) object for the given sound id.",
+        "infos": [
+          "Includes the `user` field if the bot has the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/soundboard#get-guild-soundboard-sound"
+      }
+    },
+    {
+      "key": "PostAPIGuildSoundboardSound",
+      "params": ["url.guildId", "data"],
+      "overrides": { "apiRoute": "guildSoundboardSounds", "name": "createSound" },
+      "docs": {
+        "description": "Create a new soundboard sound for the guild.",
+        "infos": [
+          "Requires the `CREATE_GUILD_EXPRESSIONS` permission.",
+          "Soundboard sounds have a max file size of 512kb and a max duration of 5.2 seconds."
+        ],
+        "see": "/docs/resources/soundboard#create-guild-soundboard-sound"
+      }
+    },
+    {
+      "key": "PatchAPIGuildSoundboardSound",
+      "params": ["url.guildId", "url.soundId", "data"],
+      "overrides": { "name": "modifySound" },
+      "docs": {
+        "description": "Modify the given soundboard sound.",
+        "infos": [
+          "For sounds created by the current user, requires either the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission.",
+          "For other sounds, requires the `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/soundboard#modify-guild-soundboard-sound"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildSoundboardSound",
+      "params": ["url.guildId", "url.soundId"],
+      "overrides": { "name": "deleteSound" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete the given soundboard sound.",
+        "infos": [
+          "For sounds created by the current user, requires either the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission.",
+          "For other sounds, requires the `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/soundboard#delete-guild-soundboard-sound"
+      }
+    },
+    {
+      "key": "PostAPIStageInstance",
+      "params": ["data"],
+      "overrides": { "apiRoute": "stageInstances", "name": "createStage" },
+      "docs": {
+        "description": "Creates a new Stage instance associated to a Stage channel.",
+        "infos": ["Requires the user to be a moderator of the Stage channel."],
+        "see": "/docs/resources/stage-instance#create-stage-instance"
+      }
+    },
+    {
+      "key": "GetAPIStageInstance",
+      "params": ["url.channelId"],
+      "overrides": { "name": "getStage" },
+      "docs": {
+        "description": "Gets the stage instance associated with the Stage channel, if it exists.",
+        "see": "/docs/resources/stage-instance#get-stage-instance"
+      }
+    },
+    {
+      "key": "PatchAPIStageInstance",
+      "params": ["url.channelId", "data"],
+      "overrides": { "name": "modifyStage" },
+      "docs": {
+        "description": "Updates fields of an existing Stage instance.",
+        "infos": ["Requires the user to be a moderator of the Stage channel."],
+        "see": "/docs/resources/stage-instance#modify-stage-instance"
+      }
+    },
+    {
+      "key": "DeleteAPIStageInstance",
+      "params": ["url.channelId"],
+      "overrides": { "name": "deleteStage" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Deletes the Stage instance.",
+        "infos": ["Requires the user to be a moderator of the Stage channel."],
+        "see": "/docs/resources/stage-instance#delete-stage-instance"
+      }
+    },
+    {
+      "key": "GetAPIGuildSticker",
+      "params": ["url.stickerId"],
+      "overrides": { "apiRoute": "sticker" },
+      "docs": {
+        "description": "Returns a [sticker](/docs/resources/sticker#sticker-object) object for the given sticker ID.",
+        "see": "/docs/resources/sticker#get-sticker"
+      }
+    },
+    {
+      "key": "GetStickerPacks",
+      "params": [],
+      "overrides": { "name": "listStickerPacks" },
+      "docs": {
+        "description": "Returns a list of available sticker packs.",
+        "see": "/docs/resources/sticker#list-sticker-packs"
+      }
+    },
+    {
+      "key": "GetAPIStickerPack",
+      "params": ["url.packId"],
+      "overrides": { "name": "getStickerPack" },
+      "docs": {
+        "description": "Returns a [sticker pack](/docs/resources/sticker#sticker-pack-object) object for the given sticker pack ID.",
+        "see": "/docs/resources/sticker#get-sticker-pack"
+      }
+    },
+    {
+      "key": "GetAPIGuildStickers",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns an array of [sticker](/docs/resources/sticker#sticker-object) objects for the given guild.",
+        "infos": [
+          "Includes `user` fields if the bot has the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/sticker#list-guild-stickers"
+      }
+    },
+    {
+      "key": "GetAPIGuildSticker",
+      "params": ["url.guildId", "url.stickerId"],
+      "overrides": { "name": "getGuildSticker" },
+      "docs": {
+        "description": "Returns a [sticker](/docs/resources/sticker#sticker-object) object for the given guild and sticker IDs.",
+        "infos": [
+          "Includes the `user` field if the bot has the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/sticker#get-guild-sticker"
+      }
+    },
+    {
+      "key": "PostAPIGuildSticker",
+      "params": ["url.guildId", "data"],
+      "overrides": {
+        "apiRoute": "guildStickers",
+        "dataType": "RESTPostAPIGuildStickerFormDataBody & { file: RawFile }",
+        "fetchOptions": { "flattenBodyInForm": true },
+        "imports": ["type RESTPostAPIGuildStickerFormDataBody"]
+      },
+      "flags": ["hasFiles", "singlefile"],
+      "docs": {
+        "description": "Create a new sticker for the guild.",
+        "infos": ["Requires the `CREATE_GUILD_EXPRESSIONS` permission."],
+        "warns": [
+          "Lottie stickers can only be uploaded on guilds that have either the `VERIFIED` and/or the `PARTNERED` [guild feature](/docs/resources/guild#guild-object-guild-features).",
+          "Uploaded stickers are constrained to 5 seconds in length for animated stickers, and 320 x 320 pixels."
+        ],
+        "see": "/docs/resources/sticker#create-guild-sticker"
+      }
+    },
+    {
+      "key": "PatchAPIGuildSticker",
+      "params": ["url.guildId", "url.stickerId", "data"],
+      "docs": {
+        "description": "Modify the given sticker.",
+        "infos": [
+          "For stickers created by the current user, requires either the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission.",
+          "For other stickers, requires the `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/sticker#modify-guild-sticker"
+      }
+    },
+    {
+      "key": "DeleteAPIGuildSticker",
+      "params": ["url.guildId", "url.stickerId"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete the given sticker.",
+        "infos": [
+          "For stickers created by the current user, requires either the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission.",
+          "For other stickers, requires the `MANAGE_GUILD_EXPRESSIONS` permission."
+        ],
+        "see": "/docs/resources/sticker#delete-guild-sticker"
+      }
+    },
+    {
+      "key": "GetAPISKUSubscriptions",
+      "params": ["url.skuId", "params?"],
+      "overrides": { "apiRoute": "skuSubscriptions" },
+      "docs": {
+        "description": "Returns all subscriptions containing the SKU, filtered by user.",
+        "see": "/docs/resources/subscription#list-sku-subscriptions"
+      }
+    },
+    {
+      "key": "GetAPISKUSubscription",
+      "params": ["url.skuId", "url.subscriptionId"],
+      "overrides": { "apiRoute": "skuSubscription" },
+      "docs": {
+        "description": "Get a subscription by its ID.",
+        "see": "/docs/resources/subscription#get-sku-subscription"
+      }
+    },
+    {
+      "key": "GetAPIUser",
+      "params": ["url.userId?"],
+      "docs": {
+        "description": "Returns a [user](/docs/resources/user#user-object) object for a given user ID, defaults to self.",
+        "see": "/docs/resources/user#get-user"
+      }
+    },
+    {
+      "key": "PatchAPICurrentUser",
+      "params": ["data"],
+      "overrides": { "apiRoute": "user" },
+      "docs": {
+        "description": "Modify the requester's user account settings.",
+        "see": "/docs/resources/user#modify-current-user"
+      }
+    },
+    {
+      "key": "GetAPICurrentUserGuilds",
+      "params": ["params?"],
+      "overrides": { "apiRoute": "userGuilds", "name": "listGuilds" },
+      "docs": {
+        "description": "Returns a list of partial [guild](/docs/resources/guild#guild-object) objects the current user is a member of.",
+        "infos": [
+          "For OAuth2, requires the `guilds` scope.",
+          "This endpoint returns 200 guilds by default, which is the maximum number of guilds a non-bot user can join. Therefore, pagination is **not needed** for integrations that need to get a list of the users' guilds."
+        ],
+        "see": "/docs/resources/user#get-current-user-guilds"
+      }
+    },
+    {
+      "key": "GetAPIUserGuildMember",
+      "params": ["url.guildId"],
+      "overrides": {
+        "imports": ["type APIGuildMember"],
+        "name": "getCurrentUserMember",
+        "returnType": "APIGuildMember"
+      },
+      "docs": {
+        "description": "Returns a [guild member](/docs/resources/guild#guild-member-object) object for the current user.",
+        "infos": ["Requires the `guilds.members.read` OAuth2 scope."],
+        "warns": ["Bots cannot use this endpoint"],
+        "see": "/docs/resources/user#get-current-user-guild-member"
+      }
+    },
+    {
+      "key": "DeleteAPICurrentUserGuild",
+      "params": ["url.guildId"],
+      "overrides": { "apiRoute": "userGuild", "name": "leaveGuild" },
+      "flags": ["returnVoid"],
+      "docs": { "description": "Leave a guild.", "see": "/docs/resources/user#leave-member" }
+    },
+    {
+      "key": "PostAPICurrentUserCreateDMChannel",
+      "params": ["data"],
+      "overrides": {
+        "apiRoute": "userChannels",
+        "dangerousExtraLogic": "data = { recipient_id: data } as unknown as Snowflake",
+        "dataType": "Snowflake",
+        "name": "createDM"
+      },
+      "docs": {
+        "description": "Create a new DM channel with a user.",
+        "warns": [
+          "You should not use this endpoint to DM everyone in a server about something. DMs should generally be initiated by a user action. If you open a significant amount of DMs too quickly, your bot may be rate limited or blocked from opening new ones."
+        ],
+        "see": "/docs/resources/user#create-dm"
+      }
+    },
+    {
+      "key": "GetAPICurrentUserConnections",
+      "params": [],
+      "overrides": { "apiRoute": "userConnections", "name": "listConnections" },
+      "docs": {
+        "description": "Returns a list of [connection](/docs/resources/user#connection-object) objects.",
+        "infos": ["Requires the `connections` OAuth2 scope."],
+        "see": "/docs/resources/user#get-current-user-connections"
+      }
+    },
+    {
+      "key": "GetAPICurrentUserApplicationRoleConnection",
+      "params": ["url.applicationId: Snowflake = botEnv.DISCORD_APP_ID"],
+      "overrides": { "apiRoute": "userApplicationRoleConnection", "name": "getRoleConnection" },
+      "docs": {
+        "description": "Returns the [application role connection](/docs/resources/user#application-role-connection-object) for the user.",
+        "infos": ["Requires the `connections` OAuth2 scope."],
+        "see": "/docs/resources/user#get-current-user-application-role-connection"
+      }
+    },
+    {
+      "key": "PutAPICurrentUserApplicationRoleConnection",
+      "params": ["url.applicationId: Snowflake = botEnv.DISCORD_APP_ID", "data"],
+      "overrides": { "apiRoute": "userApplicationRoleConnection", "name": "modifyRoleConnection" },
+      "docs": {
+        "description": "Updates and returns the [application role connection](/docs/resources/user#application-role-connection-object) for the user.",
+        "infos": ["Requires the `connections` OAuth2 scope."],
+        "see": "/docs/resources/user#update-current-user-application-role-connection"
+      }
+    },
+    {
+      "key": "GetAPIVoiceRegions",
+      "params": [],
+      "overrides": { "name": "listVoiceRegions" },
+      "docs": {
+        "description": "Returns an array of [voice region](/docs/resources/voice#voice-region-object) objects that can be used when setting a voice or stage channel's [`rtc_region`](/docs/resources/channel#channel-object-channel-structure).",
+        "see": "/docs/resources/voice#list-voice-regions"
+      }
+    },
+    {
+      "key": "GetAPIGuildVoiceStateUser",
+      "params": ["url.guildId", "url.userId?"],
+      "overrides": { "apiRoute": "guildVoiceState", "name": "getVoiceState" },
+      "docs": {
+        "description": "Returns the specified user's [voice state](/docs/resources/voice#voice-state-object) in the guild, defaults to self.",
+        "see": "/docs/resources/voice#get-user-voice-state"
+      }
+    },
+    {
+      "key": "PatchAPIGuildVoiceStateCurrentMember",
+      "params": ["url.guildId", "data", "url.userId?"],
+      "overrides": { "apiRoute": "guildVoiceState", "name": "modifyVoiceState" },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Updates a user's voice state, defaults to self.\n * @param data.request_to_speak_timestamp Not usable for other users",
+        "see": "/docs/resources/voice#modify-current-user-voice-state"
+      }
+    },
+    {
+      "key": "PostAPIChannelWebhook",
+      "params": ["url.channelId", "data"],
+      "overrides": { "apiRoute": "webhook" },
+      "docs": {
+        "description": "Creates a new webhook and returns a [webhook](/docs/resources/webhook#webhook-object) object on success.",
+        "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
+        "see": "/docs/resources/webhook#create-webhook"
+      }
+    },
+    {
+      "key": "GetAPIChannelWebhooks",
+      "params": ["url.channelId"],
+      "overrides": { "name": "listChannelWebhooks" },
+      "docs": {
+        "description": "Returns a list of channel [webhook](/docs/resources/webhook#webhook-object) objects.",
+        "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
+        "see": "/docs/resources/webhook#get-channel-webhooks"
+      }
+    },
+    {
+      "key": "GetAPIGuildWebhooks",
+      "params": ["url.guildId"],
+      "overrides": { "name": "listGuildWebhooks" },
+      "docs": {
+        "description": "Returns a list of guild [webhook](/docs/resources/webhook#webhook-object) objects.",
+        "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
+        "see": "/docs/resources/webhook#get-guild-webhooks"
+      }
+    },
+    {
+      "key": "GetAPIWebhook",
+      "params": ["url.webhookId", "url.webhookToken?: T"],
+      "overrides": {
+        "generic": "T extends string | undefined = undefined",
+        "imports": ["type RESTGetAPIWebhookWithTokenResult"],
+        "returnType": "T extends string ? RESTGetAPIWebhookWithTokenResult : RESTGetAPIWebhookResult"
+      },
+      "docs": {
+        "description": "Returns the new [webhook](/docs/resources/webhook#webhook-object) object for the given id.",
+        "infos": [
+          "This request requires the `MANAGE_WEBHOOKS` permission unless the application making the request owns the webhook. [(see: webhook.application_id)](/docs/resources/webhook#webhook-object)"
+        ],
+        "see": "/docs/resources/webhook#get-webhook"
+      }
+    },
+    {
+      "key": "PatchAPIWebhook",
+      "params": ["url.webhookId", "data", "url.webhookToken?: T"],
+      "overrides": {
+        "dataType": "T extends string ? RESTPatchAPIWebhookWithTokenJSONBody : RESTPatchAPIWebhookJSONBody",
+        "generic": "T extends string | undefined = undefined",
+        "imports": ["type RESTPatchAPIWebhookWithTokenJSONBody", "type RESTPatchAPIWebhookWithTokenResult"],
+        "returnType": "T extends string ? RESTPatchAPIWebhookWithTokenResult : RESTPatchAPIWebhookResult"
+      },
+      "docs": {
+        "description": "Modify a webhook.",
+        "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
+        "see": "/docs/resources/webhook#modify-webhook"
+      }
+    },
+    {
+      "key": "DeleteAPIWebhook",
+      "params": ["url.webhookId", "url.webhookToken?: string"],
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Delete a webhook permanently.",
+        "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
+        "see": "/docs/resources/webhook#modify-webhook"
+      }
+    },
+    {
+      "key": "PostAPIWebhookWithToken",
+      "params": ["url.webhookId", "url.webhookToken: string", "data", "params?"],
+      "overrides": {
+        "apiRoute": "webhook",
+        "generic": "T extends RESTPostAPIWebhookWithTokenQuery",
+        "imports": ["type RESTPostAPIWebhookWithTokenQuery", "type RESTPostAPIWebhookWithTokenWaitResult"],
+        "name": "executeWebhook",
+        "paramsType": "T",
+        "returnType": "T[\"wait\"] extends true ? RESTPostAPIWebhookWithTokenWaitResult : void"
+      },
+      "flags": ["hasFiles", "hasStringableContent"],
+      "docs": {
+        "description": "Execute a webhook.",
+        "infos": [
+          "If the webhook channel is a forum or media channel, you must provide either `thread_id` in the query string params, or `thread_name` in the JSON/form params. If `thread_id` is provided, the message will send in that thread. If `thread_name` is provided, a thread with that name will be created in the channel.",
+          "For the webhook embed objects, you can set every field except `type` (it will be `rich` regardless of if you try to set it), `provider`, `video`, and any `height`, `width`, or `proxy_url` values for images."
+        ],
+        "see": "/docs/resources/webhook#execute-webhook"
+      }
+    },
+    {
+      "key": "GetAPIWebhookWithTokenMessage",
+      "params": ["url.webhookId", "url.webhookToken: string", "url.messageId", "params?"],
+      "overrides": { "apiRoute": "webhookMessage", "name": "getWebhookMessage" },
+      "docs": {
+        "description": "Returns a previously-sent webhook message from the same token.",
+        "see": "/docs/resources/webhook#get-webhook-message"
+      }
+    },
+    {
+      "key": "PatchAPIWebhookWithTokenMessage",
+      "params": ["url.webhookId", "url.webhookToken: string", "url.messageId", "data", "params?"],
+      "overrides": { "apiRoute": "webhookMessage", "name": "editWebhookMessage" },
+      "flags": ["hasFiles", "hasStringableContent"],
+      "docs": {
+        "description": "Edits a previously-sent webhook message from the same token.",
+        "warns": [
+          "Starting with API v10, the `attachments` array must contain all attachments that should be present after edit, including **retained and new** attachments provided in the request body."
+        ],
+        "see": "/docs/resources/webhook#edit-webhook-message"
+      }
+    },
+    {
+      "key": "DeleteAPIWebhookWithTokenMessage",
+      "params": ["url.webhookId", "url.webhookToken: string", "url.messageId", "params?"],
+      "overrides": {
+        "apiRoute": "webhookMessage",
+        "name": "deleteWebhookMessage",
+        "paramsType": "Pick<RESTPostAPIWebhookWithTokenQuery, \"thread_id\">"
+      },
+      "flags": ["returnVoid"],
+      "docs": {
+        "description": "Deletes a message that was created by the webhook.",
+        "see": "/docs/resources/webhook#delete-webhook-message"
+      }
+    }
+  ]
+}

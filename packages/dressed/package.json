@@ -1,22 +1,20 @@
 {
   "name": "dressed",
-  "version": "1.10.0-rc.1",
+  "version": "1.10.0-canary.8.2",
   "description": "A sleek, serverless-ready Discord bot framework.",
   "scripts": {
-    "dist": "rm -fr dist && tsc",
+    "dist": "rm -fr dist && bun --bun ./src/resources/make && tsc",
     "check-types": "tsc --noEmit",
     "test": "bun test",
     "dry-publish": "bun publish --dry-run && deno publish --dry-run --allow-dirty"
   },
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
-    "@next/env": "^15.5.3",
     "commander": "^14.0.1",
     "discord-api-types": "^0.38.26-next.93decca.1758147813",
+    "dotenv": "^17.2.2",
     "enquirer": "^2.4.1",
     "esbuild": "^0.25.9",
-    "ora": "^9.0.0",
-    "tweetnacl": "^1.0.3",
     "walk-it": "^6.0.1"
   },
   "exports": {

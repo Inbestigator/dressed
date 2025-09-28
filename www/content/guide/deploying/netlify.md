@@ -1,4 +1,4 @@
-# Deploying to Cloudflare Workers
+# Deploying to Netlify Functions
 
 This guide walks you through deploying a Discord bot built with Dressed to [Netlify Functions](https://www.netlify.com/platform/core/functions/).
 
@@ -17,8 +17,7 @@ Deploying is the last step in building your bot, it will be where Discord can se
    import { commands, components, events, config } from "../../.dressed";
    import { handleRequest } from "dressed/server";
 
-   export default (req: Request) =>
-     handleRequest(req, commands, components, events, config);
+   export default (req: Request) => handleRequest(req, commands, components, events, config);
    ```
 
 ## Environment variables

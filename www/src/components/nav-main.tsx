@@ -15,7 +15,7 @@ import {
 
 interface Item {
   title: string;
-  url: string;
+  url?: string;
   icon?: LucideIcon;
   items?: Item[];
 }
@@ -25,7 +25,7 @@ export function NavMain({ items }: { items: Item[] }) {
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => (
-          <Item key={item.url} item={item} />
+          <Item key={item.title} item={item} />
         ))}
       </SidebarMenu>
     </SidebarGroup>
@@ -37,8 +37,8 @@ function Item({ item }: { item: Item }) {
   return (
     <Collapsible asChild defaultOpen={path.some((p) => p.toLowerCase() === item.title.toLowerCase())}>
       <SidebarMenuItem>
-        <SidebarMenuButton asChild tooltip={item.title}>
-          <Link href={item.url}>
+        <SidebarMenuButton asChild className="text-nowrap overflow-x-scroll" tooltip={item.title}>
+          <Link tabIndex={-1} className={!item.url ? "pointer-events-none select-none" : ""} href={item.url ?? "/docs"}>
             {item.icon && <item.icon />}
             {item.title}
           </Link>
