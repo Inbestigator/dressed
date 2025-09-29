@@ -24,11 +24,7 @@ for (const { docs, key, params, flags, overrides: { dataType, name } = {} } of r
                 : "";
   const splitRoutes = routeKey.match(/[A-Z][a-z]+/g) ?? [];
   dataType ??
-    `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}JSONBody${
-      flags?.includes("hasFiles")
-        ? ` & { file${flags.includes("singlefile") ? "" : "s"}?: RawFile${flags.includes("singlefile") ? "" : "[]"} }`
-        : ""
-    }`;
+    `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}JSONBody${flags?.includes("hasFiles") ? ` & { file${flags.includes("singlefile") ? "" : "s"}?: RawFile${flags.includes("singlefile") ? "" : "[]"} }` : ""}`;
   const resolvedName =
     name ??
     prefix +

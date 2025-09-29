@@ -17,10 +17,10 @@ export function importString(file: WalkEntry) {
   return `import * as h${file.uid} from "${relative(".dressed/tmp", file.path).replace(/\\/g, "/")}";`;
 }
 
-export function categoryExports(categories: WalkEntry[][], exports: "null" | "append") {
+export function categoryExports(categories: WalkEntry[][]) {
   return categories.map(
     (c, i) =>
-      `export const ${["commands", "components", "events"][i]} = [${c.map((f) => (exports === "append" ? `${JSON.stringify(f).slice(0, -1)},exports:h${f.uid}}` : JSON.stringify(f).replace('"exports":null', `"exports":h${f.uid}`)))}];`,
+      `export const ${["commands", "components", "events"][i]} = [${c.map((f) => JSON.stringify({ ...f, exports: null }).replace('"exports":null', `"exports":h${f.uid}`))}];`,
   );
 }
 
@@ -74,10 +74,7 @@ export default async function build(
   );
   const entriesPath = ".dressed/tmp/entries.ts";
 
-  writeFileSync(
-    entriesPath,
-    [files.map((c) => c.map(importString)), categoryExports(files, "append")].flat(2).join(""),
-  );
+  writeFileSync(entriesPath, [files.map((c) => c.map(importString)), categoryExports(files)].flat(2).join(""));
   logDefer("Bundling handlers");
   await bundle(entriesPath, ".dressed/tmp");
   const { commands, components, events } = await import(resolve(entriesPath.replace(".ts", ".mjs")));

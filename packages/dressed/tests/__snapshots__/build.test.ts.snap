@@ -5,7 +5,10 @@ exports[`Build bot 1`] = `
   "commands": [
     {
       "data": {},
-      "exports": null,
+      "exports": {
+        "config": [native code],
+        "default": [native code],
+      },
       "name": "ping",
       "path": "tests/src/commands/ping.ts",
       "uid": "8fb0c7f6d76f306d26b0a4439233cfcf2213aead",
@@ -18,7 +21,10 @@ exports[`Build bot 1`] = `
         "regex": "^button_(?<arg>.+?)$",
         "score": 0.3888888888888889,
       },
-      "exports": null,
+      "exports": {
+        "default": [native code],
+        "pattern": [native code],
+      },
       "name": "button",
       "path": "tests/src/components/buttons/button.ts",
       "uid": "393f92e485a47bf513c3d0b247432a701b9380fa",
@@ -34,7 +40,9 @@ exports[`Build bot 1`] = `
       "data": {
         "type": "APPLICATION_AUTHORIZED",
       },
-      "exports": null,
+      "exports": {
+        "default": [native code],
+      },
       "name": "ApplicationAuthorized",
       "path": "tests/src/events/ApplicationAuthorized.ts",
       "uid": "69d246633f8b88caba1f573bc8f94948ebf48d5f",

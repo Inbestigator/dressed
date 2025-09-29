@@ -30,9 +30,7 @@ export const setupComponents: ReturnType<
       noItem: `No ${category} component handler for "${interaction.data.custom_id}"`,
       middlewareKey: "components",
       pending: (item, props) =>
-        `Running ${category} "${item.name}"${
-          Object.keys(props[1]).length > 0 ? ` with args: ${JSON.stringify(props[1])}` : ""
-        }`,
+        `Running ${category} "${item.name}"${Object.keys(props[1]).length > 0 ? ` with args: ${JSON.stringify(props[1])}` : ""}`,
     };
   },
   findItem(interaction, items) {

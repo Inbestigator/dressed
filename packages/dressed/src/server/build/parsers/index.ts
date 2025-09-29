@@ -9,17 +9,18 @@ interface ParserItemMessages {
   col2?: string;
 }
 
-export function createHandlerParser<
-  T extends BaseData<Partial<Record<keyof T["data"], unknown>>>,
-  F extends WalkEntry = WalkEntry & { exports?: NonNullable<T["exports"]> },
->(options: {
+type ImportedEntry<T extends BaseData<Partial<Record<keyof T["data"], unknown>>>> = WalkEntry & {
+  exports: T["exports"];
+};
+
+export function createHandlerParser<T extends BaseData<Partial<Record<keyof T["data"], unknown>>>>(options: {
   col1Name: string;
   col2Name?: string;
   uniqueKeys?: (keyof T["data"])[];
-  itemMessages: ((file: F) => ParserItemMessages) | ParserItemMessages;
-  createData: (file: F, tree: ReturnType<typeof logTree>) => T["data"];
+  itemMessages: ((file: ImportedEntry<T>) => ParserItemMessages) | ParserItemMessages;
+  createData: (file: ImportedEntry<T>, tree: ReturnType<typeof logTree>) => T["data"];
   postMortem?: (items: T[]) => T[];
-}): (files: F[], base?: string) => T[] {
+}): (files: ImportedEntry<T>[], base?: string) => T[] {
   return (files, base) => {
     if (files.length === 0) return [];
     const tree = logTree(files.length, options.col1Name, options.col2Name);
@@ -45,8 +46,7 @@ export function createHandlerParser<
         if (hasConflict) {
           throw `${warnSymbol} ${itemMessages.confict}`;
         }
-        // @ts-expect-error Technically, type F should extend `& { default: AnyFn }`. Shouldn't skip if exports aren't even included
-        if ("exports" in file && typeof file.exports.default !== "function") {
+        if (typeof file.exports.default !== "function") {
           throw `${errorSymbol} Every handler must export a default function, skipping`;
         }
       } catch (e) {
@@ -61,11 +61,8 @@ export function createHandlerParser<
         continue;
       }
       items.push({
-        name: file.name,
-        path: file.path,
-        uid: file.uid,
+        ...file,
         data,
-        exports: null,
       } as T);
     }
 
