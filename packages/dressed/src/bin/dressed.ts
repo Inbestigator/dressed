@@ -65,7 +65,7 @@ ${
     : ""
 }
 import config from "./dressed.config.mjs";
-${[categories.map((c) => c.map(importString)), categoryExports(categories, "null")].flat(2).join("")}
+${[categories.map((c) => c.map(importString)), categoryExports(categories)].flat(2).join("")}
 export { config };
 ${register ? "\ninstallCommands(commands);" : ""}
 ${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
