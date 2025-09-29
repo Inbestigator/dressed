@@ -57,13 +57,7 @@ program
       const categories = [commands, components, events];
 
       const outputContent = `
-${
-  instance || register
-    ? `import { ${
-        instance ? `createServer${register ? ", installCommands" : ""}` : register ? "installCommands" : ""
-      } } from "dressed/server";`
-    : ""
-}
+${instance || register ? `import { ${instance ? `createServer${register ? ", installCommands" : ""}` : register ? "installCommands" : ""} } from "dressed/server";` : ""}
 import config from "./dressed.config.mjs";
 ${[categories.map((c) => c.map(importString)), categoryExports(categories)].flat(2).join("")}
 export { config };
