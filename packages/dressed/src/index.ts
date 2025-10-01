@@ -4,6 +4,7 @@ export * from "./components/button.ts";
 export * from "./components/command-option.ts";
 export * from "./components/container.ts";
 export * from "./components/file.ts";
+export * from "./components/file-upload.ts";
 export * from "./components/label.ts";
 export * from "./components/media-gallery.ts";
 export * from "./components/section.ts";

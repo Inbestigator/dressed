@@ -1,4 +1,5 @@
 import {
+  type APIAttachment,
   type APIInteractionDataResolved,
   type APIInteractionDataResolvedChannel,
   type APIRole,
@@ -21,16 +22,19 @@ export interface FieldValueGetters {
   mentionableSelect: () => (APIUser | APIRole)[];
   /** Return the select menu's values as an array of channels - Component type must be a select with type `Channel` */
   channelSelect: () => APIInteractionDataResolvedChannel[];
+  /** Return the file upload's values as an array of attachments - Component type must be a select with type `FileUpload` */
+  fileUpload: () => APIAttachment[];
 }
 
-const blurbs = [
-  "a string select",
-  "a text input",
-  "a user select",
-  "a role select",
-  "a mentionable select",
-  "a channel select",
-];
+const blurbs = {
+  3: "a string select",
+  4: "a text input",
+  5: "a user select",
+  6: "a role select",
+  7: "a mentionable select",
+  8: "a channel select",
+  19: "a file upload",
+};
 
 export function getField<R extends boolean>(
   custom_id: string,
@@ -46,7 +50,7 @@ export function getField<R extends boolean>(
 
   const returnValue = (type: ModalSubmitComponent["type"], resolvedKey?: keyof APIInteractionDataResolved) => () => {
     if (component.type !== type) {
-      throw new Error(`The field ${custom_id} is ${blurbs[component.type - 3]}, not ${blurbs[type - 3]}`);
+      throw new Error(`The field ${custom_id} is ${blurbs[component.type]}, not ${blurbs[type]}`);
     }
     if (component.type === ComponentType.TextInput) {
       return component.value;
@@ -85,5 +89,6 @@ export function getField<R extends boolean>(
       return mentionables;
     },
     channelSelect: returnValue(ComponentType.ChannelSelect, "channels"),
+    fileUpload: returnValue(ComponentType.FileUpload, "attachments"),
   }) as ReturnType<typeof getField<R>>;
 }
