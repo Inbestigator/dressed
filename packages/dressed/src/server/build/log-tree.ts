@@ -1,39 +1,46 @@
-/** Log a table of values with a title (two columns max) */
-export default function logTree(total: number, title1: string, title2 = "") {
-  const col1 = [`\x1b[4m${title1}\x1b[24m`];
-  const col2 = [`\x1b[4m${title2}\x1b[24m`];
+/** Log a table of values with titles */
+export default function logTree(total: number, ...titles: string[]) {
+  const cols = titles.map((t) => [`\x1b[4m${t}\x1b[24m`]);
   const asides: Record<number, unknown[]> = {};
-  const chopped = new Set();
-
+  const chopped = new Set<number>();
   return {
-    push(name: string, secondaryName = "") {
-      col1.push(name);
-      col2.push(secondaryName);
+    push(...values: string[]) {
+      for (let i = 0; i < values.length; ++i) {
+        cols[i]?.push(values[i]);
+      }
     },
     aside(v: unknown) {
-      asides[col1.length - 1] ??= [];
-      asides[col1.length - 1].push(v);
+      const i = cols[0].length - 1;
+      asides[i] ??= [];
+      asides[i].push(v);
     },
-    chop: () => chopped.add(col1.length - 1),
+    chop: () => chopped.add(cols[0].length - 1),
     log() {
-      const m1 = Math.max(...col1.map(removeAnsi));
-      const m2 = Math.max(...col2.map(removeAnsi));
-      const lines = col1.flatMap((name, i) => {
-        let prefix = "├";
-        if (i === 0) prefix = " ";
-        else if (i === 1) prefix = total === 1 ? "-" : "┌";
-        else if (i === col1.length - 1) prefix = "└";
-        return [
-          `${prefix} ${chopped.has(i) ? "\x1b[9m" : ""}${name}${title2.length ? `${" ".repeat(pad(name, m1) + pad(col2[i], m2))}${col2[i]}\x1b[0m` : ""}`,
+      const widths = cols.map((col) => Math.max(...col.map((s) => removeAnsiLen(s))));
+      const rowCount = cols[0].length;
+      const lines: unknown[] = [];
+      for (let i = 0; i < rowCount; ++i) {
+        const row = cols
+          .map((col, j) => {
+            const s = col[i] ?? "";
+            const w = widths[j];
+            if (j === cols.length - 1 && cols.length !== 1) {
+              return " ".repeat(pad(s, w)) + s;
+            } else {
+              return s + " ".repeat(pad(s, w));
+            }
+          })
+          .join("  ");
+        lines.push(
+          `${i === 0 ? " " : i === 1 ? (total === 1 ? "-" : "┌") : i === rowCount - 1 ? "└" : "├"} ${chopped.has(i) ? "\x1b[9m" : ""}${row}\x1b[0m`,
           ...(asides[i] ?? []),
-        ];
-      });
-
+        );
+      }
       lines.concat("").map((l) => console.log(l));
     },
   };
 }
 
 // biome-ignore lint/suspicious/noControlCharactersInRegex: We need a control char
-const removeAnsi = (s: string) => s.replace(/\x1b\[\d{1,2}m/g, "").length;
-const pad = (s: string, width: number) => Math.max(0, width - removeAnsi(s)) + 1;
+const removeAnsiLen = (s: string) => s.replace(/\x1b\[\d{1,2}m/g, "").length;
+const pad = (s: string, width: number) => Math.max(0, width - removeAnsiLen(s));

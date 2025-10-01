@@ -6,7 +6,7 @@ import logTree from "../log-tree.ts";
 
 interface ParserItemMessages {
   confict: string;
-  col2?: string;
+  cols?: string[];
 }
 
 type ImportedEntry<T extends BaseData<Partial<Record<keyof T["data"], unknown>>>> = WalkEntry & {
@@ -14,8 +14,7 @@ type ImportedEntry<T extends BaseData<Partial<Record<keyof T["data"], unknown>>>
 };
 
 export function createHandlerParser<T extends BaseData<Partial<Record<keyof T["data"], unknown>>>>(options: {
-  col1Name: string;
-  col2Name?: string;
+  colNames: string[];
   uniqueKeys?: (keyof T["data"])[];
   itemMessages: ((file: ImportedEntry<T>) => ParserItemMessages) | ParserItemMessages;
   createData: (file: ImportedEntry<T>, tree: ReturnType<typeof logTree>) => T["data"];
@@ -23,7 +22,7 @@ export function createHandlerParser<T extends BaseData<Partial<Record<keyof T["d
 }): (files: ImportedEntry<T>[], base?: string) => T[] {
   return (files, base) => {
     if (files.length === 0) return [];
-    const tree = logTree(files.length, options.col1Name, options.col2Name);
+    const tree = logTree(files.length, ...options.colNames);
     let items: T[] = [];
 
     for (const [i, file] of Object.entries(files)) {
@@ -37,7 +36,7 @@ export function createHandlerParser<T extends BaseData<Partial<Record<keyof T["d
           files.filter((f) => f.name === file.name).length > 1
             ? `${file.name} \x1b[2m(${relative(base ?? "", file.path)})\x1b[22m`
             : file.name,
-          itemMessages.col2,
+          ...(itemMessages.cols ?? []),
         );
         data = options.createData(file, tree);
         const hasConflict = items.some(

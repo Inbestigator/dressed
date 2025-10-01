@@ -26,5 +26,4 @@ export * from "./handlers/components.ts";
 export * from "./handlers/events.ts";
 export * from "./handlers/index.ts";
 export * from "./server.ts";
-// Server
-export { verifySignature } from "./signature.ts";
+export * from "./signature.ts";
