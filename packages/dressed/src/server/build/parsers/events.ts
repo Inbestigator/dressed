@@ -4,7 +4,7 @@ import { warnSymbol } from "../../../utils/log.ts";
 import { createHandlerParser } from "./index.ts";
 
 export const parseEvents = createHandlerParser<EventData>({
-  col1Name: "Event",
+  colNames: ["Event"],
   uniqueKeys: ["type"],
   itemMessages: ({ name }) => ({
     confict: `"${name}" conflicts with another event, skipping the duplicate`,
