@@ -1,13 +1,13 @@
 import { createHash } from "node:crypto";
 import { appendFileSync, existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, extname, relative, resolve } from "node:path";
-import { cwd, stdout } from "node:process";
-import ora from "ora";
+import { cwd } from "node:process";
 import { walkFiles } from "walk-it";
-import { getApp } from "../../resources/application.ts";
+import { getApp } from "../../resources/generated.resources.ts";
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../../types/config.ts";
 import type { WalkEntry } from "../../types/walk.ts";
 import { botEnv } from "../../utils/env.ts";
+import { logDefer, logWarn } from "../../utils/log.ts";
 import bundleFiles from "./bundle.ts";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";
@@ -17,10 +17,10 @@ export function importString(file: WalkEntry) {
   return `import * as h${file.uid} from "${relative(".dressed/tmp", file.path).replace(/\\/g, "/")}";`;
 }
 
-export function categoryExports(categories: WalkEntry[][], exports: "null" | "append") {
+export function categoryExports(categories: WalkEntry[][]) {
   return categories.map(
     (c, i) =>
-      `export const ${["commands", "components", "events"][i]} = [${c.map((f) => (exports === "append" ? `${JSON.stringify(f).slice(0, -1)},exports:h${f.uid}}` : JSON.stringify(f).replace('"exports":null', `"exports":h${f.uid}`)))}];`,
+      `export const ${["commands", "components", "events"][i]} = [${c.map((f) => JSON.stringify({ ...f, exports: null }).replace('"exports":null', `"exports":h${f.uid}`))}];`,
   );
 }
 
@@ -74,17 +74,16 @@ export default async function build(
   );
   const entriesPath = ".dressed/tmp/entries.ts";
 
-  writeFileSync(
-    entriesPath,
-    [files.map((c) => c.map(importString)), categoryExports(files, "append")].flat(2).join(""),
-  );
+  writeFileSync(entriesPath, [files.map((c) => c.map(importString)), categoryExports(files)].flat(2).join(""));
+  logDefer("Bundling handlers");
   await bundle(entriesPath, ".dressed/tmp");
   const { commands, components, events } = await import(resolve(entriesPath.replace(".ts", ".mjs")));
 
+  console.log(); // This just adds a newline before the logged trees for consistency
   return {
-    commands: await parseCommands(commands),
-    components: await parseComponents(components),
-    events: await parseEvents(events),
+    commands: parseCommands(commands, `${root}/commands`),
+    components: parseComponents(components, `${root}/components`),
+    events: parseEvents(events, `${root}/events`),
     config,
   };
 }
@@ -93,7 +92,7 @@ async function fetchFiles(root: string, dir: string, extensions: string[]): Prom
   const dirPath = resolve(root, dir);
 
   if (!existsSync(dirPath)) {
-    ora(`${dir.slice(0, 1).toUpperCase() + dir.slice(1)} directory not found`).warn();
+    logWarn(`${dir.slice(0, 1).toUpperCase() + dir.slice(1)} directory not found`);
     return [];
   }
 
@@ -129,10 +128,7 @@ async function fetchMissingVars() {
     }
 
     if (missingVars.length) {
-      const varLoader = ora({
-        stream: stdout,
-        text: `Fetching missing variables (${missingVars.join(", ")})`,
-      }).start();
+      logDefer(`Fetching missing variables (${missingVars.join(", ")})`);
 
       const app = await getApp();
 
@@ -147,8 +143,6 @@ async function fetchMissingVars() {
       }
 
       appendFileSync(".env", `\n${envLines.join("\n")}`);
-
-      varLoader.succeed(`Fetched missing variables (${missingVars.join(", ")})`);
     }
   } catch {
     //

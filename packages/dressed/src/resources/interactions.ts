@@ -1,8 +1,8 @@
-import type { APIInteractionResponse, RESTPostAPIInteractionCallbackQuery } from "discord-api-types/v10";
+import type { APIInteractionResponse, RESTPostAPIInteractionCallbackQuery, Snowflake } from "discord-api-types/v10";
 import { InteractionResponseType, Routes } from "discord-api-types/v10";
 import type { RawFile } from "../types/file.ts";
 import type { InteractionCallbackResponse } from "../types/interaction.ts";
-import { callDiscord } from "../utils/call-discord.ts";
+import { type CallConfig, callDiscord } from "../utils/call-discord.ts";
 
 /**
  * Respond to an interaction by sending a modal, message, or update the original.
@@ -15,28 +15,32 @@ import { callDiscord } from "../utils/call-discord.ts";
  */
 export async function createInteractionCallback<
   T extends keyof typeof InteractionResponseType,
-  Q extends RESTPostAPIInteractionCallbackQuery,
+  P extends RESTPostAPIInteractionCallbackQuery,
   E extends object = Extract<APIInteractionResponse, { type: (typeof InteractionResponseType)[T] }>,
 >(
-  interactionId: string,
+  interactionId: Snowflake,
   interactionToken: string,
   type: T,
-  ...[data, files, options]: E extends {
+  ...[data, files, params, $req]: E extends {
     data?: infer D;
   }
     ? // This accounts for the different types submitting data or not
-      [...(E extends { data: object } ? [D] : [D?]), RawFile[]?, Q?]
-    : [undefined?, undefined?, Q?]
-): InteractionCallbackResponse<Q> {
-  const res = await callDiscord(Routes.interactionCallback(interactionId, interactionToken), {
-    method: "POST",
-    body: {
-      type: InteractionResponseType[type],
-      data,
+      [...(E extends { data: object } ? [D] : [D?]), RawFile[]?, P?, CallConfig?]
+    : [undefined?, undefined?, P?, CallConfig?]
+): InteractionCallbackResponse<P> {
+  const res = await callDiscord(
+    Routes.interactionCallback(interactionId, interactionToken),
+    {
+      method: "POST",
+      body: {
+        type: InteractionResponseType[type],
+        data,
+      },
+      params,
+      files,
     },
-    params: options,
-    files,
-  });
+    $req,
+  );
 
-  return options?.with_response ? res.json() : (null as never);
+  return params?.with_response ? res.json() : (null as never);
 }

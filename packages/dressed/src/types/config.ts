@@ -106,9 +106,9 @@ export interface BaseData<T, M extends object = object> {
   path: string;
   uid: string;
   data: T;
-  /** @deprecated Use the `default` key in `exports` instead (will be removed at the next major release) */
+  /** @deprecated Use the `default` key in `exports` instead */
   run?: AnyFn; // TODO Remove before next major release
-  exports: (M & { default: AnyFn }) | null;
+  exports: M & { default: AnyFn };
 }
 
 /**
@@ -119,18 +119,9 @@ export type CommandData = BaseData<{ config?: CommandConfig }, { autocomplete?: 
 /**
  * Component data object in the `components` array outputted from `build()`
  */
-export type ComponentData = BaseData<
-  {
-    regex: string;
-    category: string;
-    score: number;
-  },
-  { pattern?: string | RegExp }
->;
+export type ComponentData = BaseData<{ regex: string; category: string; score: number }, { pattern?: string | RegExp }>;
 
 /**
  * Event data object in the `events` array outputted from `build()`
  */
-export type EventData = BaseData<{
-  type: string;
-}>;
+export type EventData = BaseData<{ type: string }>;

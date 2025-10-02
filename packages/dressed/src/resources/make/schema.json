@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "routes": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "key": { "type": "string" },
+          "params": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                { "type": "string", "title": "Data", "enum": ["data", "data?"] },
+                { "type": "string", "title": "Params", "enum": ["params", "params?"] },
+                {
+                  "type": "string",
+                  "title": "URL parameter",
+                  "pattern": "^url\\.[^<]+(?:<[^?]+)?$",
+                  "examples": ["url.key", "url.key?", "url.key<value", "url.key<value?"]
+                },
+                {
+                  "type": "string",
+                  "title": "Var parameter",
+                  "pattern": "^var\\..+$",
+                  "examples": ["var.key", "var.key?"]
+                }
+              ]
+            },
+            "uniqueItems": true
+          },
+          "overrides": {
+            "type": "object",
+            "properties": {
+              "apiRoute": { "type": "string" },
+              "dangerousExtraLogic": { "type": "string" },
+              "dataType": { "type": "string" },
+              "fetchOptions": { "type": "object" },
+              "generic": { "type": "string" },
+              "imports": { "type": "array", "items": { "type": "string" } },
+              "messageKey": { "type": "string" },
+              "name": { "type": "string" },
+              "paramsType": { "type": "string" },
+              "returnType": { "type": "string" }
+            },
+            "additionalProperties": false
+          },
+          "flags": {
+            "type": "array",
+            "items": { "enum": ["deprecated", "hasFiles", "hasStringableContent", "singlefile", "returnVoid"] },
+            "uniqueItems": true
+          },
+          "docs": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "infos": { "type": "array", "items": { "type": "string" } },
+              "warns": { "type": "array", "items": { "type": "string" } },
+              "dangers": { "type": "array", "items": { "type": "string" } },
+              "see": { "type": "string" }
+            },
+            "required": ["description", "see"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["key", "params", "docs"],
+        "additionalProperties": false
+      }
+    }
+  }
+}

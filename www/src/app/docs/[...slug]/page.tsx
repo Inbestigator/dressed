@@ -17,7 +17,7 @@ export function generateStaticParams() {
 }
 
 const banner = `> [!IMPORTANT]
-> Currently the documentation here pertains to the canary tag of Dressed (\`dressed@1.10.0-canary.5.x\`), keep in mind that some items (especially talked about in the [deployment guides](/docs/guide/deploying)) are not available / work slightly differently in the \`@latest\` version.
+> Currently the documentation here pertains to the canary tag of Dressed (docs currently at \`dressed@1.10.0-canary.8.x\`), keep in mind that some items (especially those talked about in the [deployment guides](/docs/guide/deploying)) are not available / work slightly differently in the \`@latest\` version.
 
 `;
 

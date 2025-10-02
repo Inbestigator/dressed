@@ -1,5 +1,4 @@
 import { createServer as createHttpServer, type Server } from "node:http";
-import { stdout } from "node:process";
 import {
   type APIApplicationCommandAutocompleteInteraction,
   type APIApplicationCommandInteraction,
@@ -9,9 +8,9 @@ import {
   ApplicationWebhookType,
   InteractionType,
 } from "discord-api-types/v10";
-import ora from "ora";
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../types/config.ts";
 import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
+import { logError } from "../utils/log.ts";
 import { createInteraction } from "./extenders/interaction.ts";
 import { setupCommands } from "./handlers/commands.ts";
 import { setupComponents } from "./handlers/components.ts";
@@ -88,18 +87,17 @@ export async function handleRequest(
   events: EventRunner | EventData[],
   config?: ServerConfig,
 ): Promise<Response> {
-  const reqLoader = ora({
-    stream: stdout,
-    text: "Validating new request",
-  }).start();
   const body = await req.text();
+  const verified = await verifySignature(
+    body,
+    req.headers.get("x-signature-ed25519") as string,
+    req.headers.get("x-signature-timestamp") as string,
+  );
 
-  if (!verifySignature(body, req.headers.get("x-signature-ed25519"), req.headers.get("x-signature-timestamp"))) {
-    reqLoader.fail("Invalid signature");
+  if (!verified) {
+    logError("Invalid signature");
     return new Response(null, { status: 401 });
   }
-
-  reqLoader.stop();
 
   try {
     const json = JSON.parse(body);

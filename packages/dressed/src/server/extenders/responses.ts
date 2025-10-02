@@ -4,8 +4,8 @@ import {
   type APIUser,
   MessageFlags,
 } from "discord-api-types/v10";
+import { editWebhookMessage, executeWebhook } from "../../resources/generated.resources.ts";
 import { createInteractionCallback } from "../../resources/interactions.ts";
-import { editWebhookMessage, executeWebhook } from "../../resources/webhooks.ts";
 import type { RawFile } from "../../types/file.ts";
 import type { BaseInteractionMethods } from "../../types/interaction.ts";
 import { botEnv } from "../../utils/env.ts";

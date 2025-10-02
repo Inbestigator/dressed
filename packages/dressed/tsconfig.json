@@ -15,5 +15,6 @@
     "verbatimModuleSyntax": true,
     "rootDir": "src"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/resources/make"]
 }

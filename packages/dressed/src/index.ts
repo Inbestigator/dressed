@@ -1,5 +1,3 @@
-// Types
-
 // Components
 export * from "./components/action-row.ts";
 export * from "./components/button.ts";
@@ -14,30 +12,10 @@ export * from "./components/separator.ts";
 export * from "./components/text-display.ts";
 export * from "./components/text-input.ts";
 export * from "./components/thumbnail.ts";
-export * from "./resources/application.ts";
 // API interactions
-export * from "./resources/application-commands.ts";
-export * from "./resources/audit-log.ts";
-export * from "./resources/automod.ts";
-export * from "./resources/channels.ts";
-export * from "./resources/emojis.ts";
-export * from "./resources/entitlements.ts";
-export * from "./resources/gateway.ts";
-export * from "./resources/guild-events.ts";
-export * from "./resources/guild-templates.ts";
-export * from "./resources/guilds.ts";
+export * from "./resources/generated.resources.ts";
 export * from "./resources/interactions.ts";
-export * from "./resources/invites.ts";
-export * from "./resources/messages.ts";
-export * from "./resources/polls.ts";
-export * from "./resources/role-connections.ts";
-export * from "./resources/skus.ts";
-export * from "./resources/soundboards.ts";
-export * from "./resources/stages.ts";
-export * from "./resources/stickers.ts";
-export * from "./resources/users.ts";
-export * from "./resources/voice.ts";
-export * from "./resources/webhooks.ts";
+// Types
 export type { CommandConfig } from "./types/config.ts";
 export type { Event } from "./types/event.ts";
 export type {

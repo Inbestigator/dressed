@@ -1,96 +1,76 @@
-import { stdout } from "node:process";
-import ora from "ora";
+import { relative } from "node:path";
 import type { BaseData } from "../../../types/config.ts";
-import type { Promisable } from "../../../types/utilities.ts";
 import type { WalkEntry } from "../../../types/walk.ts";
+import { errorSymbol, warnSymbol } from "../../../utils/log.ts";
 import logTree from "../log-tree.ts";
-
-interface ParserMessages {
-  pending: string;
-  generated: string;
-  noItems: string;
-}
 
 interface ParserItemMessages {
   confict: string;
-  col2?: string;
+  cols?: string[];
 }
 
-export function createHandlerParser<
-  T extends BaseData<Partial<Record<keyof T["data"], unknown>>>,
-  F extends WalkEntry = WalkEntry & { exports?: NonNullable<T["exports"]> },
->(options: {
-  col1Name: string;
-  col2Name?: string;
+type ImportedEntry<T extends BaseData<Partial<Record<keyof T["data"], unknown>>>> = WalkEntry & {
+  exports: T["exports"];
+};
+
+export function createHandlerParser<T extends BaseData<Partial<Record<keyof T["data"], unknown>>>>(options: {
+  colNames: string[];
   uniqueKeys?: (keyof T["data"])[];
-  messages: ParserMessages;
-  itemMessages: ((file: F) => ParserItemMessages) | ParserItemMessages;
-  createData: (file: F) => Promisable<T["data"]>;
-  postMortem?: (items: T[]) => Promisable<T[]>;
-}): (files: F[]) => Promise<T[]> {
-  return async (files) => {
+  itemMessages: ((file: ImportedEntry<T>) => ParserItemMessages) | ParserItemMessages;
+  createData: (file: ImportedEntry<T>, tree: ReturnType<typeof logTree>) => T["data"];
+  postMortem?: (items: T[]) => T[];
+}): (files: ImportedEntry<T>[], base?: string) => T[] {
+  return (files, base) => {
     if (files.length === 0) return [];
-    const generatingLoader = ora({
-      stream: stdout,
-      text: options.messages.pending,
-    }).start();
-    const tree = logTree(files.length, options.col1Name, options.col2Name);
+    const tree = logTree(files.length, ...options.colNames);
+    let items: T[] = [];
 
-    try {
-      let items: T[] = [];
-
-      for (const file of files) {
-        // @ts-expect-error Technically, type F should extend `& { default: AnyFn }`. Shouldn't skip if exports aren't even included
-        if ("exports" in file && typeof file.exports.default !== "function") {
-          continue;
+    for (const [i, file] of Object.entries(files)) {
+      let data: T["data"];
+      let itemMessages = options.itemMessages;
+      if (typeof itemMessages === "function") {
+        itemMessages = itemMessages(file);
+      }
+      try {
+        tree.push(
+          files.filter((f) => f.name === file.name).length > 1
+            ? `${file.name} \x1b[2m(${relative(base ?? "", file.path)})\x1b[22m`
+            : file.name,
+          ...(itemMessages.cols ?? []),
+        );
+        data = options.createData(file, tree);
+        const hasConflict = items.some(
+          (item) => options.uniqueKeys?.every((k) => data[k] === item.data[k]) ?? item.name === file.name,
+        );
+        if (hasConflict) {
+          throw `${warnSymbol} ${itemMessages.confict}`;
         }
-        let data: T["data"];
-        let itemMessages = options.itemMessages;
-
-        try {
-          if (typeof itemMessages === "function") {
-            itemMessages = itemMessages(file);
-          }
-          data = await options.createData(file);
-          const hasConflict = items.some((c) => {
-            if (c.name !== file.name) return false;
-            return options.uniqueKeys?.every((k) => data[k] === c.data[k]);
-          });
-          if (hasConflict) {
-            ora(itemMessages.confict).warn();
-            throw null;
-          }
-
-          items.push({
-            name: file.name,
-            path: file.path,
-            uid: file.uid,
-            data,
-            exports: null,
-          } as T);
-          tree.push(file.name, itemMessages.col2);
-        } catch (e) {
-          if (e && e instanceof Error) {
-            ora(`Failed to parse ${file.path}:`).fail();
-            console.error(e);
-          }
+        if (typeof file.exports.default !== "function") {
+          throw `${errorSymbol} Every handler must export a default function, skipping`;
         }
+      } catch (e) {
+        const prefix = Number(i) !== files.length - 1 ? "│" : " ";
+        if (e && e instanceof Error) {
+          tree.aside(`${prefix} ${errorSymbol} Failed to parse ${file.path}: ${e.message}`);
+          tree.aside(e);
+        } else if (typeof e === "string") {
+          tree.aside(`${prefix} ${e}`);
+        }
+        tree.chop();
+        continue;
       }
-
-      if (options.postMortem) {
-        items = await options.postMortem(items);
-      }
-
-      generatingLoader.succeed(items.length > 0 ? options.messages.generated : options.messages.noItems);
-
-      if (items.length > 0) {
-        tree.log();
-      }
-
-      return items;
-    } catch (e) {
-      generatingLoader.fail();
-      throw e;
+      items.push({
+        ...file,
+        data,
+      } as T);
     }
+
+    if (options.postMortem) {
+      items = options.postMortem(items);
+    }
+
+    tree.log();
+
+    return items;
   };
 }

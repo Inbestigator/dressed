@@ -2,13 +2,13 @@
 
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { cwd, exit, stdout } from "node:process";
-import { confirm, input, select } from "@inquirer/prompts";
-import { Command } from "commander";
+import { cwd, exit } from "node:process";
+import { Command, InvalidArgumentError } from "commander";
 import { parse } from "dotenv";
-import ora from "ora";
+import Enquirer from "enquirer";
 import build, { categoryExports, importString } from "../server/build/build.ts";
 import bundleFiles from "../server/build/bundle.ts";
+import { logDefer, logError, logSuccess } from "../utils/log.ts";
 
 const program = new Command().name("dressed").description("A sleek, serverless-ready Discord bot framework.");
 
@@ -18,107 +18,117 @@ program
   .option("-i, --instance", "Include an instance create in the generated file")
   .option("-r, --register", "Register slash commands")
   .option("-e, --endpoint <endpoint>", "The endpoint to listen on, defaults to `/`")
-  .option("-p, --port <port>", "The port to listen on, defaults to `8000`")
+  .option("-p, --port <port>", "The port to listen on, defaults to `8000`", (v) => {
+    const parsed = parseInt(v, 10);
+    if (Number.isNaN(parsed) || parsed < 0 || parsed > 65_535) {
+      throw new InvalidArgumentError("Port must be a valid TCP/IP network port number (0-65535)");
+    }
+    return parsed;
+  })
   .option("-R, --root <root>", "Source root for the bot, defaults to `src`")
   .option(
     "-E, --extensions <extensions>",
     "Comma separated list of file extensions to include when bundling handlers, defaults to `js, ts, mjs`",
   )
-  .action(async ({ instance, register, endpoint, port, root, extensions }) => {
-    if (port && Number.isNaN(Number(port))) {
-      ora("Port must be a valid number").fail();
-      return;
-    }
-    const { commands, components, events } = await build({
+  .action(
+    async ({
+      instance,
+      register,
       endpoint,
-      port: port ? Number(port) : undefined,
-      build: {
-        root,
-        extensions: extensions?.split(",").map((e: string) => e.trim()),
-      },
-    });
-    const buildLoader = ora({
-      stream: stdout,
-      text: "Assembling generated build",
-    }).start();
-    const categories = [commands, components, events];
+      port,
+      root,
+      extensions,
+    }: {
+      instance?: boolean;
+      register?: boolean;
+      endpoint?: string;
+      port?: number;
+      root?: string;
+      extensions?: string;
+    }) => {
+      const { commands, components, events } = await build({
+        endpoint,
+        port,
+        build: {
+          root,
+          extensions: extensions?.split(",").map((e: string) => e.trim()),
+        },
+      });
+      const categories = [commands, components, events];
 
-    const outputContent = `
-${
-  instance || register
-    ? `import { ${
-        instance ? `createServer${register ? ", installCommands" : ""}` : register ? "installCommands" : ""
-      } } from "dressed/server";`
-    : ""
-}
+      const outputContent = `
+${instance || register ? `import { ${instance ? `createServer${register ? ", installCommands" : ""}` : register ? "installCommands" : ""} } from "dressed/server";` : ""}
 import config from "./dressed.config.mjs";
-${[categories.map((c) => c.map(importString)), categoryExports(categories, "null")].flat(2).join("")}
+${[categories.map((c) => c.map(importString)), categoryExports(categories)].flat(2).join("")}
 export { config };
 ${register ? "\ninstallCommands(commands);" : ""}
 ${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
-    const jsContent = 'export * from "./index.mjs";';
-    const typeContent =
-      'import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
+      const jsContent = 'export * from "./index.mjs";';
+      const typeContent =
+        'import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
 
-    writeFileSync(".dressed/tmp/index.ts", outputContent);
-    await bundleFiles(".dressed/tmp/index.ts", ".dressed");
-    writeFileSync(".dressed/index.js", jsContent);
-    writeFileSync(".dressed/index.d.ts", typeContent);
-    rmSync(".dressed/tmp", { recursive: true, force: true });
+      writeFileSync(".dressed/tmp/index.ts", outputContent);
+      await bundleFiles(".dressed/tmp/index.ts", ".dressed");
+      writeFileSync(".dressed/index.js", jsContent);
+      writeFileSync(".dressed/index.d.ts", typeContent);
+      rmSync(".dressed/tmp", { recursive: true, force: true });
 
-    buildLoader.succeed("Assembled generated build");
-    exit();
-  });
+      logSuccess("Assembled generated build");
+      exit();
+    },
+  );
 
 program
   .command("create")
   .description("Clone a new bot from the examples repository")
   .argument("[name]", "Project name")
   .argument("[template]", "Template name (node/deno)")
-  .action(async (name, template) => {
+  .action(async (name?: string, template?: string) => {
+    const { prompt } = Enquirer;
     if (!name) {
-      name = await input({
-        message: "Project name:",
-        required: true,
-      });
+      name = (
+        await prompt<{ name: string }>({
+          type: "text",
+          name: "name",
+          message: "Project name:",
+        })
+      ).name;
     }
     if (!template || (!template.startsWith("node/") && !template.startsWith("deno/"))) {
-      const isDeno = await confirm({
-        message: "Would you like to use a Deno specific template?",
-        default: false,
-      });
-      const res = await fetch(
-        `https://api.github.com/repos/inbestigator/dressed-examples/contents/${isDeno ? "deno" : "node"}`,
-      );
+      const res = await fetch("https://api.github.com/repos/inbestigator/dressed-examples/contents/node");
       if (!res.ok) {
         throw new Error("Failed to list templates.");
       }
       const files = ((await res.json()) as { name: string; path: string; type: string }[]).filter(
         (f) => f.type === "dir",
       );
-      template = await select({
-        message: "Select the template to use",
-        choices: files.map((f) => ({
-          name: f.name,
-          value: f.path,
-        })),
-      });
+      template = `node/${
+        (
+          await prompt<{ template: string }>({
+            name: "template",
+            type: "select",
+            message: "Select the template to use",
+            choices: files.map((f) => f.name),
+          })
+        ).template
+      }`;
     }
     const res = await fetch(
       `https://raw.githubusercontent.com/inbestigator/dressed-examples/main/${template}/.env.example`,
     );
     if (!res.ok) {
-      throw new Error("Failed to fetch template.");
+      throw new Error("Failed to fetch env template.");
     }
-    const parsed = parse(await res.text());
-    const envVars: Record<string, string> = {};
+    const envVars = await prompt(
+      Object.entries(parse(await res.text())).map(([k, v]) => ({
+        type: /TOKEN|PASSWORD/.test(k) ? "password" : "text",
+        name: k,
+        message: k,
+        initial: v as string,
+      })),
+    );
 
-    for (const [k, v] of Object.entries(parsed)) {
-      if (k === "DISCORD_APP_ID" || k === "DISCORD_PUBLIC_KEY") continue;
-      envVars[k] = await input({ message: k, default: v });
-    }
-
-    const mkdirLoader = ora(`Creating files for project: ${name}`).start();
+    logDefer(`Creating files for project: ${name}`);
 
     async function createFiles(path: string, dest: string) {
       mkdirSync(dest, { recursive: true });
@@ -159,15 +169,12 @@ program
 
     try {
       const path = `https://api.github.com/repos/inbestigator/dressed-examples/contents/${template}`;
-
       await createFiles(path, join(cwd(), name));
-    } catch {
-      mkdirLoader.fail();
-      return;
+    } catch (e) {
+      logError(e);
     }
-    mkdirLoader.succeed();
 
-    console.log("\x1b[32m%s", "Project created successfully.");
+    logSuccess("Project created successfully!");
     exit();
   });
 
