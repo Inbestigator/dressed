@@ -2,7 +2,7 @@
   "name": "dressed-site",
   "scripts": {
     "dev": "next dev",
-    "build": "bun --bun routeDocs.ts && next build",
+    "build": "bun --bun route-docs.ts && next build",
     "start": "next start"
   },
   "dependencies": {

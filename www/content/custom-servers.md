@@ -12,9 +12,7 @@ import { handleRequest } from "dressed/server";
 import { Hono } from "hono";
 
 const app = new Hono();
-app.post("/", ({ req }) =>
-  handleRequest(req.raw, commands, components, events, config),
-);
+app.post("/bot", ({ req }) => handleRequest(req.raw, commands, components, events, config));
 
 export default app;
 ```
@@ -30,9 +28,7 @@ const runCommand = setupCommands(commands);
 const app = new Hono();
 app.post("/", async ({ req }) => {
   const json = await req.json();
-  const interaction = createInteraction(
-    json as APIApplicationCommandInteraction,
-  );
+  const interaction = createInteraction(json as APIApplicationCommandInteraction);
   await runCommand(interaction);
   return new Response(null, { status: 202 });
 });

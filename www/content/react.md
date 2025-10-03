@@ -2,7 +2,7 @@
 
 [@dressed/react](https://www.npmjs.com/package/@dressed/react) is a library that lets you create messages and modal using components which get rendered into the standard JSON format.
 
-Upgrading from using Dressed's components to React should be fairly straightforward, as the syntax for Dressed is intentionally similar looking to React.
+Upgrading from using Dressed's components to React should be fairly straightforward, as the syntax for Dressed is intentionally similar looking to JSX.
 
 ## Installation
 
@@ -53,7 +53,7 @@ const components = (
 ```
 
 > [!TIP]
-> By default, the `dressed build` command doesn't recognize `tsx` files, so you have to add it as an extension either in the command arguments (`dressed build -E ts,tsx`) or your config file.
+> By default, the `dressed build` command doesn't recognize `tsx` files, so you have to add the extension either in the cli arguments (`dressed build -E ts,tsx`) or your config file.
 >
 > ```ts title="dressed.config.ts"
 > import { patchInteraction } from "@dressed/react";
@@ -101,9 +101,7 @@ import { CommandInteraction } from "dressed";
 
 export default async function pingCommand(interaction: CommandInteraction) {
   const patched = patchInteraction(interaction);
-  await patched.reply(
-    <Button label="Pong!" custom_id="pong" emoji={{ name: "🏓" }} />,
-  );
+  await patched.reply(<Button label="Pong!" custom_id="pong" emoji={{ name: "🏓" }} />);
 }
 ```
 
