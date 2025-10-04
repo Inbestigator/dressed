@@ -25,15 +25,15 @@
     counter-reset: line;
   }
 
-  figure[data-rehype-pretty-code-figure]:has(> figcaption[data-rehype-pretty-code-title]) pre {
+  figure[data-rehype-pretty-code-figure]:has(> [data-rehype-pretty-code-title]) pre {
     @apply rounded-tl-none;
   }
 
-  figcaption[data-rehype-pretty-code-title] {
-    @apply w-fit rounded-t-lg relative border border-b-0 bg-muted px-2 top-[1px];
+  [data-rehype-pretty-code-title] {
+    @apply w-fit rounded-t-lg relative border border-b-0 bg-muted text-muted-foreground text-sm px-2 top-[1px];
   }
 
-  figcaption[data-rehype-pretty-code-title]::after {
+  [data-rehype-pretty-code-title]::after {
     @apply content-[''] absolute h-full aspect-square border-b border-l border-border translate-x-2 rounded-lg bg-background;
     box-shadow: -0.25rem 0.25rem 0 var(--muted);
     clip-path: rect(50% 50% 100% 0);

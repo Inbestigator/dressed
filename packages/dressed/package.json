@@ -31,7 +31,7 @@
   "files": [
     "dist"
   ],
-  "homepage": "https://dressed.vercel.app",
+  "homepage": "https://dressed.js.org",
   "keywords": [
     "bot",
     "serverless",

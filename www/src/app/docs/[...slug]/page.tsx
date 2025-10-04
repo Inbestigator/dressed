@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
+import type { Metadata } from "next";
 import DocsMD from "@/components/docs-md";
 import {
   Breadcrumb,
@@ -39,6 +40,16 @@ function readDir(path: string) {
   return files;
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
+  const basename = (await params).slug.at(-1) ?? "unknown";
+  return {
+    title: basename
+      .split("-")
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(" "),
+  };
+}
+
 export default async function DocsPage({ params }: { params: Promise<{ slug: string[] }> }) {
   const slug = (await params).slug;
   let doc: { slug: string[]; content: string } | undefined;
@@ -49,8 +60,8 @@ export default async function DocsPage({ params }: { params: Promise<{ slug: str
 
   if (!doc) {
     return (
-      <div className="h-full flex flex-col items-center justify-center text-center gap-10 max-w-5xl mx-auto">
-        <h1 className="z-10 text-3xl font-black leading-tight sm:text-7xl sm:leading-tight">404</h1>
+      <div className="mx-auto flex h-full max-w-5xl flex-col items-center justify-center gap-10 text-center">
+        <h1 className="z-10 font-black text-3xl leading-tight sm:text-7xl sm:leading-tight">404</h1>
         <p>Page not found.</p>
       </div>
     );
@@ -78,7 +89,7 @@ export default async function DocsPage({ params }: { params: Promise<{ slug: str
                   );
                 }
                 return (
-                  <div key={s} className=" gap-2.5 items-center hidden md:flex">
+                  <div key={s} className="hidden items-center gap-2.5 md:flex">
                     <BreadcrumbItem>
                       <BreadcrumbLink href={`/docs/${doc.slug.slice(0, i + 1).join("/")}`}>
                         {s
@@ -95,7 +106,7 @@ export default async function DocsPage({ params }: { params: Promise<{ slug: str
           </Breadcrumb>
         </div>
       </header>
-      <main className="p-4 pt-0 max-w-screen">
+      <main className="max-w-screen p-4 pt-0">
         <DocsMD content={doc.content} />
       </main>
     </>

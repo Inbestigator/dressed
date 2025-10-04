@@ -5,7 +5,7 @@ mkdirSync("./content/resources", { recursive: true });
 
 const groups: Record<string, string[]> = {};
 
-for (const { docs, key, params, flags, overrides: { dataType, name } = {} } of routes) {
+for (const { docs, key, params, overrides: { name } = {} } of routes) {
   const method = (key.match(/[A-Z][a-z]+/) ?? [])[0] ?? "";
   const routeKey = key.slice(method.length).replace("API", "");
   const prefix =
@@ -23,8 +23,6 @@ for (const { docs, key, params, flags, overrides: { dataType, name } = {} } of r
                 ? "delete"
                 : "";
   const splitRoutes = routeKey.match(/[A-Z][a-z]+/g) ?? [];
-  dataType ??
-    `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}JSONBody${flags?.includes("hasFiles") ? ` & { file${flags.includes("singlefile") ? "" : "s"}?: RawFile${flags.includes("singlefile") ? "" : "[]"} }` : ""}`;
   const resolvedName =
     name ??
     prefix +

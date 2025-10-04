@@ -6,63 +6,72 @@ All interaction types share a set of core response methods. Additional methods a
 
 These methods are available on most interactions:
 
-1. **Reply**
+### Reply
 
-   Sends an immediate response to the interaction.
+Sends an immediate response to the interaction.
 
-   #### Parameters
-   - `data`: The message content or options.
+**Parameters**
 
-   ```ts
-   await interaction.reply({ content: "Hello!", ephemeral: true });
-   ```
+- `data`: The message content or options.
 
-2. **Defer Reply**  
-   Acknowledges the interaction, showing a "thinking..." indicator to the user, with an option to edit or respond later.
+```ts
+await interaction.reply({ content: "Hello!", ephemeral: true });
+```
 
-   #### Parameters
-   - `data` (optional): Options for deferral, such as whether it's ephemeral:
+### Defer Reply
 
-   ```ts
-   await interaction.deferReply({ ephemeral: true });
-   ```
+Acknowledges the interaction, showing a "thinking..." indicator to the user, with an option to edit or respond later.
 
-3. **Edit Reply**  
-   Edits the initial response to the interaction.
+**Parameters**
 
-   #### Parameters
-   - `data`: The updated message content or options.
+- `data` (optional): Options for deferral, such as whether it's ephemeral:
 
-   ```ts
-   await interaction.editReply("Updated message content");
-   ```
+```ts
+await interaction.deferReply({ ephemeral: true });
+```
 
-4. **Follow Up**  
-   Sends an additional message related to the interaction.
+### Edit Reply
 
-   #### Parameters
-   - `data`: The follow-up message content or options.
+Edits the initial response to the interaction.
 
-   ```ts
-   await interaction.followUp({
-     content: "Another message!",
-     ephemeral: true,
-   });
-   ```
+**Parameters**
 
-5. **Show Modal**  
-    Responds with a modal dialog. This is not available on modal submission interactions.
+- `data`: The updated message content or options.
 
-   #### Parameters
-   - `data`: Modal data, including components and title.
+```ts
+await interaction.editReply("Updated message content");
+```
 
-   ```ts
-   await interaction.showModal({
-    title: "Example Modal",
-    custom_id: "modal_id",
-    components: [...],
-   });
-   ```
+### Follow Up
+
+Sends an additional message related to the interaction.
+
+**Parameters**
+
+- `data`: The follow-up message content or options.
+
+```ts
+await interaction.followUp({
+  content: "Another message!",
+  ephemeral: true,
+});
+```
+
+### Show Modal
+
+Responds with a modal dialog. This is not available on modal submission interactions.
+
+**Parameters**
+
+- `data`: Modal data, including components and title.
+
+```ts
+await interaction.showModal({
+  title: "Example Modal",
+  custom_id: "modal_id",
+  components: [...],
+});
+```
 
 ---
 
@@ -74,7 +83,7 @@ This method is only available for command interactions
 
 Retrieves an option from the command, provides functions to retrieve the value.
 
-#### Parameters
+**Parameters**
 
 - `name`: Name of the option.
 - `required`: If true, throws an error if the option is not present.
@@ -93,7 +102,7 @@ This method is only available for command autocomplete interactions
 
 Provides a list of choices for the user to prompt the user to select from.
 
-#### Parameters
+**Parameters**
 
 - `choices`: The choices to suggest.
 
@@ -114,7 +123,7 @@ This method is only available for components
 
 Edits the original message containing the component.
 
-#### Parameters
+**Parameters**
 
 - `data`: New content or message options.
 
@@ -132,7 +141,7 @@ This method is only available for modal responses
 
 Retrieves a field from the modal submission, provides functions to retrieve the value.
 
-#### Parameters
+**Parameters**
 
 - `name`: Name of the field.
 - `required`: If true, throws an error if the field is not present.
