@@ -1,4 +1,4 @@
-import { BookDashed } from "lucide-react";
+import { IconBook2 } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import JSRLogo from "@/components/jsr-logo";
@@ -32,21 +32,21 @@ export default function Home() {
           <Link href="/docs">Docs</Link>
         </Button>
         <div className="flex items-center">
-          <Button title="NPM package" className="h-11 rounded-r-none border-r-0" variant="outline" asChild>
+          <Button title="NPM package" className="rounded-r-none border-r-0" variant="outline" size="lg" asChild>
             <Link href="https://www.npmjs.com/package/dressed" target="_blank" rel="noreferrer">
               <NPMLogo className="!size-8" />
             </Link>
           </Button>
           <Separator orientation="vertical" className="h-11" />
-          <Button title="JSR package" className="h-11 rounded-l-none border-l-0" variant="outline" asChild>
+          <Button title="JSR package" className="rounded-l-none border-l-0" variant="outline" size="lg" asChild>
             <Link href="https://jsr.io/@dressed/dressed" target="_blank" rel="noreferrer">
               <JSRLogo className="!size-8" />
             </Link>
           </Button>
         </div>
-        <Button title="Examples" className="not-sm:hidden size-11" variant="outline" asChild size="icon">
+        <Button title="Examples" className="not-sm:hidden" variant="outline" asChild size="icon-lg">
           <Link href="https://github.com/Inbestigator/dressed-examples" target="_blank" rel="noreferrer">
-            <BookDashed className="!size-5" />
+            <IconBook2 />
           </Link>
         </Button>
       </div>
