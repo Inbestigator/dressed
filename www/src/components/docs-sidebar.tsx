@@ -125,7 +125,7 @@ const data = [
     icon: IconMessageReply,
   },
   {
-    title: "Custom servers",
+    title: "Custom Servers",
     url: "/docs/custom-servers",
     icon: IconNetwork,
   },

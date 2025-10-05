@@ -60,13 +60,13 @@ const components = (
 > import { ServerConfig } from "dressed/server";
 >
 > export default {
->   build: { extensions: ["tsx", "tsx"] },
+>   build: { extensions: ["ts", "tsx"] },
 > } satisfies ServerConfig;
 > ```
 
 ## Sending a message
 
-But just using some JSX isn't enough to send a message through the main library. You need to use the `render` function, which takes in some JSX components and returns the objects that Discord expects.
+Using JSX in your bot isn't enough to send a message through the main library. You need to use the `render` function, which takes in your components and returns the objects that Discord expects.
 
 ```tsx title="dog.tsx"
 import { render, ... } from "@dressed/react";
@@ -81,7 +81,7 @@ await createMessage("<channel_id>", {
 });
 ```
 
-But using the `render` function every time you want to do anything regarding a message will get tiresome, thankfully `@dressed/react` exports a custom version of the `createMessage` function. The library automatically applies the `1 << 15` flag for you.
+Calling the `render` function every time you want to do anything regarding a message will get tiresome, thankfully `@dressed/react` exports a custom version of `createMessage` and other similar functions. The library automatically applies the `1 << 15` flag for you.
 
 ```tsx title="dog.tsx"
 import { createMessage, ... } from "@dressed/react";
@@ -93,7 +93,7 @@ await createMessage("<channel_id>", components);
 
 ## Interactions
 
-What about replying to an interaction? That presumably still requires you to use the `render` function, right? Fear not! The React library also exports a function named `patchInteraction` which will automatically change the reply functions to accept React components instead of the usual content.
+What about replying to an interaction? That presumably still requires you to use the `render` function, right? Fear not! The React library also exports a `patchInteraction` function which will automatically change the reply methods to accept React components instead of the usual content.
 
 ```tsx title="ping.tsx"
 import { Button, patchInteraction } from "@dressed/react";
