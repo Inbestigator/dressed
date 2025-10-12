@@ -10,19 +10,19 @@ type Bucket = {
 const buckets = new Map<string, Bucket>();
 
 let globalRemaining = 5;
-let globalResetAt = Date.now() + 3000;
+let globalResetAt = Date.now() + 1400;
 
 function getBucket(endpoint: string): Bucket {
   const now = Date.now();
   let bucket = buckets.get(endpoint);
   if (!bucket) {
-    bucket = { resetAt: now + 500, remaining: 1, limit: 1 };
+    bucket = { resetAt: now + 200, remaining: 1, limit: 1 };
     buckets.set(endpoint, bucket);
   }
 
   if (now >= bucket.resetAt) {
     bucket.remaining = bucket.limit;
-    bucket.resetAt = now + 500;
+    bucket.resetAt = now + 200;
   }
 
   return bucket;
@@ -33,7 +33,7 @@ function checkGlobalLimit() {
 
   if (now >= globalResetAt) {
     globalRemaining = 1;
-    globalResetAt = now + 1000;
+    globalResetAt = now + 600;
   }
 
   return globalRemaining-- > 0;
