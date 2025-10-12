@@ -6,14 +6,13 @@
     "www"
   ],
   "scripts": {
-    "checks": "turbo dist && bun --bun biome check --write && turbo test",
-    "outdated": "for pkg in packages/*; do (cd \"$pkg\" && bun outdated); done"
+    "checks": "turbo dist && bun --bun biome check --write && turbo test"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.4",
-    "@types/bun": "^1.2.22",
+    "@biomejs/biome": "2.2.5",
+    "@types/bun": "^1.3.0",
     "turbo": "^2.5.8",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
-  "packageManager": "bun@1.2.13"
+  "packageManager": "bun@1.3.0"
 }

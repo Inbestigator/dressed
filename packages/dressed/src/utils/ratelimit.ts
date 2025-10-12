@@ -1,39 +1,74 @@
-import { logWarn } from "./log.ts";
-
-const buckets = new Map<string, { remaining: number; resetAt: number }>();
-const endpoints = new Map<string, string>();
-
-export async function checkLimit(endpoint: string, method = "") {
-  if (endpoint !== "global") await checkLimit("global");
-  const bucket = endpoints.get(method + endpoint);
-  if (!bucket) return;
-  const limit = buckets.get(bucket);
-  if (limit) {
-    if (Date.now() > limit.resetAt) {
-      buckets.delete(bucket);
-      return;
-    }
-    const displayed = endpoint === "global" ? "all endpoints" : endpoint;
-    if (limit.remaining === 0) {
-      logWarn(`Rate limit for ${displayed} reached! - waiting to try again...`);
-      await new Promise((r) => setTimeout(r, Math.max(0, limit.resetAt - Date.now())));
-      buckets.delete(bucket);
-    } else if (limit.remaining === 1) {
-      logWarn(`You are about to hit the rate limit for ${displayed}`);
-    }
-  }
+interface Bucket {
+  remaining: number;
+  limit: number;
+  queue: (() => void)[];
+  sweeper?: NodeJS.Timeout;
+  tmp?: true;
 }
 
-export function headerUpdateLimit(endpoint: string, res: Response, method = "") {
-  const remaining = res.headers.get("x-ratelimit-remaining");
-  const resetAt = res.headers.get("x-ratelimit-reset");
-  const bucket = res.headers.get("x-ratelimit-bucket");
-  if (remaining && bucket) {
-    updateLimit(bucket, Number(remaining), Number(resetAt) * 1000);
-    endpoints.set(method + endpoint, bucket);
-  }
+const buckets = new Map<string, Bucket>();
+const bucketIds = new Map<string, string>();
+
+function ensureBucket(id: string) {
+  const bucketId = bucketIds.get(id) ?? id;
+  return (
+    buckets.get(bucketId) ??
+    // biome-ignore lint/style/noNonNullAssertion: We're setting, so it's guaranteed
+    buckets.set(bucketId, { limit: 1, remaining: 1, queue: [], tmp: true }).get(bucketId)!
+  );
 }
 
-export function updateLimit(bucket: string, remaining: number, resetAt: number) {
-  buckets.set(bucket, { remaining, resetAt });
+export async function checkLimit(req: Request) {
+  const bucket = ensureBucket(`${req.method}:${req.url}`);
+  if (bucket.remaining-- > 0 && bucket.tmp) return;
+  return new Promise<void>((r) => bucket.queue.push(r));
+}
+
+const reqing: Record<string, () => void> = {};
+
+export function updateLimit(req: Request, res: Response) {
+  const bucketId = res.headers.get("x-ratelimit-bucket") ?? "global";
+  const limit = parseInt(res.headers.get("x-ratelimit-limit") ?? "", 10);
+  const remaining = parseInt(res.headers.get("x-ratelimit-remaining") ?? "", 10);
+  const resetAfter = parseFloat(res.headers.get("x-ratelimit-reset-after") ?? "");
+  const retryAfter = parseFloat(res.headers.get("retry-after") ?? "");
+
+  if ([limit, remaining, resetAfter].some(Number.isNaN)) return;
+
+  const id = `${req.method}:${req.url}`;
+  bucketIds.set(id, bucketId);
+  const bucket = buckets.get(bucketId);
+  const tmpBucket = buckets.get(id);
+  buckets.delete(id);
+
+  function sweep() {
+    const bucket = buckets.get(bucketId);
+    if (!bucket) return;
+    bucket.remaining = bucket.limit;
+    trial();
+  }
+
+  async function trial() {
+    const bucket = buckets.get(bucketId);
+    if (!bucket) return;
+    const callback = bucket.queue.shift();
+    if (callback) {
+      --bucket.remaining;
+      callback();
+      await new Promise<void>((r) => {
+        reqing[bucketId] = r;
+      });
+      if (bucket.remaining > 0) trial();
+    }
+  }
+
+  clearTimeout(bucket?.sweeper);
+  buckets.set(bucketId, {
+    limit,
+    remaining,
+    queue: [...(tmpBucket?.queue ?? []), ...(bucket?.queue ?? [])],
+    sweeper: !tmpBucket ? setTimeout(sweep, (Number.isNaN(retryAfter) ? resetAfter : retryAfter) * 1000) : undefined,
+  });
+  reqing[bucketId]?.();
+  if (tmpBucket) trial();
 }

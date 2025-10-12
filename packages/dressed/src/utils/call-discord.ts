@@ -1,9 +1,9 @@
 import { Buffer } from "node:buffer";
-import { type RESTError, type RESTErrorData, type RESTRateLimit, RouteBases } from "discord-api-types/v10";
+import { type RESTError, type RESTErrorData, RouteBases } from "discord-api-types/v10";
 import type { RawFile } from "../types/file.ts";
 import { botEnv } from "./env.ts";
 import { logError } from "./log.ts";
-import { checkLimit, headerUpdateLimit, updateLimit } from "./ratelimit.ts";
+import { checkLimit, updateLimit } from "./ratelimit.ts";
 
 /** Optional extra config for the layer before fetch */
 export interface CallConfig {
@@ -67,12 +67,16 @@ export async function callDiscord(
     options.body = JSON.stringify(options.body);
   }
 
-  await checkLimit(endpoint, options.method);
-
-  const res = await fetch(url, {
+  const req = new Request(url, {
     headers: { authorization, ...(!files?.length ? { "content-type": "application/json" } : {}) },
     ...(options as RequestInit),
   });
+
+  await checkLimit(req);
+
+  const res = await fetch(req);
+
+  updateLimit(req, res);
 
   if (!res.ok) {
     const error = (await res.json()) as RESTError;
@@ -82,15 +86,8 @@ export async function callDiscord(
       logErrorData(error.errors);
     }
 
-    if (res.status === 429) {
-      const { global, retry_after } = error as RESTRateLimit;
-      updateLimit(global ? "global" : endpoint, 0, Date.now() + retry_after * 1000);
-    }
-
     throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`, { cause: res });
   }
-
-  headerUpdateLimit(endpoint, res, options.method);
 
   return res;
 }
