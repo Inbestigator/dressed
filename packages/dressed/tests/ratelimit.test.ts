@@ -32,8 +32,8 @@ function checkGlobalLimit() {
   const now = Date.now();
 
   if (now >= globalResetAt) {
-    globalRemaining = 5;
-    globalResetAt = now + 3000;
+    globalRemaining = 1;
+    globalResetAt = now + 1000;
   }
 
   return globalRemaining-- > 0;
@@ -86,18 +86,24 @@ beforeAll(() => {
   });
 });
 
-test("Ratelimit delaying", async () => {
+// Normally tries defaults to 3, but for the purposes of these tests there shouldn't be any wiggle room
+
+test("Ratelimit delaying", () => {
   expect(
-    await Promise.all(
-      Array.from({ length: 5 }, () => createMessage("wait_for_me", "test", { tries: 0, authorization: "" })),
-    ),
-  ).toMatchSnapshot();
+    Promise.all(Array.from({ length: 5 }, () => createMessage("wait_for_me", "test", { tries: 0, authorization: "" }))),
+  ).resolves.toMatchSnapshot();
 });
 
 test("Globally ratelimited and thrown", () => {
-  expect(() => createMessage("limit_me", "test", { tries: 0, authorization: "" })).toThrowErrorMatchingSnapshot();
+  expect(createMessage("limit_me", "test", { tries: 0, authorization: "" })).rejects.toThrowErrorMatchingSnapshot();
 });
 
+test("Globally ratelimited and delayed", async () => {
+  expect(createMessage("delay_me", "test", { tries: 0, authorization: "" })).resolves.toMatchSnapshot();
+});
+
+// Ratelimit is reset to 1 for the previous test, that's why this one acts differently
+
 test("Globally ratelimited and retried", async () => {
-  expect(await createMessage("retry_me", "test", { tries: 1, authorization: "" })).toMatchSnapshot();
+  expect(createMessage("retry_me", "test", { tries: 1, authorization: "" })).resolves.toMatchSnapshot();
 });
