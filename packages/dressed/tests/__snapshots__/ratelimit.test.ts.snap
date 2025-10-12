@@ -1,0 +1,29 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`Ratelimit delaying 1`] = `
+[
+  {
+    "content": "test",
+  },
+  {
+    "content": "test",
+  },
+  {
+    "content": "test",
+  },
+  {
+    "content": "test",
+  },
+  {
+    "content": "test",
+  },
+]
+`;
+
+exports[`Globally ratelimited and retried 1`] = `
+{
+  "content": "test",
+}
+`;
+
+exports[`Globally ratelimited and thrown 1`] = `"Failed to POST /channels/limit_me/messages (429)"`;

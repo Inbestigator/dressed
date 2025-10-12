@@ -25,7 +25,7 @@ function ensureBucket(id: string) {
   );
 }
 
-export async function checkLimit(req: Request) {
+export function checkLimit(req: Request) {
   const bucket = ensureBucket(`${req.method}:${req.url}`);
   if (bucket.remaining-- > 0 && bucket.tmp) return checkGlobalLimit();
   return new Promise<void>((r) => bucket.queue.push(r));
