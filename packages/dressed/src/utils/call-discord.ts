@@ -9,25 +9,24 @@ import { checkLimit, updateLimit } from "./ratelimit.ts";
 export interface CallConfig {
   /** The authorization string to use, defaults to `Bot {env.DISCORD_TOKEN}` */
   authorization?: string;
+  /** Number of retries when rate limited before the caller gives up, defaults to 3 */
+  tries?: number;
 }
 
 export async function callDiscord(
   endpoint: string,
-  {
-    params,
-    files,
-    flattenBodyInForm,
-    ...options
-  }: Omit<RequestInit, "body"> & {
+  init: Omit<RequestInit, "body"> & {
+    method: string;
     params?: unknown;
     body?: unknown;
     files?: RawFile[];
     flattenBodyInForm?: boolean;
   },
-  { authorization = `Bot ${botEnv.DISCORD_TOKEN}` }: CallConfig = {},
+  $req: CallConfig = {},
 ): Promise<Response> {
+  const { params, files, flattenBodyInForm, ...options } = { ...init };
+  const { authorization = `Bot ${botEnv.DISCORD_TOKEN}`, tries = 3 } = $req;
   const url = new URL(RouteBases.api + endpoint);
-  options.method ??= "GET";
 
   if (typeof options.body === "object" && options.body !== null) {
     if ("files" in options.body) delete options.body.files;
@@ -79,12 +78,15 @@ export async function callDiscord(
   updateLimit(req, res);
 
   if (!res.ok) {
-    const error = (await res.json()) as RESTError;
-    logError(`${error.message} (${error.code})`);
-
-    if (error.errors) {
-      logErrorData(error.errors);
+    if (res.status === 429 && tries > 0) {
+      $req.tries = tries - 1;
+      return callDiscord(endpoint, init, $req);
     }
+
+    const error = (await res.json()) as RESTError;
+    logError(`${error.message} (${error.code ?? res.status})`);
+
+    if (error.errors) logErrorData(error.errors);
 
     throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`, { cause: res });
   }
