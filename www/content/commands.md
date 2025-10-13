@@ -27,14 +27,10 @@ export default async function (interaction: CommandInteraction) {
 
 ## Autocomplete
 
-For some command options, you want to enable autocomplete. To create a handler for those interactions, you can simply export a function named autocomplete!
+For some command options, you want to enable autocomplete. To create a handler for those interactions, you can simply export a function named `autocomplete`!
 
 ```ts showLineNumbers
-import {
-  CommandOption,
-  type CommandConfig,
-  type CommandAutocompleteInteraction,
-} from "dressed";
+import { CommandOption, type CommandAutocompleteInteraction, type CommandConfig } from "dressed";
 
 export const config: CommandConfig = {
   description: "Send a random adorable animal photo",
@@ -55,5 +51,20 @@ export function autocomplete(interaction: CommandAutocompleteInteraction) {
     { name: "Dog", value: "dog" },
     { name: "Cat", value: "cat" },
   ]);
+}
+```
+
+## Context commands
+
+Context commands are super easy to enable, all you have to do is set the type in your command config to `Message`, `User`, or `PrimaryEntryPoint`. The `CommandInteraction` type is generic, so you can match it to show the correct data.
+
+```ts title="src / commands / get-avatar.ts" showLineNumbers
+import type { CommandConfig, CommandInteraction } from "dressed";
+
+export const config: CommandConfig = { type: "User" };
+
+export default function avatar(interaction: CommandInteraction<"User">) {
+  const user = interaction.data.resolved.users[interaction.data.target_id]!;
+  return interaction.reply(`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`);
 }
 ```

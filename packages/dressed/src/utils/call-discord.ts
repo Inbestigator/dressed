@@ -1,33 +1,32 @@
 import { Buffer } from "node:buffer";
-import { type RESTError, type RESTErrorData, type RESTRateLimit, RouteBases } from "discord-api-types/v10";
+import { type RESTError, type RESTErrorData, RouteBases } from "discord-api-types/v10";
 import type { RawFile } from "../types/file.ts";
 import { botEnv } from "./env.ts";
 import { logError } from "./log.ts";
-import { checkLimit, headerUpdateLimit, updateLimit } from "./ratelimit.ts";
+import { checkLimit, updateLimit } from "./ratelimit.ts";
 
 /** Optional extra config for the layer before fetch */
 export interface CallConfig {
   /** The authorization string to use, defaults to `Bot {env.DISCORD_TOKEN}` */
   authorization?: string;
+  /** Number of retries when rate limited before the caller gives up, defaults to 3 */
+  tries?: number;
 }
 
 export async function callDiscord(
   endpoint: string,
-  {
-    params,
-    files,
-    flattenBodyInForm,
-    ...options
-  }: Omit<RequestInit, "body"> & {
+  init: Omit<RequestInit, "body"> & {
+    method: string;
     params?: unknown;
     body?: unknown;
     files?: RawFile[];
     flattenBodyInForm?: boolean;
   },
-  { authorization = `Bot ${botEnv.DISCORD_TOKEN}` }: CallConfig = {},
+  $req: CallConfig = {},
 ): Promise<Response> {
+  const { params, files, flattenBodyInForm, ...options } = { ...init };
+  const { authorization = `Bot ${botEnv.DISCORD_TOKEN}`, tries = 3 } = $req;
   const url = new URL(RouteBases.api + endpoint);
-  options.method ??= "GET";
 
   if (typeof options.body === "object" && options.body !== null) {
     if ("files" in options.body) delete options.body.files;
@@ -67,30 +66,30 @@ export async function callDiscord(
     options.body = JSON.stringify(options.body);
   }
 
-  await checkLimit(endpoint, options.method);
-
-  const res = await fetch(url, {
+  const req = new Request(url, {
     headers: { authorization, ...(!files?.length ? { "content-type": "application/json" } : {}) },
     ...(options as RequestInit),
   });
 
+  await checkLimit(req);
+
+  const res = await fetch(req);
+
+  updateLimit(req, res);
+
   if (!res.ok) {
+    if (res.status === 429 && tries > 0) {
+      $req.tries = tries - 1;
+      return callDiscord(endpoint, init, $req);
+    }
+
     const error = (await res.json()) as RESTError;
-    logError(`${error.message} (${error.code})`);
+    logError(`${error.message} (${error.code ?? res.status})`);
 
-    if (error.errors) {
-      logErrorData(error.errors);
-    }
-
-    if (res.status === 429) {
-      const { global, retry_after } = error as RESTRateLimit;
-      updateLimit(global ? "global" : endpoint, 0, Date.now() + retry_after * 1000);
-    }
+    if (error.errors) logErrorData(error.errors);
 
     throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`, { cause: res });
   }
-
-  headerUpdateLimit(endpoint, res, options.method);
 
   return res;
 }

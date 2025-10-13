@@ -27,10 +27,7 @@ component will be handled.
 ```ts title="src / components / buttons / guess_:answer.ts" showLineNumbers
 import type { ComponentInteraction } from "dressed";
 
-export default function guess(
-  interaction: ComponentInteraction,
-  args: { answer: string },
-) {
+export default function guess(interaction: ComponentInteraction, args: { answer: string }) {
   if (args.answer === correctAnswer) {
     interaction.reply("Good job!");
   } else {

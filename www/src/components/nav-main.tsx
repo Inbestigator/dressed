@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
+import { type Icon, IconChevronRight } from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -16,7 +16,7 @@ import {
 interface Item {
   title: string;
   url?: string;
-  icon?: LucideIcon;
+  icon?: Icon;
   items?: Item[];
 }
 
@@ -47,7 +47,7 @@ function Item({ item }: { item: Item }) {
           <>
             <CollapsibleTrigger asChild>
               <SidebarMenuAction className="data-[state=open]:rotate-90">
-                <ChevronRight />
+                <IconChevronRight />
                 <span className="sr-only">Toggle</span>
               </SidebarMenuAction>
             </CollapsibleTrigger>

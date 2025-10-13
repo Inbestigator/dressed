@@ -610,9 +610,9 @@
       "docs": { "description": "Returns an entitlement.", "see": "/docs/resources/entitlement#get-entitlement" }
     },
     {
-      "key": "PostAPIEntitlement",
+      "key": "PostAPIEntitlementConsume",
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
-      "overrides": { "name": "consumeEntitlement" },
+      "overrides": { "apiRoute": "consumeEntitlement", "name": "consumeEntitlement" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "For One-Time Purchase consumable SKUs, marks a given entitlement for the user as consumed.",
@@ -644,7 +644,7 @@
         "infos": [
           "After creating a test entitlement, you'll need to reload your Discord client. After doing so, you'll see that your server or user now has premium access."
         ],
-        "see": "/docs/resources/entitlement#create-test-entitlement"
+        "see": "/docs/resources/entitlement#delete-test-entitlement"
       }
     },
     {
@@ -1504,7 +1504,7 @@
       "overrides": { "apiRoute": "expirePoll", "name": "endPoll" },
       "docs": {
         "description": "Immediately ends the poll. You cannot end polls from other users.",
-        "see": "/docs/resources/poll#get-answer-voters"
+        "see": "/docs/resources/poll#end-poll"
       }
     },
     {
@@ -1643,7 +1643,7 @@
       }
     },
     {
-      "key": "GetAPIGuildSticker",
+      "key": "GetAPISticker",
       "params": ["url.stickerId"],
       "overrides": { "apiRoute": "sticker" },
       "docs": {
@@ -1950,7 +1950,7 @@
       "docs": {
         "description": "Delete a webhook permanently.",
         "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
-        "see": "/docs/resources/webhook#modify-webhook"
+        "see": "/docs/resources/webhook#delete-webhook"
       }
     },
     {

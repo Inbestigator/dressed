@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.5/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -20,7 +20,8 @@
       "suspicious": {
         // TODO Remove when installing biome v2.3.x
         "noUnknownAtRules": "off"
-      }
+      },
+      "nursery": { "useSortedClasses": "on" }
     }
   },
   "javascript": {

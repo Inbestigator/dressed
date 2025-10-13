@@ -7,14 +7,13 @@ import { createHandlerParser } from "./index.ts";
 const validComponentCategories = ["buttons", "modals", "selects"];
 
 export const parseComponents = createHandlerParser<ComponentData>({
-  col1Name: "Component",
-  col2Name: "Category",
+  colNames: ["Component", "Category"],
   uniqueKeys: ["category", "regex"],
   itemMessages({ name, path }) {
     const category = getCategory(path);
     return {
       confict: `"${name}" conflicts with another ${category?.slice(0, -1)}, skipping`,
-      col2: category ?? "unknown",
+      cols: [category ?? ""],
     };
   },
   createData({ name, path, exports: { pattern = name } = {} }) {
