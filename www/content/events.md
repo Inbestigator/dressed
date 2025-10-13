@@ -22,11 +22,7 @@ All events are required to have a default export, this function is how the event
 import type { Event } from "dressed";
 
 export default async function (event: Event<"ApplicationAuthorized">) {
-  console.log(
-    event.user.username,
-    "just added me to",
-    event.guild ? event.guild.name : "themself",
-  );
+  console.log(event.user.username, "just added me to", event.guild ? event.guild.name : "themself");
 }
 ```
 
