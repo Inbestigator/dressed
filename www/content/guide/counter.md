@@ -23,11 +23,7 @@ export default function counterCommand(interaction: CommandInteraction) {
 We should export some config too, so that users know what the command does. The config object contains the data that will be sent to Discord when registering commands.
 
 ```ts title="src / commands / counter.ts" showLineNumbers
-import {
-  TextDisplay,
-  type CommandConfig,
-  type CommandInteraction,
-} from "dressed";
+import { TextDisplay, type CommandConfig, type CommandInteraction } from "dressed";
 
 export const config: CommandConfig = {
   description: "Shows a counter",
@@ -62,7 +58,7 @@ export function countDisplay(n: number) {
         label: "Reset",
         style: "Danger",
         custom_id: "set-counter-0",
-      }),
+      })
     ),
   ];
 }
@@ -89,7 +85,7 @@ import { countDisplay } from "../../commands/counter.ts";
 
 export default function setCounterButton(
   interaction: MessageComponentInteraction,
-  { value }: { value: string },
+  { value }: { value: string }
 ) {
   interaction.update({ components: countDisplay(Number(value)) });
 }

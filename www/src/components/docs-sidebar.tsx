@@ -1,6 +1,18 @@
 "use client";
 
-import { Book, Cog, Ear, FunctionSquare, Home, Network, Puzzle, Reply, Terminal } from "lucide-react";
+import {
+  IconBook,
+  IconBrandReact,
+  IconEar,
+  IconFunction,
+  IconHome,
+  IconMessageReply,
+  IconNetwork,
+  IconPuzzle,
+  IconServer,
+  IconSettings,
+  IconTerminal,
+} from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
@@ -26,12 +38,12 @@ const data = [
   {
     title: "Home",
     url: "/docs",
-    icon: Home,
+    icon: IconHome,
   },
   {
     title: "Guide",
     url: "/docs/guide",
-    icon: Book,
+    icon: IconBook,
     items: [
       {
         title: "Getting started",
@@ -44,7 +56,7 @@ const data = [
       {
         title: "Deploying",
         url: "/docs/guide/deploying",
-        icon: Network,
+        icon: IconServer,
         items: [
           {
             title: "Vercel",
@@ -69,12 +81,12 @@ const data = [
   {
     title: "Server Config",
     url: "/docs/server-config",
-    icon: Cog,
+    icon: IconSettings,
   },
   {
     title: "Commands",
     url: "/docs/commands",
-    icon: Terminal,
+    icon: IconTerminal,
     items: [
       {
         title: "Config",
@@ -88,7 +100,7 @@ const data = [
   },
   {
     title: "Resources",
-    icon: FunctionSquare,
+    icon: IconFunction,
     items: Array.from(files).map((f) => ({
       title: f
         .split("-")
@@ -100,17 +112,27 @@ const data = [
   {
     title: "Components",
     url: "/docs/components",
-    icon: Puzzle,
+    icon: IconPuzzle,
   },
   {
     title: "Events",
     url: "/docs/events",
-    icon: Ear,
+    icon: IconEar,
   },
   {
     title: "Interactions",
     url: "/docs/interactions",
-    icon: Reply,
+    icon: IconMessageReply,
+  },
+  {
+    title: "Custom Servers",
+    url: "/docs/custom-servers",
+    icon: IconNetwork,
+  },
+  {
+    title: "React",
+    url: "/docs/react",
+    icon: IconBrandReact,
   },
 ];
 
