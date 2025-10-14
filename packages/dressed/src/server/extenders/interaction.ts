@@ -3,7 +3,7 @@ import type {
   APIInteraction,
   ModalSubmitComponent,
 } from "discord-api-types/v10";
-import { ComponentType, InteractionType } from "discord-api-types/v10";
+import { ApplicationCommandType, ComponentType, InteractionType } from "discord-api-types/v10";
 import type {
   CommandAutocompleteInteraction,
   CommandInteraction,
@@ -24,6 +24,16 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
 
   switch (input.type) {
     case InteractionType.ApplicationCommand: {
+      const { data } = input;
+      switch (data.type) {
+        case ApplicationCommandType.Message:
+          // @ts-expect-error Property is on return type
+          input.target = data.resolved.messages[data.target_id];
+          break;
+        case ApplicationCommandType.User:
+          // @ts-expect-error Property is on return type
+          input.target = { ...data.resolved.users[data.target_id], member: data.resolved.members?.[data.target_id] };
+      }
       return {
         ...input,
         ...methods,
