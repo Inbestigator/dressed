@@ -1,5 +1,5 @@
 /** Log a table of values with titles */
-export default function logTree(total: number, ...titles: string[]) {
+export default function logTree(...titles: string[]) {
   const cols = titles.map((t) => [`\x1b[4m${t}\x1b[24m`]);
   const asides: Record<number, unknown[]> = {};
   const chopped = new Set<number>();
@@ -32,7 +32,7 @@ export default function logTree(total: number, ...titles: string[]) {
           })
           .join("  ");
         lines.push(
-          `${i === 0 ? " " : i === 1 ? (total === 1 ? "-" : "┌") : i === rowCount - 1 ? "└" : "├"} ${chopped.has(i) ? "\x1b[9m" : ""}${row}\x1b[0m`,
+          `${i === 0 ? " " : i === 1 ? (rowCount === 2 ? "-" : "┌") : i === rowCount - 1 ? "└" : "├"} ${chopped.has(i) ? "\x1b[9m" : ""}${row}\x1b[0m`,
           ...(asides[i] ?? []),
         );
       }

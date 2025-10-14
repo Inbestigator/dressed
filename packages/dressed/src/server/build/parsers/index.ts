@@ -22,7 +22,7 @@ export function createHandlerParser<T extends BaseData<Partial<Record<keyof T["d
 }): (files: ImportedEntry<T>[], base?: string) => T[] {
   return (files, base) => {
     if (files.length === 0) return [];
-    const tree = logTree(files.length, ...options.colNames);
+    const tree = logTree(...options.colNames);
     let items: T[] = [];
 
     for (const [i, file] of Object.entries(files)) {
