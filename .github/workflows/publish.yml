@@ -3,6 +3,13 @@ name: Publish
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        description: "Mark as a release candidate"
+        required: false
+        default: true
+        type: "boolean"
 
 jobs:
   test:
@@ -35,7 +42,7 @@ jobs:
       - name: Publish to NPM
         working-directory: packages/dressed
         env:
-          TAG: ${{ github.event.release.prerelease && 'rc' || 'latest' }}
+          TAG: ${{ (inputs.prerelease || github.event.release.prerelease) && 'rc' || 'latest' }}
         run: |
           bunx npm publish --provenance --access public --tag "$TAG"
 
