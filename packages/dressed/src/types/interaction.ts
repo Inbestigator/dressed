@@ -3,6 +3,7 @@ import type {
   APIApplicationCommandInteraction,
   APIChatInputApplicationCommandInteraction,
   APIInteraction,
+  APIInteractionDataResolvedGuildMember,
   APIMessage,
   APIMessageApplicationCommandInteraction,
   APIMessageComponentInteraction,
@@ -38,9 +39,9 @@ export type CommandInteraction<T extends keyof typeof ApplicationCommandType = "
       getOption: <N extends string, R extends boolean>(name: N, required?: R) => ReturnType<typeof getOption<N, R>>;
     }
   : T extends "Message"
-    ? APIMessageApplicationCommandInteraction
+    ? APIMessageApplicationCommandInteraction & { target: APIMessage }
     : T extends "User"
-      ? APIUserApplicationCommandInteraction
+      ? APIUserApplicationCommandInteraction & { target: APIUser & { member?: APIInteractionDataResolvedGuildMember } }
       : APIPrimaryEntryPointCommandInteraction) &
   Omit<BaseInteractionMethods, "update" | "deferUpdate" | "sendChoices">;
 

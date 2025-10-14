@@ -64,7 +64,7 @@ import type { CommandConfig, CommandInteraction } from "dressed";
 export const config: CommandConfig = { type: "User" };
 
 export default function avatar(interaction: CommandInteraction<"User">) {
-  const user = interaction.data.resolved.users[interaction.data.target_id]!;
+  const user = interaction.target;
   return interaction.reply(`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`);
 }
 ```
