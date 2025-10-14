@@ -12,7 +12,7 @@
     },
     "packages/dressed": {
       "name": "dressed",
-      "version": "1.10.0-canary.8.2",
+      "version": "1.10.0-rc.2",
       "bin": {
         "dressed": "dist/bin/dressed.js",
       },
@@ -42,7 +42,7 @@
     },
     "packages/dressed-react": {
       "name": "@dressed/react",
-      "version": "1.5.0",
+      "version": "1.6.0-rc.1",
       "dependencies": {
         "discord-api-types": "^0.38.30",
         "react-reconciler": "npm:@dressed/react-reconciler",
