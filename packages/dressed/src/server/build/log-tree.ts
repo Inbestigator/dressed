@@ -1,15 +1,20 @@
 /** Log a table of values with titles */
-export default function logTree(...titles: string[]) {
+export default function logTree(...titles: string[]): {
+  push: (...v: string[]) => void;
+  aside: (v: unknown) => void;
+  chop: () => void;
+  log: () => void;
+} {
   const cols = titles.map((t) => [`\x1b[4m${t}\x1b[24m`]);
   const asides: Record<number, unknown[]> = {};
   const chopped = new Set<number>();
   return {
-    push(...values: string[]) {
-      for (let i = 0; i < values.length; ++i) {
-        cols[i]?.push(values[i]);
+    push(...v) {
+      for (let i = 0; i < v.length; ++i) {
+        cols[i]?.push(v[i]);
       }
     },
-    aside(v: unknown) {
+    aside(v) {
       const i = cols[0].length - 1;
       asides[i] ??= [];
       asides[i].push(v);

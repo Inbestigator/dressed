@@ -3,12 +3,10 @@ import type { EventData } from "../../../types/config.ts";
 import { warnSymbol } from "../../../utils/log.ts";
 import { createHandlerParser } from "./index.ts";
 
-export const parseEvents = createHandlerParser<EventData>({
+export const parseEvents: ReturnType<typeof createHandlerParser<EventData>> = createHandlerParser({
   colNames: ["Event"],
   uniqueKeys: ["type"],
-  itemMessages: ({ name }) => ({
-    confict: `"${name}" conflicts with another event, skipping the duplicate`,
-  }),
+  itemMessages: ({ name }) => ({ confict: `"${name}" conflicts with another event, skipping the duplicate` }),
   createData({ name }) {
     const type = ApplicationWebhookEventType[name as keyof typeof ApplicationWebhookEventType];
 

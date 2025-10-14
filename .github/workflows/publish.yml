@@ -48,4 +48,4 @@ jobs:
 
       - name: Publish to JSR
         working-directory: packages/dressed
-        run: bunx jsr publish --allow-slow-types
+        run: bunx jsr publish
