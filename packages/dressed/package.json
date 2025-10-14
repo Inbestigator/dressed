@@ -6,7 +6,7 @@
     "dist": "rm -fr dist && bun --bun ./src/resources/make && tsc",
     "check-types": "tsc --noEmit",
     "test": "bun test",
-    "dry-publish": "bun publish --dry-run && bunx --bun jsr publish --dry-run --allow-slow-types --allow-dirty"
+    "dry-publish": "bun publish --dry-run && bunx --bun jsr publish --dry-run --allow-dirty"
   },
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
