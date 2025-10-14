@@ -73,7 +73,8 @@ export async function renderNode(node: ComponentNode): Promise<APIMessageCompone
     case ComponentType.TextInput:
     case ComponentType.Thumbnail:
     case ComponentType.File:
-    case ComponentType.Separator: {
+    case ComponentType.Separator:
+    case ComponentType.FileUpload: {
       return node.props;
     }
     case ComponentType.StringSelect:

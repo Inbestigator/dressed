@@ -31,7 +31,7 @@
   "type": "module",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "discord-api-types": "^0.38.25",
+    "discord-api-types": "^0.38.30",
     "react-reconciler": "npm:@dressed/react-reconciler"
   },
   "devDependencies": {
