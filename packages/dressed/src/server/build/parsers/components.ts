@@ -6,7 +6,7 @@ import { createHandlerParser } from "./index.ts";
 
 const validComponentCategories = ["buttons", "modals", "selects"];
 
-export const parseComponents = createHandlerParser<ComponentData>({
+export const parseComponents: ReturnType<typeof createHandlerParser<ComponentData>> = createHandlerParser({
   colNames: ["Component", "Category"],
   uniqueKeys: ["category", "regex"],
   itemMessages({ name, path }) {
