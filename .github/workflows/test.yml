@@ -24,10 +24,13 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Run TSC
-        run: bun turbo dist
+        run: bun --bun turbo dist
 
       - name: Run Biome
         run: bun --bun biome check
 
       - name: Run tests
-        run: bun turbo test
+        run: bun --bun turbo test
+      
+      - name: Dry publish
+        run: bun --bun turbo dry-publish

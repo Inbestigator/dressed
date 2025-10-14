@@ -10,6 +10,6 @@
   },
   "publish": {
     "include": ["README.md", "src"],
-    "exclude": ["dist"]
+    "exclude": ["dist", "!src/resources/generated.resources.ts"]
   }
 }
