@@ -1,11 +1,9 @@
 import { type APIFileUploadComponent, ComponentType } from "discord-api-types/v10";
 
-// TODO add real jsdoc
-
 /**
  * Creates a file upload component
  *
- * Upload files to submit
+ * Component for uploading files
  */
 export function FileUpload(config: Omit<APIFileUploadComponent, "type">): APIFileUploadComponent {
   return {
