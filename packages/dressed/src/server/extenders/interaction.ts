@@ -1,6 +1,8 @@
+import { isMessageComponentSelectMenuInteraction } from "discord-api-types/utils";
 import type {
   APIChatInputApplicationCommandInteractionData,
   APIInteraction,
+  APIInteractionDataResolved,
   ModalSubmitComponent,
 } from "discord-api-types/v10";
 import { ApplicationCommandType, ComponentType, InteractionType } from "discord-api-types/v10";
@@ -54,7 +56,49 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
       } as CommandAutocompleteInteraction as Interaction<T>;
     }
     case InteractionType.MessageComponent: {
-      return { ...input, ...methods } as MessageComponentInteraction as Interaction<T>;
+      return {
+        ...input,
+        ...methods,
+        getValues: () => {
+          if (!isMessageComponentSelectMenuInteraction(input)) {
+            throw new Error("The function getValues may only be used on select menus");
+          }
+          const resolved: Partial<APIInteractionDataResolved> = "resolved" in input.data ? input.data.resolved : {};
+          const returnValue = (resolvedKey?: keyof APIInteractionDataResolved) => {
+            if (resolvedKey) {
+              if (!resolved?.[resolvedKey]) {
+                throw new Error(`No ${resolvedKey} found`);
+              }
+              const resolveds = [];
+              for (const value of input.data.values) {
+                resolveds.push(resolved[resolvedKey][value]);
+              }
+              return resolveds;
+            }
+            return input.data.values;
+          };
+          switch (input.data.component_type) {
+            case ComponentType.StringSelect:
+              return returnValue();
+            case ComponentType.UserSelect:
+              return returnValue("users");
+            case ComponentType.RoleSelect:
+              return returnValue("roles");
+            case ComponentType.MentionableSelect: {
+              if (!resolved?.users && !resolved?.roles) {
+                throw new Error(`No mentionables found`);
+              }
+              const mentionables = [];
+              for (const value of input.data.values) {
+                mentionables.push(resolved.users?.[value] ?? resolved.roles?.[value]);
+              }
+              return mentionables;
+            }
+            case ComponentType.ChannelSelect:
+              return returnValue("channels");
+          }
+        },
+      } as MessageComponentInteraction as Interaction<T>;
     }
     case InteractionType.ModalSubmit: {
       const components: ModalSubmitComponent[] = [];

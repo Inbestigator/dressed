@@ -7,10 +7,14 @@ import {
   type APIUser,
   ApplicationCommandOptionType,
 } from "discord-api-types/v10";
-import type { CommandInteraction } from "../../types/interaction.ts";
+import type { ChatInputConfig } from "../../types/config.ts";
+import type { CommandInteraction, GetOptionFn } from "../../types/interaction.ts";
 import type { Requirable } from "../../types/utilities.ts";
 
-export interface OptionValueGetters<N> {
+export interface OptionValueGetters<
+  N extends string,
+  T extends Pick<ChatInputConfig, "options"> | undefined = undefined,
+> {
   /** Return the option as a subcommand - Option type must be `Subcommand` */
   subcommand: () => {
     /**
@@ -18,7 +22,7 @@ export interface OptionValueGetters<N> {
      * @param name The name of the option
      * @param required Whether the option is required
      */
-    getOption: CommandInteraction["getOption"];
+    getOption: T extends object ? GetOptionFn<T & { description: string }> : CommandInteraction["getOption"];
     name: N;
   };
   /** Return the option as a subcommand group - Option type must be `SubcommandGroup` */
@@ -27,7 +31,18 @@ export interface OptionValueGetters<N> {
      * Get a subcommand from the group
      * @param name The name of the subcommand
      */
-    getSubcommand: <N extends string>(name: N) => ReturnType<OptionValueGetters<N>["subcommand"]> | undefined;
+    getSubcommand: T extends object
+      ? <
+          N extends NonNullable<T["options"]>[number]["name"],
+          O extends Extract<NonNullable<T["options"]>[number], { name: N }>,
+        >(
+          name: N,
+        ) =>
+          | ReturnType<
+              OptionValueGetters<N, { options: O extends { options: unknown[] } ? O["options"] : [] }>["subcommand"]
+            >
+          | undefined
+      : <N extends string>(name: N) => ReturnType<OptionValueGetters<N>["subcommand"]> | undefined;
     name: N;
   };
   /** Return the option's value as a string - Option type must be `String` */
@@ -64,16 +79,16 @@ const blurbs = {
   11: "an attachment",
 };
 
-export function getOption<N extends string, R extends boolean>(
+export function getOption<N extends string, R extends boolean, T extends ChatInputConfig | undefined = undefined>(
   name: N,
   required: R,
   options: APIApplicationCommandInteractionDataOption[],
   resolved?: APIInteractionDataResolved,
-): Requirable<R, OptionValueGetters<N>> {
+): Requirable<R, OptionValueGetters<N, T>> {
   const option = options.find((o) => o.name === name);
   if (!option) {
     if (required) throw new Error(`Required option "${name}" not found`);
-    return undefined as ReturnType<typeof getOption<N, R>>;
+    return undefined as ReturnType<typeof getOption<N, R, T>>;
   }
 
   const returnOption =
@@ -97,7 +112,7 @@ export function getOption<N extends string, R extends boolean>(
       }
       return {
         name,
-        getOption: (n, r) => getOption(n, r ?? false, option.options ?? [], resolved),
+        getOption: (n: string, r?: boolean) => getOption(n, r ?? false, option.options ?? [], resolved),
       };
     },
     subcommandGroup() {
@@ -106,7 +121,7 @@ export function getOption<N extends string, R extends boolean>(
       }
       return {
         name,
-        getSubcommand: (n) => getOption(n, false, option.options, resolved)?.subcommand(),
+        getSubcommand: (n: string) => getOption(n, false, option.options, resolved)?.subcommand(),
       };
     },
     string: returnOption(ApplicationCommandOptionType.String),
@@ -126,5 +141,5 @@ export function getOption<N extends string, R extends boolean>(
     },
     number: returnOption(ApplicationCommandOptionType.Number),
     attachment: returnOption(ApplicationCommandOptionType.Attachment, "attachments"),
-  } as ReturnType<typeof getOption<N, R>>;
+  } as ReturnType<typeof getOption<N, R, T>>;
 }

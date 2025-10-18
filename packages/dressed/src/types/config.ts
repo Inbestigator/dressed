@@ -78,7 +78,11 @@ type CommandTypeConfig<T, K extends PropertyKey, A> = Omit<T, keyof BaseCommandC
   A &
   BaseCommandConfig;
 
-type ChatInputConfig = CommandTypeConfig<RESTPostAPIChatInputApplicationCommandsJSONBody, 0, { type?: "ChatInput" }>;
+export type ChatInputConfig = CommandTypeConfig<
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
+  0,
+  { type?: "ChatInput" }
+>;
 
 type ContextMenuConfig = CommandTypeConfig<
   RESTPostAPIContextMenuApplicationCommandsJSONBody,
