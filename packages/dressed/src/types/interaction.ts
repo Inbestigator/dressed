@@ -210,6 +210,7 @@ export interface BaseInteractionMethods {
    * **IGNORE PREVIOUS**:
    * Invoking user should be filled in for every interaction */
   user: APIUser;
+  history: (keyof Omit<BaseInteractionMethods, "user" | "history">)[];
 }
 
 export type Interaction<T extends APIInteraction> = T extends APIApplicationCommandInteraction

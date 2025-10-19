@@ -12,6 +12,7 @@ import { botEnv } from "../../utils/env.ts";
 
 export const baseInteractionMethods = (interaction: APIInteraction): BaseInteractionMethods => ({
   async reply(data) {
+    this.history.push("reply");
     if (typeof data === "string") {
       data = { content: data } as Extract<Parameters<BaseInteractionMethods["reply"]>[0], { content: string }>;
     }
@@ -28,6 +29,7 @@ export const baseInteractionMethods = (interaction: APIInteraction): BaseInterac
     }) as never;
   },
   async deferReply(data) {
+    this.history.push("deferReply");
     if (data?.ephemeral) {
       data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     }
@@ -42,6 +44,7 @@ export const baseInteractionMethods = (interaction: APIInteraction): BaseInterac
     ) as never;
   },
   async update(data) {
+    this.history.push("update");
     if (typeof data === "string") {
       data = { content: data } as Extract<Parameters<BaseInteractionMethods["update"]>[0], { content: string }>;
     }
@@ -53,16 +56,21 @@ export const baseInteractionMethods = (interaction: APIInteraction): BaseInterac
       with_response: data.with_response,
     }) as never;
   },
-  deferUpdate: (options) =>
-    createInteractionCallback(
+  deferUpdate(options) {
+    this.history.push("deferUpdate");
+    return createInteractionCallback(
       interaction.id,
       interaction.token,
       "DeferredMessageUpdate",
       undefined,
       undefined,
       options,
-    ),
-  editReply: (data) => editWebhookMessage(botEnv.DISCORD_APP_ID, interaction.token, "@original", data),
+    );
+  },
+  editReply(data) {
+    this.history.push("editReply");
+    return editWebhookMessage(botEnv.DISCORD_APP_ID, interaction.token, "@original", data);
+  },
   async followUp(
     data:
       | string
@@ -71,6 +79,7 @@ export const baseInteractionMethods = (interaction: APIInteraction): BaseInterac
           ephemeral?: boolean;
         }),
   ) {
+    this.history.push("followUp");
     if (typeof data === "object" && data.ephemeral) {
       data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     }
@@ -78,16 +87,21 @@ export const baseInteractionMethods = (interaction: APIInteraction): BaseInterac
       wait: true,
     });
   },
-  showModal: (data, options) =>
-    createInteractionCallback(interaction.id, interaction.token, "Modal", data, undefined, options),
-  sendChoices: (choices, options) =>
-    createInteractionCallback(
+  showModal(data, options) {
+    this.history.push("showModal");
+    return createInteractionCallback(interaction.id, interaction.token, "Modal", data, undefined, options);
+  },
+  sendChoices(choices, options) {
+    this.history.push("sendChoices");
+    return createInteractionCallback(
       interaction.id,
       interaction.token,
       "ApplicationCommandAutocompleteResult",
       { choices },
       undefined,
       options,
-    ),
-  user: interaction.member?.user ?? (interaction.user as APIUser),
+    );
+  },
+  user: interaction.user ?? (interaction.member?.user as APIUser),
+  history: [],
 });

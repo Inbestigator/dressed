@@ -20,10 +20,6 @@ import { baseInteractionMethods } from "./responses.ts";
 export function createInteraction<T extends APIInteraction>(input: T): Interaction<T> {
   const methods = baseInteractionMethods(input);
 
-  if (!input.user && input.member) {
-    input.user = input.member.user;
-  }
-
   switch (input.type) {
     case InteractionType.ApplicationCommand: {
       const { data } = input;
