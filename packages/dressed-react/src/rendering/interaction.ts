@@ -5,6 +5,7 @@ import {
   MessageFlags,
 } from "discord-api-types/v10";
 import type {
+  CommandConfig,
   CommandInteraction as DressedCommandInteraction,
   MessageComponentInteraction as DressedMessageComponentInteraction,
   ModalSubmitInteraction as DressedModalSubmitInteraction,
@@ -62,10 +63,19 @@ type OverrideMethodParams<T, Overrides extends Record<string, unknown[]>> = {
     : T[K];
 };
 
-export type CommandInteraction<T extends keyof typeof ApplicationCommandType = "ChatInput"> = ReactivatedInteraction<
-  DressedCommandInteraction<T>
->;
-export type MessageComponentInteraction = ReactivatedInteraction<DressedMessageComponentInteraction>;
+// I wish there's a better way to make it just automatically recognize the generic constraints from the original types
+export type CommandInteraction<T extends keyof typeof ApplicationCommandType | CommandConfig = "ChatInput"> =
+  ReactivatedInteraction<DressedCommandInteraction<T>>;
+export type MessageComponentInteraction<
+  T extends
+    | "Button"
+    | "StringSelect"
+    | "UserSelect"
+    | "RoleSelect"
+    | "MentionableSelect"
+    | "ChannelSelect"
+    | undefined = undefined,
+> = ReactivatedInteraction<DressedMessageComponentInteraction<T>>;
 export type ModalSubmitInteraction = ReactivatedInteraction<DressedModalSubmitInteraction>;
 
 export function patchInteraction<T extends NonNullable<ReturnType<typeof createInteraction>>>(
