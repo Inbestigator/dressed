@@ -43,7 +43,7 @@ export type GetOptionFn<T extends Extract<CommandConfig, { type?: "ChatInput" }>
   Pick<
     OptionValueGetters<N, { options: O extends { options: unknown[] } ? O["options"] : [] }>,
     // biome-ignore format: These don't need individual lines
-    NonNullable<["", "subcommand", "subcommandGroup", "string", "integer", "boolean", "user", "channel", "role", "mentionable", "attachment"][O["type"]]>
+    NonNullable<["", "subcommand", "subcommandGroup", "string", "integer", "boolean", "user", "channel", "role", "mentionable", "number", "attachment"][O["type"]]>
   >
 >;
 
