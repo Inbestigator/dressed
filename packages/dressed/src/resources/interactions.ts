@@ -23,9 +23,8 @@ export async function createInteractionCallback<
   type: T,
   ...[data, files, params, $req]: E extends {
     data?: infer D;
-  }
-    ? // This accounts for the different types submitting data or not
-      [...(E extends { data: object } ? [D] : [D?]), RawFile[]?, P?, CallConfig?]
+  } // This accounts for the different types submitting data or not
+    ? [...(E extends { data: object } ? [D] : [D?]), RawFile[]?, P?, CallConfig?]
     : [undefined?, undefined?, P?, CallConfig?]
 ): InteractionCallbackResponse<P> {
   const res = await callDiscord(
@@ -41,6 +40,5 @@ export async function createInteractionCallback<
     },
     $req,
   );
-
-  return params?.with_response ? res.json() : (null as never);
+  return (params?.with_response ? res.json() : null) as InteractionCallbackResponse<P>;
 }

@@ -11,29 +11,24 @@ import type { BaseInteractionMethods } from "../../types/interaction.ts";
 import { botEnv } from "../../utils/env.ts";
 
 export const baseInteractionMethods = (interaction: APIInteraction): BaseInteractionMethods => ({
-  async reply(data) {
+  reply(data) {
     this.history.push("reply");
     if (typeof data === "string") {
       data = { content: data } as Extract<Parameters<BaseInteractionMethods["reply"]>[0], { content: string }>;
     }
-
     if (data.ephemeral) {
       data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     }
-
-    const files = data.files;
-    delete data.files;
-
-    return createInteractionCallback(interaction.id, interaction.token, "ChannelMessageWithSource", data, files, {
+    const { files, ...rest } = data;
+    return createInteractionCallback(interaction.id, interaction.token, "ChannelMessageWithSource", rest, files, {
       with_response: data?.with_response,
     }) as never;
   },
-  async deferReply(data) {
+  deferReply(data) {
     this.history.push("deferReply");
     if (data?.ephemeral) {
       data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     }
-
     return createInteractionCallback(
       interaction.id,
       interaction.token,
@@ -43,16 +38,13 @@ export const baseInteractionMethods = (interaction: APIInteraction): BaseInterac
       { with_response: data?.with_response },
     ) as never;
   },
-  async update(data) {
+  update(data) {
     this.history.push("update");
     if (typeof data === "string") {
       data = { content: data } as Extract<Parameters<BaseInteractionMethods["update"]>[0], { content: string }>;
     }
-
-    const files = data.files;
-    delete data.files;
-
-    return createInteractionCallback(interaction.id, interaction.token, "UpdateMessage", data, files, {
+    const { files, ...rest } = data;
+    return createInteractionCallback(interaction.id, interaction.token, "UpdateMessage", rest, files, {
       with_response: data.with_response,
     }) as never;
   },
@@ -71,7 +63,7 @@ export const baseInteractionMethods = (interaction: APIInteraction): BaseInterac
     this.history.push("editReply");
     return editWebhookMessage(botEnv.DISCORD_APP_ID, interaction.token, "@original", data);
   },
-  async followUp(
+  followUp(
     data:
       | string
       | (APIInteractionResponseCallbackData & {
