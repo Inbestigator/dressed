@@ -12,7 +12,7 @@
     },
     "packages/dressed": {
       "name": "dressed",
-      "version": "1.10.0-rc.2",
+      "version": "1.10.0-rc.3",
       "bin": {
         "dressed": "dist/bin/dressed.js",
       },
