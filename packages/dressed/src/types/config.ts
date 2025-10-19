@@ -10,33 +10,29 @@ import type {
 import type { CommandHandler, ComponentHandler, EventHandler } from "./handlers.ts";
 import type { AnyFn, Promisable } from "./utilities.ts";
 
-export type CommandMiddleware = (...p: Parameters<CommandHandler>) => Promisable<unknown[]>;
-export type ComponentMiddleware = (...p: Parameters<ComponentHandler>) => Promisable<unknown[]>;
-export type EventMiddleware = (...p: Parameters<EventHandler>) => Promisable<unknown[]>;
-
 /**
  * The configuration for the server.
  */
-export type ServerConfig = Partial<{
+export interface ServerConfig {
   /** The endpoint to listen on
    * @default "/"
    */
-  endpoint: string;
+  endpoint?: string;
   /** The port to listen on
    * @default 8000
    */
-  port: number;
+  port?: number;
   /** Build configuration */
-  build: Partial<{
+  build?: {
     /** Source root for the bot
      * @default "src"
      */
-    root: string;
+    root?: string;
     /** File extensions to include when bundling handlers
      * @default ["js", "ts", "mjs"]
      */
-    extensions: string[];
-  }>;
+    extensions?: string[];
+  };
   /**
    * A layer before your individual handlers are executed.
    * The return values are the props passed to your handler.
@@ -54,12 +50,12 @@ export type ServerConfig = Partial<{
    *   components: (interaction, args) => [patchInteraction(interaction), args]
    * }
    */
-  middleware: Partial<{
-    commands: CommandMiddleware;
-    components: ComponentMiddleware;
-    events: EventMiddleware;
-  }>;
-}>;
+  middleware?: {
+    commands?: (...p: Parameters<CommandHandler>) => Promisable<unknown[]>;
+    components?: (...p: Parameters<ComponentHandler>) => Promisable<unknown[]>;
+    events?: (...p: Parameters<EventHandler>) => Promisable<unknown[]>;
+  };
+}
 
 interface BaseCommandConfig {
   /** Type of the command, defaults to `ChatInput` */
@@ -78,7 +74,11 @@ type CommandTypeConfig<T, K extends PropertyKey, A> = Omit<T, keyof BaseCommandC
   A &
   BaseCommandConfig;
 
-type ChatInputConfig = CommandTypeConfig<RESTPostAPIChatInputApplicationCommandsJSONBody, 0, { type?: "ChatInput" }>;
+export type ChatInputConfig = CommandTypeConfig<
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
+  0,
+  { type?: "ChatInput" }
+>;
 
 type ContextMenuConfig = CommandTypeConfig<
   RESTPostAPIContextMenuApplicationCommandsJSONBody,

@@ -11,27 +11,24 @@ import type { BaseInteractionMethods } from "../../types/interaction.ts";
 import { botEnv } from "../../utils/env.ts";
 
 export const baseInteractionMethods = (interaction: APIInteraction): BaseInteractionMethods => ({
-  async reply(data) {
+  reply(data) {
+    this.history.push("reply");
     if (typeof data === "string") {
       data = { content: data } as Extract<Parameters<BaseInteractionMethods["reply"]>[0], { content: string }>;
     }
-
     if (data.ephemeral) {
       data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     }
-
-    const files = data.files;
-    delete data.files;
-
-    return createInteractionCallback(interaction.id, interaction.token, "ChannelMessageWithSource", data, files, {
+    const { files, ...rest } = data;
+    return createInteractionCallback(interaction.id, interaction.token, "ChannelMessageWithSource", rest, files, {
       with_response: data?.with_response,
     }) as never;
   },
-  async deferReply(data) {
+  deferReply(data) {
+    this.history.push("deferReply");
     if (data?.ephemeral) {
       data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     }
-
     return createInteractionCallback(
       interaction.id,
       interaction.token,
@@ -41,29 +38,32 @@ export const baseInteractionMethods = (interaction: APIInteraction): BaseInterac
       { with_response: data?.with_response },
     ) as never;
   },
-  async update(data) {
+  update(data) {
+    this.history.push("update");
     if (typeof data === "string") {
       data = { content: data } as Extract<Parameters<BaseInteractionMethods["update"]>[0], { content: string }>;
     }
-
-    const files = data.files;
-    delete data.files;
-
-    return createInteractionCallback(interaction.id, interaction.token, "UpdateMessage", data, files, {
+    const { files, ...rest } = data;
+    return createInteractionCallback(interaction.id, interaction.token, "UpdateMessage", rest, files, {
       with_response: data.with_response,
     }) as never;
   },
-  deferUpdate: (options) =>
-    createInteractionCallback(
+  deferUpdate(options) {
+    this.history.push("deferUpdate");
+    return createInteractionCallback(
       interaction.id,
       interaction.token,
       "DeferredMessageUpdate",
       undefined,
       undefined,
       options,
-    ),
-  editReply: (data) => editWebhookMessage(botEnv.DISCORD_APP_ID, interaction.token, "@original", data),
-  async followUp(
+    );
+  },
+  editReply(data) {
+    this.history.push("editReply");
+    return editWebhookMessage(botEnv.DISCORD_APP_ID, interaction.token, "@original", data);
+  },
+  followUp(
     data:
       | string
       | (APIInteractionResponseCallbackData & {
@@ -71,6 +71,7 @@ export const baseInteractionMethods = (interaction: APIInteraction): BaseInterac
           ephemeral?: boolean;
         }),
   ) {
+    this.history.push("followUp");
     if (typeof data === "object" && data.ephemeral) {
       data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     }
@@ -78,16 +79,21 @@ export const baseInteractionMethods = (interaction: APIInteraction): BaseInterac
       wait: true,
     });
   },
-  showModal: (data, options) =>
-    createInteractionCallback(interaction.id, interaction.token, "Modal", data, undefined, options),
-  sendChoices: (choices, options) =>
-    createInteractionCallback(
+  showModal(data, options) {
+    this.history.push("showModal");
+    return createInteractionCallback(interaction.id, interaction.token, "Modal", data, undefined, options);
+  },
+  sendChoices(choices, options) {
+    this.history.push("sendChoices");
+    return createInteractionCallback(
       interaction.id,
       interaction.token,
       "ApplicationCommandAutocompleteResult",
       { choices },
       undefined,
       options,
-    ),
-  user: interaction.member?.user ?? (interaction.user as APIUser),
+    );
+  },
+  user: interaction.user ?? (interaction.member?.user as APIUser),
+  history: [],
 });

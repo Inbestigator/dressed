@@ -889,7 +889,7 @@
     },
     {
       "key": "GetAPIGuildMember",
-      "params": ["url.guildId", "url.memberId"],
+      "params": ["url.guildId", "url.userId"],
       "docs": {
         "description": "Returns a [guild member](/docs/resources/guild#guild-member-object) object for the specified user.",
         "see": "/docs/resources/guild#get-guild-member"

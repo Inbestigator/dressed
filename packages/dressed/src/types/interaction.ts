@@ -3,15 +3,18 @@ import type {
   APIApplicationCommandInteraction,
   APIChatInputApplicationCommandInteraction,
   APIInteraction,
+  APIInteractionDataResolvedChannel,
   APIInteractionDataResolvedGuildMember,
   APIMessage,
   APIMessageApplicationCommandInteraction,
   APIMessageComponentInteraction,
   APIModalSubmitInteraction,
   APIPrimaryEntryPointCommandInteraction,
+  APIRole,
   APIUser,
   APIUserApplicationCommandInteraction,
   ApplicationCommandType,
+  ComponentType,
   InteractionResponseType,
   RESTPostAPIInteractionCallbackQuery,
   RESTPostAPIInteractionCallbackWithResponseResult,
@@ -20,27 +23,49 @@ import type { editWebhookMessage, executeWebhook } from "../resources/generated.
 import type { createInteractionCallback } from "../resources/interactions.ts";
 import type { getField } from "../server/extenders/fields.ts";
 import type { getOption, OptionValueGetters } from "../server/extenders/options.ts";
+import type { ChatInputConfig, CommandConfig } from "./config.ts";
 import type { RawFile } from "./file.ts";
+import type { Requirable } from "./utilities.ts";
 
 export type InteractionCallbackResponse<O extends RESTPostAPIInteractionCallbackQuery> = Promise<
   O["with_response"] extends true ? RESTPostAPIInteractionCallbackWithResponseResult : null
 >;
 
+export type GetOptionFn<T extends Extract<CommandConfig, { type?: "ChatInput" }>> = <
+  N extends NonNullable<T["options"]>[number]["name"],
+  R extends boolean,
+  O extends Extract<NonNullable<T["options"]>[number], { name: N }>,
+>(
+  name: N,
+  ...[required]: O["required"] extends true ? [R] : [R?]
+) => Requirable<
+  R,
+  Pick<
+    OptionValueGetters<N, { options: O extends { options: unknown[] } ? O["options"] : [] }>,
+    // biome-ignore format: These don't need individual lines
+    NonNullable<["", "subcommand", "subcommandGroup", "string", "integer", "boolean", "user", "channel", "role", "mentionable", "attachment"][O["type"]]>
+  >
+>;
+
 /**
  * A command interaction, includes methods for responding to the interaction.
  */
-export type CommandInteraction<T extends keyof typeof ApplicationCommandType = "ChatInput"> = (T extends "ChatInput"
+export type CommandInteraction<T extends keyof typeof ApplicationCommandType | CommandConfig = "ChatInput"> = (T extends
+  | "ChatInput"
+  | ChatInputConfig
   ? APIChatInputApplicationCommandInteraction & {
       /**
        * Get an option from the interaction
        * @param name The name of the option
        * @param required Whether the option is required
        */
-      getOption: <N extends string, R extends boolean>(name: N, required?: R) => ReturnType<typeof getOption<N, R>>;
+      getOption: T extends ChatInputConfig
+        ? GetOptionFn<T>
+        : <N extends string, R extends boolean>(name: N, required?: R) => ReturnType<typeof getOption<N, R>>;
     }
-  : T extends "Message"
+  : T extends "Message" | { type: "Message" }
     ? APIMessageApplicationCommandInteraction & { target: APIMessage }
-    : T extends "User"
+    : T extends "User" | { type: "User" }
       ? APIUserApplicationCommandInteraction & { target: APIUser & { member?: APIInteractionDataResolvedGuildMember } }
       : APIPrimaryEntryPointCommandInteraction) &
   Omit<BaseInteractionMethods, "update" | "deferUpdate" | "sendChoices">;
@@ -59,10 +84,30 @@ export type CommandAutocompleteInteraction = APIApplicationCommandAutocompleteIn
     "deferReply" | "deferUpdate" | "editReply" | "followUp" | "reply" | "showModal" | "update"
   >;
 
+interface ResolvedSelectValues {
+  StringSelect: string[];
+  UserSelect: APIUser[];
+  RoleSelect: APIRole[];
+  MentionableSelect: (APIInteractionDataResolvedGuildMember | APIUser)[];
+  ChannelSelect: APIInteractionDataResolvedChannel[];
+}
+
 /**
  * A message component interaction, includes methods for responding to the interaction.
  */
-export type MessageComponentInteraction = APIMessageComponentInteraction & Omit<BaseInteractionMethods, "sendChoices">;
+export type MessageComponentInteraction<T extends "Button" | keyof ResolvedSelectValues | undefined = undefined> =
+  APIMessageComponentInteraction &
+    Omit<BaseInteractionMethods, "sendChoices"> & {
+      data: { component_type: T extends string ? (typeof ComponentType)[T] : unknown };
+    } & (T extends keyof ResolvedSelectValues | undefined
+      ? {
+          /**
+           * Get the resolved values from the user's selections
+           * @warn Only available on select menus
+           */
+          getValues: () => ResolvedSelectValues[T extends keyof ResolvedSelectValues ? T : keyof ResolvedSelectValues];
+        }
+      : unknown);
 
 /**
  * A modal submit interaction, includes methods for responding to the interaction.
@@ -165,6 +210,7 @@ export interface BaseInteractionMethods {
    * **IGNORE PREVIOUS**:
    * Invoking user should be filled in for every interaction */
   user: APIUser;
+  history: (keyof Omit<BaseInteractionMethods, "user" | "history">)[];
 }
 
 export type Interaction<T extends APIInteraction> = T extends APIApplicationCommandInteraction
