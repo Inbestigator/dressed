@@ -2,16 +2,12 @@
 
 Options are defined in your [command config](/docs/commands/config) and are filled in by users to be sent with the interaction.
 
-You can access options using the `getOption` function on `interaction`.
+You can access options using the `getOption` function on `interaction`. While it isn't required, including your command's config in the type will unlock name autocomplete and smart function determination in `getOption`.
 
 ```ts
-import {
-  type CommandConfig,
-  type CommandInteraction,
-  CommandOption,
-} from "dressed";
+import { type CommandConfig, type CommandInteraction, CommandOption } from "dressed";
 
-export const config: CommandConfig = {
+export const config = {
   options: [
     CommandOption({
       name: "required",
@@ -25,9 +21,9 @@ export const config: CommandConfig = {
       type: "String",
     }),
   ],
-};
+} satisfies CommandConfig;
 
-export default function (interaction: CommandInteraction) {
+export default function (interaction: CommandInteraction<typeof config>) {
   const required = interaction.getOption("required", true).string(); // string
   const optional = interaction.getOption("optional")?.string(); // string | undefined
 }
@@ -40,13 +36,9 @@ A required option will throw an error if it's missing.
 Subcommands are a special type of option as they can contain further options, while they do have the required prop in the `CommandOption` function, Discord will fail if you try to use it.
 
 ```ts
-import {
-  type CommandConfig,
-  type CommandInteraction,
-  CommandOption,
-} from "dressed";
+import { type CommandConfig, type CommandInteraction, CommandOption } from "dressed";
 
-export const config: CommandConfig = {
+export const config = {
   options: [
     CommandOption({
       name: "foo",
@@ -74,9 +66,9 @@ export const config: CommandConfig = {
       ],
     }),
   ],
-};
+} satisfies CommandConfig;
 
-export default function (interaction: CommandInteraction) {
+export default function (interaction: CommandInteraction<typeof config>) {
   const subcommand =
     interaction.getOption("foo")?.subcommand() ||
     interaction.getOption("group")?.subcommandGroup().getSubcommand("bar");

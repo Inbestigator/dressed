@@ -23,7 +23,7 @@ import type { editWebhookMessage, executeWebhook } from "../resources/generated.
 import type { createInteractionCallback } from "../resources/interactions.ts";
 import type { getField } from "../server/extenders/fields.ts";
 import type { getOption, OptionValueGetters } from "../server/extenders/options.ts";
-import type { ChatInputConfig, CommandConfig } from "./config.ts";
+import type { CommandConfig } from "./config.ts";
 import type { RawFile } from "./file.ts";
 import type { Requirable } from "./utilities.ts";
 
@@ -52,14 +52,14 @@ export type GetOptionFn<T extends Extract<CommandConfig, { type?: "ChatInput" }>
  */
 export type CommandInteraction<T extends keyof typeof ApplicationCommandType | CommandConfig = "ChatInput"> = (T extends
   | "ChatInput"
-  | ChatInputConfig
+  | Extract<CommandConfig, { type?: "ChatInput" }>
   ? APIChatInputApplicationCommandInteraction & {
       /**
        * Get an option from the interaction
        * @param name The name of the option
        * @param required Whether the option is required
        */
-      getOption: T extends ChatInputConfig
+      getOption: T extends object
         ? GetOptionFn<T>
         : <N extends string, R extends boolean>(name: N, required?: R) => ReturnType<typeof getOption<N, R>>;
     }
