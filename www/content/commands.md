@@ -32,7 +32,7 @@ For some command options, you want to enable autocomplete. To create a handler f
 ```ts showLineNumbers
 import { CommandOption, type CommandAutocompleteInteraction, type CommandConfig } from "dressed";
 
-export const config: CommandConfig = {
+export const config = {
   description: "Send a random adorable animal photo",
   options: [
     CommandOption({
@@ -43,7 +43,7 @@ export const config: CommandConfig = {
       autocomplete: true,
     }),
   ],
-};
+} satisfies CommandConfig;
 
 export function autocomplete(interaction: CommandAutocompleteInteraction) {
   // sendChoices returns the options for them to select from
@@ -61,9 +61,9 @@ Context commands are super easy to enable, all you have to do is set the type in
 ```ts title="src / commands / get-avatar.ts" showLineNumbers
 import type { CommandConfig, CommandInteraction } from "dressed";
 
-export const config: CommandConfig = { type: "User" };
+export const config = { type: "User" } satisfies CommandConfig;
 
-export default function avatar(interaction: CommandInteraction<"User">) {
+export default function avatar(interaction: CommandInteraction<typeof config>) {
   const user = interaction.target;
   return interaction.reply(`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`);
 }

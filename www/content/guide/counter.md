@@ -25,9 +25,9 @@ We should export some config too, so that users know what the command does. The 
 ```ts title="src / commands / counter.ts" showLineNumbers
 import { TextDisplay, type CommandConfig, type CommandInteraction } from "dressed";
 
-export const config: CommandConfig = {
+export const config = {
   description: "Shows a counter",
-};
+} satisfies CommandConfig;
 ```
 
 The description is visible in Discord when the user types in your command.
