@@ -2,7 +2,7 @@
 
 Dressed is a Discord bot library that allows you to host a bot using the
 [interactions endpoint](https://discord.com/developers/docs/interactions/overview#configuring-an-interactions-endpoint-url)
-system for Discord. Discord will send POST requests to your bot, instead of the websocket system that other libraries utilize.
+system for Discord. Discord will send `POST` requests to your bot, instead of the websocket system that other libraries utilize.
 
 For more information on common functions (e.g. [getUser](/docs/resources/user#get-user), [createChannel](/docs/resources/guild#create-channel), etc.), see the resources section.
 
