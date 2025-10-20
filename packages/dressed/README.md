@@ -3,14 +3,12 @@
   <h1>Dressed</h1>
 </div>
 
-Dressed is a Discord bot framework with 100% API support. It allows you to host a bot using the
-[interactions endpoint](https://discord.com/developers/docs/interactions/overview#configuring-an-interactions-endpoint-url)
-system for Discord.
+Dressed is a Discord bot library that allows you to host a bot using the
+[interactions endpoint](https://discord.com/developers/docs/interactions/overview#configuring-an-interactions-endpoint-url) system for Discord.
 
-Discord will send `POST` requests to your bot, instead of using the WebSocket system that libraries like Discord.js rely on.
+Discord will send `POST` requests to your bot, instead of the websocket system that other libraries utilize.
 
-One cool feature of Dressed is support for **dynamic component IDs**, so you only need to write one component handler for many different scenarios.
-👉 [See more](https://dressed.js.org/docs/components#dynamic-component-ids)
+One cool feature of Dressed is that you can make **dynamic component IDs**, so that you only need to write one component handler for many different scenarios. 👉 [See more](https://dressed.js.org/docs/components#dynamic-component-ids)
 
 You can find examples of bots ready to deploy on
 [Vercel](https://vercel.com) and [Deno Deploy](https://deno.com/deploy) in
@@ -20,23 +18,20 @@ You can find examples of bots ready to deploy on
 
 ```sh
 bun add dressed
-# or
-deno add jsr:@dressed/dressed
 ```
 
 ```ts
 // src/commands/ping.ts
 import type { CommandConfig, CommandInteraction } from "dressed";
 
-export const config: CommandConfig = {
-  description: "Returns pong",
-};
+export const config = {
+  description: "Returns the latency",
+} satisfies CommandConfig;
 
-export default async function (interaction: CommandInteraction) {
-  await interaction.reply({
-    content: "Pong!",
-    ephemeral: true,
-  });
+export default async function (interaction: CommandInteraction<typeof config>) {
+  const start = Date.now();
+  const { resource } = await interaction.deferReply({ ephemeral: true, with_response: true });
+  await interaction.editReply(`🏓 ${Date.parse(resource?.message?.timestamp ?? "") - start}ms`);
 }
 ```
 
@@ -45,17 +40,13 @@ You can then build and run the bot with:
 ```sh
 bun dressed build -ir
 bun .dressed
-# or
-deno -A npm:dressed build -ir
-deno -A .dressed/index.mjs
 ```
 
 - By default, the builder outputs only boilerplate data.
 - To include an instance creator, add the `-i` flag.
 - To register your bot's commands, add the `-r` flag.
 
-> [!TIP]
-> For a better development experience, install [Discord API Types](https://www.npmjs.com/package/discord-api-types).
+For more information on how to create a simple bot, check out [the getting started guide](/docs/guide/getting-started).
 
 Dressed includes a [Node HTTP](https://nodejs.org/api/http.html) server out of the box.
 If you'd prefer to create your own, all the functions you need are available within `dressed/server`.
