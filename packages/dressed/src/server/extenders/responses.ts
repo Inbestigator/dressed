@@ -13,7 +13,7 @@ import { botEnv } from "../../utils/env.ts";
 export function baseInteractionMethods(interaction: APIInteraction): BaseInteractionMethods {
   const history: BaseInteractionMethods["history"] = [];
   return {
-    reply(data) {
+    reply(data, $req) {
       history.push("reply");
       if (typeof data === "string") {
         data = { content: data } as Extract<Parameters<BaseInteractionMethods["reply"]>[0], { content: string }>;
@@ -22,11 +22,19 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
         data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
       }
       const { files, ...rest } = data;
-      return createInteractionCallback(interaction.id, interaction.token, "ChannelMessageWithSource", rest, files, {
-        with_response: data?.with_response,
-      }) as never;
+      return createInteractionCallback(
+        interaction.id,
+        interaction.token,
+        "ChannelMessageWithSource",
+        rest,
+        files,
+        {
+          with_response: data?.with_response,
+        },
+        $req,
+      ) as never;
     },
-    deferReply(data) {
+    deferReply(data, $req) {
       history.push("deferReply");
       if (data?.ephemeral) {
         data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
@@ -38,19 +46,28 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
         data,
         undefined,
         { with_response: data?.with_response },
+        $req,
       ) as never;
     },
-    update(data) {
+    update(data, $req) {
       history.push("update");
       if (typeof data === "string") {
         data = { content: data } as Extract<Parameters<BaseInteractionMethods["update"]>[0], { content: string }>;
       }
       const { files, ...rest } = data;
-      return createInteractionCallback(interaction.id, interaction.token, "UpdateMessage", rest, files, {
-        with_response: data.with_response,
-      }) as never;
+      return createInteractionCallback(
+        interaction.id,
+        interaction.token,
+        "UpdateMessage",
+        rest,
+        files,
+        {
+          with_response: data.with_response,
+        },
+        $req,
+      ) as never;
     },
-    deferUpdate(options) {
+    deferUpdate(params, $req) {
       history.push("deferUpdate");
       return createInteractionCallback(
         interaction.id,
@@ -58,12 +75,13 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
         "DeferredMessageUpdate",
         undefined,
         undefined,
-        options,
+        params,
+        $req,
       );
     },
-    editReply(data) {
+    editReply(data, $req) {
       history.push("editReply");
-      return editWebhookMessage(botEnv.DISCORD_APP_ID, interaction.token, "@original", data);
+      return editWebhookMessage(botEnv.DISCORD_APP_ID, interaction.token, "@original", data, undefined, $req);
     },
     followUp(
       data:
@@ -72,20 +90,27 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
             files?: RawFile[];
             ephemeral?: boolean;
           }),
+      $req,
     ) {
       history.push("followUp");
       if (typeof data === "object" && data.ephemeral) {
         data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
       }
-      return executeWebhook(botEnv.DISCORD_APP_ID, interaction.token, data, {
-        wait: true,
-      });
+      return executeWebhook(
+        botEnv.DISCORD_APP_ID,
+        interaction.token,
+        data,
+        {
+          wait: true,
+        },
+        $req,
+      );
     },
-    showModal(data, options) {
+    showModal(data, params, $req) {
       history.push("showModal");
-      return createInteractionCallback(interaction.id, interaction.token, "Modal", data, undefined, options);
+      return createInteractionCallback(interaction.id, interaction.token, "Modal", data, undefined, params, $req);
     },
-    sendChoices(choices, options) {
+    sendChoices(choices, params, $req) {
       history.push("sendChoices");
       return createInteractionCallback(
         interaction.id,
@@ -93,7 +118,8 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
         "ApplicationCommandAutocompleteResult",
         { choices },
         undefined,
-        options,
+        params,
+        $req,
       );
     },
     user: interaction.user ?? (interaction.member?.user as APIUser),
