@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import { appendFileSync, existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
-import { basename, extname, relative, resolve } from "node:path";
+import { readdir } from "node:fs/promises";
+import { basename, extname, join, relative, resolve } from "node:path";
 import { cwd } from "node:process";
-import { walkFiles } from "walk-it";
 import { getApp } from "../../resources/generated.resources.ts";
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../../types/config.ts";
 import type { WalkEntry } from "../../types/walk.ts";
@@ -96,19 +96,17 @@ async function fetchFiles(root: string, dir: string, extensions: string[]): Prom
     return [];
   }
 
-  const filesArray: WalkEntry[] = [];
-  for await (const file of walkFiles(dirPath, {
-    filterFile: (f) => extensions.includes(extname(f.name).slice(1)),
-  })) {
-    const path = relative(cwd(), file.path);
-    filesArray.push({
-      name: basename(path, extname(path)),
-      uid: createHash("sha1").update(path).digest("hex"),
-      path,
+  const entries = await readdir(dirPath, { recursive: true });
+  return entries
+    .filter((e) => extensions.includes(extname(e).slice(1)))
+    .map((e) => {
+      const path = relative(cwd(), join(dirPath, e));
+      return {
+        name: basename(path, extname(path)),
+        path,
+        uid: createHash("sha1").update(path).digest("hex"),
+      };
     });
-  }
-
-  return filesArray;
 }
 
 async function fetchMissingVars() {

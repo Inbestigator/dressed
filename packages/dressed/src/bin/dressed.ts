@@ -73,7 +73,11 @@ ${instance ? `createServer(commands, components, events, config);` : ""}`.trim()
       writeFileSync(".dressed/index.d.ts", typeContent);
       rmSync(".dressed/tmp", { recursive: true, force: true });
 
-      logSuccess("Assembled generated build");
+      logSuccess(
+        "Assembled generated build",
+        instance ? `\n${register ? "├" : "└"} Server instance` : "",
+        register ? "\n└ Command registerer" : "",
+      );
       exit();
     },
   );

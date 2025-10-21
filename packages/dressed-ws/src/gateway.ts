@@ -98,6 +98,12 @@ export function createConnection(
        * @default 80
        */
       shardCapacity?: number;
+      /**
+       * A function that will return the gateway bot, the response controls shards and is saved in the cache for a short time.
+       *
+       * @warn This function must still return a phony value when connecting with a user token
+       */
+      getGatewayBot?: () => ReturnType<typeof getGatewayBot>;
     };
   } = {},
 ): ConnectionActions {
@@ -131,7 +137,9 @@ export function createConnection(
       workers,
       numShards: 0,
       isResharding: false,
-      cache: createCache({ getGatewayBot }),
+      cache: createCache({
+        getGatewayBot: config.shards?.getGatewayBot ?? (() => getGatewayBot({ authorization: `Bot ${token}` })),
+      }),
       async reshard(newShardCount?: number) {
         if (connection.shards.isResharding) {
           throw new Error("Attempted to reshard while already resharding");

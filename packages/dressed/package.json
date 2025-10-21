@@ -14,8 +14,7 @@
     "discord-api-types": "^0.38.30",
     "dotenv": "^17.2.2",
     "enquirer": "^2.4.1",
-    "esbuild": "^0.25.9",
-    "walk-it": "^6.0.1"
+    "esbuild": "^0.25.11"
   },
   "exports": {
     ".": "./dist/index.js",
