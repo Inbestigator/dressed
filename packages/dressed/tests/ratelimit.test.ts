@@ -95,7 +95,7 @@ afterAll(() => server.stop());
 
 // Normally tries defaults to 3, but for the purposes of these tests there shouldn't be any wiggle room
 
-const $req = { tries: 0, authorization: "", baseURL: "http://localhost:6556" };
+const $req = { tries: 0, authorization: "", routeBase: "http://localhost:6556" };
 
 test("Ratelimit delaying", () => {
   expect(
