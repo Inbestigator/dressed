@@ -70,22 +70,18 @@ You can now replace the `[TextDisplay("Current count: 1")]` in your original han
 
 In order to handle button interactions, we need to make a handler file.
 
-Start by creating a file within `src/components/buttons` named `set-counter-:value.ts`.
-
-> [!IMPORTANT]
-> If you are on Windows, you will encounter issues with filenames containing colons and other dynamic ID characters. You can use this instead:
->
-> ```ts title="src / components / buttons / set-counter.ts"
-> export const pattern = "set-counter-:value";
-> ```
+Start by creating a file within `src/components/buttons` named `set-counter.ts`.
 
 ```ts showLineNumbers
+import type { Params } from "@dressed/matcher";
 import type { MessageComponentInteraction } from "dressed";
 import { countDisplay } from "../../commands/counter.ts";
 
+export const pattern = "set-counter-:value";
+
 export default function setCounterButton(
   interaction: MessageComponentInteraction,
-  { value }: { value: string }
+  { value }: Params<typeof pattern>
 ) {
   interaction.update({ components: countDisplay(Number(value)) });
 }

@@ -12,6 +12,9 @@ export async function render(children: ReactNode) {
     null,
     "dressed",
     (error: Error) => console.error(error),
+    () => {},
+    () => {},
+    () => {},
     null,
   );
 

@@ -11,6 +11,11 @@ export interface CallConfig {
   authorization?: string;
   /** Number of retries when rate limited before the caller gives up, defaults to 3 */
   tries?: number;
+  /**
+   * The location which endpoints branch off from
+   * @default "https://discord.com/api/v10"
+   */
+  routeBase?: string;
 }
 
 export async function callDiscord(
@@ -25,8 +30,13 @@ export async function callDiscord(
   $req: CallConfig = {},
 ): Promise<Response> {
   const { params, files, flattenBodyInForm, ...options } = { ...init };
-  const { authorization = `Bot ${botEnv.DISCORD_TOKEN}`, tries = 3 } = $req;
-  const url = new URL(RouteBases.api + endpoint);
+  const reqsConfig = globalThis.DRESSED_CONFIG.requests;
+  const {
+    authorization = reqsConfig?.authorization ?? `Bot ${botEnv.DISCORD_TOKEN}`,
+    tries = reqsConfig?.tries ?? 3,
+    routeBase = reqsConfig?.routeBase ?? RouteBases.api,
+  } = $req;
+  const url = new URL(routeBase + endpoint);
 
   if (typeof options.body === "object" && options.body !== null) {
     if ("files" in options.body) delete options.body.files;

@@ -23,6 +23,7 @@ import type { editWebhookMessage, executeWebhook } from "../resources/generated.
 import type { createInteractionCallback } from "../resources/interactions.ts";
 import type { getField } from "../server/extenders/fields.ts";
 import type { getOption, OptionValueGetters } from "../server/extenders/options.ts";
+import type { CallConfig } from "../utils/call-discord.ts";
 import type { CommandConfig } from "./config.ts";
 import type { RawFile } from "./file.ts";
 import type { Requirable } from "./utilities.ts";
@@ -142,6 +143,7 @@ export interface BaseInteractionMethods {
           /** The files to send with the message */
           files?: RawFile[];
         } & Q),
+    $req?: CallConfig,
   ) => InteractionCallbackResponse<Q>;
   /**
    * ACK an interaction and edit a response later, the user sees a loading state
@@ -152,6 +154,7 @@ export interface BaseInteractionMethods {
       /** Whether the message is ephemeral */
       ephemeral?: boolean;
     } & Q,
+    $req?: CallConfig,
   ) => InteractionCallbackResponse<Q>;
 
   /**
@@ -165,18 +168,22 @@ export interface BaseInteractionMethods {
           /** The files to send with the message */
           files?: RawFile[];
         } & Q),
+    $req?: CallConfig,
   ) => InteractionCallbackResponse<Q>;
 
   /**
    * For components, ACK an interaction and edit the original message later; the user does not see a loading state
    */
-  deferUpdate: <Q extends RESTPostAPIInteractionCallbackQuery>(options?: Q) => InteractionCallbackResponse<Q>;
+  deferUpdate: <Q extends RESTPostAPIInteractionCallbackQuery>(
+    params?: Q,
+    $req?: CallConfig,
+  ) => InteractionCallbackResponse<Q>;
 
   /**
    * Edit the initial interaction response
    * @param data The new data for the response message
    */
-  editReply: (data: Parameters<typeof editWebhookMessage>[3]) => Promise<APIMessage>;
+  editReply: (data: Parameters<typeof editWebhookMessage>[3], $req?: CallConfig) => Promise<APIMessage>;
   /**
    * Create another response to the interaction
    * @param data The data for the message
@@ -188,6 +195,7 @@ export interface BaseInteractionMethods {
       /** The files to send with the message */
       files?: RawFile[];
     },
+    $req?: CallConfig,
   ) => Promise<APIMessage>;
   /**
    * Respond to an interaction with a popup modal
@@ -195,7 +203,8 @@ export interface BaseInteractionMethods {
    */
   showModal: <Q extends RESTPostAPIInteractionCallbackQuery>(
     data: InteractionResponseCallbackData<"Modal">,
-    options?: Q,
+    params?: Q,
+    $req?: CallConfig,
   ) => InteractionCallbackResponse<Q>;
   /**
    * Respond to an autocomplete interaction with suggested choices
@@ -203,7 +212,8 @@ export interface BaseInteractionMethods {
    */
   sendChoices: <Q extends RESTPostAPIInteractionCallbackQuery>(
     choices?: InteractionResponseCallbackData<"ApplicationCommandAutocompleteResult">["choices"],
-    options?: Q,
+    params?: Q,
+    $req?: CallConfig,
   ) => InteractionCallbackResponse<Q>;
   /**
    *

@@ -7,6 +7,7 @@ import type {
   RESTPostAPIPrimaryEntryPointApplicationCommandJSONBody,
   Snowflake,
 } from "discord-api-types/v10";
+import type { CallConfig } from "../utils/call-discord.ts";
 import type { CommandHandler, ComponentHandler, EventHandler } from "./handlers.ts";
 import type { AnyFn, Promisable } from "./utilities.ts";
 
@@ -55,6 +56,8 @@ export interface ServerConfig {
     components?: (...p: Parameters<ComponentHandler>) => Promisable<unknown[]>;
     events?: (...p: Parameters<EventHandler>) => Promisable<unknown[]>;
   };
+  /** Configuration for all API requests */
+  requests?: CallConfig;
 }
 
 interface BaseCommandConfig {

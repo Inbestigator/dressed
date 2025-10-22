@@ -36,6 +36,6 @@
   },
   "devDependencies": {
     "@types/react": "^19.1.13",
-    "@types/react-reconciler": "^0.32.1"
+    "@types/react-reconciler": "^0.32.2"
   }
 }

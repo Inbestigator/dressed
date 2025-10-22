@@ -15,8 +15,8 @@ const program = new Command().name("dressed").description("A sleek, serverless-r
 program
   .command("build")
   .description("Builds the bot and writes to .dressed")
-  .option("-i, --instance", "Include an instance create in the generated file")
-  .option("-r, --register", "Register slash commands")
+  .option("-i, --instance", "Include code to start a server instance")
+  .option("-r, --register", "Include code to register commands")
   .option("-e, --endpoint <endpoint>", "The endpoint to listen on, defaults to `/`")
   .option("-p, --port <port>", "The port to listen on, defaults to `8000`", (v) => {
     const parsed = parseInt(v, 10);
@@ -59,6 +59,7 @@ program
       const outputContent = `
 ${instance || register ? `import { ${instance ? `createServer${register ? ", installCommands" : ""}` : register ? "installCommands" : ""} } from "dressed/server";` : ""}
 import config from "./dressed.config.mjs";
+globalThis.DRESSED_CONFIG = config;
 ${[categories.map((c) => c.map(importString)), categoryExports(categories)].flat(2).join("")}
 export { config };
 ${register ? "\ninstallCommands(commands);" : ""}
@@ -73,7 +74,11 @@ ${instance ? `createServer(commands, components, events, config);` : ""}`.trim()
       writeFileSync(".dressed/index.d.ts", typeContent);
       rmSync(".dressed/tmp", { recursive: true, force: true });
 
-      logSuccess("Assembled generated build");
+      logSuccess(
+        "Assembled generated build",
+        instance ? `\n${register ? "├" : "└"} Starts a server instance` : "",
+        register ? "\n└ Registers commands" : "",
+      );
       exit();
     },
   );

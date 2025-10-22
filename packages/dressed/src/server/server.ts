@@ -10,7 +10,7 @@ import {
 } from "discord-api-types/v10";
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../types/config.ts";
 import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
-import { logError } from "../utils/log.ts";
+import { logError, logSuccess } from "../utils/log.ts";
 import { createInteraction } from "./extenders/interaction.ts";
 import { setupCommands } from "./handlers/commands.ts";
 import { setupComponents } from "./handlers/components.ts";
@@ -50,20 +50,13 @@ export function createServer(
       config,
     );
 
-    res
-      .writeHead(handlerRes.status, {
-        "Content-Type": "application/json",
-      })
-      .end(await handlerRes.text());
+    res.writeHead(handlerRes.status, { "Content-Type": "application/json" }).end(await handlerRes.text());
   });
 
   const port = config.port ?? 8000;
-
-  server.listen(port, "0.0.0.0", () => {
-    console.log("Bot is now listening on", endpoint.href);
-  });
-
   const shutdown = () => server.close(() => process.exit());
+
+  server.listen(port, "0.0.0.0", () => logSuccess("Bot is now listening on", endpoint.href));
 
   process.on("SIGTERM", shutdown);
   process.on("SIGINT", shutdown);
@@ -112,7 +105,7 @@ export async function handleRequest(
       status,
     });
   } catch (error) {
-    console.error("Failed to process request:", error);
+    logError("Failed to process request:", error);
     return new Response(null, { status: 500 });
   }
 }
@@ -128,7 +121,7 @@ export async function handleInteraction(
 ): Promise<200 | 202 | 404> {
   switch (json.type) {
     case InteractionType.Ping: {
-      console.log("Received ping test");
+      logSuccess("Received ping test");
       return 200;
     }
     case InteractionType.ApplicationCommand: {
@@ -151,7 +144,7 @@ export async function handleInteraction(
       return 202;
     }
     default: {
-      console.error("Received unknown interaction type:", json.type);
+      logError("Received unknown interaction type:", json.type);
       return 404;
     }
   }
@@ -167,7 +160,7 @@ export async function handleEvent(
 ): Promise<200 | 202 | 404> {
   switch (json.type) {
     case ApplicationWebhookType.Ping: {
-      console.log("Received ping test");
+      logSuccess("Received ping test");
       return 200;
     }
     case ApplicationWebhookType.Event: {
@@ -176,7 +169,7 @@ export async function handleEvent(
       return 202;
     }
     default: {
-      console.log("Received unknown event type:", json.type);
+      logError("Received unknown event type:", json.type);
       return 404;
     }
   }

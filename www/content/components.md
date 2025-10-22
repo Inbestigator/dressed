@@ -71,23 +71,31 @@ export const pattern = "trivia_guess_:answer"; // Matches `trivia_guess_(.+?)` n
 
 ### Examples
 
-| Filename                        | Matches                      | Arg types                            |
-| ------------------------------- | ---------------------------- | ------------------------------------ |
-| `print-:value.ts`               | `print-<...>`                | `{ value: string }`                  |
-| `ticket{-:state}.ts`            | `dialog`, `dialog-<...>`     | `{ state?: string }`                 |
-| `wait-:length(\d+).ts`          | `wait-<[0-9]+>`              | `{ length: string (string number) }` |
-| `i-love-:animal(dogs\|cats).ts` | `i-love-dogs`, `i-love-cats` | `{ animal: "dogs" \| "cats" }`       |
+| Pattern                      | Matches                      | Arg types                            |
+| ---------------------------- | ---------------------------- | ------------------------------------ |
+| `print-:value`               | `print-<...>`                | `{ value: string }`                  |
+| `ticket{-:state}`            | `dialog`, `dialog-<...>`     | `{ state?: string }`                 |
+| `wait-:length(\d+)`          | `wait-<[0-9]+>`              | `{ length: string (string number) }` |
+| `i-love-:animal(dogs\|cats)` | `i-love-dogs`, `i-love-cats` | `{ animal: "dogs" \| "cats" }`       |
 
-```ts title="src / components / buttons / print-:value.ts"
-export default async function print(_, args: { value: string }) {
+```ts title="src / components / buttons / print.ts"
+import { Params } from "@dressed/matcher";
+
+export const pattern = "print-:value";
+
+export default function print(_, args: Params<typeof pattern>) {
   console.log(args.value);
 }
 ```
 
 Will be invoked for IDs like `print-Hello world` or `print-wowie`.
 
-```ts title="src / components / buttons / ticket{-:action(open|close)}.ts"
-export default function ticket(_, args: { action?: "open" | "close" }) {
+```ts title="src / components / buttons / ticket.ts"
+import { Params } from "@dressed/matcher";
+
+export const pattern = "ticket{-:action(open|close)}";
+
+export default function ticket(_, args: Params<typeof pattern>) {
   console.log("Action:", args.action ?? "none");
 }
 ```
