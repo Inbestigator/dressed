@@ -30,11 +30,11 @@ export async function callDiscord(
   $req: CallConfig = {},
 ): Promise<Response> {
   const { params, files, flattenBodyInForm, ...options } = { ...init };
-  const global$Req = globalThis.DRESSED_CONFIG.requests;
+  const reqsConfig = globalThis.DRESSED_CONFIG.requests;
   const {
-    authorization = global$Req?.authorization ?? `Bot ${botEnv.DISCORD_TOKEN}`,
-    tries = global$Req?.tries ?? 3,
-    routeBase = global$Req?.routeBase ?? RouteBases.api,
+    authorization = reqsConfig?.authorization ?? `Bot ${botEnv.DISCORD_TOKEN}`,
+    tries = reqsConfig?.tries ?? 3,
+    routeBase = reqsConfig?.routeBase ?? RouteBases.api,
   } = $req;
   const url = new URL(routeBase + endpoint);
 
