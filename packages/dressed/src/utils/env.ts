@@ -8,6 +8,7 @@ interface BotEnvs {
 }
 
 loadEnvConfig();
+globalThis.DRESSED_CONFIG ??= {};
 
 export const botEnv: BotEnvs = new Proxy({} as BotEnvs, {
   get(_, key: string) {

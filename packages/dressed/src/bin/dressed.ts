@@ -59,6 +59,7 @@ program
       const outputContent = `
 ${instance || register ? `import { ${instance ? `createServer${register ? ", installCommands" : ""}` : register ? "installCommands" : ""} } from "dressed/server";` : ""}
 import config from "./dressed.config.mjs";
+globalThis.DRESSED_CONFIG = config;
 ${[categories.map((c) => c.map(importString)), categoryExports(categories)].flat(2).join("")}
 export { config };
 ${register ? "\ninstallCommands(commands);" : ""}

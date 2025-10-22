@@ -62,3 +62,20 @@ Here's an example of some middleware:
     components: (interaction, args) => [patchInteraction(interaction), args]
 }
 ```
+
+### Requests
+
+These values will set the default call configuration for every API request. It can still be overriden on a per-request basis by setting the $req prop.
+
+```ts
+{
+  requests: {
+    authorization: "Bot TOKEN",
+    routeBase: "https://proxy.example.com";
+  }
+}
+```
+
+```ts
+createMessage("CHANNEL_ID", "Hello, world", { authorization: "Bot OTHER_TOKEN" });
+```
