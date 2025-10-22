@@ -30,7 +30,7 @@ export async function callDiscord(
   $req: CallConfig = {},
 ): Promise<Response> {
   const { params, files, flattenBodyInForm, ...options } = { ...init };
-  const reqsConfig = globalThis.DRESSED_CONFIG.requests;
+  const reqsConfig = globalThis.DRESSED_CONFIG?.requests;
   const {
     authorization = reqsConfig?.authorization ?? `Bot ${botEnv.DISCORD_TOKEN}`,
     tries = reqsConfig?.tries ?? 3,
