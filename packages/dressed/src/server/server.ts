@@ -11,6 +11,7 @@ import {
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../types/config.ts";
 import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
 import { logError, logSuccess } from "../utils/log.ts";
+import { override } from "../utils/override-obj.ts";
 import { createInteraction } from "./extenders/interaction.ts";
 import { setupCommands } from "./handlers/commands.ts";
 import { setupComponents } from "./handlers/components.ts";
@@ -25,8 +26,9 @@ export function createServer(
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
   events: EventRunner | EventData[],
-  config: ServerConfig,
+  config: ServerConfig = {},
 ): Server {
+  config = override(globalThis.DRESSED_CONFIG, config);
   const endpoint = new URL(config.endpoint ?? "/", `http://localhost:${config.port ?? 8000}`);
   const server = createHttpServer(async (req, res) => {
     if (req.url !== endpoint.pathname) {
@@ -78,8 +80,9 @@ export async function handleRequest(
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
   events: EventRunner | EventData[],
-  config?: ServerConfig,
+  config: ServerConfig = {},
 ): Promise<Response> {
+  config = override(globalThis.DRESSED_CONFIG, config);
   const body = await req.text();
   const verified = await verifySignature(
     body,
@@ -97,9 +100,9 @@ export async function handleRequest(
     let status = 500;
     // The interaction response token
     if ("token" in json) {
-      status = await handleInteraction(commands, components, json, config?.middleware);
+      status = await handleInteraction(commands, components, json, config.middleware);
     } else {
-      status = await handleEvent(events, json, config?.middleware);
+      status = await handleEvent(events, json, config.middleware);
     }
     return new Response(status === 200 ? '{"type":1}' : null, {
       status,

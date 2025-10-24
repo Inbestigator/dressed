@@ -8,6 +8,7 @@ import type { CommandData, ComponentData, EventData, ServerConfig } from "../../
 import type { WalkEntry } from "../../types/walk.ts";
 import { botEnv } from "../../utils/env.ts";
 import { logDefer, logWarn } from "../../utils/log.ts";
+import { override } from "../../utils/override-obj.ts";
 import bundleFiles from "./bundle.ts";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";
@@ -22,24 +23,6 @@ export function categoryExports(categories: WalkEntry[][]) {
     (c, i) =>
       `export const ${["commands", "components", "events"][i]} = [${c.map((f) => JSON.stringify({ ...f, exports: null }).replace('"exports":null', `"exports":h${f.uid}`))}];`,
   );
-}
-
-function override<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
-  const result = { ...a };
-
-  for (const key in b) {
-    const k = key as keyof T;
-    const bv = b[k];
-    const av = a[k];
-
-    if (bv !== undefined && typeof bv === "object" && bv !== null && !Array.isArray(bv)) {
-      result[k] = override(av ?? {}, bv) as T[typeof k];
-    } else if (bv !== undefined) {
-      result[k] = bv as T[typeof k];
-    }
-  }
-
-  return result;
 }
 
 /**

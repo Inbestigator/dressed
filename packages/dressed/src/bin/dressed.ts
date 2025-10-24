@@ -63,7 +63,7 @@ globalThis.DRESSED_CONFIG = config;
 ${[categories.map((c) => c.map(importString)), categoryExports(categories)].flat(2).join("")}
 export { config };
 ${register ? "\ninstallCommands(commands);" : ""}
-${instance ? `createServer(commands, components, events, config);` : ""}`.trim();
+${instance ? `createServer(commands, components, events);` : ""}`.trim();
       const jsContent = 'export * from "./index.mjs";';
       const typeContent =
         'import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
