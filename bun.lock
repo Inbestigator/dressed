@@ -57,7 +57,7 @@
     },
     "packages/dressed-ws": {
       "name": "@dressed/ws",
-      "version": "0.4.4",
+      "version": "0.4.5",
       "dependencies": {
         "discord-api-types": "^0.38.30",
       },
