@@ -55,6 +55,16 @@
         "react": "^19.1.1",
       },
     },
+    "packages/dressed-voice": {
+      "name": "@dressed/voice",
+      "version": "0.0.0",
+      "dependencies": {
+        "discord-api-types": "^0.38.20",
+      },
+      "peerDependencies": {
+        "dressed": "^1.9.0",
+      },
+    },
     "packages/dressed-ws": {
       "name": "@dressed/ws",
       "version": "0.4.5",
@@ -134,6 +144,8 @@
     "@dressed/next": ["@dressed/next@workspace:packages/dressed-next"],
 
     "@dressed/react": ["@dressed/react@workspace:packages/dressed-react"],
+
+    "@dressed/voice": ["@dressed/voice@workspace:packages/dressed-voice"],
 
     "@dressed/ws": ["@dressed/ws@workspace:packages/dressed-ws"],
 
