@@ -1,13 +1,13 @@
 {
   "name": "@dressed/react",
-  "version": "1.6.0-rc.1.1",
+  "version": "1.6.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Inbestigator/dressed.git",
     "directory": "packages/dressed-react"
   },
   "peerDependencies": {
-    "dressed": "^1.10.0-rc",
+    "dressed": "^1.10.0",
     "react": "^19.1.1"
   },
   "exports": "./dist/index.js",
