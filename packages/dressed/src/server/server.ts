@@ -80,9 +80,8 @@ export async function handleRequest(
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
   events: EventRunner | EventData[],
-  config: ServerConfig = {},
+  config = globalThis.DRESSED_CONFIG,
 ): Promise<Response> {
-  config = override(globalThis.DRESSED_CONFIG, config);
   const body = await req.text();
   const verified = await verifySignature(
     body,
