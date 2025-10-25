@@ -16,11 +16,6 @@ export function generateStaticParams() {
   return readDir("content").map((s) => ({ slug: s.slug }));
 }
 
-const banner = `> [!IMPORTANT]
-> Currently the documentation here pertains to the canary tag of Dressed (docs currently at \`dressed@1.10.0-canary.8.x\`), keep in mind that some items (especially those talked about in the [deployment guides](/docs/guide/deploying)) are not available / work slightly differently in the \`@latest\` version.
-
-`;
-
 function readDir(path: string) {
   const files: { slug: string[]; content: string }[] = [];
   const dir = readdirSync(path);
@@ -32,7 +27,7 @@ function readDir(path: string) {
     } else {
       files.push({
         slug: `${path.split("content/")[1] ?? ""}/${file.split(".")[0]}`.split("/").filter((v) => v !== ""),
-        content: banner + readFileSync(`${path}/${file}`, "utf-8"),
+        content: readFileSync(`${path}/${file}`, "utf-8"),
       });
     }
   }

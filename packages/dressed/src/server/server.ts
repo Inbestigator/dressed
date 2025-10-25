@@ -10,8 +10,8 @@ import {
 } from "discord-api-types/v10";
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../types/config.ts";
 import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
+import { override } from "../utils/build.ts";
 import { logError, logSuccess } from "../utils/log.ts";
-import { override } from "../utils/override-obj.ts";
 import { createInteraction } from "./extenders/interaction.ts";
 import { setupCommands } from "./handlers/commands.ts";
 import { setupComponents } from "./handlers/components.ts";

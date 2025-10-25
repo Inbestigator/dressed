@@ -16,7 +16,7 @@
                 {
                   "type": "string",
                   "title": "URL parameter",
-                  "pattern": "^url\\.[^<]+(?:<[^?]+)?$",
+                  "pattern": "^url\\..+$",
                   "examples": ["url.key", "url.key?", "url.key<value", "url.key<value?"]
                 },
                 {

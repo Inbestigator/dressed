@@ -11,8 +11,8 @@ loadEnvConfig();
 globalThis.DRESSED_CONFIG ??= {};
 
 export const botEnv: BotEnvs = new Proxy({} as BotEnvs, {
-  get(_, key: string) {
-    const value = env[key];
+  get(_, key: keyof BotEnvs) {
+    const value = globalThis.DRESSED_CONFIG.requests?.env?.[key] ?? env[key];
     if (!value) {
       throw new Error(`Missing ${key}: please set it in your environment variables.`);
     }

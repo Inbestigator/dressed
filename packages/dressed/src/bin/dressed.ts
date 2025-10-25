@@ -6,8 +6,9 @@ import { cwd, exit } from "node:process";
 import { Command, InvalidArgumentError } from "commander";
 import { parse } from "dotenv";
 import Enquirer from "enquirer";
-import build, { categoryExports, importString } from "../server/build/build.ts";
+import build from "../server/build/build.ts";
 import bundleFiles from "../server/build/bundle.ts";
+import { categoryExports, importString } from "../utils/build.ts";
 import { logDefer, logError, logSuccess } from "../utils/log.ts";
 
 const program = new Command().name("dressed").description("A sleek, serverless-ready Discord bot framework.");

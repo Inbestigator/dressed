@@ -11,7 +11,7 @@ Discord will send `POST` requests to your bot, instead of the websocket system t
 One cool feature of Dressed is that you can make **dynamic component IDs**, so that you only need to write one component handler for many different scenarios. 👉 [See more](https://dressed.js.org/docs/components#dynamic-component-ids)
 
 You can find examples of bots ready to deploy on
-[Vercel](https://vercel.com) and [Deno Deploy](https://deno.com/deploy) in
+[Cloudflare Workers](https://workers.cloudflare.com/), [Vercel](https://vercel.com), and [Deno Deploy](https://deno.com/deploy) in
 [this repo](https://github.com/Inbestigator/dressed-examples).
 
 ## 🚀 Usage
@@ -25,13 +25,14 @@ bun add dressed
 import type { CommandConfig, CommandInteraction } from "dressed";
 
 export const config = {
-  description: "Returns the latency",
+  description: "Checks the API latency",
 } satisfies CommandConfig;
 
 export default async function (interaction: CommandInteraction<typeof config>) {
   const start = Date.now();
-  const { resource } = await interaction.deferReply({ ephemeral: true, with_response: true });
-  await interaction.editReply(`🏓 ${Date.parse(resource?.message?.timestamp ?? "") - start}ms`);
+  const res = await interaction.deferReply({ ephemeral: true, with_response: true });
+  const delay = Date.parse(res.resource?.message?.timestamp ?? "") - start;
+  await interaction.editReply(`🏓 ${delay}ms`);
 }
 ```
 
@@ -41,10 +42,6 @@ You can then build and run the bot with:
 bun dressed build -ir
 bun .dressed
 ```
-
-- By default, the builder outputs only boilerplate data.
-- To include an instance creator, add the `-i` flag.
-- To register your bot's commands, add the `-r` flag.
 
 For more information on how to create a simple bot, check out [the getting started guide](/docs/guide/getting-started).
 

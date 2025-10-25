@@ -12,7 +12,7 @@ The config file is named `dressed.config.ts`, although other JS filetypes will w
 import { patchInteraction } from "@dressed/react";
 import type { ServerConfig } from "dressed/server";
 
-const config: ServerConfig = {
+export default {
   endpoint: "/bot",
   port: 3000,
   build: { extensions: ["tsx", "ts"], root: "src/bot" },
@@ -20,9 +20,7 @@ const config: ServerConfig = {
     commands: (i) => [patchInteraction(i)],
     components: (i, a) => [patchInteraction(i), a],
   },
-};
-
-export default config;
+} satisfies ServerConfig;
 ```
 
 ## Config breakdown
