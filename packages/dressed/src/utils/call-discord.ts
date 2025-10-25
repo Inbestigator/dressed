@@ -16,6 +16,8 @@ export interface CallConfig {
    * @default "https://discord.com/api/v10"
    */
   routeBase?: string;
+  /** Environment variables to use (botEnv) */
+  env?: typeof botEnv;
 }
 
 export async function callDiscord(
@@ -32,7 +34,7 @@ export async function callDiscord(
   const { params, files, flattenBodyInForm, ...options } = { ...init };
   const reqsConfig = globalThis.DRESSED_CONFIG.requests;
   const {
-    authorization = reqsConfig?.authorization ?? `Bot ${botEnv.DISCORD_TOKEN}`,
+    authorization = reqsConfig?.authorization ?? `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
     tries = reqsConfig?.tries ?? 3,
     routeBase = reqsConfig?.routeBase ?? RouteBases.api,
   } = $req;

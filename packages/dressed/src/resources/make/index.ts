@@ -104,7 +104,7 @@ export async function ${name}${generic ? `<${generic}>` : ""}(${params
     .filter((p) => p.startsWith("url."))
     .map((p) => (p.endsWith("?") ? p.slice(0, -1) : p))
     .map((p) => (p.includes("<") ? p.split("<")[1] : p.slice(4)))
-    .map((p) => (p.includes(":") ? p.split(/[?:]/)[0] : p))}), {
+    .map((p) => (p.includes(":") ? p.split(/[?:]/)[0] : p).replace(/botEnv\.([A-Z_]+)/, "$req?.env?.$1??$&"))}), {
       ${[`method: "${method.toUpperCase()}"`, params.some((p) => p.startsWith("data")) ? "body: data" : undefined, params.some((p) => p.startsWith("params")) ? "params" : undefined, flags?.includes("hasFiles") ? `files: ${flags.includes("singlefile") ? `[{ ...data${messageKey}.file, key: "file" }]` : `data${messageKey}.files`}` : undefined].filter(Boolean)}
       ${Object.entries(fetchOptions ?? [])
         .map(([k, v]) => `,${k}: ${JSON.stringify(v)}`)
