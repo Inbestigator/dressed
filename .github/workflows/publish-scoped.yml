@@ -9,7 +9,6 @@ on:
         type: "choice"
         options:
           - "matcher"
-          - "next"
           - "react"
           - "ws"
       prerelease:
