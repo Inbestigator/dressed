@@ -1,5 +1,5 @@
 /** Deep merges two objects, producing a new object where values from `b` override those from `a`. */
-export function override<T>(a: Partial<T>, b: Partial<T>): Partial<T> {
+export function override<T>(a: Partial<T>, b: Partial<T>) {
   const result = { ...a };
 
   for (const key in b) {
