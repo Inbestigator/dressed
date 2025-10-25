@@ -25,7 +25,7 @@ Deploying is the last step in building your bot, it will be where Discord can se
 
    ```ts title="src / index.ts"
    // @ts-ignore Generated after build
-   import { commands, components, events, config } from "../.dressed";
+   import { commands, components, events } from "../.dressed";
    import { handleRequest, setupCommands, setupComponents, setupEvents } from "dressed/server";
 
    export default {
@@ -34,8 +34,7 @@ Deploying is the last step in building your bot, it will be where Discord can se
          req,
          (...p) => ctx.waitUntil(setupCommands(commands)(...p)),
          (...p) => ctx.waitUntil(setupComponents(components)(...p)),
-         (...p) => ctx.waitUntil(setupEvents(events)(...p)),
-         config
+         (...p) => ctx.waitUntil(setupEvents(events)(...p))
        ),
    };
    ```

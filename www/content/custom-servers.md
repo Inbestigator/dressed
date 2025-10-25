@@ -5,12 +5,12 @@ If you want to run a server yourself, or build a Dressed project into a pre-exis
 Here's an example of integrating Dressed into a [Hono](https://hono.dev/) server. See [the deploying guides](/docs/guide/deploying) for more examples.
 
 ```ts caption="The handleRequest function takes a Request object and bot data, then runs the interaction and returns a Response object." showLineNumbers
-import { commands, components, events, config } from "./.dressed";
+import { commands, components, events } from "./.dressed";
 import { handleRequest } from "dressed/server";
 import { Hono } from "hono";
 
 const app = new Hono();
-app.post("/bot", ({ req }) => handleRequest(req.raw, commands, components, events, config));
+app.post("/bot", ({ req }) => handleRequest(req.raw, commands, components, events));
 
 export default app;
 ```

@@ -23,10 +23,10 @@ Deploying is the last step in building your bot, it will be where Discord can se
 
 3. ```ts title="api / bot.ts"
    // @ts-ignore Generated after build
-   import { commands, components, events, config } from "../.dressed/index.js";
+   import { commands, components, events } from "../.dressed/index.js";
    import { handleRequest } from "dressed/server";
 
-   export const POST = (req: Request) => handleRequest(req, commands, components, events, config);
+   export const POST = (req: Request) => handleRequest(req, commands, components, events);
    ```
 
 ---
@@ -37,10 +37,10 @@ If you’re using Next.js, you don’t need a `vercel.json` file. The Next.js fr
 
 ```ts title="app / api / bot / route.ts"
 // @ts-ignore Generated after build
-import { commands, components, events, config } from "../../../.dressed";
+import { commands, components, events } from "../../../.dressed";
 import { handleRequest } from "dressed/server";
 
-export const POST = (req: Request) => handleRequest(req, commands, components, events, config);
+export const POST = (req: Request) => handleRequest(req, commands, components, events);
 ```
 
 > [!IMPORTANT]
