@@ -9,7 +9,6 @@
     "ignoreUnknown": false
   },
   "formatter": {
-    "enabled": true,
     "indentStyle": "space",
     "lineWidth": 120
   },
@@ -19,18 +18,11 @@
     }
   },
   "linter": {
-    "enabled": true,
     "rules": {
       "nursery": { "useSortedClasses": "on" }
     }
   },
-  "javascript": {
-    "formatter": {
-      "quoteStyle": "double"
-    }
-  },
   "assist": {
-    "enabled": true,
     "actions": {
       "source": {
         "organizeImports": "on"
