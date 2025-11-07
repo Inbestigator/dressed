@@ -16,13 +16,13 @@ function ensureBucket(id: string) {
     buckets[bucketId] = { limit: 1, remaining: 1, refresh: -1, promise: Promise.resolve() };
   }
   const bucket = buckets[bucketId];
+  // Runtimes like CF workers persist global state between requests except promises -> null
   if (!bucket.promise) bucket.promise = Promise.resolve();
   return bucket;
 }
 
 export function checkLimit(req: Request) {
   return new Promise<(v: Response) => void>((resolveChecker) => {
-    const { promise, resolve: resolveRequest } = Promise.withResolvers<void>();
     const bucketIdKey = `${req.method}:${req.url}`;
     const bucket = ensureBucket(bucketIdKey);
     bucket.promise = bucket.promise.then(async () => {
@@ -30,22 +30,24 @@ export function checkLimit(req: Request) {
       const deltaG = globalReset - Date.now();
 
       if (deltaG > 0) {
-        await new Promise<void>((resolveTimeout) => setTimeout(resolveTimeout, deltaG));
+        await new Promise<void>((resolveDeltaG) => setTimeout(resolveDeltaG, deltaG));
       }
 
       const deltaB = bucket.refresh - Date.now();
 
       if (bucket.remaining-- === 0) {
-        await new Promise<void>((resolveTimeout) =>
+        await new Promise<void>((resolveDeltaB) =>
           setTimeout(
             () => {
               bucket.remaining = bucket.limit - 1;
-              resolveTimeout();
+              resolveDeltaB();
             },
             Math.max(0, deltaB),
           ),
         );
       }
+
+      let resolveRequest: () => void;
 
       resolveChecker((res) => {
         const bucketId = res.headers.get("x-ratelimit-bucket");
@@ -79,7 +81,9 @@ export function checkLimit(req: Request) {
         resolveRequest();
       });
 
-      return promise;
+      return new Promise<void>((r) => {
+        resolveRequest = r;
+      });
     });
   });
 }
