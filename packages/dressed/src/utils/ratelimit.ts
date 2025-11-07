@@ -61,9 +61,9 @@ export function checkLimit(req: Request) {
 
         if (scope === "global" && !Number.isNaN(retryAfter)) {
           globalReset = Date.now() + retryAfter * 1000;
-          return;
+          return resolveRequest();
         }
-        if ([limit, remaining, resetAfter].some(Number.isNaN) || !bucketId) return;
+        if ([limit, remaining, resetAfter].some(Number.isNaN) || !bucketId) return resolveRequest();
 
         bucketIds[bucketIdKey] = bucketId;
 
