@@ -1,6 +1,6 @@
 {
   "name": "dressed",
-  "version": "1.10.0",
+  "version": "1.10.1-canary.1.6",
   "description": "A sleek, serverless-ready Discord bot framework.",
   "scripts": {
     "dist": "rm -fr dist && bun --bun ./src/resources/make && tsc",
@@ -12,9 +12,9 @@
     "@dressed/matcher": "^1.4.0",
     "commander": "^14.0.2",
     "discord-api-types": "^0.38.31",
-    "dotenv": "^17.2.2",
+    "dotenv": "^17.2.3",
     "enquirer": "^2.4.1",
-    "esbuild": "^0.25.11"
+    "esbuild": "^0.25.12"
   },
   "exports": {
     ".": "./dist/index.js",

@@ -61,7 +61,7 @@ beforeAll(() => {
             retry_after: retryAfter,
             global: true,
           }),
-          { status: 429, headers },
+          { status: 429, headers }
         );
       }
 
@@ -82,7 +82,7 @@ beforeAll(() => {
             retry_after: retryAfter,
             global: false,
           }),
-          { status: 429, headers },
+          { status: 429, headers }
         );
       }
 
@@ -99,7 +99,7 @@ const $req = { tries: 0, authorization: "", routeBase: "http://localhost:6556" }
 
 test("Ratelimit delaying", () => {
   expect(
-    Promise.all(Array.from({ length: 5 }, () => createMessage("wait_for_me", "test", $req))),
+    Promise.all(Array.from({ length: 5 }, () => createMessage("wait_for_me", "test", $req)))
   ).resolves.toMatchSnapshot();
 });
 
@@ -107,12 +107,12 @@ test("Globally ratelimited and thrown", () => {
   expect(createMessage("limit_me", "test", $req)).rejects.toThrowErrorMatchingSnapshot();
 });
 
-test("Globally ratelimited and delayed", async () => {
+test("Globally ratelimited and delayed", () => {
   expect(createMessage("delay_me", "test", $req)).resolves.toMatchSnapshot();
 });
 
 // Ratelimit is reset to 1 for the previous test, that's why this one acts differently
 
-test("Globally ratelimited and retried", async () => {
+test("Globally ratelimited and retried", () => {
   expect(createMessage("retry_me", "test", { ...$req, tries: 1 })).resolves.toMatchSnapshot();
 });
