@@ -29,13 +29,12 @@ export async function callDiscord(
     files?: RawFile[];
     flattenBodyInForm?: boolean;
   },
-  $req: CallConfig = {}
+  $req: CallConfig = {},
 ): Promise<Response> {
   const { params, files, flattenBodyInForm, ...options } = { ...init };
   const reqsConfig = globalThis.DRESSED_CONFIG.requests;
   const {
-    authorization = reqsConfig?.authorization ??
-      `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
+    authorization = reqsConfig?.authorization ?? `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
     tries = reqsConfig?.tries ?? 3,
     routeBase = reqsConfig?.routeBase ?? RouteBases.api,
   } = $req;
@@ -62,7 +61,7 @@ export async function callDiscord(
         new Blob([Buffer.isBuffer(file.data) ? Buffer.from(file.data) : file.data.toString()], {
           type: file.contentType,
         }),
-        file.name
+        file.name,
       );
     }
 

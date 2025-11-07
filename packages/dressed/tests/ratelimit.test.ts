@@ -61,7 +61,7 @@ beforeAll(() => {
             retry_after: retryAfter,
             global: true,
           }),
-          { status: 429, headers }
+          { status: 429, headers },
         );
       }
 
@@ -82,7 +82,7 @@ beforeAll(() => {
             retry_after: retryAfter,
             global: false,
           }),
-          { status: 429, headers }
+          { status: 429, headers },
         );
       }
 
@@ -99,7 +99,7 @@ const $req = { tries: 0, authorization: "", routeBase: "http://localhost:6556" }
 
 test("Ratelimit delaying", () => {
   expect(
-    Promise.all(Array.from({ length: 5 }, () => createMessage("wait_for_me", "test", $req)))
+    Promise.all(Array.from({ length: 5 }, () => createMessage("wait_for_me", "test", $req))),
   ).resolves.toMatchSnapshot();
 });
 
