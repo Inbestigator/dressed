@@ -11,7 +11,7 @@
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
     "commander": "^14.0.2",
-    "discord-api-types": "^0.38.31",
+    "discord-api-types": "^0.38.32",
     "dotenv": "^17.2.3",
     "enquirer": "^2.4.1",
     "esbuild": "^0.25.12"
