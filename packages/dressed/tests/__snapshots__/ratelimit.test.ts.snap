@@ -33,9 +33,3 @@ exports[`Globally ratelimited and retried 1`] = `
   "content": "test",
 }
 `;
-
-exports[`Ratelimit supports partial 1`] = `
-{
-  "content": "test",
-}
-`;

@@ -1,7 +1,7 @@
 import { Buffer } from "node:buffer";
 import { type RESTError, type RESTErrorData, RouteBases } from "discord-api-types/v10";
 import type { RawFile } from "../types/file.ts";
-import { botEnv } from "./env.ts";
+import { botEnv, serverConfig } from "./env.ts";
 import { logError } from "./log.ts";
 import { checkLimit } from "./ratelimit.ts";
 
@@ -17,7 +17,12 @@ export interface CallConfig {
    */
   routeBase?: string;
   /** Environment variables to use (botEnv) */
-  env?: typeof botEnv;
+  env?: Partial<typeof botEnv>;
+  /**
+   * Interval in seconds at which old buckets are purged from the cache, set to -1 to disable
+   * @default 1,800 // 30 minutes
+   */
+  bucketCleanup?: number;
 }
 
 export async function callDiscord(
@@ -32,7 +37,7 @@ export async function callDiscord(
   $req: CallConfig = {},
 ): Promise<Response> {
   const { params, files, flattenBodyInForm, ...options } = { ...init };
-  const reqsConfig = globalThis.DRESSED_CONFIG.requests;
+  const reqsConfig = serverConfig.requests;
   const {
     authorization = reqsConfig?.authorization ?? `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
     tries = reqsConfig?.tries ?? 3,
