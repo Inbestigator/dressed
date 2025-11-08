@@ -12,7 +12,7 @@
     },
     "packages/dressed": {
       "name": "dressed",
-      "version": "1.10.1-canary.1.7",
+      "version": "1.10.1",
       "bin": {
         "dressed": "dist/bin/dressed.js",
       },
