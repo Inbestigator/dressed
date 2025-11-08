@@ -1,0 +1,36 @@
+{
+  "name": "@dressed/voice",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inbestigator/dressed.git",
+    "directory": "packages/dressed-voice"
+  },
+  "peerDependencies": {
+    "dressed": "^1.9.0"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "description": "Send data in voice channels",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://dressed.vercel.app",
+  "keywords": [
+    "dressed",
+    "voice",
+    "discord"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "dist": "rm -fr dist && tsc",
+    "check-types": "tsc --noEmit",
+    "dry-publish": "bun publish --dry-run"
+  },
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "discord-api-types": "^0.38.20"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "dist": {
+      "dependsOn": ["dressed#dist"],
+      "outputs": ["dist/**"]
+    },
+    "check-types": {
+      "dependsOn": ["dressed#dist"]
+    }
+  }
+}
