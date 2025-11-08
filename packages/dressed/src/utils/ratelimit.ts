@@ -1,3 +1,4 @@
+import { setTimeout } from "node:timers";
 import { serverConfig } from "./env.ts";
 
 interface Bucket {
@@ -5,7 +6,7 @@ interface Bucket {
   limit: number;
   refresh: number;
   promise: Promise<void>;
-  lastUsed: number;
+  cleaner?: NodeJS.Timeout;
 }
 
 export const buckets = new Map<string, Bucket>();
@@ -21,13 +22,23 @@ function ensureBucket(id: string) {
       remaining: 1,
       refresh: -1,
       promise: Promise.resolve(),
-      lastUsed: -1,
     });
   }
   const bucket = buckets.get(bucketId) as Bucket;
   // Runtimes like CF workers persist global state between requests except promises -> null
   if (!bucket.promise) bucket.promise = Promise.resolve();
-  bucket.lastUsed = Date.now();
+
+  const { bucketCleanup = 30 * 60 } = serverConfig.requests ?? {};
+  if (bucketCleanup !== -1) {
+    clearTimeout(bucket.cleaner);
+    bucket.cleaner = setTimeout(() => {
+      buckets.delete(id);
+      bucketIds.forEach((v, k) => {
+        v === id && bucketIds.delete(k);
+      });
+    }, bucketCleanup * 1000).unref();
+  }
+
   return bucket;
 }
 
@@ -40,13 +51,13 @@ export function checkLimit(req: Request) {
     const bucketIdKey = `${req.method}:${req.url}`;
     const bucket = ensureBucket(bucketIdKey);
     bucket.promise = bucket.promise.then(async () => {
-      const bucket = ensureBucket(bucketIdKey);
       const deltaG = globalReset - Date.now();
 
       if (deltaG > 0) {
         await delay(deltaG);
       }
 
+      const bucket = ensureBucket(bucketIdKey);
       const deltaB = bucket.refresh - Date.now();
 
       if (bucket.remaining-- === 0) {
@@ -91,23 +102,4 @@ export function checkLimit(req: Request) {
       });
     });
   });
-}
-
-const { bucketCleanup = 30 * 60 } = serverConfig.requests ?? {};
-
-if (bucketCleanup !== -1) {
-  setInterval(() => {
-    const now = Date.now();
-    for (const [key, bucket] of buckets) {
-      if (
-        now - bucket.lastUsed > bucketCleanup &&
-        (bucket.remaining !== 0 || bucket.refresh < now || now - bucket.lastUsed > bucketCleanup * 4)
-      ) {
-        buckets.delete(key);
-      }
-    }
-    for (const [reqKey, bucketId] of bucketIds) {
-      if (!buckets.has(bucketId)) bucketIds.delete(reqKey);
-    }
-  }, bucketCleanup * 1000).unref();
 }
