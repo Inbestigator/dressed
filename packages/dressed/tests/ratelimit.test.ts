@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import { createMessage } from "dressed";
+import { serverConfig } from "dressed/utils";
 
 interface Bucket {
   resetAt: number;
@@ -93,26 +94,25 @@ beforeAll(() => {
 
 afterAll(() => server.stop());
 
-// Normally tries defaults to 3, but for the purposes of these tests there shouldn't be any wiggle room
-
-const $req = { tries: 0, authorization: "", routeBase: "http://localhost:6556" };
+Object.assign(serverConfig, {
+  // Normally tries defaults to 3, but for the purposes of these tests there shouldn't be any wiggle room
+  requests: { tries: 0, authorization: "", routeBase: "http://localhost:6556" },
+});
 
 test("Ratelimit delaying", () => {
-  expect(
-    Promise.all(Array.from({ length: 5 }, () => createMessage("wait_for_me", "test", $req))),
-  ).resolves.toMatchSnapshot();
+  expect(Promise.all(Array.from({ length: 5 }, () => createMessage("wait_for_me", "test")))).resolves.toMatchSnapshot();
 });
 
 test("Globally ratelimited and thrown", () => {
-  expect(createMessage("limit_me", "test", $req)).rejects.toThrowErrorMatchingSnapshot();
+  expect(createMessage("limit_me", "test")).rejects.toThrowErrorMatchingSnapshot();
 });
 
-test("Globally ratelimited and delayed", async () => {
-  expect(createMessage("delay_me", "test", $req)).resolves.toMatchSnapshot();
+test("Globally ratelimited and delayed", () => {
+  expect(createMessage("delay_me", "test")).resolves.toMatchSnapshot();
 });
 
 // Ratelimit is reset to 1 for the previous test, that's why this one acts differently
 
-test("Globally ratelimited and retried", async () => {
-  expect(createMessage("retry_me", "test", { ...$req, tries: 1 })).resolves.toMatchSnapshot();
+test("Globally ratelimited and retried", () => {
+  expect(createMessage("retry_me", "test", { tries: 1 })).resolves.toMatchSnapshot();
 });

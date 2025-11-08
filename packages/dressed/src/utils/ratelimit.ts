@@ -1,81 +1,103 @@
+import { setTimeout } from "node:timers";
+
 interface Bucket {
   remaining: number;
   limit: number;
-  queue: (() => void)[];
   refresh: number;
-  sweeper?: NodeJS.Timeout;
+  promise: Promise<void>;
+  cleaner?: NodeJS.Timeout;
 }
 
-const buckets = new Map<string, Bucket>();
-const bucketIds = new Map<string, string>();
+export const buckets = new Map<string, Bucket>();
+export const bucketIds = new Map<string, string>();
 
 let globalReset = -1;
 
-function checkGlobalLimit() {
-  const deltaG = globalReset - Date.now();
-  if (deltaG > 0) return new Promise<void>((r) => setTimeout(r, deltaG));
-}
-
 function ensureBucket(id: string) {
   const bucketId = bucketIds.get(id) ?? id;
-  return (
-    buckets.get(bucketId) ??
-    // biome-ignore lint/style/noNonNullAssertion: We're setting, so it's guaranteed
-    buckets.set(bucketId, { limit: 1, remaining: 1, queue: [], refresh: -1 }).get(bucketId)!
-  );
-}
-
-export function checkLimit(req: Request) {
-  const bucket = ensureBucket(`${req.method}:${req.url}`);
-  if (bucket.remaining-- > 0 && bucket.refresh < Date.now()) return checkGlobalLimit();
-  return new Promise<void>((r) => bucket.queue.push(r));
-}
-
-export function updateLimit(req: Request, res: Response) {
-  const bucketId = res.headers.get("x-ratelimit-bucket");
-  const limit = parseInt(res.headers.get("x-ratelimit-limit") ?? "", 10);
-  const remaining = parseInt(res.headers.get("x-ratelimit-remaining") ?? "", 10);
-  const resetAfter = parseFloat(res.headers.get("x-ratelimit-reset-after") ?? "");
-  const retryAfter = parseFloat(res.headers.get("retry-after") ?? "");
-  const scope = res.headers.get("x-ratelimit-scope");
-  const id = `${req.method}:${req.url}`;
-  const tmpBucket = buckets.get(id);
-  const now = Date.now();
-  const refreshAfter = (Number.isNaN(retryAfter) ? resetAfter : retryAfter) * 1000;
-  buckets.delete(id);
-
-  if (scope === "global" && !Number.isNaN(retryAfter)) {
-    globalReset = now + retryAfter * 1000;
-    return;
+  if (!buckets.has(bucketId)) {
+    buckets.set(bucketId, {
+      limit: 1,
+      remaining: 1,
+      refresh: -1,
+      promise: Promise.resolve(),
+    });
   }
-  if ([limit, remaining, resetAfter].some(Number.isNaN) || !bucketId) return;
+  const bucket = buckets.get(bucketId) as Bucket;
+  // Runtimes like CF workers persist global state between requests except promises -> null
+  if (!bucket.promise) bucket.promise = Promise.resolve();
 
-  const release = async () => {
-    const bucket = buckets.get(bucketId);
-    if (!bucket) return;
-    const callback = bucket.queue.shift();
-    if (callback) {
-      --bucket.remaining;
-      await checkGlobalLimit();
-      callback();
-    }
-  };
+  return bucket;
+}
 
-  bucketIds.set(id, bucketId);
-  const bucket = buckets.get(bucketId);
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-  clearTimeout(bucket?.sweeper);
-  buckets.set(bucketId, {
-    limit,
-    remaining,
-    queue: (bucket?.queue ?? []).concat(tmpBucket?.queue ?? []),
-    refresh: now + refreshAfter,
-    sweeper: setTimeout(() => {
-      const bucket = buckets.get(bucketId);
-      if (!bucket || globalReset > Date.now()) return;
-      bucket.remaining = bucket.limit;
-      release();
-    }, refreshAfter),
+export function checkLimit(req: Request, bucketTTL: number) {
+  return new Promise<(v: Response) => void>((resolveChecker) => {
+    const bucketIdKey = `${req.method}:${req.url}`;
+    const bucket = ensureBucket(bucketIdKey);
+    bucket.promise = bucket.promise.then(async () => {
+      const deltaG = globalReset - Date.now();
+
+      if (deltaG > 0) {
+        await delay(deltaG);
+      }
+
+      const bucket = ensureBucket(bucketIdKey);
+      const deltaB = bucket.refresh - Date.now();
+
+      if (bucket.remaining-- === 0) {
+        await delay(Math.max(0, deltaB));
+        bucket.remaining = bucket.limit - 1;
+      }
+
+      let resolveRequest: () => void;
+
+      resolveChecker((res) => {
+        const bucketId = res.headers.get("x-ratelimit-bucket");
+        const limit = parseInt(res.headers.get("x-ratelimit-limit") ?? "", 10);
+        const remaining = parseInt(res.headers.get("x-ratelimit-remaining") ?? "", 10);
+        const resetAfter = parseFloat(res.headers.get("x-ratelimit-reset-after") ?? "");
+        const retryAfter = parseFloat(res.headers.get("retry-after") ?? "");
+        const scope = res.headers.get("x-ratelimit-scope");
+        const refreshAfter = (Number.isNaN(retryAfter) ? resetAfter : retryAfter) * 1000;
+        const tmpBucket = buckets.get(bucketIdKey);
+
+        buckets.delete(bucketIdKey);
+
+        if (scope === "global" && !Number.isNaN(retryAfter)) {
+          globalReset = Date.now() + retryAfter * 1000;
+          return resolveRequest();
+        }
+        if ([limit, remaining, resetAfter].some(Number.isNaN) || !bucketId) return resolveRequest();
+
+        bucketIds.set(bucketIdKey, bucketId);
+
+        const bucket = ensureBucket(bucketIdKey);
+
+        bucket.limit = limit;
+        bucket.remaining = remaining;
+        bucket.refresh = Date.now() + refreshAfter;
+        bucket.promise = tmpBucket ? bucket.promise.then(() => tmpBucket.promise) : bucket.promise;
+
+        clearTimeout(bucket.cleaner);
+        if (bucketTTL !== -1) {
+          bucket.cleaner = setTimeout(() => {
+            buckets.delete(bucketId);
+            bucketIds.forEach((v, k) => {
+              v === bucketId && bucketIds.delete(k);
+            });
+          }, bucketTTL * 1000).unref();
+        }
+
+        resolveRequest();
+      });
+
+      return new Promise<void>((r) => {
+        resolveRequest = r;
+      });
+    });
   });
-  if (remaining > 0) release();
 }
