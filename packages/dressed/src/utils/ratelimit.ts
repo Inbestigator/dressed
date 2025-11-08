@@ -1,5 +1,4 @@
 import { setTimeout } from "node:timers";
-import { serverConfig } from "./env.ts";
 
 interface Bucket {
   remaining: number;
@@ -28,25 +27,14 @@ function ensureBucket(id: string) {
   // Runtimes like CF workers persist global state between requests except promises -> null
   if (!bucket.promise) bucket.promise = Promise.resolve();
 
-  const { bucketCleanup = 30 * 60 } = serverConfig.requests ?? {};
-  if (bucketCleanup !== -1) {
-    clearTimeout(bucket.cleaner);
-    bucket.cleaner = setTimeout(() => {
-      buckets.delete(id);
-      bucketIds.forEach((v, k) => {
-        v === id && bucketIds.delete(k);
-      });
-    }, bucketCleanup * 1000).unref();
-  }
-
   return bucket;
 }
 
-function delay(ms: number): Promise<void> {
+function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function checkLimit(req: Request) {
+export function checkLimit(req: Request, bucketTTL: number) {
   return new Promise<(v: Response) => void>((resolveChecker) => {
     const bucketIdKey = `${req.method}:${req.url}`;
     const bucket = ensureBucket(bucketIdKey);
@@ -93,6 +81,16 @@ export function checkLimit(req: Request) {
         bucket.remaining = remaining;
         bucket.refresh = Date.now() + refreshAfter;
         bucket.promise = tmpBucket ? bucket.promise.then(() => tmpBucket.promise) : bucket.promise;
+
+        clearTimeout(bucket.cleaner);
+        if (bucketTTL !== -1) {
+          bucket.cleaner = setTimeout(() => {
+            buckets.delete(bucketId);
+            bucketIds.forEach((v, k) => {
+              v === bucketId && bucketIds.delete(k);
+            });
+          }, bucketTTL * 1000).unref();
+        }
 
         resolveRequest();
       });

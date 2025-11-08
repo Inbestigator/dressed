@@ -7,22 +7,31 @@ import { checkLimit } from "./ratelimit.ts";
 
 /** Optional extra config for the layer before fetch */
 export interface CallConfig {
-  /** The authorization string to use, defaults to `Bot {env.DISCORD_TOKEN}` */
+  /**
+   * The authorization string to use
+   * @default `Bot {env.DISCORD_TOKEN}`
+   */
   authorization?: string;
-  /** Number of retries when rate limited before the caller gives up, defaults to 3 */
+  /**
+   * Number of retries when rate limited before the caller gives up
+   * @default 3
+   */
   tries?: number;
   /**
    * The location which endpoints branch off from
    * @default "https://discord.com/api/v10"
    */
   routeBase?: string;
-  /** Environment variables to use (botEnv) */
+  /**
+   * Environment variables to use
+   * @default {botEnv}
+   */
   env?: Partial<typeof botEnv>;
   /**
-   * Interval in seconds at which old buckets are purged from the cache, set to -1 to disable
+   * Delay in seconds before old ratelimit buckets are purged from the cache, set to -1 to disable
    * @default 1,800 // 30 minutes
    */
-  bucketCleanup?: number;
+  bucketTTL?: number;
 }
 
 export async function callDiscord(
@@ -42,6 +51,7 @@ export async function callDiscord(
     authorization = reqsConfig?.authorization ?? `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
     tries = reqsConfig?.tries ?? 3,
     routeBase = reqsConfig?.routeBase ?? RouteBases.api,
+    bucketTTL = reqsConfig?.bucketTTL ?? 30 * 60,
   } = $req;
   const url = new URL(routeBase + endpoint);
 
@@ -88,7 +98,7 @@ export async function callDiscord(
     ...(options as RequestInit),
   });
 
-  const updateLimit = await checkLimit(req);
+  const updateLimit = await checkLimit(req, bucketTTL);
 
   const res = await fetch(req);
 
