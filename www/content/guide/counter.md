@@ -50,15 +50,8 @@ export function countDisplay(n: number) {
   return [
     TextDisplay(`Current count: ${n}`),
     ActionRow(
-      Button({
-        label: "Add",
-        custom_id: `set-counter-${n + 1}`,
-      }),
-      Button({
-        label: "Reset",
-        style: "Danger",
-        custom_id: "set-counter-0",
-      })
+      Button({ label: "Add", custom_id: `set-counter-${n + 1}` }),
+      Button({ label: "Reset", style: "Danger", custom_id: "set-counter-0" })
     ),
   ];
 }
