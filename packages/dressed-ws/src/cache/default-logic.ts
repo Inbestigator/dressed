@@ -57,19 +57,12 @@ export function defaultLogic<F extends CachedFunctions>(config: Config = {}): De
       if (!data || data.expiresAt + data.swr < Date.now()) {
         return { state: "miss" };
       }
-      return {
-        state: data.expiresAt < Date.now() ? "stale" : "hit",
-        value: data.value,
-      };
+      return { state: data.expiresAt < Date.now() ? "stale" : "hit", value: data.value };
     },
     set(key, value) {
-      cache.set(key, {
-        value,
-        swr: (config.swr ?? 60) * 1000,
-        expiresAt: Date.now() + (config.ttl ?? 5 * 60) * 1000,
-      });
+      cache.set(key, { value, swr: (config.swr ?? 60) * 1000, expiresAt: Date.now() + (config.ttl ?? 5 * 60) * 1000 });
     },
-    delete: cache.delete,
+    delete: (key) => cache.delete(key),
     resolveKey,
   };
 }
