@@ -43,7 +43,7 @@ bun dressed build -ir
 bun .dressed
 ```
 
-For more information on how to create a simple bot, check out [the getting started guide](/docs/guide/getting-started).
+For more information on how to create a simple bot, check out [the getting started guide](https://dressed.js.org/docs/guide/getting-started).
 
 Dressed includes a [Node HTTP](https://nodejs.org/api/http.html) server out of the box.
 If you'd prefer to create your own, all the functions you need are available within `dressed/server`.
