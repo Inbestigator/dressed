@@ -24,7 +24,7 @@ import type { createInteractionCallback } from "../resources/interactions.ts";
 import type { getField } from "../server/extenders/fields.ts";
 import type { getOption, OptionValueGetters } from "../server/extenders/options.ts";
 import type { CallConfig } from "../utils/call-discord.ts";
-import type { CommandConfig } from "./config.ts";
+import type { ChatInputConfig, CommandConfig } from "./config.ts";
 import type { RawFile } from "./file.ts";
 import type { Requirable } from "./utilities.ts";
 
@@ -32,7 +32,8 @@ export type InteractionCallbackResponse<O extends RESTPostAPIInteractionCallback
   O["with_response"] extends true ? RESTPostAPIInteractionCallbackWithResponseResult : null
 >;
 
-export type GetOptionFn<T extends Extract<CommandConfig, { type?: "ChatInput" }>> = <
+// TODO return the value directly instead of getters
+export type GetOptionFn<T extends ChatInputConfig> = <
   N extends NonNullable<T["options"]>[number]["name"],
   R extends boolean,
   O extends Extract<NonNullable<T["options"]>[number], { name: N }>,
@@ -71,19 +72,26 @@ export type CommandInteraction<T extends keyof typeof ApplicationCommandType | C
       : APIPrimaryEntryPointCommandInteraction) &
   Omit<BaseInteractionMethods, "update" | "deferUpdate" | "sendChoices">;
 
+type Derequire<T> = T extends { options: readonly (infer O)[] }
+  ? Omit<T, "options"> & { options: (Omit<Derequire<O>, "required"> & { required: false })[] }
+  : T;
+
 /**
  * A command autocomplete interaction, includes methods for responding to the interaction.
  */
-export type CommandAutocompleteInteraction = APIApplicationCommandAutocompleteInteraction & {
-  /**
-   * Get an option from the interaction
-   * @param name The name of the option
-   */
-  getOption: <N extends string>(name: N) => OptionValueGetters<N> | undefined;
-} & Omit<
-    BaseInteractionMethods,
-    "deferReply" | "deferUpdate" | "editReply" | "followUp" | "reply" | "showModal" | "update"
-  >;
+export type CommandAutocompleteInteraction<T extends ChatInputConfig | undefined = undefined> =
+  APIApplicationCommandAutocompleteInteraction & {
+    /**
+     * Get an option from the interaction
+     * @param name The name of the option
+     */
+    getOption: T extends object
+      ? GetOptionFn<Derequire<T>>
+      : <N extends string>(name: N) => OptionValueGetters<N> | undefined;
+  } & Omit<
+      BaseInteractionMethods,
+      "deferReply" | "deferUpdate" | "editReply" | "followUp" | "reply" | "showModal" | "update"
+    >;
 
 interface ResolvedSelectValues {
   StringSelect: string[];

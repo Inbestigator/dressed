@@ -37,7 +37,6 @@ const config: HostConfig<
       throw new Error(`Unknown node type: ${type}`);
     }
 
-    // biome-ignore lint/correctness/noUnusedVariables: Children are being filtered out
     const { children, ...rest } = props;
 
     const node = createNode(rest);

@@ -15,7 +15,7 @@ export default function Home() {
           alt="Blurred bg of logo"
           width={128}
           height={128}
-          className="-z-1 absolute top-0 left-0 not-sm:scale-75 animate-[opacityUp_600ms_ease-in-out_forwards] blur"
+          className="absolute top-0 left-0 -z-1 not-sm:scale-75 animate-[opacityUp_600ms_ease-in-out_forwards] blur"
         />
         <Image src="/dressed.webp" alt="Dressed logo" width={128} height={128} className="not-sm:scale-75" />
       </div>

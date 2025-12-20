@@ -57,29 +57,24 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
         ...methods,
         getValues: () => {
           if (!isMessageComponentSelectMenuInteraction(input)) {
-            throw new Error("The function getValues may only be used on select menus");
+            throw new Error("The getValues function may only be used on select menus");
           }
+
           const resolved: Partial<APIInteractionDataResolved> = "resolved" in input.data ? input.data.resolved : {};
-          const returnValue = (resolvedKey?: keyof APIInteractionDataResolved) => {
-            if (resolvedKey) {
-              if (!resolved?.[resolvedKey]) {
-                throw new Error(`No ${resolvedKey} found`);
-              }
-              const resolveds = [];
-              for (const value of input.data.values) {
-                resolveds.push(resolved[resolvedKey][value]);
-              }
-              return resolveds;
+          const returnValues = (resolvedKey: keyof APIInteractionDataResolved) => {
+            if (!resolved?.[resolvedKey]) {
+              throw new Error(`No ${resolvedKey} found`);
             }
-            return input.data.values;
+            return input.data.values.map((v) => resolved[resolvedKey]?.[v]);
           };
+
           switch (input.data.component_type) {
             case ComponentType.StringSelect:
-              return returnValue();
+              return input.data.values;
             case ComponentType.UserSelect:
-              return returnValue("users");
+              return returnValues("users");
             case ComponentType.RoleSelect:
-              return returnValue("roles");
+              return returnValues("roles");
             case ComponentType.MentionableSelect: {
               if (!resolved?.users && !resolved?.roles) {
                 throw new Error(`No mentionables found`);
@@ -91,7 +86,7 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
               return mentionables;
             }
             case ComponentType.ChannelSelect:
-              return returnValue("channels");
+              return returnValues("channels");
           }
         },
       } as MessageComponentInteraction as Interaction<T>;

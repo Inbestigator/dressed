@@ -41,7 +41,6 @@ export function MediaGallery(
  * Creates a media item to be used in a media gallery
  */
 export function MediaGalleryItem(...config: Parameters<typeof Thumbnail>): APIMediaGalleryItem {
-  // biome-ignore lint/correctness/noUnusedVariables: Type and ID are unused
   const { type, id, ...item } = Thumbnail(...config);
   return item;
 }

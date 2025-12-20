@@ -20,7 +20,7 @@ DISCORD_TOKEN="<your bot token>"
 
 Now open your `.gitignore` file and add a new line ".dressed" at the end, Dressed bundles your files into JavaScript for use at runtime, they and some information data are outputted in a `.dressed` folder.
 
-For this guide, our files wil be laid out according to the opinionated file system like so:
+For this guide, our files wil be laid out according to the opinionated file system similarly to this:
 
 ```sh
 src
@@ -39,7 +39,7 @@ src
 
 ## Ping command
 
-To create a command, all you have to do is create a file within `src/commands`. The command will be named after the file, so for this we'll name it `ping.ts`.
+To create a command, all you have to do is create a file within `src/commands`. The command will be named after the file, so in this case we'll name it `ping.ts`.
 
 Command handlers in Dressed are exported as the default function from your file.
 
