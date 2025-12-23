@@ -95,7 +95,7 @@ export async function callDiscord(
   else if (options.body) options.body = JSON.stringify(options.body);
 
   const req = new Request(url, {
-    headers: { authorization, "content-type": files?.length ? "multipart/form-data" : "application/json" },
+    headers: { authorization, ...(files?.length ? {} : { "content-type": "application/json" }) },
     ...(options as RequestInit),
   });
 

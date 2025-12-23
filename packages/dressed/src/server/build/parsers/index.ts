@@ -43,7 +43,7 @@ export function createHandlerParser<T extends BaseData<Partial<Record<keyof T["d
           (item) => options.uniqueKeys?.every((k) => data[k] === item.data[k]) ?? item.name === file.name,
         );
         if (hasConflict) {
-          throw new Error(`${warnSymbol} ${itemMessages.confict}`);
+          throw new Error(`${warnSymbol} ${itemMessages.confict}`, { cause: "dressed-parsing" });
         }
         if (typeof file.exports.default !== "function") {
           throw new TypeError(`${errorSymbol} Every handler must export a default function, skipping`, {
