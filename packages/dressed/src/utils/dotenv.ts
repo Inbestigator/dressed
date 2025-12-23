@@ -13,7 +13,7 @@ export type LoadedEnvFiles = Array<{
   env: Env;
 }>;
 
-const initialEnv: Env = Object.assign({}, process.env);
+const initialEnv: Env = { ...process.env };
 
 function processEnv(loadedEnvFiles: LoadedEnvFiles) {
   if (process.env.__PROCESSED_ENV || loadedEnvFiles.length === 0) {
@@ -27,7 +27,7 @@ function processEnv(loadedEnvFiles: LoadedEnvFiles) {
     try {
       const result = parse(envFile.contents);
       for (const key of Object.keys(result)) {
-        if (typeof parsed[key] === "undefined" && typeof initialEnv[key] === "undefined") {
+        if (parsed[key] === undefined && initialEnv[key] === undefined) {
           parsed[key] = result[key];
         }
       }
@@ -40,8 +40,8 @@ function processEnv(loadedEnvFiles: LoadedEnvFiles) {
 export function loadEnvConfig() {
   const isTest = process.env.NODE_ENV === "test";
   const isDev = process.env.NODE_ENV === "development";
-  const mode = isTest ? "test" : isDev ? "development" : "production";
-  const dotenvFiles = [`.env.${mode}.local`, mode !== "test" && `.env.local`, `.env.${mode}`, ".env"].filter(
+  const mode = isTest ? "test" : isDev ? "development" : "production"; // NOSONAR
+  const dotenvFiles = [`.env.${mode}.local`, !isTest && `.env.local`, `.env.${mode}`, ".env"].filter(
     Boolean,
   ) as string[];
   const files = [];

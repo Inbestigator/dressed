@@ -1,6 +1,6 @@
 import type { BaseData, ServerConfig } from "../../types/config.ts";
 import type { Promisable } from "../../types/utilities.ts";
-import { logDefer, logError, logWarn } from "../../utils/log.ts";
+import logger from "../../utils/log.ts";
 
 interface SetupItemMessages<T, P> {
   noItem: string;
@@ -23,12 +23,12 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
         itemMessages = itemMessages(data);
       }
       if (!item || !Array.isArray(props)) {
-        logWarn(itemMessages.noItem);
+        logger.warn(itemMessages.noItem);
         return;
       }
 
       const pendingText = itemMessages.pending(item, props);
-      logDefer(pendingText);
+      logger.defer(pendingText);
 
       try {
         let handler: T["run"] | undefined;
@@ -46,10 +46,10 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
       } catch (e) {
         const text = pendingText.replace("Running", "Failed to run");
         if (e instanceof Error) {
-          logError(`${text} - ${e.message}`);
+          logger.error(`${text} - ${e.message}`);
         } else {
-          logError(text);
-          console.error(e);
+          logger.error(text);
+          logger.raw.error(e);
         }
       }
     };

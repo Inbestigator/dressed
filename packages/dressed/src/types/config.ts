@@ -15,21 +15,25 @@ import type { AnyFn, Promisable } from "./utilities.ts";
  * The configuration for the server.
  */
 export interface ServerConfig {
-  /** The endpoint to listen on
+  /**
+   * The endpoint to listen on
    * @default "/"
    */
   endpoint?: string;
-  /** The port to listen on
+  /**
+   * The port to listen on
    * @default 8000
    */
   port?: number;
   /** Build configuration */
   build?: {
-    /** Source root for the bot
+    /**
+     * Source root for the bot
      * @default "src"
      */
     root?: string;
-    /** File extensions to include when bundling handlers
+    /**
+     * File extensions to include when bundling handlers
      * @default ["js", "ts", "mjs"]
      */
     extensions?: string[];
@@ -58,6 +62,14 @@ export interface ServerConfig {
   };
   /** Configuration for all API requests */
   requests?: CallConfig;
+  /**
+   * Suppress log levels
+   * @example
+   * "Warn" // Emit warnings and errors
+   * "Error" // Only emit errors
+   * false // Emit nothing
+   */
+  logger?: "Warn" | "Error" | false;
 }
 
 interface BaseCommandConfig {

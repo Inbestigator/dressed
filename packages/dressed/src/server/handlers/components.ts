@@ -6,15 +6,8 @@ import { createHandlerSetup } from "./index.ts";
 type Data = MessageComponentInteraction | ModalSubmitInteraction;
 
 function getCategory(interaction: Data) {
-  if (interaction.type === 5) {
-    return "modals";
-  }
-  switch (interaction.data.component_type) {
-    case 2:
-      return "buttons";
-    default:
-      return "selects";
-  }
+  if (interaction.type === 5) return "modals";
+  return interaction.data.component_type === 2 ? "buttons" : "selects";
 }
 
 /**
@@ -29,8 +22,10 @@ export const setupComponents: ReturnType<
     return {
       noItem: `No ${category} component handler for "${interaction.data.custom_id}"`,
       middlewareKey: "components",
-      pending: (item, props) =>
-        `Running ${category} "${item.name}"${Object.keys(props[1]).length > 0 ? ` with args: ${JSON.stringify(props[1])}` : ""}`,
+      pending: (item, props) => {
+        const withArgs = ` with args: ${JSON.stringify(props[1])}`;
+        return `Running ${category} "${item.name}"${Object.keys(props[1]).length > 0 ? withArgs : ""}`;
+      },
     };
   },
   findItem(interaction, items) {

@@ -22,12 +22,12 @@ export const metadata: Metadata = {
   description: "A sleek, serverless-ready Discord bot framework.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} flex min-h-dvh flex-col antialiased`}>
         {children}
-        <footer className="mt-auto flex h-8 justify-end gap-8 px-8 text-muted-foreground text-sm">
+        <footer className="flex h-8 justify-end gap-8 px-8 text-muted-foreground text-sm">
           <Link href="/docs" className="hover:underline">
             Docs
           </Link>

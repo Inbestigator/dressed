@@ -20,7 +20,7 @@ interface Item {
   items?: Item[];
 }
 
-export function NavMain({ items }: { items: Item[] }) {
+export function NavMain({ items }: Readonly<{ items: Item[] }>) {
   return (
     <SidebarGroup>
       <SidebarMenu>
@@ -32,13 +32,13 @@ export function NavMain({ items }: { items: Item[] }) {
   );
 }
 
-function Item({ item }: { item: Item }) {
+function Item({ item }: Readonly<{ item: Item }>) {
   const path = usePathname().split("/");
   return (
     <Collapsible asChild defaultOpen={path.some((p) => p.toLowerCase() === item.title.toLowerCase())}>
       <SidebarMenuItem>
         <SidebarMenuButton asChild className="h-fit" tooltip={item.title}>
-          <Link tabIndex={-1} className={!item.url ? "pointer-events-none select-none" : ""} href={item.url ?? "/docs"}>
+          <Link tabIndex={-1} className={item.url ? "" : "pointer-events-none select-none"} href={item.url ?? "/docs"}>
             {item.icon && <item.icon />}
             {item.title}
           </Link>

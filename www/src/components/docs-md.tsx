@@ -5,7 +5,7 @@ import rehypeSlug from "rehype-slug";
 import rehypeUnwrapImages from "rehype-unwrap-images";
 import remarkGfm from "remark-gfm";
 
-export default function DocsMD({ content }: { content: string }) {
+export default function DocsMD({ content }: Readonly<{ content: string }>) {
   return (
     <div className="extended-prose">
       <MarkdownAsync

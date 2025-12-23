@@ -12,7 +12,7 @@ import type { CommandData, ComponentData, EventData, ServerConfig } from "../typ
 import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
 import { override } from "../utils/build.ts";
 import { serverConfig } from "../utils/env.ts";
-import { logError, logSuccess } from "../utils/log.ts";
+import logger from "../utils/log.ts";
 import { createInteraction } from "./extenders/interaction.ts";
 import { setupCommands } from "./handlers/commands.ts";
 import { setupComponents } from "./handlers/components.ts";
@@ -59,7 +59,7 @@ export function createServer(
   const port = config.port ?? 8000;
   const shutdown = () => server.close(() => process.exit());
 
-  server.listen(port, "0.0.0.0", () => logSuccess("Bot is now listening on", endpoint.href));
+  server.listen(port, "0.0.0.0", () => logger.succeed("Bot is now listening on", endpoint.href));
 
   process.on("SIGTERM", shutdown);
   process.on("SIGINT", shutdown);
@@ -91,13 +91,13 @@ export async function handleRequest(
   );
 
   if (!verified) {
-    logError("Invalid signature");
+    logger.error("Invalid signature");
     return new Response(null, { status: 401 });
   }
 
   try {
     const json = JSON.parse(body);
-    let status = 500;
+    let status: number;
     // The interaction response token
     if ("token" in json) {
       status = await handleInteraction(commands, components, json, config.middleware);
@@ -108,7 +108,7 @@ export async function handleRequest(
       status,
     });
   } catch (error) {
-    logError("Failed to process request:", error);
+    logger.error("Failed to process request:", error);
     return new Response(null, { status: 500 });
   }
 }
@@ -124,7 +124,7 @@ export async function handleInteraction(
 ): Promise<200 | 202 | 404> {
   switch (json.type) {
     case InteractionType.Ping: {
-      logSuccess("Received ping test");
+      logger.succeed("Received ping test");
       return 200;
     }
     case InteractionType.ApplicationCommand: {
@@ -147,7 +147,7 @@ export async function handleInteraction(
       return 202;
     }
     default: {
-      logError("Received unknown interaction type:", json.type);
+      logger.error("Received unknown interaction type:", json.type);
       return 404;
     }
   }
@@ -163,7 +163,7 @@ export async function handleEvent(
 ): Promise<200 | 202 | 404> {
   switch (json.type) {
     case ApplicationWebhookType.Ping: {
-      logSuccess("Received ping test");
+      logger.succeed("Received ping test");
       return 200;
     }
     case ApplicationWebhookType.Event: {
@@ -172,7 +172,7 @@ export async function handleEvent(
       return 202;
     }
     default: {
-      logError("Received unknown event type:", json.type);
+      logger.error("Received unknown event type:", json.type);
       return 404;
     }
   }

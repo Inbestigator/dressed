@@ -69,12 +69,11 @@ export function createCache<
               return value;
             }
             // biome-ignore lint/suspicious/noFallthroughSwitchClause: Intended to fall through
-            case "stale": {
+            case "stale": // NOSONAR
               if (!revalidating.has(key)) {
                 revalidating.add(key);
                 v(...args).then((v) => set(k, key, v));
               }
-            }
             case "hit":
               return res.value;
           }

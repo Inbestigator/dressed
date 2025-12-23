@@ -4,6 +4,6 @@ export const config = {
   description: "Replies with Pong!",
 } satisfies CommandConfig;
 
-export default async function (interaction: CommandInteraction) {
+export default async function pingCommand(interaction: CommandInteraction) {
   await interaction.reply("Pong!");
 }
