@@ -1,4 +1,4 @@
-import { IconBook2 } from "@tabler/icons-react";
+import { IconBrandGithub } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import JSRLogo from "@/components/jsr-logo";
@@ -34,19 +34,19 @@ export default function Home() {
         <div className="flex items-center">
           <Button title="NPM package" className="rounded-r-none border-r-0" variant="outline" size="lg" asChild>
             <Link href="https://www.npmjs.com/package/dressed" target="_blank" rel="noreferrer">
-              <NPMLogo className="!size-8" />
+              <NPMLogo className="size-8" />
             </Link>
           </Button>
           <Separator orientation="vertical" className="h-11" />
           <Button title="JSR package" className="rounded-l-none border-l-0" variant="outline" size="lg" asChild>
             <Link href="https://jsr.io/@dressed/dressed" target="_blank" rel="noreferrer">
-              <JSRLogo className="!size-8" />
+              <JSRLogo className="size-8" />
             </Link>
           </Button>
         </div>
-        <Button title="Examples" className="not-sm:hidden" variant="outline" asChild size="icon-lg">
-          <Link href="https://github.com/Inbestigator/dressed-examples" target="_blank" rel="noreferrer">
-            <IconBook2 />
+        <Button title="GitHub repo" className="not-sm:hidden" variant="outline" size="icon-lg" asChild>
+          <Link href="https://github.com/Inbestigator/dressed" target="_blank" rel="noreferrer">
+            <IconBrandGithub />
           </Link>
         </Button>
       </div>
