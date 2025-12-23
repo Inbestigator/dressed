@@ -36,16 +36,18 @@ export default function logTree(...titles: string[]): {
             }
           })
           .join("  ");
-        lines.push(
-          `${i === 0 ? " " : i === 1 ? (rowCount === 2 ? "-" : "┌") : i === rowCount - 1 ? "└" : "├"} ${chopped.has(i) ? "\x1b[9m" : ""}${row}\x1b[0m`,
-          ...(asides[i] ?? []),
-        );
+        let prefix = "├";
+        if (i === 1) prefix = rowCount === 2 ? "-" : "┌";
+        else if (i === rowCount - 1) prefix = "└";
+        lines.push(`${i === 0 ? " " : prefix} ${chopped.has(i) ? "\x1b[9m" : ""}${row}\x1b[0m`, ...(asides[i] ?? []));
       }
-      lines.concat("").map((l) => console.log(l));
+      lines.concat("").forEach((l) => {
+        console.log(l);
+      });
     },
   };
 }
 
 // biome-ignore lint/suspicious/noControlCharactersInRegex: We need a control char
-const removeAnsiLen = (s: string) => s.replace(/\x1b\[\d{1,2}m/g, "").length;
+const removeAnsiLen = (s: string) => s.replace(/\x1b\[\d{1,2}m/g, "").length; // NOSONAR
 const pad = (s: string, width: number) => Math.max(0, width - removeAnsiLen(s));

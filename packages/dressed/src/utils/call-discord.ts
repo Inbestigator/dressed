@@ -34,6 +34,36 @@ export interface CallConfig {
   bucketTTL?: number;
 }
 
+function processFiles(files: RawFile[], body: BodyInit, flattenBodyInForm?: boolean) {
+  if (typeof body === "object" && body !== null) {
+    if ("files" in body) delete body.files;
+    if ("file" in body) delete body.file;
+  }
+
+  const formData = new FormData();
+
+  for (const [index, file] of files.entries()) {
+    const fileKey = file.key ?? `files[${index}]`;
+    formData.append(
+      fileKey,
+      new Blob([Buffer.isBuffer(file.data) ? Buffer.from(file.data) : file.data.toString()], {
+        type: file.contentType,
+      }),
+      file.name,
+    );
+  }
+
+  if (body && flattenBodyInForm) {
+    for (const [key, value] of Object.entries(body)) {
+      formData.append(key, value);
+    }
+  } else if (body) {
+    formData.append("payload_json", JSON.stringify(body));
+  }
+
+  return formData;
+}
+
 export async function callDiscord(
   endpoint: string,
   init: Omit<RequestInit, "body"> & {
@@ -55,46 +85,17 @@ export async function callDiscord(
   } = $req;
   const url = new URL(routeBase + endpoint);
 
-  if (typeof options.body === "object" && options.body !== null) {
-    if ("files" in options.body) delete options.body.files;
-    if ("file" in options.body) delete options.body.file;
-  }
-
   if (params) {
     for (const [key, value] of Object.entries(params)) {
       if (!value) continue;
       url.searchParams.append(key, typeof value === "string" ? value : JSON.stringify(value));
     }
   }
-  if (files?.length) {
-    const formData = new FormData();
-
-    for (const [index, file] of files.entries()) {
-      const fileKey = file.key ?? `files[${index}]`;
-      formData.append(
-        fileKey,
-        new Blob([Buffer.isBuffer(file.data) ? Buffer.from(file.data) : file.data.toString()], {
-          type: file.contentType,
-        }),
-        file.name,
-      );
-    }
-
-    if (options.body && flattenBodyInForm) {
-      for (const [key, value] of Object.entries(options.body)) {
-        formData.append(key, value);
-      }
-    } else if (options.body) {
-      formData.append("payload_json", JSON.stringify(options.body));
-    }
-
-    options.body = formData;
-  } else if (options.body) {
-    options.body = JSON.stringify(options.body);
-  }
+  if (files?.length) options.body = processFiles(files, options.body as BodyInit, flattenBodyInForm);
+  else if (options.body) options.body = JSON.stringify(options.body);
 
   const req = new Request(url, {
-    headers: { authorization, ...(!files?.length ? { "content-type": "application/json" } : {}) },
+    headers: { authorization, "content-type": files?.length ? "multipart/form-data" : "application/json" },
     ...(options as RequestInit),
   });
 
@@ -104,7 +105,7 @@ export async function callDiscord(
 
   updateLimit(res);
 
-  if (!res.ok) {
+  async function handleResErr() {
     if (res.status === 429 && tries > 0) {
       $req.tries = tries - 1;
       return callDiscord(endpoint, init, $req);
@@ -117,6 +118,8 @@ export async function callDiscord(
 
     throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`, { cause: res });
   }
+
+  if (!res.ok) return handleResErr();
 
   return res;
 }

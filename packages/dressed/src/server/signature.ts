@@ -3,7 +3,7 @@ import { botEnv } from "../utils/env.ts";
 function hex2bin(hex: string) {
   const buf = new Uint8Array(Math.ceil(hex.length / 2));
   for (let i = 0; i < buf.length; ++i) {
-    buf[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
+    buf[i] = Number.parseInt(hex.substring(i * 2, i * 2 + 2), 16);
   }
   return buf;
 }

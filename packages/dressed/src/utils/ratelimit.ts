@@ -25,7 +25,7 @@ function ensureBucket(id: string) {
   }
   const bucket = buckets.get(bucketId) as Bucket;
   // Runtimes like CF workers persist global state between requests except promises -> null
-  if (!bucket.promise) bucket.promise = Promise.resolve();
+  bucket.promise ??= Promise.resolve();
 
   return bucket;
 }
@@ -33,6 +33,13 @@ function ensureBucket(id: string) {
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+const cleanup = (bucketId: string) => () => {
+  buckets.delete(bucketId);
+  bucketIds.forEach((v, k) => {
+    v === bucketId && bucketIds.delete(k);
+  });
+};
 
 export function checkLimit(req: Request, bucketTTL: number) {
   return new Promise<(v: Response) => void>((resolveChecker) => {
@@ -57,10 +64,10 @@ export function checkLimit(req: Request, bucketTTL: number) {
 
       resolveChecker((res) => {
         const bucketId = res.headers.get("x-ratelimit-bucket");
-        const limit = parseInt(res.headers.get("x-ratelimit-limit") ?? "", 10);
-        const remaining = parseInt(res.headers.get("x-ratelimit-remaining") ?? "", 10);
-        const resetAfter = parseFloat(res.headers.get("x-ratelimit-reset-after") ?? "");
-        const retryAfter = parseFloat(res.headers.get("retry-after") ?? "");
+        const limit = Number.parseInt(res.headers.get("x-ratelimit-limit") ?? "", 10);
+        const remaining = Number.parseInt(res.headers.get("x-ratelimit-remaining") ?? "", 10);
+        const resetAfter = Number.parseFloat(res.headers.get("x-ratelimit-reset-after") ?? "");
+        const retryAfter = Number.parseFloat(res.headers.get("retry-after") ?? "");
         const scope = res.headers.get("x-ratelimit-scope");
         const refreshAfter = (Number.isNaN(retryAfter) ? resetAfter : retryAfter) * 1000;
         const tmpBucket = buckets.get(bucketIdKey);
@@ -80,16 +87,11 @@ export function checkLimit(req: Request, bucketTTL: number) {
         bucket.limit = limit;
         bucket.remaining = remaining;
         bucket.refresh = Date.now() + refreshAfter;
-        bucket.promise = tmpBucket ? bucket.promise.then(() => tmpBucket.promise) : bucket.promise;
+        bucket.promise = tmpBucket ? bucket.promise.then(() => tmpBucket.promise) : bucket.promise; // NOSONAR
 
         clearTimeout(bucket.cleaner);
         if (bucketTTL !== -1) {
-          bucket.cleaner = setTimeout(() => {
-            buckets.delete(bucketId);
-            bucketIds.forEach((v, k) => {
-              v === bucketId && bucketIds.delete(k);
-            });
-          }, bucketTTL * 1000).unref();
+          bucket.cleaner = setTimeout(cleanup(bucketId), bucketTTL * 1000).unref();
         }
 
         resolveRequest();

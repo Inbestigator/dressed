@@ -1,4 +1,4 @@
-export default function JSRLogo(props: React.SVGProps<SVGSVGElement>) {
+export default function JSRLogo(props: Readonly<React.SVGProps<SVGSVGElement>>) {
   return (
     <svg viewBox="0 0 13 7" {...props}>
       <title>JSR Logo</title>

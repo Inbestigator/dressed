@@ -20,7 +20,7 @@ program
   .option("-r, --register", "Include code to register commands")
   .option("-e, --endpoint <endpoint>", "The endpoint to listen on, defaults to `/`")
   .option("-p, --port <port>", "The port to listen on, defaults to `8000`", (v) => {
-    const parsed = parseInt(v, 10);
+    const parsed = Number.parseInt(v, 10);
     if (Number.isNaN(parsed) || parsed < 0 || parsed > 65_535) {
       throw new InvalidArgumentError("Port must be a valid TCP/IP network port number (0-65535)");
     }
@@ -60,9 +60,7 @@ program
       const outputContent = `
 ${
   instance || register
-    ? `import { ${
-        instance ? `createServer${register ? ", installCommands" : ""}` : register ? "installCommands" : ""
-      } } from "dressed/server";`
+    ? `import { ${[instance && "createServer", register && "installCommands"].filter(Boolean)} } from "dressed/server";`
     : ""
 }
 import { serverConfig } from "dressed/utils";
@@ -70,8 +68,8 @@ import config from "./dressed.config.mjs";
 Object.assign(serverConfig, config);
 ${[categories.map((c) => c.map(importString)), categoryExports(categories)].flat(2).join("")}
 export { config };
-${register ? "\ninstallCommands(commands);" : ""}
-${instance ? `createServer(commands, components, events);` : ""}`.trim();
+${register ? "installCommands(commands);" : ""}
+${instance ? "createServer(commands, components, events);" : ""}`.trim();
       const jsContent = 'export * from "./index.mjs";';
       const typeContent =
         'import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
@@ -82,9 +80,11 @@ ${instance ? `createServer(commands, components, events);` : ""}`.trim();
       writeFileSync(".dressed/index.d.ts", typeContent);
       rmSync(".dressed/tmp", { recursive: true, force: true });
 
+      const instancePrefix = register ? "├" : "└";
+
       logSuccess(
         "Assembled generated build",
-        instance ? `\n${register ? "├" : "└"} Starts a server instance` : "",
+        instance ? `\n${instancePrefix} Starts a server instance` : "",
         register ? "\n└ Registers commands" : "",
       );
       exit();
@@ -137,7 +137,7 @@ program
         type: /TOKEN|PASSWORD/.test(k) ? "password" : "text",
         name: k,
         message: k,
-        initial: v as string,
+        initial: v,
       })),
     );
 
@@ -147,37 +147,35 @@ program
       mkdirSync(dest, { recursive: true });
       const response = await fetch(path);
 
-      if (!response.ok) {
-        throw new Error(response.statusText);
+      if (!response.ok) throw new Error(response.statusText);
+
+      async function processFile(file: { type: string; url: string; name: string; download_url: string }) {
+        if (file.type === "dir") {
+          await createFiles(file.url, join(dest, file.name));
+        } else {
+          const fileRes = await fetch(file.download_url);
+          if (!fileRes.ok) {
+            throw new Error(fileRes.statusText);
+          }
+          const fileContents = await fileRes.text();
+          const destPath = join(dest, file.name);
+          if (file.name === ".env.example") {
+            const destPath = join(dest, ".env");
+            mkdirSync(dirname(destPath), { recursive: true });
+            writeFileSync(
+              destPath,
+              Object.entries(envVars)
+                .map(([k, v]) => `${k}="${v}"`)
+                .join("\n"),
+            );
+          }
+          mkdirSync(dirname(destPath), { recursive: true });
+          writeFileSync(destPath, fileContents);
+        }
       }
 
       const json = await response.json();
-      if (Array.isArray(json)) {
-        for (const file of json) {
-          if (file.type === "dir") {
-            await createFiles(file.url, join(dest, file.name));
-          } else {
-            const fileRes = await fetch(file.download_url);
-            if (!fileRes.ok) {
-              throw new Error(fileRes.statusText);
-            }
-            const fileContents = await fileRes.text();
-            const destPath = join(dest, file.name);
-            if (file.name === ".env.example") {
-              const destPath = join(dest, ".env");
-              mkdirSync(dirname(destPath), { recursive: true });
-              writeFileSync(
-                destPath,
-                Object.entries(envVars)
-                  .map(([k, v]) => `${k}="${v}"`)
-                  .join("\n"),
-              );
-            }
-            mkdirSync(dirname(destPath), { recursive: true });
-            writeFileSync(destPath, fileContents);
-          }
-        }
-      }
+      if (Array.isArray(json)) for (const file of json) processFile(file);
     }
 
     try {

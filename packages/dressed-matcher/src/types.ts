@@ -20,7 +20,7 @@ type IsDynamic<S extends string> = S extends `${string}:${string}`
       : IsDynamic<Rest>
     : false;
 
-type NormalizePart<S extends string> = IsDynamic<S> extends true ? {} & string : S;
+type NormalizePart<S extends string> = IsDynamic<S> extends true ? {} & string : S; // NOSONAR
 
 type Merge<A, B> = {
   [K in keyof A | keyof B]: K extends keyof B ? B[K] : K extends keyof A ? A[K] : never;

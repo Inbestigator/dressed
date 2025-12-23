@@ -14,6 +14,26 @@ import type { CommandAutocompleteInteraction, CommandInteraction } from "../../t
 import { logDefer, logSuccess, logWarn } from "../../utils/log.ts";
 import { createHandlerSetup } from "./index.ts";
 
+function normalizeData(config: CommandConfig) {
+  config.type ??= "ChatInput";
+  if (config.type === "ChatInput") {
+    config.description = config.description ?? "No description provided";
+  }
+  if (Array.isArray(config.default_member_permissions)) {
+    config.default_member_permissions = config.default_member_permissions
+      .reduce((p, k) => p | PermissionFlagsBits[k], BigInt(0))
+      .toString();
+  }
+  if (config.contexts) {
+    config.contexts = [...new Set(config.contexts.map((c) => InteractionContextType[c] as never))];
+  }
+  if (config.integration_type) {
+    config.integration_types = [ApplicationIntegrationType[`${config.integration_type}Install`]];
+  }
+
+  return config;
+}
+
 /**
  * Installs commands to the Discord API
  */
@@ -33,29 +53,7 @@ export async function installCommands(commands: CommandData[]) {
       command.exports.config = command.data.config; // TODO Remove check before next major release
     }
 
-    const config = command.exports.config ?? ({} as CommandConfig);
-
-    if (!config.type) {
-      config.type = "ChatInput";
-    }
-
-    if (config.type === "ChatInput") {
-      config.description = config.description ?? "No description provided";
-    }
-
-    if (Array.isArray(config.default_member_permissions)) {
-      config.default_member_permissions = config.default_member_permissions
-        .reduce((p, k) => p | PermissionFlagsBits[k], BigInt(0))
-        .toString();
-    }
-
-    if (config.contexts) {
-      config.contexts = [...new Set(config.contexts.map((c) => InteractionContextType[c] as never))];
-    }
-
-    if (config.integration_type) {
-      config.integration_types = [ApplicationIntegrationType[`${config.integration_type}Install`]];
-    }
+    const config = normalizeData(command.exports.config ?? ({} as CommandConfig));
 
     for (const guild of config.guilds ?? ["global"]) {
       scopes.set(
@@ -63,7 +61,7 @@ export async function installCommands(commands: CommandData[]) {
         (scopes.get(guild) ?? []).concat({
           ...config,
           name: command.name,
-          type: ApplicationCommandType[config.type],
+          type: ApplicationCommandType[config.type as keyof typeof ApplicationCommandType],
         } as RESTPostAPIApplicationCommandsJSONBody),
       );
     }

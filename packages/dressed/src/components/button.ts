@@ -25,14 +25,11 @@ export function Button(
     | Omit<APIButtonComponentWithSKUId, "type" | "style">
     | Omit<APIButtonComponentWithURL, "type" | "style">,
 ) {
-  const style: keyof typeof ButtonStyle =
-    "style" in config && config.style
-      ? config.style
-      : "sku_id" in config
-        ? "Premium"
-        : "url" in config
-          ? "Link"
-          : "Primary";
+  let style: keyof typeof ButtonStyle = "Primary";
+
+  if ("style" in config && config.style) style = config.style;
+  else if ("sku_id" in config) style = "Premium";
+  else if ("url" in config) style = "Link";
 
   return {
     ...config,

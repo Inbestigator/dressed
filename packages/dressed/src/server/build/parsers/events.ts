@@ -11,7 +11,9 @@ export const parseEvents: ReturnType<typeof createHandlerParser<EventData>> = cr
     const type = ApplicationWebhookEventType[name as keyof typeof ApplicationWebhookEventType];
 
     if (!type) {
-      throw `${warnSymbol} Event type of "${name}" could not be determined, skipping`;
+      throw new Error(`${warnSymbol} Event type of "${name}" could not be determined, skipping`, {
+        cause: "dressed-parsing",
+      });
     }
 
     return { type };

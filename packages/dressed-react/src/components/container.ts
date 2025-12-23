@@ -3,9 +3,9 @@ import { Container as DressedComponent } from "dressed";
 import { createElement, type ReactNode } from "react";
 import { type ComponentNode, renderNode } from "../react/renderer.ts";
 
-type ContainerProps = Omit<APIContainerComponent, "components" | "type"> & {
+interface ContainerProps extends Omit<APIContainerComponent, "components" | "type"> {
   children: ReactNode;
-};
+}
 
 export function Container({ children, ...rest }: ContainerProps) {
   const props = DressedComponent([], rest);

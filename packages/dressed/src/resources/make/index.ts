@@ -60,24 +60,31 @@ ${routeData.routes
     }) => {
       const method = (key.match(/[A-Z][a-z]+/) ?? [])[0] ?? "";
       const routeKey = key.slice(method.length).replace("API", "");
-      const prefix =
-        method === "Get" && routeKey.endsWith("s")
-          ? "list"
-          : method === "Get"
-            ? "get"
-            : method === "Post"
-              ? "create"
-              : method === "Put"
-                ? "add"
-                : method === "Patch"
-                  ? "modify"
-                  : method === "Delete"
-                    ? "delete"
-                    : "";
+      let prefix = "";
+
+      switch (method) {
+        case "Get":
+          prefix = routeKey.endsWith("s") ? "list" : "get";
+          break;
+        case "Post":
+          prefix = "create";
+          break;
+        case "Put":
+          prefix = "add";
+          break;
+        case "Patch":
+          prefix = "modify";
+          break;
+        case "Delete":
+          prefix = "delete";
+          break;
+      }
+
       const splitRoutes = routeKey.match(/[A-Z][a-z]+/g) ?? [];
       apiRoute ??= routeKey;
       dangerousExtraLogic ??= "";
-      dataType ??= `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}JSONBody${flags?.includes("hasFiles") ? ` & { file${flags.includes("singlefile") ? "" : "s"}?: RawFile${flags.includes("singlefile") ? "" : "[]"} }` : ""}`;
+      const fileTypeLine = ` & { file${flags?.includes("singlefile") ? "" : "s"}?: RawFile${flags?.includes("singlefile") ? "" : "[]"} }`;
+      dataType ??= `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}JSONBody${flags?.includes("hasFiles") ? fileTypeLine : ""}`;
       paramsType ??= `REST${key}Query`;
       messageKey ??= "";
       name ??=
@@ -86,35 +93,49 @@ ${routeData.routes
           .join("")
           .slice(0, routeKey.endsWith("s") && method !== "Get" ? -1 : undefined);
       returnType ??= flags?.includes("returnVoid") ? "void" : `REST${key}Result`;
-      return `
+      const jsdocs = [
+        ` * ${docs.description}`,
+        docs.infos?.map((i) => ` * @info ${i}`),
+        docs.warns?.map((w) => ` * @warn ${w}`),
+        docs.dangers?.map((d) => ` * @danger ${d}`),
+        `* @see ${docs.see}`,
+        flags?.includes("deprecated") && " * @deprecated",
+      ].filter(Boolean);
+      const fileValue = flags?.includes("singlefile")
+        ? `[{ ...data${messageKey}.file, key: "file" }]`
+        : `data${messageKey}.files`;
+      return (() =>
+        `
 /**
- * ${docs.description}${docs.infos ? `\n${docs.infos.map((i) => ` * @info ${i}`).join("\n")}` : ""}${docs.warns ? `\n${docs.warns.map((w) => ` * @warn ${w}`).join("\n")}` : ""}${docs.dangers ? `\n${docs.dangers.map((d) => ` * @danger ${d}`).join("\n")}` : ""}
- * @see ${docs.see}${flags?.includes("deprecated") ? "\n * @deprecated" : ""}
+${jsdocs.flat().join("\n")}
  */
 export async function ${name}${generic ? `<${generic}>` : ""}(${params
-        .concat("var.$req?: CallConfig")
-        .filter((p) => !p.includes("<"))
-        .map(
-          (p) =>
-            `${/^(url|var)\./.test(p) ? p.slice(4) : p}${p.startsWith("params") ? `: ${paramsType}` : p.startsWith("data") ? `: ${dataType}` : !p.includes(":") ? ": Snowflake" : ""}`,
-        )}): Promise<${returnType}> {
+          .concat("var.$req?: CallConfig")
+          .filter((p) => !p.includes("<"))
+          .map((p) => {
+            let paramType = "";
+            if (p.startsWith("params")) paramType = `: ${paramsType}`;
+            else if (p.startsWith("data")) paramType = `: ${dataType}`;
+            else if (!p.includes(":")) paramType = ": Snowflake";
+            return `${/^(url|var)\./.test(p) ? p.slice(4) : p}${paramType}`;
+          })}): Promise<${returnType}> {
   ${dangerousExtraLogic}
   ${flags?.includes("hasStringableContent") ? `if (typeof data${messageKey} === "string") data${messageKey} = { content: data${messageKey} };` : ""}
-  const ${!flags?.includes("returnVoid") ? "res" : "_res"} = await callDiscord(Routes${apiRoute.startsWith("[") ? apiRoute : `.${apiRoute[0].toLowerCase()}${apiRoute.slice(1)}`}(${params
+  const ${flags?.includes("returnVoid") ? "_res" : "res"} = await callDiscord(Routes${apiRoute.startsWith("[") ? apiRoute : `.${apiRoute[0].toLowerCase()}${apiRoute.slice(1)}`}(${params
     .filter((p) => p.startsWith("url."))
     .map((p) => (p.endsWith("?") ? p.slice(0, -1) : p))
     .map((p) => (p.includes("<") ? p.split("<")[1] : p.slice(4)))
     .map((p) => (p.includes(":") ? p.split(/[?:]/)[0] : p).replace(/botEnv\.([A-Z_]+)/, "$req?.env?.$1??$&"))}), {
-      ${[`method: "${method.toUpperCase()}"`, params.some((p) => p.startsWith("data")) ? "body: data" : undefined, params.some((p) => p.startsWith("params")) ? "params" : undefined, flags?.includes("hasFiles") ? `files: ${flags.includes("singlefile") ? `[{ ...data${messageKey}.file, key: "file" }]` : `data${messageKey}.files`}` : undefined].filter(Boolean)}
+      ${[`method: "${method.toUpperCase()}"`, params.some((p) => p.startsWith("data")) ? "body: data" : undefined, params.some((p) => p.startsWith("params")) ? "params" : undefined, flags?.includes("hasFiles") ? `files: ${fileValue}` : undefined].filter(Boolean)}
       ${Object.entries(fetchOptions ?? [])
         .map(([k, v]) => `,${k}: ${JSON.stringify(v)}`)
         .join("")}
   }, $req);
-  ${!flags?.includes("returnVoid") ? "return res.json()" : ""}
+  ${flags?.includes("returnVoid") ? "" : "return res.json()"}
 }
 `
-        .trim()
-        .replace(/\/docs/g, "https://discord.com/developers$&");
+          .trim()
+          .replace(/\/docs/g, "https://discord.com/developers$&"))();
     },
   )
   .join("\n\n")}

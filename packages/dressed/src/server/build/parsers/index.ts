@@ -43,31 +43,33 @@ export function createHandlerParser<T extends BaseData<Partial<Record<keyof T["d
           (item) => options.uniqueKeys?.every((k) => data[k] === item.data[k]) ?? item.name === file.name,
         );
         if (hasConflict) {
-          throw `${warnSymbol} ${itemMessages.confict}`;
+          throw new Error(`${warnSymbol} ${itemMessages.confict}`);
         }
         if (typeof file.exports.default !== "function") {
-          throw `${errorSymbol} Every handler must export a default function, skipping`;
+          throw new TypeError(`${errorSymbol} Every handler must export a default function, skipping`, {
+            cause: "dressed-parsing",
+          });
         }
       } catch (e) {
-        const prefix = Number(i) !== files.length - 1 ? "│" : " ";
-        if (e && e instanceof Error) {
-          tree.aside(`${prefix} ${errorSymbol} Failed to parse ${file.path}: ${e.message}`);
-          tree.aside(e);
-        } else if (typeof e === "string") {
-          tree.aside(`${prefix} ${e}`);
+        function asideErr() {
+          const prefix = Number(i) === files.length - 1 ? " " : "│";
+          if (e && e instanceof Error) {
+            if (e.cause === "dressed-parsing") {
+              tree.aside(`${prefix} ${e.message}`);
+            } else {
+              tree.aside(`${prefix} ${errorSymbol} Failed to parse ${file.path}: ${e.message}`);
+              tree.aside(e);
+            }
+          }
         }
+        asideErr();
         tree.chop();
         continue;
       }
-      items.push({
-        ...file,
-        data,
-      } as T);
+      items.push({ ...file, data } as T);
     }
 
-    if (options.postMortem) {
-      items = options.postMortem(items);
-    }
+    if (options.postMortem) items = options.postMortem(items);
 
     tree.log();
 

@@ -3,13 +3,13 @@ import { SelectMenu as DressedComponent, SelectMenuOption as DressedOption } fro
 import { createElement, type ReactNode } from "react";
 import type { Node } from "../react/node.ts";
 
-type SelectType = {
+interface SelectType {
   Channel: 8;
   Mentionable: 7;
   Role: 6;
   String: 3;
   User: 5;
-};
+}
 
 type SelectMap = {
   [Key in keyof typeof ComponentType]: Extract<APISelectMenuComponent, { type: (typeof ComponentType)[Key] }>;

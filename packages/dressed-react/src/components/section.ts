@@ -5,10 +5,10 @@ import { render } from "../index.ts";
 import type { Node } from "../react/node.ts";
 import { type ComponentNode, renderNode } from "../react/renderer.ts";
 
-type SectionProps = Omit<APISectionComponent, "accessory" | "components" | "type"> & {
+interface SectionProps extends Omit<APISectionComponent, "accessory" | "components" | "type"> {
   children: ReactNode;
   accessory: ReactNode;
-};
+}
 
 export function Section({ children, accessory, ...rest }: SectionProps) {
   const props = DressedComponent([], accessory as never, rest);

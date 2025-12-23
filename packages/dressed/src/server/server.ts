@@ -97,7 +97,7 @@ export async function handleRequest(
 
   try {
     const json = JSON.parse(body);
-    let status = 500;
+    let status: number;
     // The interaction response token
     if ("token" in json) {
       status = await handleInteraction(commands, components, json, config.middleware);

@@ -4,7 +4,7 @@ import type { ComponentData } from "../../../types/config.ts";
 import { warnSymbol } from "../../../utils/log.ts";
 import { createHandlerParser } from "./index.ts";
 
-const validComponentCategories = ["buttons", "modals", "selects"];
+const validComponentCategories = new Set(["buttons", "modals", "selects"]);
 
 export const parseComponents: ReturnType<typeof createHandlerParser<ComponentData>> = createHandlerParser({
   colNames: ["Component", "Category"],
@@ -19,9 +19,10 @@ export const parseComponents: ReturnType<typeof createHandlerParser<ComponentDat
   createData({ name, path, exports: { pattern = name } = {} }) {
     const category = getCategory(path);
 
-    if (!category) {
-      throw `${warnSymbol} Category for "${name}" could not be determined, skipping`;
-    }
+    if (!category)
+      throw new Error(`${warnSymbol} Category for "${name}" could not be determined, skipping`, {
+        cause: "dressed-parsing",
+      });
 
     return {
       category,
@@ -45,11 +46,7 @@ function getCategory(path: string) {
   const compIndex = parts.lastIndexOf("components");
   if (compIndex === -1) return null;
 
-  for (let i = parts.length - 2; i > compIndex; i--) {
-    if (validComponentCategories.includes(parts[i])) {
-      return parts[i];
-    }
-  }
+  for (let i = parts.length - 2; i > compIndex; --i) if (validComponentCategories.has(parts[i])) return parts[i];
 
   return null;
 }

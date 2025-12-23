@@ -13,7 +13,10 @@ export function importString(file: WalkEntry) {
 export function categoryExports(categories: WalkEntry[][]) {
   return categories.map(
     (c, i) =>
-      `export const ${["commands", "components", "events"][i]} = [${c.map((f) => JSON.stringify({ ...f, exports: null }).replace('"exports":null', `"exports":h${f.uid}`))}];`,
+      `export const ${["commands", "components", "events"][i]} = [${c.map((f) => {
+        const exportKey = `"exports":h${f.uid}`;
+        return JSON.stringify({ ...f, exports: null }).replace('"exports":null', exportKey);
+      })}];`,
   );
 }
 

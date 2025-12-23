@@ -98,7 +98,6 @@ function connectShard(url: string, config: ShardConfig, resume?: { sessionId: st
       ),
     );
   };
-
   ws.onmessage = (e) => {
     assert(parentPort);
     const payload = JSON.parse(e.data) as GatewayReceivePayload;
@@ -147,11 +146,7 @@ function connectShard(url: string, config: ShardConfig, resume?: { sessionId: st
       }
     }
   };
-
-  ws.onerror = (e) => {
-    console.error(`WebSocket error (shard ${config.shard[0]})`, e);
-  };
-
+  ws.onerror = (e) => console.error(`WebSocket error (shard ${config.shard[0]})`, e);
   ws.onclose = ({ code, reason }) => {
     if (shard.state === "Disconnecting") {
       code = WSCodes.GoingAway;
@@ -175,15 +170,11 @@ function connectShard(url: string, config: ShardConfig, resume?: { sessionId: st
       }
       // biome-ignore lint/suspicious/noFallthroughSwitchClause: Intended to fall through
       // biome-ignore lint/suspicious/useDefaultSwitchClauseLast: It's falling through
-      default: {
+      default: // NOSONAR
         if (resumeData && seq !== null) {
-          connectShard(resumeData.resume_gateway_url, config, {
-            seq,
-            sessionId: resumeData.session_id,
-          });
+          connectShard(resumeData.resume_gateway_url, config, { seq, sessionId: resumeData.session_id });
           break;
         }
-      }
       case GatewayCloseCodes.NotAuthenticated:
       case GatewayCloseCodes.InvalidSeq:
       case GatewayCloseCodes.SessionTimedOut:
