@@ -4,7 +4,7 @@ import { readdir } from "node:fs/promises";
 import { basename, extname, join, relative, resolve } from "node:path";
 import { cwd } from "node:process";
 import type { WalkEntry } from "../types/walk.ts";
-import { logWarn } from "./log.ts";
+import logger from "./log.ts";
 
 export function importString(file: WalkEntry) {
   return `import * as h${file.uid} from "${relative(".dressed/tmp", file.path).replace(/\\/g, "/")}";`;
@@ -43,7 +43,7 @@ export async function crawlDir(root: string, dir: string, extensions = ["js", "t
   const dirPath = resolve(root, dir);
 
   if (!existsSync(dirPath)) {
-    logWarn(`${dir.slice(0, 1).toUpperCase() + dir.slice(1)} directory not found`);
+    logger.warn(`${dir.slice(0, 1).toUpperCase() + dir.slice(1)} directory not found`);
     return [];
   }
 

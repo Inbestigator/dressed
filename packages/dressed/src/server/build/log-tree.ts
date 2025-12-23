@@ -1,3 +1,5 @@
+import logger from "../../utils/log.ts";
+
 /** Log a table of values with titles */
 export default function logTree(...titles: string[]): {
   push: (...v: string[]) => void;
@@ -41,9 +43,7 @@ export default function logTree(...titles: string[]): {
         else if (i === rowCount - 1) prefix = "└";
         lines.push(`${i === 0 ? " " : prefix} ${chopped.has(i) ? "\x1b[9m" : ""}${row}\x1b[0m`, ...(asides[i] ?? []));
       }
-      lines.concat("").forEach((l) => {
-        console.log(l);
-      });
+      for (const l of lines.concat("")) logger.raw.log(l);
     },
   };
 }

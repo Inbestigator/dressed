@@ -3,8 +3,8 @@ import { basename, extname, resolve } from "node:path";
 import { getApp } from "../../resources/generated.resources.ts";
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../../types/config.ts";
 import { categoryExports, crawlDir, importString, override } from "../../utils/build.ts";
-import { botEnv } from "../../utils/env.ts";
-import { logDefer, logError } from "../../utils/log.ts";
+import { botEnv, serverConfig } from "../../utils/env.ts";
+import logger from "../../utils/log.ts";
 import bundleFiles from "./bundle.ts";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";
@@ -31,6 +31,7 @@ export default async function build(
     await bundle(configPath, ".dressed/tmp");
     const { default: importedConfig } = await import(resolve(configOutPath));
     config = override(importedConfig, config);
+    Object.assign(serverConfig, override(serverConfig, config));
   } else {
     writeFileSync(configOutPath, `export default ${JSON.stringify(config)}`);
   }
@@ -41,11 +42,11 @@ export default async function build(
   const entriesPath = ".dressed/tmp/entries.ts";
 
   writeFileSync(entriesPath, [files.map((c) => c.map(importString)), categoryExports(files)].flat(2).join(""));
-  logDefer("Bundling handlers");
+  logger.defer("Bundling handlers");
   await bundle(entriesPath, ".dressed/tmp");
   const { commands, components, events } = await import(resolve(entriesPath.replace(".ts", ".mjs")));
 
-  console.log(); // This just adds a newline before the logged trees for consistency
+  logger.raw.log(); // This just adds a newline before the logged trees for consistency
   return {
     commands: parseCommands(commands, `${root}/commands`),
     components: parseComponents(components, `${root}/components`),
@@ -71,7 +72,7 @@ async function fetchMissingVars() {
     }
 
     if (missingVars.length) {
-      logDefer(`Fetching missing variables (${missingVars.join(", ")})`);
+      logger.defer(`Fetching missing variables (${missingVars.join(", ")})`);
 
       const app = await getApp();
 
@@ -88,6 +89,6 @@ async function fetchMissingVars() {
       appendFileSync(".env", `\n${envLines.join("\n")}`);
     }
   } catch {
-    logError("Failed to fetch missing variables");
+    logger.error("Failed to fetch missing variables");
   }
 }

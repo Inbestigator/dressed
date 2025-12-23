@@ -2,7 +2,7 @@ import { Buffer } from "node:buffer";
 import { type RESTError, type RESTErrorData, RouteBases } from "discord-api-types/v10";
 import type { RawFile } from "../types/file.ts";
 import { botEnv, serverConfig } from "./env.ts";
-import { logError } from "./log.ts";
+import logger from "./log.ts";
 import { checkLimit } from "./ratelimit.ts";
 
 /** Optional extra config for the layer before fetch */
@@ -112,7 +112,7 @@ export async function callDiscord(
     }
 
     const error = (await res.json()) as RESTError;
-    logError(`${error.message} (${error.code ?? res.status})`);
+    logger.error(`${error.message} (${error.code ?? res.status})`);
 
     if (error.errors) logErrorData(error.errors);
 
@@ -126,7 +126,7 @@ export async function callDiscord(
 
 function logErrorData(data: RESTErrorData, path: string[] = []) {
   if (typeof data === "string") {
-    console.error(`${path.join(".")}: ${data}`);
+    logger.raw.error(`${path.join(".")}: ${data}`);
   } else if ("_errors" in data && Array.isArray(data._errors)) {
     for (const err of data._errors) {
       logErrorData(err, path);

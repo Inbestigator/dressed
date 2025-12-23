@@ -9,7 +9,7 @@ import Enquirer from "enquirer";
 import build from "../server/build/build.ts";
 import bundleFiles from "../server/build/bundle.ts";
 import { categoryExports, importString } from "../utils/build.ts";
-import { logDefer, logError, logSuccess } from "../utils/log.ts";
+import logger from "../utils/log.ts";
 
 const program = new Command().name("dressed").description("A sleek, serverless-ready Discord bot framework.");
 
@@ -82,7 +82,7 @@ ${instance ? "createServer(commands, components, events);" : ""}`.trim();
 
       const instancePrefix = register ? "├" : "└";
 
-      logSuccess(
+      logger.succeed(
         "Assembled generated build",
         instance ? `\n${instancePrefix} Starts a server instance` : "",
         register ? "\n└ Registers commands" : "",
@@ -141,7 +141,7 @@ program
       })),
     );
 
-    logDefer(`Creating files for project: ${name}`);
+    logger.defer(`Creating files for project: ${name}`);
 
     async function createFiles(path: string, dest: string) {
       mkdirSync(dest, { recursive: true });
@@ -182,10 +182,10 @@ program
       const path = `https://api.github.com/repos/inbestigator/dressed-examples/contents/${template}`;
       await createFiles(path, join(cwd(), name));
     } catch (e) {
-      logError(e);
+      logger.error(e);
     }
 
-    logSuccess("Project created successfully!");
+    logger.succeed("Project created successfully!");
     exit();
   });
 

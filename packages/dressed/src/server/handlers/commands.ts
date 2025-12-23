@@ -11,7 +11,7 @@ import {
 import { bulkOverwriteGlobalCommands, bulkOverwriteGuildCommands } from "../../resources/generated.resources.ts";
 import type { CommandConfig, CommandData } from "../../types/config.ts";
 import type { CommandAutocompleteInteraction, CommandInteraction } from "../../types/interaction.ts";
-import { logDefer, logSuccess, logWarn } from "../../utils/log.ts";
+import logger from "../../utils/log.ts";
 import { createHandlerSetup } from "./index.ts";
 
 function normalizeData(config: CommandConfig) {
@@ -38,7 +38,7 @@ function normalizeData(config: CommandConfig) {
  * Installs commands to the Discord API
  */
 export async function installCommands(commands: CommandData[]) {
-  logDefer("Registering commands");
+  logger.defer("Registering commands");
 
   const scopes = new Map<string, RESTPutAPIApplicationCommandsJSONBody | RESTPutAPIApplicationGuildCommandsJSONBody>([
     ["global", []],
@@ -47,7 +47,7 @@ export async function installCommands(commands: CommandData[]) {
   for (const command of commands) {
     if (command.exports === null) return;
     if ("config" in command.data) {
-      logWarn(
+      logger.warn(
         "In the next major version of Dressed, command config must be passed in using `command.exports` instead of `command.data`",
       );
       command.exports.config = command.data.config; // TODO Remove check before next major release
@@ -75,7 +75,7 @@ export async function installCommands(commands: CommandData[]) {
     }
   }
 
-  logSuccess("Registered commands");
+  logger.succeed("Registered commands");
 }
 
 /**
