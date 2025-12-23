@@ -36,9 +36,9 @@ function delay(ms: number) {
 
 const cleanup = (bucketId: string) => () => {
   buckets.delete(bucketId);
-  bucketIds.forEach((v, k) => {
-    v === bucketId && bucketIds.delete(k);
-  });
+  for (const [k, v] of bucketIds) {
+    if (v === bucketId) bucketIds.delete(k);
+  }
 };
 
 export function checkLimit(req: Request, bucketTTL: number) {
