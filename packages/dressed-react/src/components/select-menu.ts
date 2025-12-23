@@ -3,22 +3,16 @@ import { SelectMenu as DressedComponent, SelectMenuOption as DressedOption } fro
 import { createElement, type ReactNode } from "react";
 import type { Node } from "../react/node.ts";
 
-interface SelectType {
-  Channel: 8;
-  Mentionable: 7;
-  Role: 6;
-  String: 3;
-  User: 5;
-}
+type SelectType = "Channel" | "Mentionable" | "Role" | "String" | "User";
 
 type SelectMap = {
   [Key in keyof typeof ComponentType]: Extract<APISelectMenuComponent, { type: (typeof ComponentType)[Key] }>;
 };
 
-type MenuProps<K extends keyof SelectType> = Omit<SelectMap[`${K}Select`], "type" | "options"> &
+type MenuProps<K extends SelectType> = Omit<SelectMap[`${K}Select`], "type" | "options"> &
   ({ children: ReactNode; type: "String" } | { type: Exclude<K, "String"> });
 
-export function SelectMenu<K extends keyof SelectType>(props: MenuProps<K>) {
+export function SelectMenu<K extends SelectType>(props: MenuProps<K>) {
   const { children, ...rest } = props as Record<string, unknown>;
   const component = DressedComponent(rest as never);
   return createElement("dressed-node", component as never, children as ReactNode);
