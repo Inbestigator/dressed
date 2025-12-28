@@ -1,7 +1,7 @@
 import type { APIActionRowComponent, APIComponentInActionRow } from "discord-api-types/v10";
 import { ActionRow as DressedComponent } from "dressed";
 import { createElement, type ReactElement, type ReactNode } from "react";
-import { type ComponentNode, renderNode } from "../react/renderer.ts";
+import { type ComponentNode, parseNode } from "../react/renderer.ts";
 
 export function ActionRow({
   children,
@@ -16,5 +16,5 @@ export async function parseActionRow<T extends APIActionRowComponent<APIComponen
   props: T,
   children: ComponentNode[],
 ): Promise<T> {
-  return { ...props, components: await Promise.all(children.map(renderNode)) };
+  return { ...props, components: await Promise.all(children.map(parseNode)) };
 }

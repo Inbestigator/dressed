@@ -3,7 +3,7 @@ import { Section as DressedComponent } from "dressed";
 import { createElement, isValidElement, type ReactNode } from "react";
 import { render } from "../index.ts";
 import type { Node } from "../react/node.ts";
-import { type ComponentNode, renderNode } from "../react/renderer.ts";
+import { type ComponentNode, parseNode } from "../react/renderer.ts";
 
 interface SectionProps extends Omit<APISectionComponent, "accessory" | "components" | "type"> {
   children: ReactNode;
@@ -25,6 +25,6 @@ export async function parseSection<T extends APISectionComponent>(props: T, chil
   return {
     ...props,
     accessory,
-    components: await Promise.all(children.map(renderNode)),
+    components: await Promise.all(children.map(parseNode)),
   };
 }

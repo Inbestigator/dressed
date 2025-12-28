@@ -1,5 +1,6 @@
 import {
   type APIInteractionResponseCallbackData,
+  type APIMessageTopLevelComponent,
   type APIModalInteractionResponseCallbackData,
   type ApplicationCommandType,
   MessageFlags,
@@ -90,7 +91,7 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
     newInteraction[method] = async (components: ReplyProps[0], data: ReplyProps[1] = {}) => {
       const flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
       data.flags = flags;
-      data.components = (await render(components)).components as never;
+      data.components = (await render(components)).components as APIMessageTopLevelComponent[];
       return original(data);
     };
   }

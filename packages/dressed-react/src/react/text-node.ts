@@ -2,15 +2,13 @@ import { createNode, type Node } from "./node.ts";
 
 export type TextNode = Node<string>;
 
-export function createTextNode(props: string): TextNode {
+export function createTextNode(props: string) {
   const node = createNode<string>(props);
 
-  function text(): string {
+  node.text = () => {
+    if (node.hidden) return "";
     return node.props;
-  }
-
-  return {
-    ...node,
-    text,
   };
+
+  return node;
 }

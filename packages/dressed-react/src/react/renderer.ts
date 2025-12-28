@@ -49,22 +49,30 @@ function mergeTextNodes<T>(nodes: Node<T>[]) {
   return merged;
 }
 
-export function createRenderer(): Renderer {
-  const components: (APIMessageComponent | APIModalComponent)[] = [];
-  const nodes: Node<APIMessageComponent | APIModalComponent>[] = [];
+export type RendererCallback = (components: (APIMessageComponent | APIModalComponent)[]) => void;
 
-  return {
-    nodes,
+export function createRenderer(callback?: RendererCallback) {
+  let prev = "";
+  const renderer: Renderer = {
+    nodes: [],
+    components: [],
     async render() {
-      for (const node of mergeTextNodes(nodes)) {
-        components.push(await renderNode(node));
+      const components = [];
+      for (const node of mergeTextNodes(renderer.nodes as Node<APIMessageComponent | APIModalComponent>[])) {
+        components.push(await parseNode(node));
       }
+      const stringified = JSON.stringify(components);
+      if (stringified === prev) return;
+      prev = stringified;
+      callback?.(components);
+      renderer.components = components;
     },
-    components,
   };
+
+  return renderer;
 }
 
-export async function renderNode(node: ComponentNode): Promise<APIMessageComponent | APIModalComponent> {
+export async function parseNode(node: ComponentNode): Promise<APIMessageComponent | APIModalComponent> {
   switch (node.props.type) {
     case ComponentType.ActionRow: {
       return parseActionRow(node.props, node.children);
