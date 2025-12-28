@@ -1,57 +1,25 @@
+import { type APIMessageTopLevelComponent, type ApplicationCommandType, MessageFlags } from "discord-api-types/v10";
 import {
-  type APIInteractionResponseCallbackData,
-  type APIMessageTopLevelComponent,
-  type APIModalInteractionResponseCallbackData,
-  type ApplicationCommandType,
-  MessageFlags,
-} from "discord-api-types/v10";
-import type {
-  CommandConfig,
-  CommandInteraction as DressedCommandInteraction,
-  MessageComponentInteraction as DressedMessageComponentInteraction,
-  ModalSubmitInteraction as DressedModalSubmitInteraction,
+  type CommandConfig,
+  type CommandInteraction as DressedCommandInteraction,
+  type MessageComponentInteraction as DressedMessageComponentInteraction,
+  type ModalSubmitInteraction as DressedModalSubmitInteraction,
+  editWebhookMessage,
 } from "dressed";
-import type { createInteraction, RawFile } from "dressed/server";
+import type { createInteraction } from "dressed/server";
 import type { ReactNode } from "react";
 import { render } from "./index.ts";
-
-type ReplyProps = [
-  components: ReactNode,
-  data?: Omit<APIInteractionResponseCallbackData, "content"> & {
-    /** Whether the message is ephemeral */
-    ephemeral?: boolean;
-    /** The files to send with the message */
-    files?: RawFile[];
-    /** Whether to return the source message with the response */
-    with_response?: boolean;
-  },
-];
-type EditReplyProps = [
-  components: ReactNode,
-  data?: Omit<APIInteractionResponseCallbackData, "content"> & {
-    /** The files to send with the message */
-    files?: RawFile[];
-  },
-];
-type FollowUpProps = [
-  components: ReactNode,
-  data?: Omit<APIInteractionResponseCallbackData, "content"> & {
-    /** The files to send with the message */
-    files?: RawFile[];
-    /** Whether the message is ephemeral */
-    ephemeral?: boolean;
-  },
-];
-type ShowModalProps = [components: ReactNode, data: Omit<APIModalInteractionResponseCallbackData, "components">];
 
 type ReactivatedInteraction<T> = OverrideMethodParams<
   T,
   {
-    reply: ReplyProps;
-    editReply: EditReplyProps;
-    update: EditReplyProps;
-    followUp: FollowUpProps;
-    showModal: ShowModalProps;
+    [K in "reply" | "editReply" | "update" | "followUp" | "showModal"]: [
+      components: ReactNode,
+      // @ts-expect-error
+      ...(Parameters<T[K]> extends readonly [infer First, ...infer Rest]
+        ? [Omit<Exclude<First, string>, "content" | "components">, ...Rest]
+        : never),
+    ];
   }
 >;
 
@@ -92,20 +60,22 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
 
     const original = interaction[method] as (d: unknown) => unknown;
 
-    newInteraction[method] = (components: ReplyProps[0], data: ReplyProps[1] = {}) => {
-      data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
+    newInteraction[method] = (...[components, originalData = {}, $req]: Parameters<CommandInteraction["reply"]>) => {
+      originalData.flags = (originalData.flags ?? 0) | MessageFlags.IsComponentsV2;
 
-      const { promise, resolve } = Promise.withResolvers();
-
-      render(components, (c) => {
-        data.components = c as APIMessageTopLevelComponent[];
-        const didRespond = interaction.history.some((h) =>
-          ["reply", "deferReply", "update", "deferUpdate"].includes(h),
-        );
-        resolve((didRespond ? editReply : original)(data));
+      return new Promise((resolve) => {
+        let followUpId: string;
+        render(components, async (c) => {
+          const data = { ...originalData, components: c as APIMessageTopLevelComponent[] };
+          if (followUpId) {
+            return editWebhookMessage(interaction.application_id, interaction.token, followUpId, data, undefined, $req);
+          }
+          const shouldEdit = (method === "reply" || method === "update") && interaction.history.includes(method);
+          const res = await (shouldEdit ? editReply : original)(data, $req);
+          if (method === "followUp") followUpId = res.id;
+          resolve(res);
+        });
       });
-
-      return promise;
     };
   }
   return newInteraction;
