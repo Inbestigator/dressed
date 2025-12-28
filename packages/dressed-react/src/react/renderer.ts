@@ -24,7 +24,7 @@ export interface Renderer {
 
 export type ComponentNode = Node<APIMessageComponent | APIModalComponent, APIMessageComponent | APIModalComponent>;
 
-function mergeTextNodes<T>(nodes: Node<T>[]) {
+function mergeTextNodes<T>(nodes: Node<T>[]): Node<T>[] {
   const merged = [];
   let content = "";
 
@@ -40,8 +40,7 @@ function mergeTextNodes<T>(nodes: Node<T>[]) {
       content += node.props;
     } else {
       pushText();
-      node.children = mergeTextNodes(node.children);
-      merged.push(node);
+      merged.push({ ...node, children: mergeTextNodes(node.children) });
     }
   }
 

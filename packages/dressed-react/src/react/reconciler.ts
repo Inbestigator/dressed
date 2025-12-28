@@ -1,7 +1,7 @@
 import type { ReactContext } from "react-reconciler";
 import ReactReconciler from "react-reconciler";
 import { DefaultEventPriority, NoEventPriority } from "react-reconciler/constants.js";
-import { createNode, isNode, type Node } from "./node.ts";
+import { createNode, isNode, type Node, removeChild } from "./node.ts";
 import type { Renderer } from "./renderer.ts";
 import { createTextNode, type TextNode } from "./text-node.ts";
 
@@ -59,7 +59,7 @@ export const reconciler = ReactReconciler<
     renderer.nodes = [];
   },
   appendChildToContainer: (renderer, child) => renderer.nodes.push(child),
-  removeChildFromContainer: (renderer, child) => renderer.nodes.filter((n) => n !== child),
+  removeChildFromContainer: (renderer, child) => removeChild(renderer.nodes, child),
   insertInContainerBefore: (renderer, child, before) => {
     let index = renderer.nodes.indexOf(before);
     if (index === -1) {
@@ -69,7 +69,7 @@ export const reconciler = ReactReconciler<
   },
   appendInitialChild: (parent, child) => parent.children.push(child),
   appendChild: (parent, child) => parent.children.push(child),
-  removeChild: (parent, child) => parent.children.filter((n) => n !== child),
+  removeChild: (parent, child) => removeChild(parent.children, child),
   insertBefore: (parent, child, before) => {
     let index = parent.children.indexOf(before);
     if (index === -1) {

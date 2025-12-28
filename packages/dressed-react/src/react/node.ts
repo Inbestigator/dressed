@@ -29,3 +29,10 @@ export function isNode(obj: unknown): obj is Node<unknown> {
     typeof obj.text === "function"
   );
 }
+
+export function removeChild<T>(array: T[], item: T) {
+  const index = array.indexOf(item);
+  if (index !== -1) {
+    array.splice(index, 1);
+  }
+}
