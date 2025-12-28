@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { reconciler } from "../react/reconciler.ts";
-import { createRenderer } from "../react/renderer.ts";
+import { createRenderer, type RendererCallback } from "../react/renderer.ts";
 
-export async function render(children: ReactNode) {
-  const container = createRenderer();
+export async function render(children: ReactNode, callback?: RendererCallback) {
+  const renderer = createRenderer(callback);
   const root = reconciler.createContainer(
-    container,
+    renderer,
     0,
     null,
     false,
@@ -20,7 +20,8 @@ export async function render(children: ReactNode) {
 
   if (root !== null) {
     await new Promise<void>((r) => reconciler.updateContainer(children, root, null, r));
-    await container.render();
+    await renderer.render();
   }
-  return container;
+
+  return renderer;
 }

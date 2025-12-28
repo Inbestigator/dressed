@@ -1,13 +1,13 @@
-import type { HostConfig, ReactContext } from "react-reconciler";
+import type { ReactContext } from "react-reconciler";
 import ReactReconciler from "react-reconciler";
 import { DefaultEventPriority, NoEventPriority } from "react-reconciler/constants.js";
-import { createNode, isNode, type Node } from "./node.ts";
+import { createNode, isNode, type Node, removeChild } from "./node.ts";
 import type { Renderer } from "./renderer.ts";
 import { createTextNode, type TextNode } from "./text-node.ts";
 
 let currentUpdatePriority: number = NoEventPriority;
 
-const config: HostConfig<
+export const reconciler = ReactReconciler<
   string, // Type,
   Record<string, unknown>, // Props,
   Renderer, // Container,
@@ -16,17 +16,19 @@ const config: HostConfig<
   never, // SuspenseInstance,
   never, // HydratableInstance,
   never, // PublicInstance,
-  never, // HostContext,
+  Record<string, never>, // HostContext,
   true, // UpdatePayload,
   never, // ChildSet,
   number, // TimeoutHandle,
   number, // NoTimeout,
   null // TransitionStatus
-> = {
+>({
   supportsMutation: true,
   supportsPersistence: false,
   supportsHydration: false,
   isPrimaryRenderer: true,
+  supportsMicrotasks: true,
+  scheduleMicrotask: queueMicrotask,
   scheduleTimeout: globalThis.setTimeout,
   cancelTimeout: globalThis.clearTimeout,
   noTimeout: -1,
@@ -54,10 +56,10 @@ const config: HostConfig<
   getInstanceFromNode: () => null,
   getInstanceFromScope: () => null,
   clearContainer: (renderer) => {
-    renderer.nodes.length = 0;
+    renderer.nodes = [];
   },
   appendChildToContainer: (renderer, child) => renderer.nodes.push(child),
-  removeChildFromContainer: (renderer, child) => renderer.nodes.filter((n) => n !== child),
+  removeChildFromContainer: (renderer, child) => removeChild(renderer.nodes, child),
   insertInContainerBefore: (renderer, child, before) => {
     let index = renderer.nodes.indexOf(before);
     if (index === -1) {
@@ -67,7 +69,7 @@ const config: HostConfig<
   },
   appendInitialChild: (parent, child) => parent.children.push(child),
   appendChild: (parent, child) => parent.children.push(child),
-  removeChild: (parent, child) => parent.children.filter((n) => n !== child),
+  removeChild: (parent, child) => removeChild(parent.children, child),
   insertBefore: (parent, child, before) => {
     let index = parent.children.indexOf(before);
     if (index === -1) {
@@ -76,7 +78,7 @@ const config: HostConfig<
     parent.children.splice(index, 0, child);
   },
   prepareForCommit: () => null,
-  resetAfterCommit: () => null,
+  resetAfterCommit: (renderer) => queueMicrotask(renderer.render),
   prepareScopeUpdate() {},
   preparePortalMount: () => {
     throw new Error("Portals are not supported");
@@ -89,9 +91,8 @@ const config: HostConfig<
     currentUpdatePriority = newPriority;
   },
   getCurrentUpdatePriority: () => currentUpdatePriority,
-  resolveUpdatePriority: () =>
-    currentUpdatePriority !== NoEventPriority ? currentUpdatePriority : DefaultEventPriority,
-  maySuspendCommit: () => false,
+  resolveUpdatePriority: () => currentUpdatePriority || DefaultEventPriority,
+  maySuspendCommit: () => true,
   NotPendingTransition: null,
   HostTransitionContext: {
     $$typeof: Symbol.for("react.context"),
@@ -111,6 +112,16 @@ const config: HostConfig<
   startSuspendingCommit() {},
   suspendInstance() {},
   waitForCommitToBeReady: () => null,
-};
-
-export const reconciler = ReactReconciler(config);
+  hideInstance: (instance) => {
+    instance.hidden = true;
+  },
+  unhideInstance: (instance) => {
+    instance.hidden = false;
+  },
+  hideTextInstance: (textInstance) => {
+    textInstance.hidden = true;
+  },
+  unhideTextInstance: (textInstance) => {
+    textInstance.hidden = false;
+  },
+});

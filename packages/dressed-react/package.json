@@ -1,14 +1,14 @@
 {
   "name": "@dressed/react",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Inbestigator/dressed.git",
     "directory": "packages/dressed-react"
   },
   "peerDependencies": {
-    "dressed": "^1.10.0",
-    "react": "^19.1.1"
+    "dressed": "^1.10.1",
+    "react": "^19.2.3"
   },
   "exports": "./dist/index.js",
   "description": "Render Dressed's components using React",
@@ -35,7 +35,7 @@
     "react-reconciler": "npm:@dressed/react-reconciler"
   },
   "devDependencies": {
-    "@types/react": "^19.1.13",
+    "@types/react": "^19.2.7",
     "@types/react-reconciler": "^0.32.3"
   }
 }

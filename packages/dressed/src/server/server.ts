@@ -104,9 +104,7 @@ export async function handleRequest(
     } else {
       status = await handleEvent(events, json, config.middleware);
     }
-    return new Response(status === 200 ? '{"type":1}' : null, {
-      status,
-    });
+    return new Response(status === 200 ? '{"type":1}' : null, { status });
   } catch (error) {
     logger.error("Failed to process request:", error);
     return new Response(null, { status: 500 });

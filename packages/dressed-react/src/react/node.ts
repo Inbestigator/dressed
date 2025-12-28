@@ -2,20 +2,21 @@ export interface Node<Props, Children = unknown> {
   props: Props;
   children: Node<Children>[];
   text: () => string;
+  hidden: boolean;
 }
 
-export function createNode<Props>(props: Props): Node<Props> {
-  const children: Node<unknown>[] = [];
-
-  function text(): string {
-    return children.map((c) => c.text()).join("");
-  }
-
-  return {
+export function createNode<Props>(props: Props) {
+  const node: Node<Props> = {
+    hidden: false,
     props,
-    children,
-    text,
+    children: [],
+    text() {
+      if (node.hidden) return "";
+      return node.children.map((c) => c.text()).join("");
+    },
   };
+
+  return node;
 }
 
 export function isNode(obj: unknown): obj is Node<unknown> {
@@ -27,4 +28,11 @@ export function isNode(obj: unknown): obj is Node<unknown> {
     "text" in obj &&
     typeof obj.text === "function"
   );
+}
+
+export function removeChild<T>(array: T[], item: T) {
+  const index = array.indexOf(item);
+  if (index !== -1) {
+    array.splice(index, 1);
+  }
 }
