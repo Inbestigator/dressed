@@ -99,10 +99,10 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
 
       render(components, (c) => {
         data.components = c as APIMessageTopLevelComponent[];
-        if (interaction.history.some((h) => ["reply", "deferReply", "update", "deferUpdate"].includes(h))) {
-          return editReply(data);
-        }
-        resolve(original(data));
+        const didRespond = interaction.history.some((h) =>
+          ["reply", "deferReply", "update", "deferUpdate"].includes(h),
+        );
+        resolve((didRespond ? editReply : original)(data));
       });
 
       return promise;
