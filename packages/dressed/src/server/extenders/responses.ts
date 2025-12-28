@@ -8,7 +8,6 @@ import { editWebhookMessage, executeWebhook } from "../../resources/generated.re
 import { createInteractionCallback } from "../../resources/interactions.ts";
 import type { RawFile } from "../../types/file.ts";
 import type { BaseInteractionMethods } from "../../types/interaction.ts";
-import { botEnv } from "../../utils/env.ts";
 
 export function baseInteractionMethods(interaction: APIInteraction): BaseInteractionMethods {
   const history: BaseInteractionMethods["history"] = [];
@@ -28,9 +27,7 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
         "ChannelMessageWithSource",
         rest,
         files,
-        {
-          with_response: data?.with_response,
-        },
+        { with_response: data?.with_response },
         $req,
       ) as never;
     },
@@ -61,9 +58,7 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
         "UpdateMessage",
         rest,
         files,
-        {
-          with_response: data.with_response,
-        },
+        { with_response: data.with_response },
         $req,
       ) as never;
     },
@@ -81,7 +76,7 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
     },
     editReply(data, $req) {
       history.push("editReply");
-      return editWebhookMessage(botEnv.DISCORD_APP_ID, interaction.token, "@original", data, undefined, $req);
+      return editWebhookMessage(interaction.application_id, interaction.token, "@original", data, undefined, $req);
     },
     followUp(
       data:
@@ -96,15 +91,7 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
       if (typeof data === "object" && data.ephemeral) {
         data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
       }
-      return executeWebhook(
-        botEnv.DISCORD_APP_ID,
-        interaction.token,
-        data,
-        {
-          wait: true,
-        },
-        $req,
-      );
+      return executeWebhook(interaction.application_id, interaction.token, data, { wait: true }, $req);
     },
     showModal(data, params, $req) {
       history.push("showModal");

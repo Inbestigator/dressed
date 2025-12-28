@@ -14,20 +14,19 @@ export async function createMessage(
 ) {
   data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
 
-  const { promise, resolve } = Promise.withResolvers();
   let messageId: string;
 
-  render(components, async (c) => {
-    data.components = c as APIMessageTopLevelComponent[];
-    if (messageId) {
-      return dressedEditMessage(channelId, messageId, data);
-    }
-    const message = await dressedCreateMessage(channelId, data);
-    messageId = message.id;
-    resolve(message);
+  return new Promise((resolve) => {
+    render(components, async (c) => {
+      data.components = c as APIMessageTopLevelComponent[];
+      if (messageId) {
+        return dressedEditMessage(channelId, messageId, data);
+      }
+      const message = await dressedCreateMessage(channelId, data);
+      messageId = message.id;
+      resolve(message);
+    });
   });
-
-  return promise;
 }
 
 /**
@@ -42,12 +41,10 @@ export async function editMessage(
 ) {
   data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
 
-  const { promise, resolve } = Promise.withResolvers();
-
-  render(components, async (c) => {
-    data.components = c as APIMessageTopLevelComponent[];
-    resolve(dressedEditMessage(channelId, messageId, data));
+  return new Promise((resolve) => {
+    render(components, async (c) => {
+      data.components = c as APIMessageTopLevelComponent[];
+      resolve(dressedEditMessage(channelId, messageId, data));
+    });
   });
-
-  return promise;
 }
