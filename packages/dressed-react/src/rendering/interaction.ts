@@ -85,14 +85,27 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
   if (!interaction) throw new Error("No interaction");
   // biome-ignore lint/suspicious/noExplicitAny: We're overriding the types
   const newInteraction = interaction as any;
+  // @ts-expect-error
+  const editReply = interaction.editReply;
   for (const method of ["reply", "editReply", "update", "followUp", "showModal"] as (keyof T)[]) {
     if (!(method in interaction)) continue;
+
     const original = interaction[method] as (d: unknown) => unknown;
-    newInteraction[method] = async (components: ReplyProps[0], data: ReplyProps[1] = {}) => {
-      const flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
-      data.flags = flags;
-      data.components = (await render(components)).components as APIMessageTopLevelComponent[];
-      return original(data);
+
+    newInteraction[method] = (components: ReplyProps[0], data: ReplyProps[1] = {}) => {
+      data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
+
+      const { promise, resolve } = Promise.withResolvers();
+
+      render(components, (c) => {
+        data.components = c as APIMessageTopLevelComponent[];
+        if (interaction.history.some((h) => ["reply", "deferReply", "update", "deferUpdate"].includes(h))) {
+          return editReply(data);
+        }
+        resolve(original(data));
+      });
+
+      return promise;
     };
   }
   return newInteraction;

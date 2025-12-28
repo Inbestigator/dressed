@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import {
   type APIMediaGalleryItem,
   type APIMessageComponent,
@@ -51,7 +52,7 @@ function mergeTextNodes<T>(nodes: Node<T>[]): Node<T>[] {
 export type RendererCallback = (components: (APIMessageComponent | APIModalComponent)[]) => void;
 
 export function createRenderer(callback?: RendererCallback) {
-  let prev = "";
+  let prevHash = "";
   const renderer: Renderer = {
     nodes: [],
     components: [],
@@ -60,9 +61,9 @@ export function createRenderer(callback?: RendererCallback) {
       for (const node of mergeTextNodes(renderer.nodes as Node<APIMessageComponent | APIModalComponent>[])) {
         components.push(await parseNode(node));
       }
-      const stringified = JSON.stringify(components);
-      if (stringified === prev) return;
-      prev = stringified;
+      const hash = createHash("sha256").update(JSON.stringify(components)).digest("hex");
+      if (hash === prevHash) return;
+      prevHash = hash;
       callback?.(components);
       renderer.components = components;
     },
