@@ -1,4 +1,4 @@
-import { type APIMessageTopLevelComponent, type ApplicationCommandType, MessageFlags } from "discord-api-types/v10";
+import { type ApplicationCommandType, MessageFlags } from "discord-api-types/v10";
 import {
   type CommandConfig,
   type CommandInteraction as DressedCommandInteraction,
@@ -16,8 +16,8 @@ type ReactivatedInteraction<T> = OverrideMethodParams<
     [K in "reply" | "editReply" | "update" | "followUp" | "showModal"]: [
       components: ReactNode,
       // @ts-expect-error
-      ...(Parameters<T[K]> extends readonly [infer First, ...infer Rest]
-        ? [Omit<Exclude<First, string>, "content" | "components">, ...Rest]
+      ...(Parameters<T[K]> extends readonly [...infer P]
+        ? [data?: Omit<Exclude<P[0], string>, "content" | "components">, $req?: P[1]]
         : never),
     ];
   }
@@ -60,13 +60,14 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
 
     const original = interaction[method] as (d: unknown) => unknown;
 
-    newInteraction[method] = (...[components, originalData = {}, $req]: Parameters<CommandInteraction["reply"]>) => {
-      originalData.flags = (originalData.flags ?? 0) | MessageFlags.IsComponentsV2;
+    newInteraction[method] = (...[components, data = {}, $req]: Parameters<CommandInteraction["reply"]>) => {
+      data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
 
       return new Promise((resolve) => {
         let followUpId: string;
         render(components, async (c) => {
-          const data = { ...originalData, components: c as APIMessageTopLevelComponent[] };
+          // @ts-expect-error
+          data.components = c;
           if (followUpId) {
             return editWebhookMessage(interaction.application_id, interaction.token, followUpId, data, undefined, $req);
           }

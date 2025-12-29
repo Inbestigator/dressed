@@ -1,5 +1,6 @@
-import { type APIMessageTopLevelComponent, MessageFlags, type Snowflake } from "discord-api-types/v10";
+import { type APIMessage, MessageFlags, type Snowflake } from "discord-api-types/v10";
 import { createMessage as dressedCreateMessage, editMessage as dressedEditMessage } from "dressed";
+import type { CallConfig } from "dressed/utils";
 import type { ReactNode } from "react";
 import { render } from "./index.ts";
 
@@ -7,22 +8,24 @@ import { render } from "./index.ts";
  * Renders the provided children and posts a message to a guild text or DM channel with the `IsComponentsV2` flag.
  * @example createMessage(channelId, <Button label="Foo" />)
  */
-export async function createMessage(
+export function createMessage(
   channelId: Snowflake,
   components: ReactNode,
-  data: Exclude<Parameters<typeof dressedCreateMessage>[1], string> = {},
+  data: Omit<Exclude<Parameters<typeof dressedCreateMessage>[1], string>, "content" | "components"> = {},
+  $req?: CallConfig,
 ) {
   data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
 
   let messageId: string;
 
-  return new Promise((resolve) => {
+  return new Promise<APIMessage>((resolve) => {
     render(components, async (c) => {
-      data.components = c as APIMessageTopLevelComponent[];
+      // @ts-expect-error
+      data.components = c;
       if (messageId) {
-        return dressedEditMessage(channelId, messageId, data);
+        return dressedEditMessage(channelId, messageId, data, $req);
       }
-      const message = await dressedCreateMessage(channelId, data);
+      const message = await dressedCreateMessage(channelId, data, $req);
       messageId = message.id;
       resolve(message);
     });
@@ -33,18 +36,20 @@ export async function createMessage(
  * Renders the provided children and edits a previously sent message.
  * @example editMessage(channelId, messageId, <Button label="Bar" />)
  */
-export async function editMessage(
+export function editMessage(
   channelId: Snowflake,
   messageId: Snowflake,
   components: ReactNode,
-  data: Exclude<Parameters<typeof dressedEditMessage>[2], string> = {},
+  data: Omit<Exclude<Parameters<typeof dressedEditMessage>[2], string>, "content" | "components"> = {},
+  $req?: CallConfig,
 ) {
   data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
 
-  return new Promise((resolve) => {
+  return new Promise<APIMessage>((resolve) => {
     render(components, async (c) => {
-      data.components = c as APIMessageTopLevelComponent[];
-      resolve(dressedEditMessage(channelId, messageId, data));
+      // @ts-expect-error
+      data.components = c;
+      resolve(dressedEditMessage(channelId, messageId, data, $req));
     });
   });
 }
