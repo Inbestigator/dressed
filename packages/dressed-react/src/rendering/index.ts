@@ -21,5 +21,5 @@ export function render(children: ReactNode, callback: RendererCallback) {
 
   if (container !== null) reconciler.updateContainer(children, container);
 
-  return renderer;
+  return { renderer, container };
 }

@@ -8,6 +8,7 @@ import {
 } from "dressed";
 import type { createInteraction } from "dressed/server";
 import type { ReactNode } from "react";
+import { reconciler } from "../react/reconciler.ts";
 import { render } from "./index.ts";
 
 type ReactivatedInteraction<T> = OverrideMethodParams<
@@ -21,7 +22,9 @@ type ReactivatedInteraction<T> = OverrideMethodParams<
         : never),
     ];
   }
->;
+> & {
+  $patched: symbol;
+};
 
 type OverrideMethodParams<T, Overrides extends Record<string, unknown[]>> = {
   [K in keyof T]: K extends keyof Overrides
@@ -50,9 +53,10 @@ export type ModalSubmitInteraction = ReactivatedInteraction<DressedModalSubmitIn
 export function patchInteraction<T extends NonNullable<ReturnType<typeof createInteraction>>>(
   interaction: T,
 ): ReactivatedInteraction<T> {
+  const createdAt = Date.now();
   if (!interaction) throw new Error("No interaction");
   // biome-ignore lint/suspicious/noExplicitAny: We're overriding the types
-  const newInteraction = interaction as any;
+  const newInteraction = { $patched: Symbol.for("@dressed/react"), ...interaction } as any;
   // @ts-expect-error
   const editReply = interaction.editReply;
   for (const method of ["reply", "editReply", "update", "followUp", "showModal"] as (keyof T)[]) {
@@ -65,7 +69,10 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
 
       return new Promise((resolve) => {
         let followUpId: string;
-        render(components, async (c) => {
+        const { container } = render(components, async (c) => {
+          if (Date.now() > createdAt + 6e4 * 15) {
+            return reconciler.updateContainer(null, container);
+          }
           // @ts-expect-error
           data.components = c;
           if (followUpId) {

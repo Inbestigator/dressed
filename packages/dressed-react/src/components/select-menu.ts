@@ -1,7 +1,9 @@
 import { type APISelectMenuComponent, type APISelectMenuOption, ComponentType } from "discord-api-types/v10";
 import { SelectMenu as DressedComponent, SelectMenuOption as DressedOption } from "dressed";
-import { createElement, type ReactNode } from "react";
+import { createElement, type ReactElement, type ReactNode } from "react";
 import type { Node } from "../react/node.ts";
+import { registerHandler } from "../rendering/callbacks.ts";
+import type { MessageComponentInteraction } from "../rendering/interaction.ts";
 
 type SelectType = "Channel" | "Mentionable" | "Role" | "String" | "User";
 
@@ -9,16 +11,36 @@ type SelectMap = {
   [Key in keyof typeof ComponentType]: Extract<APISelectMenuComponent, { type: (typeof ComponentType)[Key] }>;
 };
 
-type MenuProps<K extends SelectType> = Omit<SelectMap[`${K}Select`], "type" | "options"> &
-  ({ children: ReactNode; type: "String" } | { type: Exclude<K, "String"> });
+type SelectMenuWithCustomId<K extends SelectType> = Omit<SelectMap[`${K}Select`], "type" | "options"> & {
+  type: K;
+} & (K extends "String" ? { children: ReactNode } : object);
 
-export function SelectMenu<K extends SelectType>(props: MenuProps<K>) {
+type SelectMenuWithOnClick<K extends SelectType> = Omit<SelectMenuWithCustomId<K>, "custom_id"> & {
+  /** Create a temporary handler callback, will not work in a serverless environment */
+  onSubmit: (interaction: MessageComponentInteraction<`${K}Select`>) => void;
+  /** An additional handler identity defined in the callback setup which will run if the `onSubmit` is no longer registered */
+  fallback?: string;
+};
+
+export function SelectMenu<K extends SelectType>(
+  props: SelectMenuWithCustomId<K> & { type: K },
+): ReactElement<SelectMap[`${K}Select`]>;
+export function SelectMenu<K extends SelectType>(
+  props: SelectMenuWithOnClick<K> & { type: K },
+): ReactElement<SelectMap[`${K}Select`]>;
+
+export function SelectMenu<K extends SelectType>(
+  props: SelectMenuWithCustomId<K> | SelectMenuWithOnClick<K>,
+): ReactElement<SelectMap[`${K}Select`]> {
   const { children, ...rest } = props as Record<string, unknown>;
-  const component = DressedComponent(rest as never);
+  const component = DressedComponent({
+    ...rest,
+    ...("onSubmit" in props ? registerHandler(props.onSubmit as never, props.fallback) : {}),
+  } as never);
   return createElement("dressed-node", component as never, children as ReactNode);
 }
 
-export function SelectMenuOption(props: APISelectMenuOption) {
+export function SelectMenuOption(props: APISelectMenuOption): ReactElement<APISelectMenuOption> {
   const component = DressedOption(props.label, props.value, props);
   return createElement("dressed-node", component);
 }
