@@ -67,20 +67,33 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
     newInteraction[method] = (...[components, data = {}, $req]: Parameters<CommandInteraction["reply"]>) => {
       data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
 
+      let followUpId: string | 0 | undefined;
+      let pendingFollowUpEdit = false;
+
+      function editFollowUp() {
+        if (!followUpId) return;
+        return editWebhookMessage(interaction.application_id, interaction.token, followUpId, data, undefined, $req);
+      }
+
       return new Promise((resolve) => {
-        let followUpId: string;
         const { container } = render(components, async (c) => {
           if (Date.now() > createdAt + 6e4 * 15) {
             return reconciler.updateContainer(null, container);
           }
           // @ts-expect-error
           data.components = c;
-          if (followUpId) {
-            return editWebhookMessage(interaction.application_id, interaction.token, followUpId, data, undefined, $req);
+          if (followUpId) return editFollowUp();
+          if (followUpId === 0) {
+            pendingFollowUpEdit = true;
+            return;
           }
+          if (method === "followUp") followUpId = 0;
           const shouldEdit = (method === "reply" || method === "update") && interaction.history.includes(method);
           const res = await (shouldEdit ? editReply : original)(data, $req);
-          if (method === "followUp") followUpId = res.id;
+          if (method === "followUp") {
+            followUpId = res.id;
+            if (pendingFollowUpEdit) editFollowUp();
+          }
           resolve(res);
         });
       });

@@ -48,7 +48,7 @@ function mergeTextNodes<T>(nodes: Node<T>[]): Node<T>[] {
   return merged;
 }
 
-export type RendererCallback = (components: (APIMessageComponent | APIModalComponent)[]) => void;
+export type RendererCallback = (components: (APIMessageComponent | APIModalComponent)[]) => unknown;
 
 export function createRenderer(callback: RendererCallback) {
   let prevHash = "";

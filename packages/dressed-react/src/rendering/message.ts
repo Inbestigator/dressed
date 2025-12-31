@@ -16,17 +16,27 @@ export function createMessage(
 ) {
   data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
 
-  let messageId: string;
+  let messageId: string | 0 | undefined;
+  let pendingEdit = false;
+
+  function edit() {
+    if (!messageId) return;
+    return dressedEditMessage(channelId, messageId, data, $req);
+  }
 
   return new Promise<APIMessage>((resolve) => {
     render(components, async (c) => {
       // @ts-expect-error
       data.components = c;
-      if (messageId) {
-        return dressedEditMessage(channelId, messageId, data, $req);
+      if (messageId) return edit();
+      if (messageId === 0) {
+        pendingEdit = true;
+        return;
       }
+      messageId = 0;
       const message = await dressedCreateMessage(channelId, data, $req);
       messageId = message.id;
+      if (pendingEdit) edit();
       resolve(message);
     });
   });
