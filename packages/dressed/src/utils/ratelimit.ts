@@ -4,6 +4,7 @@ interface Bucket {
   remaining: number;
   limit: number;
   refresh: number;
+  enqueued: Request[];
   promise: Promise<void>;
   cleaner?: NodeJS.Timeout;
 }
@@ -20,12 +21,16 @@ function ensureBucket(id: string) {
       limit: 1,
       remaining: 1,
       refresh: -1,
+      enqueued: [],
       promise: Promise.resolve(),
     });
   }
   const bucket = buckets.get(bucketId) as Bucket;
   // Runtimes like CF workers persist global state between requests except promises -> null
-  bucket.promise ??= Promise.resolve();
+  if (bucket.promise === null) {
+    bucket.promise = Promise.resolve();
+    bucket.enqueued = [];
+  }
 
   return bucket;
 }
@@ -102,4 +107,46 @@ export function checkLimit(req: Request, bucketTTL: number) {
       });
     });
   });
+}
+
+async function combineReqs(...reqs: Request[]): Promise<Request[]> {
+  const groups = new Map<string | null, Request[]>();
+
+  for (const r of reqs) {
+    const k = r.headers.get("authorization");
+    (groups.get(k) ?? groups.set(k, []).get(k))?.push(r);
+  }
+
+  return Promise.all(
+    [...groups.values()].map(async (group) => {
+      const payload = {};
+      let lastForm: FormData | null = null;
+
+      for (const r of group) {
+        const ct = r.headers.get("content-type") ?? "";
+
+        if (ct.includes("multipart/form-data") || r.body instanceof FormData) {
+          lastForm = new FormData();
+          for (const [k, v] of (await r.clone().formData()).entries()) {
+            k === "payload_json" ? Object.assign(payload, JSON.parse(String(v))) : lastForm.append(k, v);
+          }
+        } else {
+          Object.assign(payload, await r.clone().json());
+        }
+      }
+
+      const body = lastForm ?? JSON.stringify(payload);
+      if (lastForm) lastForm.set("payload_json", JSON.stringify(payload));
+
+      const headers = new Headers(group[0].headers);
+      if (lastForm) headers.delete("content-type");
+      else headers.set("content-type", "application/json");
+
+      return new Request(group[0].url, {
+        method: group[0].method,
+        headers,
+        body,
+      });
+    }),
+  );
 }
