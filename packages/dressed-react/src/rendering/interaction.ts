@@ -1,4 +1,4 @@
-import { type APIMessageTopLevelComponent, type ApplicationCommandType, MessageFlags } from "discord-api-types/v10";
+import { type ApplicationCommandType, MessageFlags } from "discord-api-types/v10";
 import {
   type CommandConfig,
   type CommandInteraction as DressedCommandInteraction,
@@ -8,7 +8,9 @@ import {
 } from "dressed";
 import type { createInteraction } from "dressed/server";
 import type { ReactNode } from "react";
+import { reconciler } from "../react/reconciler.ts";
 import { render } from "./index.ts";
+import type { WithContainer } from "./message.ts";
 
 type ReactivatedInteraction<T> = OverrideMethodParams<
   T,
@@ -16,18 +18,31 @@ type ReactivatedInteraction<T> = OverrideMethodParams<
     [K in "reply" | "editReply" | "update" | "followUp" | "showModal"]: [
       components: ReactNode,
       // @ts-expect-error
-      ...(Parameters<T[K]> extends readonly [infer First, ...infer Rest]
-        ? [Omit<Exclude<First, string>, "content" | "components">, ...Rest]
+      ...(Parameters<T[K]> extends readonly [...infer P]
+        ? [
+            data?: Omit<Exclude<P[0], string>, "content" | "components">,
+            $req?: P[1] & {
+              /**
+               * Do not set the contents of your response to `null` after 15 minutes (when Discord deletes the original interaction) in order to conserve resources.
+               *
+               * Setting the response to `null` will not affect the shown components, it just destroys existing hooks and other internal data.
+               *
+               * @default false
+               */
+              persistContainer?: boolean;
+            },
+          ]
         : never),
     ];
   }
->;
+> & {
+  $patched: symbol;
+};
 
 type OverrideMethodParams<T, Overrides extends Record<string, unknown[]>> = {
   [K in keyof T]: K extends keyof Overrides
-    ? // biome-ignore lint/suspicious/noExplicitAny: We're overriding the types
-      T[K] extends (...args: any) => any
-      ? (...args: Overrides[K]) => ReturnType<T[K]>
+    ? T[K] extends (...args: never[]) => unknown
+      ? (...args: Overrides[K]) => Promise<WithContainer<NonNullable<Awaited<ReturnType<T[K]>>>>>
       : T[K]
     : T[K];
 };
@@ -50,9 +65,10 @@ export type ModalSubmitInteraction = ReactivatedInteraction<DressedModalSubmitIn
 export function patchInteraction<T extends NonNullable<ReturnType<typeof createInteraction>>>(
   interaction: T,
 ): ReactivatedInteraction<T> {
+  const createdAt = Date.now();
   if (!interaction) throw new Error("No interaction");
   // biome-ignore lint/suspicious/noExplicitAny: We're overriding the types
-  const newInteraction = interaction as any;
+  const newInteraction = { $patched: Symbol.for("@dressed/react"), ...interaction } as any;
   // @ts-expect-error
   const editReply = interaction.editReply;
   for (const method of ["reply", "editReply", "update", "followUp", "showModal"] as (keyof T)[]) {
@@ -60,21 +76,39 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
 
     const original = interaction[method] as (d: unknown) => unknown;
 
-    newInteraction[method] = (...[components, originalData = {}, $req]: Parameters<CommandInteraction["reply"]>) => {
-      originalData.flags = (originalData.flags ?? 0) | MessageFlags.IsComponentsV2;
+    newInteraction[method] = (...[components, data = {}, $req]: Parameters<CommandInteraction["reply"]>) => {
+      data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
+
+      let followUpId: string | 0 | undefined;
+      let pendingFollowUpEdit = false;
+
+      function editFollowUp() {
+        if (!followUpId) return;
+        return editWebhookMessage(interaction.application_id, interaction.token, followUpId, data, undefined, $req);
+      }
 
       return new Promise((resolve) => {
-        let followUpId: string;
-        render(components, async (c) => {
-          const data = { ...originalData, components: c as APIMessageTopLevelComponent[] };
-          if (followUpId) {
-            return editWebhookMessage(interaction.application_id, interaction.token, followUpId, data, undefined, $req);
+        const { container } = render(components, async (c) => {
+          if (c.length === 0 || Date.now() > createdAt + 6e4 * 15) return;
+          // @ts-expect-error
+          data.components = c;
+          if (followUpId) return editFollowUp();
+          if (followUpId === 0) {
+            pendingFollowUpEdit = true;
+            return;
           }
+          if (method === "followUp") followUpId = 0;
           const shouldEdit = (method === "reply" || method === "update") && interaction.history.includes(method);
           const res = await (shouldEdit ? editReply : original)(data, $req);
-          if (method === "followUp") followUpId = res.id;
-          resolve(res);
+          if (method === "followUp") {
+            followUpId = res.id;
+            if (pendingFollowUpEdit) editFollowUp();
+          }
+          resolve(Object.assign(res ?? {}, { $container: container }));
         });
+        if (!$req?.persistContainer) {
+          setTimeout(() => reconciler.updateContainer(null, container), createdAt + 6e4 * 15 - Date.now());
+        }
       });
     };
   }

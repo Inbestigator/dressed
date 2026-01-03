@@ -1,6 +1,7 @@
 import type { ReactContext } from "react-reconciler";
 import ReactReconciler from "react-reconciler";
 import { DefaultEventPriority, NoEventPriority } from "react-reconciler/constants.js";
+import { handlers } from "../rendering/callbacks.ts";
 import { createNode, isNode, type Node, removeChild } from "./node.ts";
 import type { Renderer } from "./renderer.ts";
 import { createTextNode, type TextNode } from "./text-node.ts";
@@ -34,7 +35,7 @@ export const reconciler = ReactReconciler<
   noTimeout: -1,
   getRootHostContext: () => true,
   getChildHostContext: () => true,
-  createInstance: (type, props) => {
+  createInstance(type, props) {
     if (type !== "dressed-node") {
       throw new Error(`Unknown node type: ${type}`);
     }
@@ -55,12 +56,12 @@ export const reconciler = ReactReconciler<
   afterActiveInstanceBlur() {},
   getInstanceFromNode: () => null,
   getInstanceFromScope: () => null,
-  clearContainer: (renderer) => {
+  clearContainer(renderer) {
     renderer.nodes = [];
   },
   appendChildToContainer: (renderer, child) => renderer.nodes.push(child),
   removeChildFromContainer: (renderer, child) => removeChild(renderer.nodes, child),
-  insertInContainerBefore: (renderer, child, before) => {
+  insertInContainerBefore(renderer, child, before) {
     let index = renderer.nodes.indexOf(before);
     if (index === -1) {
       index = renderer.nodes.length;
@@ -70,7 +71,7 @@ export const reconciler = ReactReconciler<
   appendInitialChild: (parent, child) => parent.children.push(child),
   appendChild: (parent, child) => parent.children.push(child),
   removeChild: (parent, child) => removeChild(parent.children, child),
-  insertBefore: (parent, child, before) => {
+  insertBefore(parent, child, before) {
     let index = parent.children.indexOf(before);
     if (index === -1) {
       index = parent.children.length;
@@ -80,14 +81,14 @@ export const reconciler = ReactReconciler<
   prepareForCommit: () => null,
   resetAfterCommit: (renderer) => queueMicrotask(renderer.render),
   prepareScopeUpdate() {},
-  preparePortalMount: () => {
+  preparePortalMount() {
     throw new Error("Portals are not supported");
   },
-  getPublicInstance: () => {
+  getPublicInstance() {
     throw new Error("Refs are currently not supported");
   },
   finalizeInitialChildren: () => false,
-  setCurrentUpdatePriority: (newPriority) => {
+  setCurrentUpdatePriority(newPriority) {
     currentUpdatePriority = newPriority;
   },
   getCurrentUpdatePriority: () => currentUpdatePriority,
@@ -112,16 +113,26 @@ export const reconciler = ReactReconciler<
   startSuspendingCommit() {},
   suspendInstance() {},
   waitForCommitToBeReady: () => null,
-  hideInstance: (instance) => {
+  commitUpdate(node, _type, oldProps, newProps) {
+    if (typeof oldProps.$registeredHandler === "string") {
+      handlers.delete(oldProps.$registeredHandler);
+    }
+    const { children, ...props } = newProps ?? oldProps;
+    node.props = props;
+  },
+  commitTextUpdate(node, _oldText, newText) {
+    node.props = newText;
+  },
+  hideInstance(instance) {
     instance.hidden = true;
   },
-  unhideInstance: (instance) => {
+  unhideInstance(instance) {
     instance.hidden = false;
   },
-  hideTextInstance: (textInstance) => {
+  hideTextInstance(textInstance) {
     textInstance.hidden = true;
   },
-  unhideTextInstance: (textInstance) => {
+  unhideTextInstance(textInstance) {
     textInstance.hidden = false;
   },
 });
