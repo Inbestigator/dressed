@@ -41,9 +41,8 @@ type ReactivatedInteraction<T> = OverrideMethodParams<
 
 type OverrideMethodParams<T, Overrides extends Record<string, unknown[]>> = {
   [K in keyof T]: K extends keyof Overrides
-    ? // biome-ignore lint/suspicious/noExplicitAny: We're overriding the types
-      T[K] extends (...args: any) => any
-      ? (...args: Overrides[K]) => Promise<WithContainer<Awaited<ReturnType<T[K]>>>>
+    ? T[K] extends (...args: never[]) => unknown
+      ? (...args: Overrides[K]) => Promise<WithContainer<NonNullable<Awaited<ReturnType<T[K]>>>>>
       : T[K]
     : T[K];
 };
@@ -105,7 +104,7 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
             followUpId = res.id;
             if (pendingFollowUpEdit) editFollowUp();
           }
-          resolve(Object.assign(res, { $container: container }));
+          resolve(Object.assign(res ?? {}, { $container: container }));
         });
         if (!$req?.persistContainer) {
           setTimeout(() => reconciler.updateContainer(null, container), createdAt + 6e4 * 15 - Date.now());
