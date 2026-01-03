@@ -16,7 +16,10 @@ type SelectMenuWithCustomId<K extends SelectType> = Omit<SelectMap[`${K}Select`]
 } & (K extends "String" ? { children: ReactNode } : object);
 
 type SelectMenuWithOnClick<K extends SelectType> = Omit<SelectMenuWithCustomId<K>, "custom_id"> & {
-  /** Create a temporary handler callback, will not work in a serverless environment */
+  /**
+   * Create a temporary handler callback, will not work in a serverless environment
+   * @warn Callbacks are deleted after 30 minutes. If you wish to have a more permanent handler, it's strongly recommended to use the [traditional component system](https://dressed.js.org/docs/components).
+   */
   onSubmit: (interaction: MessageComponentInteraction<`${K}Select`>) => void;
   /** An additional handler identity defined in the callback setup which will run if the `onSubmit` is no longer registered */
   fallback?: string;

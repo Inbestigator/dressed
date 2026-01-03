@@ -10,6 +10,7 @@ import type { createInteraction } from "dressed/server";
 import type { ReactNode } from "react";
 import { reconciler } from "../react/reconciler.ts";
 import { render } from "./index.ts";
+import type { WithContainer } from "./message.ts";
 
 type ReactivatedInteraction<T> = OverrideMethodParams<
   T,
@@ -18,7 +19,19 @@ type ReactivatedInteraction<T> = OverrideMethodParams<
       components: ReactNode,
       // @ts-expect-error
       ...(Parameters<T[K]> extends readonly [...infer P]
-        ? [data?: Omit<Exclude<P[0], string>, "content" | "components">, $req?: P[1]]
+        ? [
+            data?: Omit<Exclude<P[0], string>, "content" | "components">,
+            $req?: P[1] & {
+              /**
+               * Do not set the contents of your response to `null` after 15 minutes (when Discord deletes the original interaction) in order to conserve resources.
+               *
+               * Setting the response to `null` will not affect the shown components, it just destroys existing hooks and other internal data.
+               *
+               * @default false
+               */
+              persistContainer?: boolean;
+            },
+          ]
         : never),
     ];
   }
@@ -30,7 +43,7 @@ type OverrideMethodParams<T, Overrides extends Record<string, unknown[]>> = {
   [K in keyof T]: K extends keyof Overrides
     ? // biome-ignore lint/suspicious/noExplicitAny: We're overriding the types
       T[K] extends (...args: any) => any
-      ? (...args: Overrides[K]) => ReturnType<T[K]>
+      ? (...args: Overrides[K]) => Promise<WithContainer<Awaited<ReturnType<T[K]>>>>
       : T[K]
     : T[K];
 };
@@ -77,9 +90,7 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
 
       return new Promise((resolve) => {
         const { container } = render(components, async (c) => {
-          if (Date.now() > createdAt + 6e4 * 15) {
-            return reconciler.updateContainer(null, container);
-          }
+          if (c.length === 0 || Date.now() > createdAt + 6e4 * 15) return;
           // @ts-expect-error
           data.components = c;
           if (followUpId) return editFollowUp();
@@ -94,8 +105,11 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
             followUpId = res.id;
             if (pendingFollowUpEdit) editFollowUp();
           }
-          resolve(res);
+          resolve(Object.assign(res, { $container: container }));
         });
+        if (!$req?.persistContainer) {
+          setTimeout(() => reconciler.updateContainer(null, container), createdAt + 6e4 * 15 - Date.now());
+        }
       });
     };
   }

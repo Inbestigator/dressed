@@ -15,7 +15,10 @@ interface ButtonWithCustomId extends Omit<APIButtonComponentWithCustomId, "type"
 }
 
 interface ButtonWithOnClick extends Omit<ButtonWithCustomId, "custom_id"> {
-  /** Create a temporary handler callback, will not work in a serverless environment */
+  /**
+   * Create a temporary handler callback, will not work in a serverless environment
+   * @warn Callbacks are deleted after 30 minutes. If you wish to have a more permanent handler, it's strongly recommended to use the [traditional component system](https://dressed.js.org/docs/components).
+   */
   onClick: (interaction: MessageComponentInteraction<"Button">) => void;
   /** An additional handler identity defined in the callback setup which will run if the `onClick` is no longer registered */
   fallback?: string;
