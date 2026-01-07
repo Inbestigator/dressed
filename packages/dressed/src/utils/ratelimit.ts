@@ -4,7 +4,7 @@ interface Bucket {
   remaining: number;
   limit: number;
   refresh: number;
-  enqueued: Request[];
+  queued: Request[];
   promise: Promise<number>;
   cleaner?: NodeJS.Timeout;
 }
@@ -21,7 +21,7 @@ function ensureBucket(id: string) {
       limit: 1,
       remaining: 1,
       refresh: -1,
-      enqueued: [],
+      queued: [],
       promise: Promise.resolve(0),
     });
   }
@@ -29,7 +29,7 @@ function ensureBucket(id: string) {
   // Runtimes like CF workers persist global state between requests except promises -> null
   if (bucket.promise === null) {
     bucket.promise = Promise.resolve(0);
-    bucket.enqueued = [];
+    bucket.queued = [];
   }
 
   return bucket;
@@ -50,7 +50,7 @@ export function checkLimit(req: Request, bucketTTL: number) {
   return new Promise<[(v: Response) => void, Request]>((resolveChecker) => {
     const bucketIdKey = `${req.method}:${req.url}`;
     const bucket = ensureBucket(bucketIdKey);
-    bucket.enqueued.push(req);
+    bucket.queued.push(req);
     bucket.promise = bucket.promise.then(async (r) => {
       if (r-- > 0) return r;
 
@@ -70,9 +70,8 @@ export function checkLimit(req: Request, bucketTTL: number) {
 
       let resolveRequest: (n: number) => void;
 
-      const { next, combined } =
-        req.method === "PATCH" ? await combineReqs(bucket.enqueued) : { next: req, combined: 0 };
-      bucket.enqueued = bucket.enqueued.slice(combined);
+      const { next, combined } = req.method === "PATCH" ? await combineReqs(bucket.queued) : { next: req, combined: 1 };
+      bucket.queued = bucket.queued.slice(combined);
 
       resolveChecker([
         (res) => {
@@ -101,6 +100,7 @@ export function checkLimit(req: Request, bucketTTL: number) {
           bucket.remaining = remaining;
           bucket.refresh = Date.now() + refreshAfter;
           bucket.promise = tmpBucket ? bucket.promise.then(() => tmpBucket.promise) : bucket.promise; // NOSONAR
+          bucket.queued = tmpBucket ? bucket.queued.concat(tmpBucket.queued) : bucket.queued;
 
           clearTimeout(bucket.cleaner);
           if (bucketTTL !== -1) {
