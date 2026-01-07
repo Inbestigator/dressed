@@ -8,7 +8,7 @@ import { parse } from "dotenv";
 import Enquirer from "enquirer";
 import build from "../server/build/build.ts";
 import bundleFiles from "../server/build/bundle.ts";
-import { categoryExports, importString } from "../utils/build.ts";
+import { categoryExports, importFileString, normalizeImportPath } from "../utils/build.ts";
 import logger from "../utils/log.ts";
 
 const program = new Command().name("dressed").description("A sleek, serverless-ready Discord bot framework.");
@@ -47,13 +47,10 @@ program
       root?: string;
       extensions?: string;
     }) => {
-      const { commands, components, events } = await build({
+      const { commands, components, events, configPath } = await build({
         endpoint,
         port,
-        build: {
-          root,
-          extensions: extensions?.split(",").map((e: string) => e.trim()),
-        },
+        build: { root, extensions: extensions?.split(",").map((e: string) => e.trim()) },
       });
       const categories = [commands, components, events];
 
@@ -64,9 +61,9 @@ ${
     : ""
 }
 import { serverConfig } from "dressed/utils";
-import config from "./dressed.config.mjs";
+import config from "${configPath ? normalizeImportPath(configPath) : "./dressed.config.mjs"}";
 Object.assign(serverConfig, config);
-${[categories.map((c) => c.map(importString)), categoryExports(categories)].flat(2).join("")}
+${[categories.map((c) => c.map(importFileString)), categoryExports(categories)].flat(2).join("")}
 export { config };
 ${register ? "installCommands(commands);" : ""}
 ${instance ? "createServer(commands, components, events);" : ""}`.trim();

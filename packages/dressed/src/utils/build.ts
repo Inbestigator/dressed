@@ -6,8 +6,10 @@ import { cwd } from "node:process";
 import type { WalkEntry } from "../types/walk.ts";
 import logger from "./log.ts";
 
-export function importString(file: WalkEntry) {
-  return `import * as h${file.uid} from "${relative(".dressed/tmp", file.path).replace(/\\/g, "/")}";`;
+export const normalizeImportPath = (path: string) => relative(".dressed/tmp", path).replace(/\\/g, "/");
+
+export function importFileString(file: WalkEntry) {
+  return `import * as h${file.uid} from "${normalizeImportPath(file.path)}";`;
 }
 
 export function categoryExports(categories: WalkEntry[][]) {

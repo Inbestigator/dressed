@@ -35,6 +35,7 @@ exports[`Build bot 1`] = `
       "root": "tests/src",
     },
   },
+  "configPath": undefined,
   "events": [
     {
       "data": {

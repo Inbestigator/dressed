@@ -2,7 +2,7 @@ import { appendFileSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, extname, resolve } from "node:path";
 import { getApp } from "../../resources/generated.resources.ts";
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../../types/config.ts";
-import { categoryExports, crawlDir, importString, override } from "../../utils/build.ts";
+import { categoryExports, crawlDir, importFileString, override } from "../../utils/build.ts";
 import { botEnv, serverConfig } from "../../utils/env.ts";
 import logger from "../../utils/log.ts";
 import bundleFiles from "./bundle.ts";
@@ -21,6 +21,7 @@ export default async function build(
   components: ComponentData[];
   events: EventData[];
   config: ServerConfig;
+  configPath?: string;
 }> {
   mkdirSync(".dressed/tmp", { recursive: true });
   await fetchMissingVars();
@@ -41,7 +42,7 @@ export default async function build(
   const files = await Promise.all(categories.map((d) => crawlDir(root, d, config.build?.extensions)));
   const entriesPath = ".dressed/tmp/entries.ts";
 
-  writeFileSync(entriesPath, [files.map((c) => c.map(importString)), categoryExports(files)].flat(2).join(""));
+  writeFileSync(entriesPath, [files.map((c) => c.map(importFileString)), categoryExports(files)].flat(2).join(""));
   logger.defer("Bundling handlers");
   await bundle(entriesPath, ".dressed/tmp");
   const { commands, components, events } = await import(resolve(entriesPath.replace(".ts", ".mjs")));
@@ -52,6 +53,7 @@ export default async function build(
     components: parseComponents(components, `${root}/components`),
     events: parseEvents(events, `${root}/events`),
     config,
+    configPath,
   };
 }
 
