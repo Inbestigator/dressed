@@ -7,8 +7,7 @@ import { render } from "./index.ts";
 
 export type WithContainer<T> = T & {
   /**
-   * The root of this rendered component, can be used to update data or clear it in order to effectively stop the React process
-   *
+   * The root of this rendered component, can be used to update data or clear it in order to effectively stop the React process.
    * @example
    * import { createMessage, reconciler } from "@dressed/react";
    * const { $container } = await createMessage(channelId, "Hello");
