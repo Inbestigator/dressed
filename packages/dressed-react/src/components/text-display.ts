@@ -1,12 +1,12 @@
 import type { APITextDisplayComponent } from "discord-api-types/v10";
 import { TextDisplay as DressedComponent } from "dressed";
-import { createElement, type ReactNode } from "react";
+import { createElement, type ReactElement, type ReactNode } from "react";
 
 interface TextDisplayProps extends Omit<APITextDisplayComponent, "content" | "type"> {
   children: ReactNode;
 }
 
-export function TextDisplay({ children, ...rest }: TextDisplayProps) {
+export function TextDisplay({ children, ...rest }: TextDisplayProps): ReactElement<APITextDisplayComponent> {
   const props = DressedComponent("", rest);
   return createElement("dressed-node", props, children);
 }

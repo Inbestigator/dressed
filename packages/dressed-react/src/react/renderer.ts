@@ -20,7 +20,6 @@ import { createTextNode } from "./text-node.ts";
 export interface Renderer {
   nodes: Node<unknown>[];
   render: () => Promise<void>;
-  components: (APIMessageComponent | APIModalComponent)[];
 }
 
 export type ComponentNode = Node<APIMessageComponent | APIModalComponent, APIMessageComponent | APIModalComponent>;
@@ -49,23 +48,21 @@ function mergeTextNodes<T>(nodes: Node<T>[]): Node<T>[] {
   return merged;
 }
 
-export type RendererCallback = (components: (APIMessageComponent | APIModalComponent)[]) => void;
+export type RendererCallback = (components: (APIMessageComponent | APIModalComponent)[]) => unknown;
 
-export function createRenderer(callback?: RendererCallback) {
+export function createRenderer(callback: RendererCallback) {
   let prevHash = "";
   const renderer: Renderer = {
     nodes: [],
-    components: [],
     async render() {
       const components = [];
-      for (const node of mergeTextNodes(renderer.nodes as Node<APIMessageComponent | APIModalComponent>[])) {
-        components.push(await parseNode(node));
+      for (const node of mergeTextNodes(renderer.nodes)) {
+        components.push(await parseNode(node as ComponentNode));
       }
       const hash = createHash("sha256").update(JSON.stringify(components)).digest("hex");
       if (hash === prevHash) return;
       prevHash = hash;
       callback?.(components);
-      renderer.components = components;
     },
   };
 
