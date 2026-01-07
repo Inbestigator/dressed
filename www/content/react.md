@@ -95,7 +95,7 @@ await createMessage("<channel_id>", components);
 
 Your bot is (hopefully) running in a server environment, but the React runtime acts like it's in the client. So while being unable to use async components ([server components](https://react.dev/reference/rsc/server-components) only), your bot has access to all hooks, notably including [`useState`](https://react.dev/reference/react/useState), [`useEffect`](https://react.dev/reference/react/useEffect), and [`use`](https://react.dev/reference/react/use).
 
-You can include callbacks in buttons and select menus (`onClick` and `onSubmit`, respectively) that will be triggered when the user interacts with that component.
+You can include callbacks in buttons and select menus (`onClick` and `onSubmit`, respectively) that will be triggered when the user interacts with that component. [Click here](#callback-handlers) for more information on enabling callbacks.
 
 ```tsx title="counter.tsx" showLineNumbers
 import { createMessage } from "@dressed/react";
@@ -147,23 +147,23 @@ await createMessage(
 
 ### Callback handlers
 
-When using callbacks within your messages, you must create a handler file for each component type you wish to use (button or select).
+When using callbacks within your messages, you must first create a handler file for each component type you wish to use (button or select). This works as the central handler which is actually run when the interaction comes in.
 
-```tsx title="src / components / buttons / react.tsx" showLineNumbers
-import { setupCallbackHandler } from "@dressed/react/callbacks";
+```tsx title="src / components / buttons / react.ts" showLineNumbers
+import { createCallbackHandler } from "@dressed/react/callbacks";
 
-export default setupCallbackHandler();
+export default createCallbackHandler();
 
 export { pattern } from "@dressed/react/callbacks";
 ```
 
-The callback handler takes an object of functions whichs can be used as fallbacks if the original handler is lost before the user interacts (such as if your bot restarts).
+The callback handler takes an object of functions which can be used as fallbacks if the original handler is lost before the user interacts (such as if your bot restarts).
 
-```tsx title="src / components / buttons / react.tsx" showLineNumbers
+```tsx title="src / components / buttons / react.ts" showLineNumbers
 import type { MessageComponentInteraction } from "@dressed/react";
-import { setupCallbackHandler } from "@dressed/react/callbacks";
+import { createCallbackHandler } from "@dressed/react/callbacks";
 
-const buttonCallbackHandler = setupCallbackHandler({
+const buttonCallbackHandler = createCallbackHandler({
   // The default fallback will be called if no fallback is specified in the component
   default(i: MessageComponentInteraction) {
     return i.reply("That handler has expired", { ephemeral: true });
@@ -177,7 +177,9 @@ export { pattern } from "@dressed/react/callbacks";
 export default buttonCallbackHandler;
 ```
 
-```diff title="counter.tsx"
+You can now update your counter file to include a fallback key in your component which corresponds to the function you want. The callback handler you created includes all your fallback function names so you don't have to remember them.
+
+```diff title="counter.tsx" caption="We import and use the handler's fallbacks. Setting the fallback key directly to 'counter' would also work."
 + import buttonCallbackHandler from "./src/components/buttons/react";
 
 - <Section accessory={<Button onClick={() => setCounter(counter + 1)} label="Add" />}>

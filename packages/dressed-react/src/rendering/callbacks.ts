@@ -9,7 +9,7 @@ export const pattern = "@dressed/react-handler-:handlerId{-:fallback}";
 
 /** Creates a function for handling callback interactions */
 // biome-ignore lint/complexity/noBannedTypes: Need an empty record
-export function setupCallbackHandler<T extends Record<string, Handler> = {}>(fallbacks: T = {} as T) {
+export function createCallbackHandler<T extends Record<string, Handler> = {}>(fallbacks: T = {} as T) {
   for (const key in fallbacks) handlers.set(key, fallbacks[key]);
   return Object.assign(
     async (
