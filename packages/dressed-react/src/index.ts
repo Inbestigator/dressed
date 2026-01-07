@@ -13,6 +13,7 @@ export { TextInput } from "./components/text-input.ts";
 export { Thumbnail } from "./components/thumbnail.ts";
 
 // Rendering
+export * from "./react/reconciler.ts";
 export * from "./rendering/index.ts";
 export * from "./rendering/interaction.ts";
 export * from "./rendering/message.ts";
