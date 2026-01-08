@@ -33,7 +33,7 @@ export function createCallbackHandler<T extends Record<string, Handler> = {}>(fa
 
 export function registerHandler(handler: Handler, fallback?: string, id = randId()) {
   handlers.set(id, handler);
-  const $handlerCleaner = setTimeout(() => handlers.delete(id), 6e4 * 30);
+  const $handlerCleaner = setTimeout(() => handlers.delete(id), 6e4 * 30).unref();
   const fbText = fallback ? `-${fallback}` : "";
   return { custom_id: `@dressed/react-handler-${id}${fbText}`, $registeredHandler: id, $handlerCleaner };
 }

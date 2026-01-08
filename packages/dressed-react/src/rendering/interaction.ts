@@ -7,7 +7,7 @@ import {
   editWebhookMessage,
 } from "dressed";
 import type { createInteraction } from "dressed/server";
-import type { ReactNode } from "react";
+import { type ComponentType, createElement, type PropsWithChildren, type ReactNode } from "react";
 import { reconciler } from "../react/reconciler.ts";
 import { render } from "./index.ts";
 import type { WithContainer } from "./message.ts";
@@ -62,8 +62,13 @@ export type MessageComponentInteraction<
 > = ReactivatedInteraction<DressedMessageComponentInteraction<T>>;
 export type ModalSubmitInteraction = ReactivatedInteraction<DressedModalSubmitInteraction>;
 
+/**
+ * Override interaction methods to accept React components
+ * @param parent A global parent that will be placed at the tree root, can be used for providers
+ */
 export function patchInteraction<T extends NonNullable<ReturnType<typeof createInteraction>>>(
   interaction: T,
+  parent?: ComponentType<PropsWithChildren>,
 ): ReactivatedInteraction<T> {
   const createdAt = Date.now();
   if (!interaction) throw new Error("No interaction");
@@ -88,7 +93,7 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
       }
 
       return new Promise((resolve) => {
-        const { container } = render(components, async (c) => {
+        const { container } = render(parent ? createElement(parent, null, components) : components, async (c) => {
           if (c.length === 0 || Date.now() > createdAt + 6e4 * 15) return;
           // @ts-expect-error
           data.components = c;
@@ -107,7 +112,7 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
           resolve(Object.assign(res ?? {}, { $container: container }));
         });
         if (!$req?.persistContainer) {
-          setTimeout(() => reconciler.updateContainer(null, container), createdAt + 6e4 * 15 - Date.now());
+          setTimeout(() => reconciler.updateContainer(null, container), createdAt + 6e4 * 15 - Date.now()).unref();
         }
       });
     };
