@@ -99,13 +99,8 @@ export async function callDiscord(
     ...(options as RequestInit),
   });
 
-  const [updateLimit, limitedReq] = await checkLimit(req, bucketTTL);
-
-  const res = await fetch(limitedReq);
-
-  updateLimit(res);
-
-  async function handleResErr() {
+  async function handleRes(res: Response) {
+    if (res.ok) return res;
     if (res.status === 429 && tries > 0) {
       $req.tries = tries - 1;
       return callDiscord(endpoint, init, $req);
@@ -119,9 +114,16 @@ export async function callDiscord(
     throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`, { cause: res });
   }
 
-  if (!res.ok) return handleResErr();
+  const limiter = await checkLimit(req, bucketTTL);
 
-  return res;
+  if (limiter instanceof Response) return handleRes(limiter);
+
+  const [limitedReq, updateLimit] = limiter;
+  const res = await fetch(limitedReq);
+
+  updateLimit(res);
+
+  return handleRes(res);
 }
 
 function logErrorData(data: RESTErrorData, path: string[] = []) {
