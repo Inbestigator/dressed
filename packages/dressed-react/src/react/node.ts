@@ -1,6 +1,7 @@
-import { handlers, type registerHandler } from "../rendering/callbacks.ts";
+import { handlers } from "../rendering/callbacks.ts";
 
 export interface Node<Props, Children = unknown> {
+  id: string;
   props: Props;
   children: Node<Children>[];
   text: () => string;
@@ -9,6 +10,7 @@ export interface Node<Props, Children = unknown> {
 
 export function createNode<Props>(props: Props) {
   const node: Node<Props> = {
+    id: crypto.randomUUID().slice(0, 18).replace(/-/g, ""),
     hidden: false,
     props,
     children: [],
@@ -33,10 +35,9 @@ export function isNode(obj: unknown): obj is Node<unknown> {
 }
 
 function destroyCallbacks(item: Node<unknown>) {
-  const { props } = item as Node<ReturnType<typeof registerHandler>>;
-  if (typeof props.$registeredHandler === "string") {
-    handlers.delete(props.$registeredHandler);
-    clearTimeout(props.$handlerCleaner as NodeJS.Timeout | undefined);
+  if (handlers.has(item.id)) {
+    clearTimeout(handlers.get(item.id)?.$handlerCleaner);
+    handlers.delete(item.id);
   }
   item.children.forEach(destroyCallbacks);
 }
