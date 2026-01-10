@@ -6,8 +6,8 @@ import type {
   ButtonStyle,
 } from "discord-api-types/v10";
 import { Button as DressedComponent } from "dressed";
-import React, { createElement, type ReactElement } from "react";
-import { randId, registerHandler } from "../rendering/callbacks.ts";
+import { createElement, type ReactElement } from "react";
+import { registerHandler } from "../rendering/callbacks.ts";
 import type { MessageComponentInteraction } from "../rendering/interaction.ts";
 
 interface ButtonWithCustomId extends Omit<APIButtonComponentWithCustomId, "type" | "style"> {
@@ -40,10 +40,15 @@ export function Button(
     | Omit<APIButtonComponentWithSKUId, "type" | "style">
     | Omit<APIButtonComponentWithURL, "type" | "style">,
 ): ReactElement<APIButtonComponent> {
-  const handlerId = (React?.useMemo ?? ((c) => c()))(randId, []);
-  const component = DressedComponent({
-    ...props,
-    ...("onClick" in props ? registerHandler(props.onClick as never, props.fallback, handlerId) : undefined),
-  } as never);
+  const component = DressedComponent(props as never);
   return createElement("dressed-node", component);
+}
+
+export async function parseButton<
+  T extends APIButtonComponent & (Pick<ButtonWithOnClick, "onClick" | "fallback"> | object),
+>(nodeId: string, props: T): Promise<T> {
+  return {
+    ...props,
+    ...("onClick" in props ? registerHandler(nodeId, props.onClick as never, props.fallback) : undefined),
+  };
 }
