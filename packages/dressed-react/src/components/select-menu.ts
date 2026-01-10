@@ -1,8 +1,8 @@
 import { type APISelectMenuComponent, type APISelectMenuOption, ComponentType } from "discord-api-types/v10";
 import { SelectMenu as DressedComponent, SelectMenuOption as DressedOption } from "dressed";
-import { createElement, type ReactElement, type ReactNode, useEffect, useState } from "react";
+import { createElement, type ReactElement, type ReactNode, useMemo } from "react";
 import type { Node } from "../react/node.ts";
-import { registerHandler } from "../rendering/callbacks.ts";
+import { randId, registerHandler } from "../rendering/callbacks.ts";
 import type { MessageComponentInteraction } from "../rendering/interaction.ts";
 
 type SelectType = "Channel" | "Mentionable" | "Role" | "String" | "User";
@@ -36,15 +36,11 @@ export function SelectMenu<K extends SelectType>(
   props: SelectMenuWithCustomId<K> | SelectMenuWithOnClick<K>,
 ): ReactElement<SelectMap[`${K}Select`]> {
   const { children, ...rest } = props as Record<string, unknown>;
-  const [registeredHandler, setRegisteredHandler] = useState<ReturnType<typeof registerHandler>>();
-
-  useEffect(() => {
-    if ("onSubmit" in props) {
-      setRegisteredHandler((p) => registerHandler(props.onSubmit as never, props.fallback, p?.$registeredHandler));
-    }
-  }, [props]);
-
-  const component = DressedComponent({ ...rest, ...registeredHandler } as never);
+  const handlerId = useMemo(randId, []);
+  const component = DressedComponent({
+    ...rest,
+    ...("onSubmit" in props ? registerHandler(props.onSubmit as never, props.fallback, handlerId) : undefined),
+  } as never);
   return createElement("dressed-node", component as never, children as ReactNode);
 }
 

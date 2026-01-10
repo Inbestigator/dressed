@@ -38,9 +38,4 @@ export function registerHandler(handler: Handler, fallback?: string, id = randId
   return { custom_id: `@dressed/react-handler-${id}${fbText}`, $registeredHandler: id, $handlerCleaner };
 }
 
-function randId(length = 16) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const array = new Uint32Array(length);
-  crypto.getRandomValues(array);
-  return Array.from(array, (x) => chars[x % chars.length]).join("");
-}
+export const randId = () => crypto.randomUUID().slice(0, 18).replace(/-/g, "");

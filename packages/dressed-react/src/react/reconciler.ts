@@ -1,7 +1,6 @@
 import type { ReactContext } from "react-reconciler";
 import ReactReconciler from "react-reconciler";
 import { DefaultEventPriority, NoEventPriority } from "react-reconciler/constants.js";
-import { handlers } from "../rendering/callbacks.ts";
 import { createNode, isNode, type Node, removeChild } from "./node.ts";
 import type { Renderer } from "./renderer.ts";
 import { createTextNode, type TextNode } from "./text-node.ts";
@@ -114,9 +113,6 @@ export const reconciler = ReactReconciler<
   suspendInstance() {},
   waitForCommitToBeReady: () => null,
   commitUpdate(node, _type, oldProps, newProps) {
-    if (typeof oldProps.$registeredHandler === "string") {
-      handlers.delete(oldProps.$registeredHandler);
-    }
     const { children, ...props } = newProps ?? oldProps;
     node.props = props;
   },

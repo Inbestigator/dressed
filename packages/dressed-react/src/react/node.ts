@@ -1,3 +1,5 @@
+import { handlers, type registerHandler } from "../rendering/callbacks.ts";
+
 export interface Node<Props, Children = unknown> {
   props: Props;
   children: Node<Children>[];
@@ -30,7 +32,17 @@ export function isNode(obj: unknown): obj is Node<unknown> {
   );
 }
 
-export function removeChild<T>(array: T[], item: T) {
+function destroyCallbacks(item: Node<unknown>) {
+  const { props } = item as Node<ReturnType<typeof registerHandler>>;
+  if (typeof props.$registeredHandler === "string") {
+    handlers.delete(props.$registeredHandler);
+    clearTimeout(props.$handlerCleaner as NodeJS.Timeout | undefined);
+  }
+  item.children.forEach(destroyCallbacks);
+}
+
+export function removeChild<T extends Node<unknown>>(array: T[], item: T) {
+  destroyCallbacks(item);
   const index = array.indexOf(item);
   if (index !== -1) {
     array.splice(index, 1);
