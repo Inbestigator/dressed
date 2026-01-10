@@ -1,6 +1,6 @@
 import { type APISelectMenuComponent, type APISelectMenuOption, ComponentType } from "discord-api-types/v10";
 import { SelectMenu as DressedComponent, SelectMenuOption as DressedOption } from "dressed";
-import { createElement, type ReactElement, type ReactNode, useMemo } from "react";
+import React, { createElement, type ReactElement, type ReactNode } from "react";
 import type { Node } from "../react/node.ts";
 import { randId, registerHandler } from "../rendering/callbacks.ts";
 import type { MessageComponentInteraction } from "../rendering/interaction.ts";
@@ -36,7 +36,7 @@ export function SelectMenu<K extends SelectType>(
   props: SelectMenuWithCustomId<K> | SelectMenuWithOnClick<K>,
 ): ReactElement<SelectMap[`${K}Select`]> {
   const { children, ...rest } = props as Record<string, unknown>;
-  const handlerId = (useMemo ?? ((c) => c()))(randId, []);
+  const handlerId = (React?.useMemo ?? ((c) => c()))(randId, []);
   const component = DressedComponent({
     ...rest,
     ...("onSubmit" in props ? registerHandler(props.onSubmit as never, props.fallback, handlerId) : undefined),

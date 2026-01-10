@@ -6,7 +6,7 @@ import type {
   ButtonStyle,
 } from "discord-api-types/v10";
 import { Button as DressedComponent } from "dressed";
-import { createElement, type ReactElement, useMemo } from "react";
+import React, { createElement, type ReactElement } from "react";
 import { randId, registerHandler } from "../rendering/callbacks.ts";
 import type { MessageComponentInteraction } from "../rendering/interaction.ts";
 
@@ -40,7 +40,7 @@ export function Button(
     | Omit<APIButtonComponentWithSKUId, "type" | "style">
     | Omit<APIButtonComponentWithURL, "type" | "style">,
 ): ReactElement<APIButtonComponent> {
-  const handlerId = (useMemo ?? ((c) => c()))(randId, []);
+  const handlerId = (React?.useMemo ?? ((c) => c()))(randId, []);
   const component = DressedComponent({
     ...props,
     ...("onClick" in props ? registerHandler(props.onClick as never, props.fallback, handlerId) : undefined),
