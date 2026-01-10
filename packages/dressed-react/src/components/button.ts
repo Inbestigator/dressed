@@ -6,7 +6,7 @@ import type {
   ButtonStyle,
 } from "discord-api-types/v10";
 import { Button as DressedComponent } from "dressed";
-import { createElement, type ReactElement } from "react";
+import { createElement, type ReactElement, useEffect, useState } from "react";
 import { registerHandler } from "../rendering/callbacks.ts";
 import type { MessageComponentInteraction } from "../rendering/interaction.ts";
 
@@ -40,9 +40,14 @@ export function Button(
     | Omit<APIButtonComponentWithSKUId, "type" | "style">
     | Omit<APIButtonComponentWithURL, "type" | "style">,
 ): ReactElement<APIButtonComponent> {
-  const component = DressedComponent({
-    ...props,
-    ...("onClick" in props ? registerHandler(props.onClick as never, props.fallback) : {}),
-  } as never);
+  const [registeredHandler, setRegisteredHandler] = useState<ReturnType<typeof registerHandler>>();
+
+  useEffect(() => {
+    if ("onClick" in props) {
+      setRegisteredHandler((p) => registerHandler(props.onClick as never, props.fallback, p?.$registeredHandler));
+    }
+  }, [props]);
+
+  const component = DressedComponent({ ...props, ...registeredHandler } as never);
   return createElement("dressed-node", component);
 }
