@@ -36,7 +36,7 @@ export function SelectMenu<K extends SelectType>(
   props: SelectMenuWithCustomId<K> | SelectMenuWithOnClick<K>,
 ): ReactElement<SelectMap[`${K}Select`]> {
   const { children, ...rest } = props as Record<string, unknown>;
-  const handlerId = useMemo(randId, []);
+  const handlerId = (useMemo ?? ((c) => c()))(randId, []);
   const component = DressedComponent({
     ...rest,
     ...("onSubmit" in props ? registerHandler(props.onSubmit as never, props.fallback, handlerId) : undefined),

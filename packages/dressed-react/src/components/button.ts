@@ -40,7 +40,7 @@ export function Button(
     | Omit<APIButtonComponentWithSKUId, "type" | "style">
     | Omit<APIButtonComponentWithURL, "type" | "style">,
 ): ReactElement<APIButtonComponent> {
-  const handlerId = useMemo(randId, []);
+  const handlerId = (useMemo ?? ((c) => c()))(randId, []);
   const component = DressedComponent({
     ...props,
     ...("onClick" in props ? registerHandler(props.onClick as never, props.fallback, handlerId) : undefined),
