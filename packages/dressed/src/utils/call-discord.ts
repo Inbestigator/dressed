@@ -99,7 +99,13 @@ export async function callDiscord(
     ...(options as RequestInit),
   });
 
-  const [updateLimit, limitedReq] = await checkLimit(req, bucketTTL);
+  const limiter = await checkLimit(req, bucketTTL);
+
+  if (limiter instanceof Response) {
+    return limiter;
+  }
+
+  const [limitedReq, updateLimit] = limiter;
 
   const res = await fetch(limitedReq);
 

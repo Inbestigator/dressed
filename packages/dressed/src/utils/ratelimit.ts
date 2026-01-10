@@ -1,11 +1,19 @@
 import { setTimeout } from "node:timers";
 
+type ExtractedBodyType = object | FormData;
+
+interface Collector {
+  bodies: Promise<ExtractedBodyType>[];
+  promise: Promise<Response>;
+  resolve: (r: Response) => void;
+  prev: { processReq: (r: Request, cb?: (r: Response) => void) => Promise<undefined>; req: Request };
+}
+
 interface Bucket {
   remaining: number;
   limit: number;
   refresh: number;
-  queued: Request[];
-  promise: Promise<number>;
+  promise: Promise<Collector | undefined> & { thened?: () => void };
   cleaner?: NodeJS.Timeout;
 }
 
@@ -17,20 +25,11 @@ let globalReset = -1;
 function ensureBucket(id: string) {
   const bucketId = bucketIds.get(id) ?? id;
   if (!buckets.has(bucketId)) {
-    buckets.set(bucketId, {
-      limit: 1,
-      remaining: 1,
-      refresh: -1,
-      queued: [],
-      promise: Promise.resolve(0),
-    });
+    buckets.set(bucketId, { limit: 1, remaining: 1, refresh: -1, promise: Promise.resolve(undefined) });
   }
   const bucket = buckets.get(bucketId) as Bucket;
   // Runtimes like CF workers persist global state between requests except promises -> null
-  if (bucket.promise === null) {
-    bucket.promise = Promise.resolve(0);
-    bucket.queued = [];
-  }
+  bucket.promise ??= Promise.resolve(undefined);
 
   return bucket;
 }
@@ -47,13 +46,11 @@ const cleanup = (bucketId: string) => () => {
 };
 
 export function checkLimit(req: Request, bucketTTL: number) {
-  return new Promise<[(v: Response) => void, Request]>((resolveChecker) => {
+  return new Promise<[Request, (v: Response) => void] | Response>((resolveChecker) => {
     const bucketIdKey = `${req.method}:${req.url}`;
     const bucket = ensureBucket(bucketIdKey);
-    bucket.queued.push(req);
-    bucket.promise = bucket.promise.then(async (r) => {
-      if (r-- > 0) return r;
 
+    async function processReq(req: Request, cb?: (res: Response) => void) {
       const deltaG = globalReset - Date.now();
 
       if (deltaG > 0) {
@@ -68,13 +65,12 @@ export function checkLimit(req: Request, bucketTTL: number) {
         bucket.remaining = bucket.limit - 1;
       }
 
-      let resolveRequest: (n: number) => void;
-
-      const { next, combined } = req.method === "PATCH" ? await combineReqs(bucket.queued) : { next: req, combined: 1 };
-      bucket.queued = bucket.queued.slice(combined);
+      let resolveRequest: (v: undefined) => void;
 
       resolveChecker([
+        req,
         (res) => {
+          if (res.ok) cb?.(res.clone());
           const bucketId = res.headers.get("x-ratelimit-bucket");
           const limit = Number.parseInt(res.headers.get("x-ratelimit-limit") ?? "", 10);
           const remaining = Number.parseInt(res.headers.get("x-ratelimit-remaining") ?? "", 10);
@@ -88,9 +84,9 @@ export function checkLimit(req: Request, bucketTTL: number) {
 
           if (scope === "global" && !Number.isNaN(retryAfter)) {
             globalReset = Date.now() + retryAfter * 1000;
-            return resolveRequest(combined - 1);
+            return resolveRequest(undefined);
           }
-          if ([limit, remaining, resetAfter].some(Number.isNaN) || !bucketId) return resolveRequest(combined - 1);
+          if ([limit, remaining, resetAfter].some(Number.isNaN) || !bucketId) return resolveRequest(undefined);
 
           bucketIds.set(bucketIdKey, bucketId);
 
@@ -100,52 +96,85 @@ export function checkLimit(req: Request, bucketTTL: number) {
           bucket.remaining = remaining;
           bucket.refresh = Date.now() + refreshAfter;
           bucket.promise = tmpBucket ? bucket.promise.then(() => tmpBucket.promise) : bucket.promise; // NOSONAR
-          bucket.queued = tmpBucket ? bucket.queued.concat(tmpBucket.queued) : bucket.queued;
 
           clearTimeout(bucket.cleaner);
           if (bucketTTL !== -1) {
             bucket.cleaner = setTimeout(cleanup(bucketId), bucketTTL * 1000).unref();
           }
 
-          resolveRequest(combined - 1);
+          resolveRequest(undefined);
         },
-        next,
       ]);
 
-      return new Promise<number>((r) => {
+      return new Promise<undefined>((r) => {
         resolveRequest = r;
       });
-    });
+    }
+
+    function collectReq(collector: Partial<Collector> & Omit<Collector, "prev">, req: Request) {
+      collector.promise = collector.promise.then((r) => {
+        resolveChecker(r.clone());
+        return r;
+      });
+      const ct = req.headers.get("content-type") ?? "";
+      collector.bodies.push(
+        req[ct.includes("multipart/form-data") || req.body instanceof FormData ? "formData" : "json"](),
+      );
+      collector.prev = { processReq, req };
+      return collector as Collector;
+    }
+
+    let isLast = true;
+    bucket.promise.thened?.();
+    bucket.promise = Object.assign(
+      bucket.promise
+        .then(async (collector) => {
+          if (collector) {
+            const { prev } = collector;
+            if (
+              isLast ||
+              prev.req.headers.get("authorization") !== req.headers.get("authorization") ||
+              req.url !== prev.req.url
+            ) {
+              return prev.processReq(combineBodies(await Promise.all(collector.bodies), prev.req), collector.resolve);
+            }
+            return collectReq(collector, req);
+          }
+          if (req.method === "PATCH" && !isLast) {
+            let resolve!: Collector["resolve"];
+            const promise = new Promise<Response>((r) => {
+              resolve = r;
+            });
+            return collectReq({ bodies: [], promise, resolve }, req);
+          }
+        })
+        .then((c) => c ?? processReq(req)),
+      {
+        thened() {
+          isLast = false;
+        },
+      },
+    );
   });
 }
 
-async function combineReqs(reqs: Request[]): Promise<{ next: Request; combined: number }> {
-  const group: Request[] = [];
-
+function combineBodies(bodies: ExtractedBodyType[], { url, method, headers }: Request) {
   const payload = {};
   let lastForm: FormData | undefined;
 
-  for (const r of reqs) {
-    if (r.headers.get("authorization") !== reqs[0].headers.get("authorization") || r.url !== reqs[0].url) break;
-
-    group.push(r);
-
-    const ct = r.headers.get("content-type") ?? "";
-
-    if (ct.includes("multipart/form-data") || r.body instanceof FormData) {
-      lastForm = await r.clone().formData();
-      const jsonPayload = lastForm.get("payload_json");
+  for (const body of bodies) {
+    if (body instanceof FormData) {
+      lastForm = body;
+      const jsonPayload = body.get("payload_json");
       if (jsonPayload) {
         Object.assign(payload, JSON.parse(jsonPayload as string));
       }
     } else {
-      Object.assign(payload, await r.clone().json());
+      Object.assign(payload, body);
     }
   }
 
   const body = lastForm ?? JSON.stringify(payload);
-
-  const { headers } = group[0];
 
   if (lastForm) {
     lastForm.set("payload_json", JSON.stringify(payload));
@@ -154,12 +183,5 @@ async function combineReqs(reqs: Request[]): Promise<{ next: Request; combined: 
     headers.set("content-type", "application/json");
   }
 
-  return {
-    next: new Request(group[0].url, {
-      method: group[0].method,
-      headers,
-      body,
-    }),
-    combined: group.length,
-  };
+  return new Request(url, { method, headers, body });
 }
