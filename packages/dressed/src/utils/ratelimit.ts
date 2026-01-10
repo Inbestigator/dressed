@@ -70,7 +70,7 @@ export function checkLimit(req: Request, bucketTTL: number) {
       resolveChecker([
         req,
         (res) => {
-          if (res.ok) cb?.(res.clone());
+          cb?.(res.clone());
           const bucketId = res.headers.get("x-ratelimit-bucket");
           const limit = Number.parseInt(res.headers.get("x-ratelimit-limit") ?? "", 10);
           const remaining = Number.parseInt(res.headers.get("x-ratelimit-remaining") ?? "", 10);
