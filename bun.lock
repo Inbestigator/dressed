@@ -32,7 +32,7 @@
     },
     "packages/dressed-react": {
       "name": "@dressed/react",
-      "version": "1.8.1",
+      "version": "1.8.2",
       "dependencies": {
         "discord-api-types": "^0.38.37",
         "react-reconciler": "npm:@dressed/react-reconciler",
