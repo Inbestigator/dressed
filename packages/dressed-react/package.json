@@ -1,6 +1,6 @@
 {
   "name": "@dressed/react",
-  "version": "1.8.1",
+  "version": "1.8.4",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Inbestigator/dressed.git",
@@ -38,7 +38,7 @@
     "react-reconciler": "npm:@dressed/react-reconciler"
   },
   "devDependencies": {
-    "@types/react": "^19.2.7",
+    "@types/react": "^19.2.8",
     "@types/react-reconciler": "^0.32.3"
   }
 }

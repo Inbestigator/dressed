@@ -8,6 +8,7 @@ import {
 } from "discord-api-types/v10";
 import { TextDisplay } from "dressed";
 import { parseActionRow } from "../components/action-row.ts";
+import { parseButton } from "../components/button.ts";
 import { parseContainer } from "../components/container.ts";
 import { parseLabel } from "../components/label.ts";
 import { parseMediaGallery } from "../components/media-gallery.ts";
@@ -74,20 +75,22 @@ export async function parseNode(node: ComponentNode): Promise<APIMessageComponen
     case ComponentType.ActionRow: {
       return parseActionRow(node.props, node.children);
     }
-    case ComponentType.Button:
-    case ComponentType.TextInput:
-    case ComponentType.Thumbnail:
-    case ComponentType.File:
-    case ComponentType.Separator:
-    case ComponentType.FileUpload: {
-      return node.props;
+    case ComponentType.Button: {
+      return parseButton(node.id, node.props);
     }
     case ComponentType.StringSelect:
     case ComponentType.UserSelect:
     case ComponentType.RoleSelect:
     case ComponentType.MentionableSelect:
     case ComponentType.ChannelSelect: {
-      return parseSelectMenu(node.props, node.children as Node<APISelectMenuOption>[]);
+      return parseSelectMenu(node.id, node.props, node.children as Node<APISelectMenuOption>[]);
+    }
+    case ComponentType.TextInput:
+    case ComponentType.Thumbnail:
+    case ComponentType.File:
+    case ComponentType.Separator:
+    case ComponentType.FileUpload: {
+      return node.props;
     }
     case ComponentType.Section: {
       return parseSection(node.props, node.children);

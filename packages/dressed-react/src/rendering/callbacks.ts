@@ -2,7 +2,7 @@ import { type MessageComponentInteraction, type ModalSubmitInteraction, patchInt
 
 type Handler = ((i: MessageComponentInteraction) => unknown) | ((i: ModalSubmitInteraction) => unknown);
 
-export const handlers = new Map<string, Handler>();
+export const handlers = new Map<string, Handler & { $handlerCleaner?: NodeJS.Timeout }>();
 
 /** The pattern to export for handling `onClick`/`onSubmit` callbacks */
 export const pattern = "@dressed/react-handler-:handlerId{-:fallback}";
@@ -31,16 +31,12 @@ export function createCallbackHandler<T extends Record<string, Handler> = {}>(fa
   );
 }
 
-export function registerHandler(handler: Handler, fallback?: string, id = randId()) {
-  handlers.set(id, handler);
-  const $handlerCleaner = setTimeout(() => handlers.delete(id), 6e4 * 30).unref();
+export function registerHandler(id: string, handler: Handler, fallback?: string) {
+  clearTimeout(handlers.get(id)?.$handlerCleaner);
+  handlers.set(
+    id,
+    Object.assign(handler, { $handlerCleaner: setTimeout(() => handlers.delete(id), 6e4 * 30).unref() }),
+  );
   const fbText = fallback ? `-${fallback}` : "";
-  return { custom_id: `@dressed/react-handler-${id}${fbText}`, $registeredHandler: id, $handlerCleaner };
-}
-
-function randId(length = 16) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const array = new Uint32Array(length);
-  crypto.getRandomValues(array);
-  return Array.from(array, (x) => chars[x % chars.length]).join("");
+  return { custom_id: `@dressed/react-handler-${id}${fbText}` };
 }

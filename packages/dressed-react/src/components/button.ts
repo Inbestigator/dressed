@@ -40,9 +40,15 @@ export function Button(
     | Omit<APIButtonComponentWithSKUId, "type" | "style">
     | Omit<APIButtonComponentWithURL, "type" | "style">,
 ): ReactElement<APIButtonComponent> {
-  const component = DressedComponent({
-    ...props,
-    ...("onClick" in props ? registerHandler(props.onClick as never, props.fallback) : {}),
-  } as never);
+  const component = DressedComponent(props as never);
   return createElement("dressed-node", component);
+}
+
+export async function parseButton<
+  T extends APIButtonComponent & (Pick<ButtonWithOnClick, "onClick" | "fallback"> | object),
+>(nodeId: string, props: T): Promise<T> {
+  return {
+    ...props,
+    ...("onClick" in props ? registerHandler(nodeId, props.onClick as never, props.fallback) : undefined),
+  };
 }
