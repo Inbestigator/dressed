@@ -162,13 +162,12 @@ program
               fileContents = Object.entries(envVars)
                 .map(([k, v]) => `${k}="${v}"`)
                 .join("\n");
-              destPath = destPath.replace(".env.example", ".env");
+              destPath = join(dest, ".env");
               break;
             case "package.json":
               fileContents = fileContents.replace(/("name": ").+"/, `$1${name}"`);
           }
 
-          mkdirSync(dirname(destPath), { recursive: true });
           writeFileSync(destPath, fileContents);
         }
       }
