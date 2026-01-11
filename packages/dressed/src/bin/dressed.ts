@@ -95,89 +95,89 @@ program
   .argument("[template]", "Template name (node/deno)")
   .action(async (name?: string, template?: string) => {
     const { prompt } = Enquirer;
+    const repo = "inbestigator/dressed-examples";
+
     if (!name) {
       name = (
         await prompt<{ name: string }>({
           type: "text",
           name: "name",
           message: "Project name:",
-        })
+          initial: "my-bot",
+          required: true,
+        }).catch(() => exit(1))
       ).name;
     }
     if (!template || (!template.startsWith("node/") && !template.startsWith("deno/"))) {
-      const res = await fetch("https://api.github.com/repos/inbestigator/dressed-examples/contents/node");
-      if (!res.ok) {
-        throw new Error("Failed to list templates.");
-      }
-      const files = ((await res.json()) as { name: string; path: string; type: string }[]).filter(
-        (f) => f.type === "dir",
-      );
+      const dirsRes = await fetch(`https://api.github.com/repos/${repo}/contents/node`);
+      if (!dirsRes.ok) throw new Error("Failed to list templates.");
+
       template = `node/${
         (
           await prompt<{ template: string }>({
             name: "template",
             type: "select",
             message: "Select the template to use",
-            choices: files.map((f) => f.name),
-          })
+            choices: ((await dirsRes.json()) as { name: string; path: string; type: string }[])
+              .filter((f) => f.type === "dir")
+              .map((f) => f.name),
+            required: true,
+          }).catch(() => exit(1))
         ).template
       }`;
     }
-    const res = await fetch(
-      `https://raw.githubusercontent.com/inbestigator/dressed-examples/main/${template}/.env.example`,
-    );
-    if (!res.ok) {
-      throw new Error("Failed to fetch env template.");
-    }
+
+    const envRes = await fetch(`https://raw.githubusercontent.com/${repo}/main/${template}/.env.example`);
+    if (!envRes.ok) throw new Error("Failed to fetch env template.");
+
     const envVars = await prompt(
-      Object.entries(parse(await res.text())).map(([k, v]) => ({
-        type: /TOKEN|PASSWORD/.test(k) ? "password" : "text",
+      Object.entries(parse(await envRes.text())).map(([k, v]) => ({
+        type: /TOKEN|PASSWORD|KEY/.test(k) ? "password" : "text",
         name: k,
         message: k,
         initial: v,
       })),
-    );
+    ).catch(() => exit(1));
 
     logger.defer(`Creating files for project: ${name}`);
 
     async function createFiles(path: string, dest: string) {
       mkdirSync(dest, { recursive: true });
-      const response = await fetch(path);
+      const dirRes = await fetch(path);
 
-      if (!response.ok) throw new Error(response.statusText);
+      if (!dirRes.ok) throw new Error(dirRes.statusText);
 
       async function processFile(file: { type: string; url: string; name: string; download_url: string }) {
         if (file.type === "dir") {
           await createFiles(file.url, join(dest, file.name));
         } else {
           const fileRes = await fetch(file.download_url);
-          if (!fileRes.ok) {
-            throw new Error(fileRes.statusText);
-          }
-          const fileContents = await fileRes.text();
-          const destPath = join(dest, file.name);
-          if (file.name === ".env.example") {
-            const destPath = join(dest, ".env");
-            mkdirSync(dirname(destPath), { recursive: true });
-            writeFileSync(
-              destPath,
-              Object.entries(envVars)
+          if (!fileRes.ok) throw new Error(`Failed to fetch ${file.name}:  ${fileRes.statusText}`);
+
+          let fileContents = await fileRes.text();
+          let destPath = join(dest, file.name);
+
+          switch (file.name) {
+            case ".env.example":
+              fileContents = Object.entries(envVars)
                 .map(([k, v]) => `${k}="${v}"`)
-                .join("\n"),
-            );
+                .join("\n");
+              destPath = join(dest, ".env");
+              break;
+            case "package.json":
+              fileContents = fileContents.replace(/("name": ").+"/, `$1${name}"`);
           }
-          mkdirSync(dirname(destPath), { recursive: true });
+
           writeFileSync(destPath, fileContents);
         }
       }
 
-      const json = await response.json();
-      if (Array.isArray(json)) for (const file of json) processFile(file);
+      const json = await dirRes.json();
+      if (Array.isArray(json)) await Promise.all(json.map(processFile));
     }
 
     try {
-      const path = `https://api.github.com/repos/inbestigator/dressed-examples/contents/${template}`;
-      await createFiles(path, join(cwd(), name));
+      await createFiles(`https://api.github.com/repos/${repo}/contents/${template}`, join(cwd(), name));
     } catch (e) {
       logger.error(e);
     }
