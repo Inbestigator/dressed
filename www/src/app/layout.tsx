@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     default: "Dressed",
     template: "%s - Dressed",
   },
+  openGraph: { images: ["/dressed_small.webp"] },
   description: "A sleek, serverless-ready Discord bot framework.",
 };
 
