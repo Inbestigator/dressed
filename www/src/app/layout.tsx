@@ -20,6 +20,7 @@ export const metadata: Metadata = {
     template: "%s - Dressed",
   },
   openGraph: { images: ["/dressed_small.webp"] },
+  twitter: { card: "summary" },
   description: "A sleek, serverless-ready Discord bot framework.",
 };
 
