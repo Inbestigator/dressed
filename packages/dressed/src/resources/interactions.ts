@@ -21,23 +21,14 @@ export async function createInteractionCallback<
   interactionId: Snowflake,
   interactionToken: string,
   type: T,
-  ...[data, files, params, $req]: E extends {
-    data?: infer D;
-  } // This accounts for the different types submitting data or not
-    ? [...(E extends { data: object } ? [D] : [D?]), RawFile[]?, P?, CallConfig?]
+  ...[data, files, params, $req]: E extends { data?: infer D }
+    ? // This accounts for the different types submitting data or not
+      [...(E extends { data: object } ? [D] : [D?]), RawFile[]?, P?, CallConfig?]
     : [undefined?, undefined?, P?, CallConfig?]
 ): InteractionCallbackResponse<P> {
   const res = await callDiscord(
     Routes.interactionCallback(interactionId, interactionToken),
-    {
-      method: "POST",
-      body: {
-        type: InteractionResponseType[type],
-        data,
-      },
-      params,
-      files,
-    },
+    { method: "POST", body: { type: InteractionResponseType[type], data }, params, files },
     $req,
   );
   return (params?.with_response ? res.json() : null) as InteractionCallbackResponse<P>;

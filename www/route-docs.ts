@@ -1,34 +1,32 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { routes } from "../packages/dressed/src/resources/make/data.json";
 
+function routeKeyToMethodName(method: string, key: string) {
+  const routeKey = key.slice(method.length).replace("API", "");
+  const prefix = {
+    Get: routeKey.endsWith("s") ? "list" : "get",
+    Post: "create",
+    Put: "add",
+    Patch: "modify",
+    Delete: "delete",
+  }[method];
+
+  const splitRoutes = routeKey.match(/[A-Z][a-z]+/g) ?? [];
+  return (
+    prefix +
+    (splitRoutes.length > 1 ? splitRoutes.slice(1) : splitRoutes)
+      .join("")
+      .slice(0, routeKey.endsWith("s") && method !== "Get" ? -1 : undefined)
+  );
+}
+
 mkdirSync("./content/resources", { recursive: true });
 
 const groups: Record<string, string[]> = {};
 
 for (const { docs, key, params, overrides: { name } = {} } of routes) {
-  const method = (key.match(/[A-Z][a-z]+/) ?? [])[0] ?? "";
-  const routeKey = key.slice(method.length).replace("API", "");
-  const prefix =
-    method === "Get" && routeKey.endsWith("s")
-      ? "list"
-      : method === "Get"
-        ? "get"
-        : method === "Post"
-          ? "create"
-          : method === "Put"
-            ? "add"
-            : method === "Patch"
-              ? "modify"
-              : method === "Delete"
-                ? "delete"
-                : "";
-  const splitRoutes = routeKey.match(/[A-Z][a-z]+/g) ?? [];
-  const resolvedName =
-    name ??
-    prefix +
-      (splitRoutes.length > 1 ? splitRoutes.slice(1) : splitRoutes)
-        .join("")
-        .slice(0, routeKey.endsWith("s") && method !== "Get" ? -1 : undefined);
+  const method = (/[A-Z][a-z]+/.exec(key) ?? [])[0] ?? "";
+  const resolvedName = name ?? routeKeyToMethodName(method, key);
   const getVarName = resolvedName.replace(/[a-z]+/, "");
 
   const content = `

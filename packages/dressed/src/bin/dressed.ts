@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { cwd, exit } from "node:process";
 import { Command, InvalidArgumentError } from "commander";
 import { parse } from "dotenv";

@@ -2,6 +2,25 @@ import { writeFileSync } from "node:fs";
 import { $ } from "bun";
 import routeData from "./data.json";
 
+function routeKeyToMethodName(method: string, key: string) {
+  const routeKey = key.slice(method.length).replace("API", "");
+  const prefix = {
+    Get: routeKey.endsWith("s") ? "list" : "get",
+    Post: "create",
+    Put: "add",
+    Patch: "modify",
+    Delete: "delete",
+  }[method];
+
+  const splitRoutes = routeKey.match(/[A-Z][a-z]+/g) ?? [];
+  return (
+    prefix +
+    (splitRoutes.length > 1 ? splitRoutes.slice(1) : splitRoutes)
+      .join("")
+      .slice(0, routeKey.endsWith("s") && method !== "Get" ? -1 : undefined)
+  );
+}
+
 writeFileSync(
   "./src/resources/generated.resources.ts",
   `
@@ -60,38 +79,14 @@ ${routeData.routes
     }) => {
       const method = (key.match(/[A-Z][a-z]+/) ?? [])[0] ?? "";
       const routeKey = key.slice(method.length).replace("API", "");
-      let prefix = "";
 
-      switch (method) {
-        case "Get":
-          prefix = routeKey.endsWith("s") ? "list" : "get";
-          break;
-        case "Post":
-          prefix = "create";
-          break;
-        case "Put":
-          prefix = "add";
-          break;
-        case "Patch":
-          prefix = "modify";
-          break;
-        case "Delete":
-          prefix = "delete";
-          break;
-      }
-
-      const splitRoutes = routeKey.match(/[A-Z][a-z]+/g) ?? [];
       apiRoute ??= routeKey;
       dangerousExtraLogic ??= "";
       const fileTypeLine = ` & { file${flags?.includes("singlefile") ? "" : "s"}?: RawFile${flags?.includes("singlefile") ? "" : "[]"} }`;
       dataType ??= `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}JSONBody${flags?.includes("hasFiles") ? fileTypeLine : ""}`;
       paramsType ??= `REST${key}Query`;
       messageKey ??= "";
-      name ??=
-        prefix +
-        (splitRoutes.length > 1 ? splitRoutes.slice(1) : splitRoutes)
-          .join("")
-          .slice(0, routeKey.endsWith("s") && method !== "Get" ? -1 : undefined);
+      name ??= routeKeyToMethodName(method, key);
       returnType ??= flags?.includes("returnVoid") ? "void" : `REST${key}Result`;
       const jsdocs = [
         ` * ${docs.description}`,

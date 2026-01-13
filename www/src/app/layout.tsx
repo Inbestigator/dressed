@@ -3,23 +3,14 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 
-const geistSans = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
-  display: "swap",
-});
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
-  display: "swap",
-});
+const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist-sans", display: "swap" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
 
 export const metadata: Metadata = {
-  title: {
-    default: "Dressed",
-    template: "%s - Dressed",
-  },
+  title: { default: "Dressed", template: "%s - Dressed" },
   description: "A sleek, serverless-ready Discord bot framework.",
+  openGraph: { images: ["/dressed_small.webp"] },
+  twitter: { card: "summary" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
