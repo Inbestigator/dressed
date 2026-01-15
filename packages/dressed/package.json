@@ -14,7 +14,8 @@
     "discord-api-types": "^0.38.37",
     "dotenv": "^17.2.3",
     "enquirer": "^2.4.1",
-    "esbuild": "^0.27.2"
+    "esbuild": "^0.27.2",
+    "magic-bytes.js": "^1.12.1"
   },
   "exports": {
     ".": "./dist/index.js",

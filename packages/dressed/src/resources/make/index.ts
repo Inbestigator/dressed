@@ -30,7 +30,7 @@ import {
     new Set(
       routeData.routes
         .flatMap(({ key, params, flags, overrides }) => {
-          const defaultDataType = `REST${key}JSONBody`;
+          const defaultDataType = `REST${key}${flags?.includes("form") ? "FormData" : "JSON"}Body`;
           const defaultReturnType = `REST${key}Result`;
           const defaultParamsType = `REST${key}Query`;
           return [
@@ -72,7 +72,7 @@ ${routeData.routes
         name,
         returnType,
         messageKey,
-        fetchOptions,
+        fileKey,
         generic,
         paramsType,
       } = {},
@@ -82,8 +82,11 @@ ${routeData.routes
 
       apiRoute ??= routeKey;
       dangerousExtraLogic ??= "";
-      const fileTypeLine = ` & { file${flags?.includes("singlefile") ? "" : "s"}?: RawFile${flags?.includes("singlefile") ? "" : "[]"} }`;
-      dataType ??= `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}JSONBody${flags?.includes("hasFiles") ? fileTypeLine : ""}`;
+      fileKey ??= ".files";
+      const fileGuaranteed = fileKey.endsWith("!");
+      if (fileGuaranteed) fileKey = fileKey.slice(0, -1);
+      const fileTypeLine = ` & { ${fileKey.slice(1)}${fileGuaranteed ? "" : "?"}: RawFile${flags?.includes("singlefile") ? "" : "[]"} }`;
+      dataType ??= `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}${flags?.includes("form") ? "FormData" : "JSON"}Body${flags?.includes("hasFiles") ? fileTypeLine : ""}`;
       paramsType ??= `REST${key}Query`;
       messageKey ??= "";
       name ??= routeKeyToMethodName(method, key);
@@ -97,8 +100,8 @@ ${routeData.routes
         flags?.includes("deprecated") && " * @deprecated",
       ].filter(Boolean);
       const fileValue = flags?.includes("singlefile")
-        ? `[{ ...data${messageKey}.file, key: "file" }]`
-        : `data${messageKey}.files`;
+        ? `data${messageKey}${fileKey} ? [{ ...data${messageKey}${fileKey}, key: "${fileKey.slice(1)}" }] : undefined`
+        : `data${messageKey}${fileKey}`;
       return (() =>
         `
 /**
@@ -110,9 +113,9 @@ export async function ${name}${generic ? `<${generic}>` : ""}(${params
           .map((p) => {
             let paramType = "";
             if (p.startsWith("params")) paramType = `: ${paramsType}`;
-            else if (p.startsWith("data")) paramType = `: ${dataType}`;
+            else if (p.startsWith("data")) paramType = `: ${dataType}${p.endsWith("?") ? " = {}" : ""}`;
             else if (!p.includes(":")) paramType = ": Snowflake";
-            return `${/^(url|var)\./.test(p) ? p.slice(4) : p}${paramType}`;
+            return `${/^(url|var)\./.test(p) ? p.slice(4) : p === "data?" ? "data" : p}${paramType}`;
           })}): Promise<${returnType}> {
   ${dangerousExtraLogic}
   ${flags?.includes("hasStringableContent") ? `if (typeof data${messageKey} === "string") data${messageKey} = { content: data${messageKey} };` : ""}
@@ -121,10 +124,7 @@ export async function ${name}${generic ? `<${generic}>` : ""}(${params
     .map((p) => (p.endsWith("?") ? p.slice(0, -1) : p))
     .map((p) => (p.includes("<") ? p.split("<")[1] : p.slice(4)))
     .map((p) => (p.includes(":") ? p.split(/[?:]/)[0] : p).replace(/botEnv\.([A-Z_]+)/, "$req?.env?.$1??$&"))}), {
-      ${[`method: "${method.toUpperCase()}"`, params.some((p) => p.startsWith("data")) ? "body: data" : undefined, params.some((p) => p.startsWith("params")) ? "params" : undefined, flags?.includes("hasFiles") ? `files: ${fileValue}` : undefined].filter(Boolean)}
-      ${Object.entries(fetchOptions ?? [])
-        .map(([k, v]) => `,${k}: ${JSON.stringify(v)}`)
-        .join("")}
+      ${[`method: "${method.toUpperCase()}"`, params.some((p) => p.startsWith("data")) && "body: data", params.some((p) => p.startsWith("params")) && "params", flags?.includes("hasFiles") && `files: ${fileValue}`, flags?.includes("singlefile") && `flattenBodyInForm: true`].filter(Boolean)}
   }, $req);
   ${flags?.includes("returnVoid") ? "" : "return res.json()"}
 }

@@ -317,8 +317,9 @@
     },
     {
       "key": "PostAPIChannelInvite",
-      "params": ["url.channelId", "data"],
-      "overrides": { "apiRoute": "channelInvites", "name": "createChannelInvite" },
+      "params": ["url.channelId", "data?"],
+      "overrides": { "apiRoute": "channelInvites", "name": "createChannelInvite", "fileKey": ".target_users_file" },
+      "flags": ["form", "hasFiles", "singlefile"],
       "docs": {
         "description": "Create a new [invite](/docs/resources/invite#invite-object) object for the channel.",
         "infos": ["Only usable for guild channels.", "Requires the `CREATE_INSTANT_INVITE` permission."],
@@ -1040,6 +1041,15 @@
       }
     },
     {
+      "key": "GetAPIGuildRoleMemberCounts",
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns a map of role IDs to the number of members with the role.",
+        "infos": ["Does not include the \\@everyone role."],
+        "see": "/docs/resources/guild#get-guild-role-member-counts"
+      }
+    },
+    {
       "key": "PostAPIGuildRole",
       "params": ["url.guildId", "data"],
       "overrides": { "apiRoute": "guildRoles" },
@@ -1283,6 +1293,22 @@
       }
     },
     {
+      "key": "GetAPIInviteTargetUsers",
+      "params": ["url.code: string"],
+      "docs": {
+        "description": "Gets the users allowed to see and accept this invite.",
+        "see": "/docs/resources/invite#get-target-users"
+      }
+    },
+    {
+      "key": "PatchAPIInviteTargetUsers",
+      "params": ["url.code: string", "params"],
+      "docs": {
+        "description": "Updates the users allowed to see and accept this invite.",
+        "see": "/docs/resources/invite#update-target-users"
+      }
+    },
+    {
       "key": "GetAPIChannelMessages",
       "params": ["url.channelId", "params?"],
       "docs": {
@@ -1523,9 +1549,10 @@
       "key": "PostAPISendSoundboardSound",
       "params": ["url.channelId", "data"],
       "overrides": {
+        "apiRoute": "sendSoundboardSound",
+        "name": "sendSound",
         "dataType": "RESTPostAPISoundboardSendSoundJSONBody",
-        "imports": ["type RESTPostAPISoundboardSendSoundJSONBody"],
-        "name": "sendSound"
+        "imports": ["type RESTPostAPISoundboardSendSoundJSONBody"]
       },
       "docs": {
         "description": "Send a soundboard sound to a voice channel the user is connected to.",
@@ -1697,11 +1724,9 @@
       "params": ["url.guildId", "data"],
       "overrides": {
         "apiRoute": "guildStickers",
-        "dataType": "RESTPostAPIGuildStickerFormDataBody & { file: RawFile }",
-        "fetchOptions": { "flattenBodyInForm": true },
-        "imports": ["type RESTPostAPIGuildStickerFormDataBody"]
+        "fileKey": ".file!"
       },
-      "flags": ["hasFiles", "singlefile"],
+      "flags": ["form", "hasFiles", "singlefile"],
       "docs": {
         "description": "Create a new sticker for the guild.",
         "infos": ["Requires the `CREATE_GUILD_EXPRESSIONS` permission."],

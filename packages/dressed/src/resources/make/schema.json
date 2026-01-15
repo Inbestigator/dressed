@@ -36,9 +36,10 @@
               "dangerousExtraLogic": { "type": "string" },
               "dataType": { "type": "string" },
               "fetchOptions": { "type": "object" },
+              "fileKey": { "type": "string", "pattern": "^(\\..+|)$", "examples": [".file", ".file!"] },
               "generic": { "type": "string" },
               "imports": { "type": "array", "items": { "type": "string" } },
-              "messageKey": { "type": "string" },
+              "messageKey": { "type": "string", "pattern": "^\\..+$" },
               "name": { "type": "string" },
               "paramsType": { "type": "string" },
               "returnType": { "type": "string" }
@@ -47,7 +48,7 @@
           },
           "flags": {
             "type": "array",
-            "items": { "enum": ["deprecated", "hasFiles", "hasStringableContent", "singlefile", "returnVoid"] },
+            "items": { "enum": ["deprecated", "form", "hasFiles", "hasStringableContent", "returnVoid", "singlefile"] },
             "uniqueItems": true
           },
           "docs": {
