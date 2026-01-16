@@ -1,8 +1,7 @@
 {
   "$schema": "./schema.json",
-  "routes": [
-    {
-      "key": "GetAPIApplicationCommands",
+  "routes": {
+    "GetAPIApplicationCommands": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "params?"],
       "overrides": { "name": "listGlobalCommands" },
       "docs": {
@@ -13,8 +12,7 @@
         "see": "/docs/interactions/application-commands#get-global-application-commands"
       }
     },
-    {
-      "key": "PostAPIApplicationCommands",
+    "PostAPIApplicationCommands": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
       "overrides": { "name": "createGlobalCommand" },
       "docs": {
@@ -25,8 +23,7 @@
         "see": "/docs/interactions/application-commands#create-global-application-command"
       }
     },
-    {
-      "key": "GetAPIApplicationCommand",
+    "GetAPIApplicationCommand": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.commandId"],
       "overrides": { "name": "getGlobalCommand" },
       "docs": {
@@ -34,8 +31,7 @@
         "see": "/docs/interactions/application-commands#get-global-application-command"
       }
     },
-    {
-      "key": "PatchAPIApplicationCommand",
+    "PatchAPIApplicationCommand": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.commandId", "data"],
       "overrides": { "name": "modifyGlobalCommand" },
       "docs": {
@@ -43,8 +39,7 @@
         "see": "/docs/interactions/application-commands#edit-global-application-command"
       }
     },
-    {
-      "key": "DeleteAPIApplicationCommand",
+    "DeleteAPIApplicationCommand": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.commandId"],
       "overrides": { "name": "deleteGlobalCommand" },
       "flags": ["returnVoid"],
@@ -53,8 +48,7 @@
         "see": "/docs/interactions/application-commands#delete-global-application-command"
       }
     },
-    {
-      "key": "PutAPIApplicationCommands",
+    "PutAPIApplicationCommands": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
       "overrides": { "name": "bulkOverwriteGlobalCommands" },
       "docs": {
@@ -65,8 +59,7 @@
         "see": "/docs/interactions/application-commands#bulk-overwrite-global-application-commands"
       }
     },
-    {
-      "key": "GetAPIApplicationGuildCommands",
+    "GetAPIApplicationGuildCommands": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "params?"],
       "docs": {
         "description": "Fetch all of the guild commands for your application for a specific guild.",
@@ -76,8 +69,7 @@
         "see": "/docs/interactions/application-commands#get-guild-application-commands"
       }
     },
-    {
-      "key": "PostAPIApplicationGuildCommands",
+    "PostAPIApplicationGuildCommands": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "data"],
       "docs": {
         "description": "Create a new guild command. New guild commands will be available in the guild immediately.",
@@ -87,24 +79,21 @@
         "see": "/docs/interactions/application-commands#create-guild-application-command"
       }
     },
-    {
-      "key": "GetAPIApplicationGuildCommand",
+    "GetAPIApplicationGuildCommand": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId"],
       "docs": {
         "description": "Fetch a guild command for your application.",
         "see": "/docs/interactions/application-commands#get-guild-application-command"
       }
     },
-    {
-      "key": "PatchAPIApplicationGuildCommand",
+    "PatchAPIApplicationGuildCommand": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId", "data"],
       "docs": {
         "description": "Edit a guild command. Updates for guild commands will be available immediately.",
         "see": "/docs/interactions/application-commands#edit-guild-application-command"
       }
     },
-    {
-      "key": "DeleteAPIApplicationGuildCommand",
+    "DeleteAPIApplicationGuildCommand": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId"],
       "flags": ["returnVoid"],
       "docs": {
@@ -112,8 +101,7 @@
         "see": "/docs/interactions/application-commands#delete-guild-application-command"
       }
     },
-    {
-      "key": "PutAPIApplicationGuildCommands",
+    "PutAPIApplicationGuildCommands": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "data"],
       "overrides": { "name": "bulkOverwriteGuildCommands" },
       "docs": {
@@ -124,8 +112,7 @@
         "see": "/docs/interactions/application-commands#bulk-overwrite-guild-application-commands"
       }
     },
-    {
-      "key": "GetAPIGuildApplicationCommandsPermissions",
+    "GetAPIGuildApplicationCommandsPermissions": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId"],
       "overrides": { "name": "listGuildCommandsPermissions" },
       "docs": {
@@ -133,8 +120,7 @@
         "see": "/docs/interactions/application-commands#get-guild-application-command-permissions"
       }
     },
-    {
-      "key": "GetAPIApplicationCommandPermissions",
+    "GetAPIApplicationCommandPermissions": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId"],
       "overrides": { "name": "getGuildCommandPermissions" },
       "docs": {
@@ -142,8 +128,7 @@
         "see": "/docs/interactions/application-commands#get-application-command-permissions"
       }
     },
-    {
-      "key": "PutAPIApplicationCommandPermissions",
+    "PutAPIApplicationCommandPermissions": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.guildId", "url.commandId", "data"],
       "overrides": { "name": "modifyGuildCommandPermissions" },
       "docs": {
@@ -155,8 +140,7 @@
         "see": "/docs/interactions/application-commands#edit-application-command-permissions"
       }
     },
-    {
-      "key": "GetAPIApplicationRoleConnectionMetadata",
+    "GetAPIApplicationRoleConnectionMetadata": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
       "overrides": { "name": "listAppRoleConnectionMetadata" },
       "docs": {
@@ -164,8 +148,7 @@
         "see": "/docs/resources/application-role-connection-metadata#get-application-role-connection-metadata-records"
       }
     },
-    {
-      "key": "PutAPIApplicationRoleConnectionMetadata",
+    "PutAPIApplicationRoleConnectionMetadata": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
       "overrides": { "name": "modifyAppRoleConnectionMetadata" },
       "docs": {
@@ -174,8 +157,7 @@
         "see": "/docs/resources/application-role-connection-metadata#update-application-role-connection-metadata-records"
       }
     },
-    {
-      "key": "GetCurrentApplication",
+    "GetCurrentApplication": {
       "params": [],
       "overrides": { "name": "getApp" },
       "docs": {
@@ -183,8 +165,7 @@
         "see": "/docs/resources/application#get-current-application"
       }
     },
-    {
-      "key": "PatchCurrentApplication",
+    "PatchCurrentApplication": {
       "params": ["data"],
       "overrides": { "name": "modifyApp" },
       "docs": {
@@ -192,10 +173,9 @@
         "see": "/docs/resources/application#edit-current-application"
       }
     },
-    {
-      "key": "GetAPIAuditLog",
+    "GetAPIAuditLog": {
       "params": ["url.guildId", "params?"],
-      "overrides": { "apiRoute": "guildAuditLog", "name": "getAuditLog" },
+      "overrides": { "apiRoute": "guildAuditLog", "keyNameStart": 0 },
       "docs": {
         "description": "Returns an [audit log](/docs/resources/audit-log#audit-log-object) object for the guild.",
         "infos": [
@@ -204,8 +184,7 @@
         "see": "/docs/resources/audit-log#get-guild-audit-log"
       }
     },
-    {
-      "key": "GetAPIAutoModerationRules",
+    "GetAPIAutoModerationRules": {
       "params": ["url.guildId"],
       "overrides": { "name": "listAutomodRules", "apiRoute": "guildAutoModerationRules" },
       "docs": {
@@ -216,8 +195,7 @@
         "see": "/docs/resources/auto-moderation#list-auto-moderation-rules-for-guild"
       }
     },
-    {
-      "key": "GetAPIAutoModerationRule",
+    "GetAPIAutoModerationRule": {
       "params": ["url.guildId", "url.ruleId"],
       "overrides": { "name": "getAutomodRule", "apiRoute": "guildAutoModerationRule" },
       "docs": {
@@ -228,8 +206,7 @@
         "see": "/docs/resources/auto-moderation#get-auto-moderation-rule"
       }
     },
-    {
-      "key": "PostAPIAutoModerationRule",
+    "PostAPIAutoModerationRule": {
       "params": ["url.guildId", "data"],
       "overrides": { "name": "createAutomodRule", "apiRoute": "guildAutoModerationRules" },
       "docs": {
@@ -240,8 +217,7 @@
         "see": "/docs/resources/auto-moderation#create-auto-moderation-rule"
       }
     },
-    {
-      "key": "PatchAPIAutoModerationRule",
+    "PatchAPIAutoModerationRule": {
       "params": ["url.guildId", "url.ruleId", "data"],
       "overrides": { "name": "modifyAutomodRule", "apiRoute": "guildAutoModerationRule" },
       "docs": {
@@ -252,8 +228,7 @@
         "see": "/docs/resources/auto-moderation#modify-auto-moderation-rule"
       }
     },
-    {
-      "key": "DeleteAPIAutoModerationRule",
+    "DeleteAPIAutoModerationRule": {
       "params": ["url.guildId", "url.ruleId"],
       "overrides": { "name": "deleteAutomodRule", "apiRoute": "guildAutoModerationRule" },
       "flags": ["returnVoid"],
@@ -265,18 +240,15 @@
         "see": "/docs/resources/auto-moderation#delete-auto-moderation-rule"
       }
     },
-    {
-      "key": "GetAPIChannel",
+    "GetAPIChannel": {
       "params": ["url.channelId"],
       "docs": { "description": "Get a channel by ID.", "see": "/docs/resources/channel#get-channel" }
     },
-    {
-      "key": "PatchAPIChannel",
+    "PatchAPIChannel": {
       "params": ["url.channelId", "data"],
       "docs": { "description": "Update a channel's settings.", "see": "/docs/resources/channel#modify-channel" }
     },
-    {
-      "key": "DeleteAPIChannel",
+    "DeleteAPIChannel": {
       "params": ["url.channelId"],
       "docs": {
         "description": "Delete a channel, or close a private message.",
@@ -290,8 +262,7 @@
         "see": "/docs/resources/channel#deleteclose-channel"
       }
     },
-    {
-      "key": "PutAPIChannelPermission",
+    "PutAPIChannelPermission": {
       "params": ["url.channelId", "url.overwriteId"],
       "overrides": { "name": "modifyChannelPermissions" },
       "flags": ["returnVoid"],
@@ -305,39 +276,37 @@
         "see": "/docs/resources/channel#edit-channel-permissions"
       }
     },
-    {
-      "key": "GetAPIChannelInvites",
+    "GetAPIChannelInvites": {
       "params": ["url.channelId"],
-      "overrides": { "name": "listChannelInvites" },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a list of [invite](/docs/resources/invite#invite-object) objects (with [invite metadata](/docs/resources/invite#invite-metadata-object)) for the channel.",
         "infos": ["Only usable for guild channels.", "Requires the `MANAGE_CHANNELS` permission."],
         "see": "/docs/resources/channel#get-channel-invites"
       }
     },
-    {
-      "key": "PostAPIChannelInvite",
-      "params": ["url.channelId", "data"],
-      "overrides": { "apiRoute": "channelInvites", "name": "createChannelInvite" },
+    "PostAPIChannelInvite": {
+      "params": ["url.channelId", "data?"],
+      "overrides": { "apiRoute": "channelInvites", "keyNameStart": 0, "fileKey": ".target_users_file" },
+      "flags": ["hasFiles", "singlefile"],
       "docs": {
         "description": "Create a new [invite](/docs/resources/invite#invite-object) object for the channel.",
         "infos": ["Only usable for guild channels.", "Requires the `CREATE_INSTANT_INVITE` permission."],
         "see": "/docs/resources/channel#create-channel-invite"
       }
     },
-    {
-      "key": "DeleteAPIChannelPermission",
+    "DeleteAPIChannelPermission": {
+      "TODO": "rename to something like `deleteChannelPermission`",
       "params": ["url.channelId", "url.overwriteId"],
       "overrides": { "name": "deleteChannelPermissions" },
       "flags": ["returnVoid"],
       "docs": {
-        "description": "Delete a channel permission overwrite for a user or role in a channel.\n * TODO rename to something like `deleteChannelPermission`",
+        "description": "Delete a channel permission overwrite for a user or role in a channel.",
         "infos": ["Only usable for guild channels.", "Requires the `MANAGE_ROLES` permission."],
         "see": "/docs/resources/channel#delete-channel-permission"
       }
     },
-    {
-      "key": "PostAPIChannelFollowers",
+    "PostAPIChannelFollowers": {
       "params": ["url.channelId", "data"],
       "overrides": { "name": "followChannel" },
       "docs": {
@@ -346,8 +315,7 @@
         "see": "/docs/resources/channel#follow-announcement-channel"
       }
     },
-    {
-      "key": "PostAPIChannelTyping",
+    "PostAPIChannelTyping": {
       "params": ["url.channelId"],
       "overrides": { "name": "createTypingIndicator" },
       "flags": ["returnVoid"],
@@ -357,8 +325,7 @@
         "see": "/docs/resources/channel#trigger-typing-indicator"
       }
     },
-    {
-      "key": "PutAPIChannelRecipient",
+    "PutAPIChannelRecipient": {
       "params": ["url.channelId", "url.userId"],
       "overrides": { "name": "addGDMMember" },
       "flags": ["returnVoid"],
@@ -367,8 +334,7 @@
         "see": "/docs/resources/channel#group-dm-add-recipient"
       }
     },
-    {
-      "key": "DeleteAPIChannelRecipient",
+    "DeleteAPIChannelRecipient": {
       "params": ["url.channelId", "url.userId"],
       "overrides": { "name": "removeGDMMember" },
       "flags": ["returnVoid"],
@@ -377,8 +343,7 @@
         "see": "/docs/resources/channel#group-dm-remove-recipient"
       }
     },
-    {
-      "key": "PostAPIChannelThreads",
+    "PostAPIChannelThreads": {
       "params": ["url.channelId", "data", "url.messageId?"],
       "overrides": {
         "apiRoute": "threads",
@@ -396,8 +361,7 @@
         "see": "/docs/resources/channel#start-thread-from-message"
       }
     },
-    {
-      "key": "PostAPIGuildForumThreads",
+    "PostAPIGuildForumThreads": {
       "params": ["url.channelId", "data"],
       "overrides": {
         "apiRoute": "threads",
@@ -416,8 +380,7 @@
         "see": "/docs/resources/channel#start-thread-in-forum-or-media-channel"
       }
     },
-    {
-      "key": "PutAPIChannelThreadMembers",
+    "PutAPIChannelThreadMembers": {
       "params": ["url.threadId", "url.userId?"],
       "overrides": { "apiRoute": "threadMembers" },
       "flags": ["returnVoid"],
@@ -427,8 +390,7 @@
         "see": "/docs/resources/channel#add-thread-member"
       }
     },
-    {
-      "key": "DeleteAPIChannelThreadMembers",
+    "DeleteAPIChannelThreadMembers": {
       "params": ["url.threadId", "url.userId?"],
       "overrides": { "name": "removeThreadMember", "apiRoute": "threadMembers" },
       "flags": ["returnVoid"],
@@ -441,8 +403,7 @@
         "see": "/docs/resources/channel#remove-thread-member"
       }
     },
-    {
-      "key": "GetAPIChannelThreadMember",
+    "GetAPIChannelThreadMember": {
       "params": ["url.threadId", "url.userId", "params?"],
       "overrides": { "apiRoute": "threadMembers" },
       "docs": {
@@ -453,8 +414,7 @@
         "see": "/docs/resources/channel#get-thread-member"
       }
     },
-    {
-      "key": "GetAPIChannelThreadMembers",
+    "GetAPIChannelThreadMembers": {
       "params": ["url.threadId", "params?"],
       "overrides": { "apiRoute": "threadMembers" },
       "docs": {
@@ -469,8 +429,7 @@
         "see": "/docs/resources/channel#list-thread-members"
       }
     },
-    {
-      "key": "GetAPIChannelThreadsArchived",
+    "GetAPIChannelThreadsArchived": {
       "params": ["url.channelId", "url.archivedStatus:\"public\"|\"private\"", "var.joinedOnly?:boolean", "params?"],
       "overrides": {
         "apiRoute": "[joinedOnly ? \"channelJoinedArchivedThreads\" : \"channelThreads\"]",
@@ -483,8 +442,7 @@
         "see": "/docs/resources/channel#list-private-archived-threads"
       }
     },
-    {
-      "key": "GetAPIGuildEmojis",
+    "GetAPIGuildEmojis": {
       "params": ["url.guildId"],
       "docs": {
         "description": "Returns a list of [emoji](/docs/resources/emoji#emoji-object) objects for the given guild.",
@@ -494,8 +452,7 @@
         "see": "/docs/resources/emoji#list-guild-emojis"
       }
     },
-    {
-      "key": "GetAPIGuildEmoji",
+    "GetAPIGuildEmoji": {
       "params": ["url.guildId", "url.emojiId"],
       "docs": {
         "description": "Returns an [emoji](/docs/resources/emoji#emoji-object) object for the given guild and emoji IDs.",
@@ -505,8 +462,7 @@
         "see": "/docs/resources/emoji#get-guild-emoji"
       }
     },
-    {
-      "key": "PostAPIGuildEmoji",
+    "PostAPIGuildEmoji": {
       "params": ["url.guildId", "data"],
       "overrides": { "apiRoute": "guildEmojis" },
       "docs": {
@@ -521,8 +477,7 @@
         "see": "/docs/resources/emoji#create-guild-emoji"
       }
     },
-    {
-      "key": "PatchAPIGuildEmoji",
+    "PatchAPIGuildEmoji": {
       "params": ["url.guildId", "url.emojiId", "data"],
       "docs": {
         "description": "Modify the given emoji.",
@@ -533,8 +488,7 @@
         "see": "/docs/resources/emoji#moify-guild-emoji"
       }
     },
-    {
-      "key": "DeleteAPIGuildEmoji",
+    "DeleteAPIGuildEmoji": {
       "params": ["url.guildId", "url.emojiId"],
       "flags": ["returnVoid"],
       "docs": {
@@ -546,10 +500,9 @@
         "see": "/docs/resources/emoji#delete-guild-emoji"
       }
     },
-    {
-      "key": "GetAPIApplicationEmojis",
+    "GetAPIApplicationEmojis": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
-      "overrides": { "name": "listApplicationEmojis" },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns an object containing a list of [emoji](/docs/resources/emoji#emoji-object) objects for the given application under the `items` key.",
         "infos": [
@@ -558,20 +511,18 @@
         "see": "/docs/resources/emoji#list-application-emojis"
       }
     },
-    {
-      "key": "GetAPIApplicationEmoji",
+    "GetAPIApplicationEmoji": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId"],
-      "overrides": { "name": "getApplicationEmoji" },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns an [emoji](/docs/resources/emoji#emoji-object) object for the given application and emoji IDs.",
         "infos": ["Includes the `user` field."],
         "see": "/docs/resources/emoji#get-application-emoji"
       }
     },
-    {
-      "key": "PostAPIApplicationEmoji",
+    "PostAPIApplicationEmoji": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
-      "overrides": { "apiRoute": "applicationEmojis", "name": "createApplicationEmoji" },
+      "overrides": { "apiRoute": "applicationEmojis", "keyNameStart": 0 },
       "docs": {
         "description": "Create a new emoji for the application.",
         "infos": [
@@ -583,34 +534,29 @@
         "see": "/docs/resources/emoji#create-application-emoji"
       }
     },
-    {
-      "key": "PatchAPIApplicationEmoji",
+    "PatchAPIApplicationEmoji": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId", "data"],
-      "overrides": { "name": "modifyApplicationEmoji" },
+      "overrides": { "keyNameStart": 0 },
       "docs": { "description": "Modify the given emoji.", "see": "/docs/resources/emoji#modify-application-emoji" }
     },
-    {
-      "key": "DeleteAPIApplicationEmoji",
+    "DeleteAPIApplicationEmoji": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId"],
-      "overrides": { "name": "deleteApplicationEmoji" },
+      "overrides": { "keyNameStart": 0 },
       "flags": ["returnVoid"],
       "docs": { "description": "Delete the given emoji.", "see": "/docs/resources/emoji#delete-application-emoji" }
     },
-    {
-      "key": "GetAPIEntitlements",
+    "GetAPIEntitlements": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "params?"],
       "docs": {
         "description": "Returns all entitlements for a given app, active and expired.",
         "see": "/docs/resources/entitlement#list-entitlements"
       }
     },
-    {
-      "key": "GetAPIEntitlement",
+    "GetAPIEntitlement": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
       "docs": { "description": "Returns an entitlement.", "see": "/docs/resources/entitlement#get-entitlement" }
     },
-    {
-      "key": "PostAPIEntitlementConsume",
+    "PostAPIEntitlementConsume": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
       "overrides": { "apiRoute": "consumeEntitlement", "name": "consumeEntitlement" },
       "flags": ["returnVoid"],
@@ -622,8 +568,7 @@
         "see": "/docs/resources/entitlement#consume-entitlement"
       }
     },
-    {
-      "key": "PostAPIEntitlement",
+    "PostAPIEntitlement": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
       "overrides": { "apiRoute": "entitlements", "name": "createTestEntitlement" },
       "docs": {
@@ -634,8 +579,7 @@
         "see": "/docs/resources/entitlement#create-test-entitlement"
       }
     },
-    {
-      "key": "DeleteAPIEntitlement",
+    "DeleteAPIEntitlement": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
       "overrides": { "name": "deleteTestEntitlement" },
       "flags": ["returnVoid"],
@@ -647,8 +591,7 @@
         "see": "/docs/resources/entitlement#delete-test-entitlement"
       }
     },
-    {
-      "key": "GetAPIGateway",
+    "GetAPIGateway": {
       "params": [],
       "docs": {
         "description": "Returns an object with a valid WSS URL which the app can use when [Connecting](/docs/events/gateway#connecting) to the Gateway. Apps should cache this value and only call this endpoint to retrieve a new URL when they are unable to properly establish a connection using the cached one.",
@@ -656,26 +599,23 @@
         "see": "/docs/events/gateway#get-gateway"
       }
     },
-    {
-      "key": "GetAPIGatewayBot",
+    "GetAPIGatewayBot": {
       "params": [],
-      "overrides": { "name": "getGatewayBot" },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns an object based on the information in [Get Gateway](/docs/events/gateway#get-gateway), plus additional metadata that can help during the operation of large or [sharded](/docs/events/gateway#sharding) bots. Unlike the [Get Gateway](/docs/events/gateway#get-gateway), this route should not be cached for extended periods of time as the value is not guaranteed to be the same per-call, and changes as the bot joins/leaves guilds.",
         "warns": ["This endpoint requires authentication using a valid bot token."],
         "see": "/docs/events/gateway#get-gateway-bot"
       }
     },
-    {
-      "key": "GetAPIGuildScheduledEvents",
+    "GetAPIGuildScheduledEvents": {
       "params": ["url.guildId", "params?"],
       "docs": {
         "description": "Returns a list of [guild scheduled event](/docs/resources/guild-scheduled-event#guild-scheduled-event-object) objects for the given guild.",
         "see": "/docs/resources/guild-scheduled-event#list-guild-scheduled-events"
       }
     },
-    {
-      "key": "PostAPIGuildScheduledEvent",
+    "PostAPIGuildScheduledEvent": {
       "params": ["url.guildId", "data"],
       "overrides": { "apiRoute": "guildScheduledEvents" },
       "docs": {
@@ -684,16 +624,14 @@
         "see": "/docs/resources/guild-scheduled-event#create-guild-scheduled-event"
       }
     },
-    {
-      "key": "GetAPIGuildScheduledEvent",
+    "GetAPIGuildScheduledEvent": {
       "params": ["url.guildId", "url.guildScheduledEventId", "params?"],
       "docs": {
         "description": "Get a guild scheduled event.",
         "see": "/docs/resources/guild-scheduled-event#get-guild-scheduled-event"
       }
     },
-    {
-      "key": "PatchAPIGuildScheduledEvent",
+    "PatchAPIGuildScheduledEvent": {
       "params": ["url.guildId", "url.guildScheduledEventId", "data"],
       "docs": {
         "description": "Modify a guild scheduled event.",
@@ -704,8 +642,7 @@
         "see": "/docs/resources/guild-scheduled-event#modify-guild-scheduled-event"
       }
     },
-    {
-      "key": "DeleteAPIGuildScheduledEvent",
+    "DeleteAPIGuildScheduledEvent": {
       "params": ["url.guildId", "url.guildScheduledEventId"],
       "flags": ["returnVoid"],
       "docs": {
@@ -713,8 +650,7 @@
         "see": "/docs/resources/guild-scheduled-event#delete-guild-scheduled-event"
       }
     },
-    {
-      "key": "GetAPIGuildScheduledEventUsers",
+    "GetAPIGuildScheduledEventUsers": {
       "params": ["url.guildId", "url.guildScheduledEventId", "params?"],
       "overrides": { "name": "getScheduledEventUsers" },
       "docs": {
@@ -722,16 +658,14 @@
         "see": "/docs/resources/guild-scheduled-event#get-guild-scheduled-event-users"
       }
     },
-    {
-      "key": "GetAPITemplate",
+    "GetAPITemplate": {
       "params": ["url.code: string"],
       "docs": {
         "description": "Returns a [guild template](/docs/resources/guild-template#guild-template-object) object for the given code.",
         "see": "/docs/resources/guild-template#get-guild-template"
       }
     },
-    {
-      "key": "PostAPITemplateCreateGuild",
+    "PostAPITemplateCreateGuild": {
       "params": ["url.code: string", "data"],
       "overrides": { "apiRoute": "template", "name": "createFromTemplate" },
       "flags": ["deprecated"],
@@ -740,8 +674,7 @@
         "see": "/docs/change-log#guild-create-deprecation"
       }
     },
-    {
-      "key": "GetAPIGuildTemplates",
+    "GetAPIGuildTemplates": {
       "params": ["url.guildId"],
       "docs": {
         "description": "Returns an array of [guild template](/docs/resources/guild-template#guild-template-object) objects.",
@@ -749,8 +682,7 @@
         "see": "/docs/resources/guild-template#get-guild-templates"
       }
     },
-    {
-      "key": "PostAPIGuildTemplates",
+    "PostAPIGuildTemplates": {
       "params": ["url.guildId", "data"],
       "docs": {
         "description": "Creates a template for the guild.",
@@ -758,8 +690,7 @@
         "see": "/docs/resources/guild-template#create-guild-template"
       }
     },
-    {
-      "key": "PutAPIGuildTemplate",
+    "PutAPIGuildTemplate": {
       "params": ["url.guildId", "url.code: string"],
       "overrides": {
         "imports": ["type RESTPutAPIGuildTemplateSyncResult"],
@@ -772,8 +703,7 @@
         "see": "/docs/resources/guild-template#sync-guild-template"
       }
     },
-    {
-      "key": "PatchAPIGuildTemplate",
+    "PatchAPIGuildTemplate": {
       "params": ["url.guildId", "url.code: string", "data"],
       "docs": {
         "description": "Modifies the template's metadata.",
@@ -781,8 +711,7 @@
         "see": "/docs/resources/guild-template#modify-guild-template"
       }
     },
-    {
-      "key": "DeleteAPIGuildTemplate",
+    "DeleteAPIGuildTemplate": {
       "params": ["url.guildId", "url.code: string"],
       "docs": {
         "description": "Deletes the template.",
@@ -790,18 +719,13 @@
         "see": "/docs/resources/guild-template#delete-guild-template"
       }
     },
-    {
-      "key": "PostAPIGuilds",
+    "PostAPIGuilds": {
       "params": ["data"],
       "overrides": { "apiRoute": "guilds" },
       "flags": ["deprecated"],
-      "docs": {
-        "description": "Create a new guild.",
-        "see": "/docs/change-log#guild-create-deprecation"
-      }
+      "docs": { "description": "Create a new guild.", "see": "/docs/change-log#guild-create-deprecation" }
     },
-    {
-      "key": "GetAPIGuild",
+    "GetAPIGuild": {
       "params": ["url.guildId", "params?"],
       "docs": {
         "description": "Returns the [guild](/docs/resources/guild#guild-object) object for the given id.",
@@ -811,10 +735,9 @@
         "see": "/docs/resources/guild#get-guild"
       }
     },
-    {
-      "key": "GetAPIGuildPreview",
+    "GetAPIGuildPreview": {
       "params": ["url.guildId"],
-      "overrides": { "name": "getGuildPreview" },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns the [guild preview](/docs/resources/guild#guild-preview-object) object for the given id.",
         "infos": [
@@ -823,8 +746,7 @@
         "see": "/docs/resources/guild#get-guild-preview"
       }
     },
-    {
-      "key": "PatchAPIGuild",
+    "PatchAPIGuild": {
       "params": ["url.guildId", "data"],
       "docs": {
         "description": "Modify a guild's settings.",
@@ -835,17 +757,12 @@
         "see": "/docs/resources/guild#modify-guild"
       }
     },
-    {
-      "key": "DeleteAPIGuild",
+    "DeleteAPIGuild": {
       "params": ["url.guildId"],
       "flags": ["deprecated", "returnVoid"],
-      "docs": {
-        "description": "Delete a guild.",
-        "see": "/docs/change-log#guild-create-deprecation"
-      }
+      "docs": { "description": "Delete a guild.", "see": "/docs/change-log#guild-create-deprecation" }
     },
-    {
-      "key": "GetAPIGuildChannels",
+    "GetAPIGuildChannels": {
       "params": ["url.guildId"],
       "docs": {
         "description": "Returns a list of guild [channel](/docs/resources/channel#channel-object) objects.",
@@ -853,8 +770,7 @@
         "see": "/docs/resources/guild#get-guild-channels"
       }
     },
-    {
-      "key": "PostAPIGuildChannel",
+    "PostAPIGuildChannel": {
       "params": ["url.guildId", "data"],
       "overrides": { "apiRoute": "guildChannels" },
       "docs": {
@@ -866,8 +782,7 @@
         "see": "/docs/resources/guild#create-guild-channel"
       }
     },
-    {
-      "key": "PatchAPIGuildChannelPositions",
+    "PatchAPIGuildChannelPositions": {
       "params": ["url.guildId", "data"],
       "overrides": { "apiRoute": "guildChannels", "name": "modifyChannelPositions" },
       "flags": ["returnVoid"],
@@ -877,8 +792,7 @@
         "see": "/docs/resources/guild#modify-guild-channel-positions"
       }
     },
-    {
-      "key": "GetAPIGuildThreads",
+    "GetAPIGuildThreads": {
       "params": ["url.guildId"],
       "overrides": { "apiRoute": "guildActiveThreads", "name": "listActiveThreads" },
       "docs": {
@@ -887,16 +801,14 @@
         "see": "/docs/resources/guild#list-active-guild-threads"
       }
     },
-    {
-      "key": "GetAPIGuildMember",
+    "GetAPIGuildMember": {
       "params": ["url.guildId", "url.userId"],
       "docs": {
         "description": "Returns a [guild member](/docs/resources/guild#guild-member-object) object for the specified user.",
         "see": "/docs/resources/guild#get-guild-member"
       }
     },
-    {
-      "key": "GetAPIGuildMembers",
+    "GetAPIGuildMembers": {
       "params": ["url.guildId", "params?"],
       "docs": {
         "description": "Returns a list of [guild member](/docs/resources/guild#guild-member-object) objects that are members of the guild.",
@@ -906,8 +818,7 @@
         "see": "/docs/resources/guild#list-guild-members"
       }
     },
-    {
-      "key": "GetAPIGuildMembersSearch",
+    "GetAPIGuildMembersSearch": {
       "params": ["url.guildId", "params?"],
       "overrides": { "name": "searchMembers" },
       "docs": {
@@ -915,8 +826,7 @@
         "see": "/docs/resources/guild#search-guild-members"
       }
     },
-    {
-      "key": "PutAPIGuildMember",
+    "PutAPIGuildMember": {
       "params": ["url.guildId", "url.userId", "data"],
       "docs": {
         "description": "Adds a user to the guild, provided you have a valid oauth2 access token for the user with the `guilds.join` scope.",
@@ -926,8 +836,7 @@
         "see": "/docs/resources/guild#add-guild-member"
       }
     },
-    {
-      "key": "PatchAPIGuildMember",
+    "PatchAPIGuildMember": {
       "params": ["url.guildId", "url.userId: T", "data"],
       "overrides": {
         "dataType": "T extends \"@me\" ? RESTPatchAPICurrentGuildMemberJSONBody : RESTPatchAPIGuildMemberJSONBody",
@@ -939,8 +848,7 @@
         "see": "/docs/resources/guild#modify-guild-member"
       }
     },
-    {
-      "key": "PutAPIGuildMemberRole",
+    "PutAPIGuildMemberRole": {
       "params": ["url.guildId", "url.userId", "url.roleId"],
       "flags": ["returnVoid"],
       "docs": {
@@ -949,8 +857,7 @@
         "see": "/docs/resources/guild#add-guild-member-role"
       }
     },
-    {
-      "key": "DeleteAPIGuildMemberRole",
+    "DeleteAPIGuildMemberRole": {
       "params": ["url.guildId", "url.userId", "url.roleId"],
       "overrides": { "name": "removeMemberRole" },
       "flags": ["returnVoid"],
@@ -960,8 +867,7 @@
         "see": "/docs/resources/guild#remove-guild-member-role"
       }
     },
-    {
-      "key": "DeleteAPIGuildMember",
+    "DeleteAPIGuildMember": {
       "params": ["url.guildId", "url.userId"],
       "overrides": { "name": "removeMember" },
       "flags": ["returnVoid"],
@@ -971,8 +877,7 @@
         "see": "/docs/resources/guild#remove-guild-member"
       }
     },
-    {
-      "key": "GetAPIGuildBans",
+    "GetAPIGuildBans": {
       "params": ["url.guildId", "params?"],
       "docs": {
         "description": "Returns a list of [ban](/docs/resources/guild#ban-object) objects for the users banned from this guild.",
@@ -980,8 +885,7 @@
         "see": "/docs/resources/guild#get-guild-bans"
       }
     },
-    {
-      "key": "GetAPIGuildBan",
+    "GetAPIGuildBan": {
       "params": ["url.guildId", "url.userId"],
       "docs": {
         "description": "Returns a [ban](/docs/resources/guild#ban-object) object for the given user or a 404 not found if the ban cannot be found.",
@@ -989,9 +893,8 @@
         "see": "/docs/resources/guild#get-guild-ban"
       }
     },
-    {
-      "key": "PutAPIGuildBan",
-      "params": ["url.guildId", "url.userId", "data"],
+    "PutAPIGuildBan": {
+      "params": ["url.guildId", "url.userId", "data?"],
       "overrides": { "name": "createBan" },
       "flags": ["returnVoid"],
       "docs": {
@@ -1000,8 +903,7 @@
         "see": "/docs/resources/guild#create-guild-ban"
       }
     },
-    {
-      "key": "DeleteAPIGuildBan",
+    "DeleteAPIGuildBan": {
       "params": ["url.guildId", "url.userId"],
       "flags": ["returnVoid"],
       "docs": {
@@ -1010,8 +912,7 @@
         "see": "/docs/resources/guild#remove-guild-ban"
       }
     },
-    {
-      "key": "PostAPIGuildBulkBan",
+    "PostAPIGuildBulkBan": {
       "params": ["url.guildId", "data"],
       "overrides": { "name": "bulkCreateBan" },
       "docs": {
@@ -1023,24 +924,29 @@
         "see": "/docs/resources/guild#bulk-guild-ban"
       }
     },
-    {
-      "key": "GetAPIGuildRoles",
+    "GetAPIGuildRoles": {
       "params": ["url.guildId"],
       "docs": {
         "description": "Returns a list of [role](/docs/topics/permissions#role-object) objects for the guild.",
         "see": "/docs/resources/guild#get-guild-roles"
       }
     },
-    {
-      "key": "GetAPIGuildRole",
+    "GetAPIGuildRole": {
       "params": ["url.guildId", "url.roleId"],
       "docs": {
         "description": "Returns a [role](/docs/topics/permissions#role-object) object for the specified role.",
         "see": "/docs/resources/guild#get-guild-role"
       }
     },
-    {
-      "key": "PostAPIGuildRole",
+    "GetAPIGuildRoleMemberCounts": {
+      "params": ["url.guildId"],
+      "docs": {
+        "description": "Returns a map of role IDs to the number of members with the role.",
+        "infos": ["Does not include the \\@everyone role."],
+        "see": "/docs/resources/guild#get-guild-role-member-counts"
+      }
+    },
+    "PostAPIGuildRole": {
       "params": ["url.guildId", "data"],
       "overrides": { "apiRoute": "guildRoles" },
       "docs": {
@@ -1049,8 +955,7 @@
         "see": "/docs/resources/guild#create-guild-role"
       }
     },
-    {
-      "key": "PatchAPIGuildRolePositions",
+    "PatchAPIGuildRolePositions": {
       "params": ["url.guildId", "data"],
       "overrides": { "apiRoute": "guildRoles", "name": "modifyRolePositions" },
       "docs": {
@@ -1059,8 +964,7 @@
         "see": "/docs/resources/guild#modify-guild-role-positions"
       }
     },
-    {
-      "key": "PatchAPIGuildRole",
+    "PatchAPIGuildRole": {
       "params": ["url.guildId", "url.roleId", "data"],
       "docs": {
         "description": "Modify a guild role.",
@@ -1068,8 +972,7 @@
         "see": "/docs/resources/guild#modify-guild-role"
       }
     },
-    {
-      "key": "PostAPIGuildsMFA",
+    "PostAPIGuildsMFA": {
       "params": ["url.guildId", "data"],
       "overrides": { "apiRoute": "guildMFA", "name": "modifyMFALevel" },
       "flags": ["deprecated"],
@@ -1079,8 +982,7 @@
         "see": "/docs/change-log#guild-create-deprecation"
       }
     },
-    {
-      "key": "DeleteAPIGuildRole",
+    "DeleteAPIGuildRole": {
       "params": ["url.guildId", "url.roleId"],
       "flags": ["returnVoid"],
       "docs": {
@@ -1089,8 +991,7 @@
         "see": "/docs/resources/guild#delete-guild-role"
       }
     },
-    {
-      "key": "GetAPIGuildPruneCount",
+    "GetAPIGuildPruneCount": {
       "params": ["url.guildId", "params?"],
       "overrides": { "apiRoute": "guildPrune" },
       "docs": {
@@ -1101,9 +1002,8 @@
         "see": "/docs/resources/guild#get-guild-prune-count"
       }
     },
-    {
-      "key": "PostAPIGuildPrune",
-      "params": ["url.guildId", "data"],
+    "PostAPIGuildPrune": {
+      "params": ["url.guildId", "data?"],
       "overrides": { "name": "startPrune" },
       "docs": {
         "description": "Begin a prune operation.",
@@ -1114,18 +1014,16 @@
         "see": "/docs/resources/guild#begin-guild-prune"
       }
     },
-    {
-      "key": "GetAPIGuildVoiceRegions",
+    "GetAPIGuildVoiceRegions": {
       "params": ["url.guildId"],
-      "overrides": { "name": "listGuildVoiceRegions" },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a list of [voice region](/docs/resources/voice#voice-region-object) objects for the guild.",
         "infos": ["Unlike the similar `/voice` route, this returns VIP servers when the guild is VIP-enabled."],
         "see": "/docs/resources/guild#get-guild-voice-regions"
       }
     },
-    {
-      "key": "GetAPIGuildInvites",
+    "GetAPIGuildInvites": {
       "params": ["url.guildId"],
       "docs": {
         "description": "Returns a list of [invite](/docs/resources/invite#invite-object) objects.",
@@ -1136,8 +1034,7 @@
         "see": "/docs/resources/guild#get-guild-invites"
       }
     },
-    {
-      "key": "GetAPIGuildIntegrations",
+    "GetAPIGuildIntegrations": {
       "params": ["url.guildId"],
       "docs": {
         "description": "Returns a list of [integration](/docs/resources/guild#integration-object) objects for the guild.",
@@ -1148,8 +1045,7 @@
         "see": "/docs/resources/guild#get-guild-integrations"
       }
     },
-    {
-      "key": "DeleteAPIGuildIntegration",
+    "DeleteAPIGuildIntegration": {
       "params": ["url.guildId", "url.integrationId"],
       "flags": ["returnVoid"],
       "docs": {
@@ -1158,8 +1054,7 @@
         "see": "/docs/resources/guild#delete-guild-integration"
       }
     },
-    {
-      "key": "GetAPIGuildWidgetSettings",
+    "GetAPIGuildWidgetSettings": {
       "params": ["url.guildId"],
       "overrides": { "name": "getWidgetSettings" },
       "docs": {
@@ -1168,8 +1063,7 @@
         "see": "/docs/resources/guild#get-guild-widget-settings"
       }
     },
-    {
-      "key": "PatchAPIGuildWidgetSettings",
+    "PatchAPIGuildWidgetSettings": {
       "params": ["url.guildId", "data"],
       "overrides": { "name": "modifyWidgetSettings" },
       "docs": {
@@ -1178,8 +1072,7 @@
         "see": "/docs/resources/guild#modify-guild-widget-settings"
       }
     },
-    {
-      "key": "GetAPIGuildWidgetJSON",
+    "GetAPIGuildWidgetJSON": {
       "params": ["url.guildId"],
       "overrides": { "name": "getWidgetJSON" },
       "docs": {
@@ -1187,8 +1080,7 @@
         "see": "/docs/resources/guild#get-guild-widget"
       }
     },
-    {
-      "key": "GetAPIGuildVanityUrl",
+    "GetAPIGuildVanityUrl": {
       "params": ["url.guildId"],
       "overrides": { "name": "getVanityInvite" },
       "docs": {
@@ -1201,8 +1093,7 @@
         "see": "/docs/resources/guild#get-guild-vanity-url"
       }
     },
-    {
-      "key": "GetAPIGuildWidgetImage",
+    "GetAPIGuildWidgetImage": {
       "params": ["url.guildId", "params?"],
       "docs": {
         "description": "Returns a PNG image widget for the guild.",
@@ -1210,8 +1101,7 @@
         "see": "/docs/resources/guild#get-guild-widget-image"
       }
     },
-    {
-      "key": "GetAPIGuildWelcomeScreen",
+    "GetAPIGuildWelcomeScreen": {
       "params": ["url.guildId"],
       "docs": {
         "description": "Returns the [Welcome Screen](/docs/resources/guild#welcome-screen-object) object for the guild.",
@@ -1219,8 +1109,7 @@
         "see": "/docs/resources/guild#get-guild-welcome-screen"
       }
     },
-    {
-      "key": "PatchAPIGuildWelcomeScreen",
+    "PatchAPIGuildWelcomeScreen": {
       "params": ["url.guildId", "data"],
       "docs": {
         "description": "Modify the guild's [Welcome Screen](/docs/resources/guild#welcome-screen-object).",
@@ -1228,16 +1117,14 @@
         "see": "/docs/resources/guild#modify-guild-welcome-screen"
       }
     },
-    {
-      "key": "GetAPIGuildOnboarding",
+    "GetAPIGuildOnboarding": {
       "params": ["url.guildId"],
       "docs": {
         "description": "Returns the [Onboarding](/docs/resources/guild#guild-onboarding-object) object for the guild.",
         "see": "/docs/resources/guild#get-guild-onboarding"
       }
     },
-    {
-      "key": "PutAPIGuildOnboarding",
+    "PutAPIGuildOnboarding": {
       "params": ["url.guildId", "data"],
       "overrides": { "name": "modifyOnboarding" },
       "docs": {
@@ -1249,13 +1136,13 @@
         "see": "/docs/resources/guild#modify-guild-onboarding"
       }
     },
-    {
-      "key": "PutAPIGuildIncidentActions",
+    "PutAPIGuildIncidentActions": {
+      "TODO": "rename to `modifyIncidentActions`",
       "params": ["url.guildId", "data"],
       "overrides": { "name": "modifyGuildIncidentActions" },
       "flags": ["returnVoid"],
       "docs": {
-        "description": "Modifies the incident actions of the guild.\n * TODO rename to `modifyIncidentActions`",
+        "description": "Modifies the incident actions of the guild.",
         "infos": [
           "Requires the `MANAGE_GUILD` permission.",
           "Both `invites_disabled_until` and `dms_disabled_until` can be enabled for a maximal timespan of 24 hours in the future."
@@ -1263,16 +1150,14 @@
         "see": "/docs/resources/guild#modify-incident-actions"
       }
     },
-    {
-      "key": "GetAPIInvite",
+    "GetAPIInvite": {
       "params": ["url.code: string", "params?"],
       "docs": {
         "description": "Returns an [invite](/docs/resources/invite#invite-object) object for the given code.",
         "see": "/docs/resources/invite#get-invite"
       }
     },
-    {
-      "key": "DeleteAPIInvite",
+    "DeleteAPIInvite": {
       "params": ["url.code: string"],
       "docs": {
         "description": "Delete an invite.",
@@ -1282,8 +1167,7 @@
         "see": "/docs/resources/invite#delete-invite"
       }
     },
-    {
-      "key": "GetAPIChannelMessages",
+    "GetAPIChannelMessages": {
       "params": ["url.channelId", "params?"],
       "docs": {
         "description": "Retrieves the messages in a channel.",
@@ -1295,8 +1179,7 @@
         "see": "/docs/resources/message#get-channel-messages"
       }
     },
-    {
-      "key": "GetAPIChannelMessage",
+    "GetAPIChannelMessage": {
       "params": ["url.channelId", "url.messageId"],
       "docs": {
         "description": "Retrieves a specific message in the channel.",
@@ -1306,8 +1189,7 @@
         "see": "/docs/resources/message#get-channel-message"
       }
     },
-    {
-      "key": "PostAPIChannelMessage",
+    "PostAPIChannelMessage": {
       "params": ["url.channelId", "data"],
       "overrides": { "apiRoute": "channelMessages" },
       "flags": ["hasFiles", "hasStringableContent"],
@@ -1322,8 +1204,7 @@
         "see": "/docs/resources/message#create-message"
       }
     },
-    {
-      "key": "PostAPIChannelMessageCrosspost",
+    "PostAPIChannelMessageCrosspost": {
       "params": ["url.channelId", "url.messageId"],
       "overrides": { "name": "crosspostMessage" },
       "docs": {
@@ -1334,8 +1215,7 @@
         "see": "/docs/resources/message#crosspost-message"
       }
     },
-    {
-      "key": "PutAPIChannelMessageOwnReaction",
+    "PutAPIChannelMessageOwnReaction": {
       "params": ["url.channelId", "url.messageId", "url.emoji: string"],
       "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)", "name": "createReaction" },
       "flags": ["returnVoid"],
@@ -1347,21 +1227,16 @@
         "see": "/docs/resources/message#create-reaction"
       }
     },
-    {
-      "key": "DeleteAPIChannelMessageUserReaction",
+    "DeleteAPIChannelMessageUserReaction": {
       "params": ["url.channelId", "url.messageId", "url.emoji: string", "url.userId?"],
-      "overrides": {
-        "dangerousExtraLogic": "emoji=encodeURIComponent(emoji); userId??=\"@me\"",
-        "name": "deleteReaction"
-      },
+      "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji); userId??=\"@me\"", "keyNameStart": 3 },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete a user's reaction, defaults to removing the current user's reaction for a message.",
         "see": "/docs/resources/message#delete-reaction"
       }
     },
-    {
-      "key": "GetAPIChannelMessageReactionUsers",
+    "GetAPIChannelMessageReactionUsers": {
       "params": ["url.channelId", "url.messageId", "url.emoji: string", "params?"],
       "overrides": {
         "apiRoute": "channelMessageReaction",
@@ -1373,8 +1248,7 @@
         "see": "/docs/resources/message#get-reactions"
       }
     },
-    {
-      "key": "DeleteAPIChannelAllMessageReactions",
+    "DeleteAPIChannelAllMessageReactions": {
       "params": ["url.channelId", "url.messageId"],
       "overrides": { "apiRoute": "channelMessageAllReactions", "name": "deleteAllReactions" },
       "flags": ["returnVoid"],
@@ -1384,8 +1258,7 @@
         "see": "/docs/resources/message#delete-all-reactions"
       }
     },
-    {
-      "key": "DeleteAPIChannelMessageReactionUsers",
+    "DeleteAPIChannelMessageReactionUsers": {
       "params": ["url.channelId", "url.messageId", "url.emoji: string"],
       "overrides": {
         "apiRoute": "channelMessageReaction",
@@ -1399,8 +1272,7 @@
         "see": "/docs/resources/message#delete-all-reactions-for-emoji"
       }
     },
-    {
-      "key": "PatchAPIChannelMessage",
+    "PatchAPIChannelMessage": {
       "params": ["url.channelId", "url.messageId", "data"],
       "overrides": { "name": "editMessage" },
       "flags": ["hasFiles", "hasStringableContent"],
@@ -1418,8 +1290,7 @@
         "see": "/docs/resources/message#edit-message"
       }
     },
-    {
-      "key": "DeleteAPIChannelMessage",
+    "DeleteAPIChannelMessage": {
       "params": ["url.channelId", "url.messageId"],
       "flags": ["returnVoid"],
       "docs": {
@@ -1430,8 +1301,7 @@
         "see": "/docs/resources/message#delete-message"
       }
     },
-    {
-      "key": "PostAPIChannelMessagesBulkDelete",
+    "PostAPIChannelMessagesBulkDelete": {
       "params": ["url.channelId", "data"],
       "overrides": { "apiRoute": "channelBulkDelete", "name": "bulkDelete" },
       "flags": ["returnVoid"],
@@ -1444,8 +1314,7 @@
         "see": "/docs/resources/message#bulk-delete-messages"
       }
     },
-    {
-      "key": "GetAPIChannelPins",
+    "GetAPIChannelPins": {
       "params": ["url.channelId"],
       "flags": ["deprecated"],
       "docs": {
@@ -1456,8 +1325,7 @@
         "see": "/docs/resources/message#get-pinned-messages-deprecated"
       }
     },
-    {
-      "key": "GetAPIChannelMessagesPins",
+    "GetAPIChannelMessagesPins": {
       "params": ["url.channelId", "params?"],
       "overrides": { "name": "listChannelPins" },
       "docs": {
@@ -1468,8 +1336,7 @@
         "see": "/docs/resources/message#get-channel-pins"
       }
     },
-    {
-      "key": "PutAPIChannelMessagesPin",
+    "PutAPIChannelMessagesPin": {
       "params": ["url.channelId", "url.messageId"],
       "overrides": { "name": "createPin" },
       "flags": ["returnVoid"],
@@ -1479,10 +1346,9 @@
         "see": "/docs/resources/message#pin-message"
       }
     },
-    {
-      "key": "DeleteAPIChannelMessagesPin",
+    "DeleteAPIChannelMessagesPin": {
       "params": ["url.channelId", "url.messageId"],
-      "overrides": { "name": "deletePin" },
+      "overrides": { "keyNameStart": 2 },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Unpin a message in a channel.",
@@ -1490,16 +1356,14 @@
         "see": "/docs/resources/message#unpin-message"
       }
     },
-    {
-      "key": "GetAPIPollAnswerVoters",
+    "GetAPIPollAnswerVoters": {
       "params": ["url.channelId", "url.messageId", "url.answerId: number", "params?"],
       "docs": {
         "description": "Get a list of users that voted for this specific answer.",
         "see": "/docs/resources/poll#get-answer-voters"
       }
     },
-    {
-      "key": "PostAPIPollExpire",
+    "PostAPIPollExpire": {
       "params": ["url.channelId", "url.messageId"],
       "overrides": { "apiRoute": "expirePoll", "name": "endPoll" },
       "docs": {
@@ -1507,8 +1371,7 @@
         "see": "/docs/resources/poll#end-poll"
       }
     },
-    {
-      "key": "GetAPISKUs",
+    "GetAPISKUs": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
       "overrides": { "apiRoute": "skus", "name": "listSKUs" },
       "docs": {
@@ -1519,13 +1382,13 @@
         "see": "/docs/resources/sku#list-skus"
       }
     },
-    {
-      "key": "PostAPISendSoundboardSound",
+    "PostAPISendSoundboardSound": {
       "params": ["url.channelId", "data"],
       "overrides": {
+        "apiRoute": "sendSoundboardSound",
+        "name": "sendSound",
         "dataType": "RESTPostAPISoundboardSendSoundJSONBody",
-        "imports": ["type RESTPostAPISoundboardSendSoundJSONBody"],
-        "name": "sendSound"
+        "imports": ["type RESTPostAPISoundboardSendSoundJSONBody"]
       },
       "docs": {
         "description": "Send a soundboard sound to a voice channel the user is connected to.",
@@ -1535,12 +1398,11 @@
         "see": "/docs/resources/soundboard#send-soundboard-sound"
       }
     },
-    {
-      "key": "GetAPISoundboardDefaultSounds",
+    "GetAPISoundboardDefaultSounds": {
       "params": ["url.guildId: Snowflake = \"\""],
       "overrides": {
         "apiRoute": "[guildId ? \"guildSoundboardSounds\":\"soundboardDefaultSounds\"]",
-        "name": "listSounds"
+        "keyNameStart": 2
       },
       "docs": {
         "description": "Returns an array of [soundboard sound](/docs/resources/soundboard#soundboard-sound-object) objects that can be used by all users.\n * @param guildId Returns a list of the guild's soundboard sounds.",
@@ -1550,10 +1412,9 @@
         "see": "/docs/resources/soundboard#list-default-soundboard-sounds"
       }
     },
-    {
-      "key": "GetAPIGuildSoundboardSound",
+    "GetAPIGuildSoundboardSound": {
       "params": ["url.guildId", "url.soundId"],
-      "overrides": { "name": "getSound" },
+      "overrides": { "keyNameStart": 2 },
       "docs": {
         "description": "Returns a [soundboard sound](/docs/resources/soundboard#soundboard-sound-object) object for the given sound id.",
         "infos": [
@@ -1562,10 +1423,9 @@
         "see": "/docs/resources/soundboard#get-guild-soundboard-sound"
       }
     },
-    {
-      "key": "PostAPIGuildSoundboardSound",
+    "PostAPIGuildSoundboardSound": {
       "params": ["url.guildId", "data"],
-      "overrides": { "apiRoute": "guildSoundboardSounds", "name": "createSound" },
+      "overrides": { "apiRoute": "guildSoundboardSounds", "keyNameStart": 2 },
       "docs": {
         "description": "Create a new soundboard sound for the guild.",
         "infos": [
@@ -1575,10 +1435,9 @@
         "see": "/docs/resources/soundboard#create-guild-soundboard-sound"
       }
     },
-    {
-      "key": "PatchAPIGuildSoundboardSound",
+    "PatchAPIGuildSoundboardSound": {
       "params": ["url.guildId", "url.soundId", "data"],
-      "overrides": { "name": "modifySound" },
+      "overrides": { "keyNameStart": 2 },
       "docs": {
         "description": "Modify the given soundboard sound.",
         "infos": [
@@ -1588,10 +1447,9 @@
         "see": "/docs/resources/soundboard#modify-guild-soundboard-sound"
       }
     },
-    {
-      "key": "DeleteAPIGuildSoundboardSound",
+    "DeleteAPIGuildSoundboardSound": {
       "params": ["url.guildId", "url.soundId"],
-      "overrides": { "name": "deleteSound" },
+      "overrides": { "keyNameStart": 2 },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete the given soundboard sound.",
@@ -1602,8 +1460,7 @@
         "see": "/docs/resources/soundboard#delete-guild-soundboard-sound"
       }
     },
-    {
-      "key": "PostAPIStageInstance",
+    "PostAPIStageInstance": {
       "params": ["data"],
       "overrides": { "apiRoute": "stageInstances", "name": "createStage" },
       "docs": {
@@ -1612,8 +1469,7 @@
         "see": "/docs/resources/stage-instance#create-stage-instance"
       }
     },
-    {
-      "key": "GetAPIStageInstance",
+    "GetAPIStageInstance": {
       "params": ["url.channelId"],
       "overrides": { "name": "getStage" },
       "docs": {
@@ -1621,8 +1477,7 @@
         "see": "/docs/resources/stage-instance#get-stage-instance"
       }
     },
-    {
-      "key": "PatchAPIStageInstance",
+    "PatchAPIStageInstance": {
       "params": ["url.channelId", "data"],
       "overrides": { "name": "modifyStage" },
       "docs": {
@@ -1631,8 +1486,7 @@
         "see": "/docs/resources/stage-instance#modify-stage-instance"
       }
     },
-    {
-      "key": "DeleteAPIStageInstance",
+    "DeleteAPIStageInstance": {
       "params": ["url.channelId"],
       "overrides": { "name": "deleteStage" },
       "flags": ["returnVoid"],
@@ -1642,8 +1496,7 @@
         "see": "/docs/resources/stage-instance#delete-stage-instance"
       }
     },
-    {
-      "key": "GetAPISticker",
+    "GetAPISticker": {
       "params": ["url.stickerId"],
       "overrides": { "apiRoute": "sticker" },
       "docs": {
@@ -1651,26 +1504,23 @@
         "see": "/docs/resources/sticker#get-sticker"
       }
     },
-    {
-      "key": "GetStickerPacks",
+    "GetStickerPacks": {
       "params": [],
-      "overrides": { "name": "listStickerPacks" },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a list of available sticker packs.",
         "see": "/docs/resources/sticker#list-sticker-packs"
       }
     },
-    {
-      "key": "GetAPIStickerPack",
+    "GetAPIStickerPack": {
       "params": ["url.packId"],
-      "overrides": { "name": "getStickerPack" },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a [sticker pack](/docs/resources/sticker#sticker-pack-object) object for the given sticker pack ID.",
         "see": "/docs/resources/sticker#get-sticker-pack"
       }
     },
-    {
-      "key": "GetAPIGuildStickers",
+    "GetAPIGuildStickers": {
       "params": ["url.guildId"],
       "docs": {
         "description": "Returns an array of [sticker](/docs/resources/sticker#sticker-object) objects for the given guild.",
@@ -1680,10 +1530,9 @@
         "see": "/docs/resources/sticker#list-guild-stickers"
       }
     },
-    {
-      "key": "GetAPIGuildSticker",
+    "GetAPIGuildSticker": {
       "params": ["url.guildId", "url.stickerId"],
-      "overrides": { "name": "getGuildSticker" },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a [sticker](/docs/resources/sticker#sticker-object) object for the given guild and sticker IDs.",
         "infos": [
@@ -1692,16 +1541,10 @@
         "see": "/docs/resources/sticker#get-guild-sticker"
       }
     },
-    {
-      "key": "PostAPIGuildSticker",
+    "PostAPIGuildSticker": {
       "params": ["url.guildId", "data"],
-      "overrides": {
-        "apiRoute": "guildStickers",
-        "dataType": "RESTPostAPIGuildStickerFormDataBody & { file: RawFile }",
-        "fetchOptions": { "flattenBodyInForm": true },
-        "imports": ["type RESTPostAPIGuildStickerFormDataBody"]
-      },
-      "flags": ["hasFiles", "singlefile"],
+      "overrides": { "apiRoute": "guildStickers", "fileKey": ".file!" },
+      "flags": ["form", "hasFiles", "singlefile"],
       "docs": {
         "description": "Create a new sticker for the guild.",
         "infos": ["Requires the `CREATE_GUILD_EXPRESSIONS` permission."],
@@ -1712,8 +1555,7 @@
         "see": "/docs/resources/sticker#create-guild-sticker"
       }
     },
-    {
-      "key": "PatchAPIGuildSticker",
+    "PatchAPIGuildSticker": {
       "params": ["url.guildId", "url.stickerId", "data"],
       "docs": {
         "description": "Modify the given sticker.",
@@ -1724,8 +1566,7 @@
         "see": "/docs/resources/sticker#modify-guild-sticker"
       }
     },
-    {
-      "key": "DeleteAPIGuildSticker",
+    "DeleteAPIGuildSticker": {
       "params": ["url.guildId", "url.stickerId"],
       "flags": ["returnVoid"],
       "docs": {
@@ -1737,8 +1578,7 @@
         "see": "/docs/resources/sticker#delete-guild-sticker"
       }
     },
-    {
-      "key": "GetAPISKUSubscriptions",
+    "GetAPISKUSubscriptions": {
       "params": ["url.skuId", "params?"],
       "overrides": { "apiRoute": "skuSubscriptions" },
       "docs": {
@@ -1746,8 +1586,7 @@
         "see": "/docs/resources/subscription#list-sku-subscriptions"
       }
     },
-    {
-      "key": "GetAPISKUSubscription",
+    "GetAPISKUSubscription": {
       "params": ["url.skuId", "url.subscriptionId"],
       "overrides": { "apiRoute": "skuSubscription" },
       "docs": {
@@ -1755,16 +1594,14 @@
         "see": "/docs/resources/subscription#get-sku-subscription"
       }
     },
-    {
-      "key": "GetAPIUser",
+    "GetAPIUser": {
       "params": ["url.userId?"],
       "docs": {
         "description": "Returns a [user](/docs/resources/user#user-object) object for a given user ID, defaults to self.",
         "see": "/docs/resources/user#get-user"
       }
     },
-    {
-      "key": "PatchAPICurrentUser",
+    "PatchAPICurrentUser": {
       "params": ["data"],
       "overrides": { "apiRoute": "user" },
       "docs": {
@@ -1772,10 +1609,9 @@
         "see": "/docs/resources/user#modify-current-user"
       }
     },
-    {
-      "key": "GetAPICurrentUserGuilds",
+    "GetAPICurrentUserGuilds": {
       "params": ["params?"],
-      "overrides": { "apiRoute": "userGuilds", "name": "listGuilds" },
+      "overrides": { "apiRoute": "userGuilds", "keyNameStart": 2 },
       "docs": {
         "description": "Returns a list of partial [guild](/docs/resources/guild#guild-object) objects the current user is a member of.",
         "infos": [
@@ -1785,8 +1621,7 @@
         "see": "/docs/resources/user#get-current-user-guilds"
       }
     },
-    {
-      "key": "GetAPIUserGuildMember",
+    "GetAPIUserGuildMember": {
       "params": ["url.guildId"],
       "overrides": {
         "imports": ["type APIGuildMember"],
@@ -1800,15 +1635,13 @@
         "see": "/docs/resources/user#get-current-user-guild-member"
       }
     },
-    {
-      "key": "DeleteAPICurrentUserGuild",
+    "DeleteAPICurrentUserGuild": {
       "params": ["url.guildId"],
       "overrides": { "apiRoute": "userGuild", "name": "leaveGuild" },
       "flags": ["returnVoid"],
       "docs": { "description": "Leave a guild.", "see": "/docs/resources/user#leave-member" }
     },
-    {
-      "key": "PostAPICurrentUserCreateDMChannel",
+    "PostAPICurrentUserCreateDMChannel": {
       "params": ["data"],
       "overrides": {
         "apiRoute": "userChannels",
@@ -1824,28 +1657,25 @@
         "see": "/docs/resources/user#create-dm"
       }
     },
-    {
-      "key": "GetAPICurrentUserConnections",
+    "GetAPICurrentUserConnections": {
       "params": [],
-      "overrides": { "apiRoute": "userConnections", "name": "listConnections" },
+      "overrides": { "apiRoute": "userConnections", "keyNameStart": 2 },
       "docs": {
         "description": "Returns a list of [connection](/docs/resources/user#connection-object) objects.",
         "infos": ["Requires the `connections` OAuth2 scope."],
         "see": "/docs/resources/user#get-current-user-connections"
       }
     },
-    {
-      "key": "GetAPICurrentUserApplicationRoleConnection",
+    "GetAPICurrentUserApplicationRoleConnection": {
       "params": ["url.applicationId: Snowflake = botEnv.DISCORD_APP_ID"],
-      "overrides": { "apiRoute": "userApplicationRoleConnection", "name": "getRoleConnection" },
+      "overrides": { "apiRoute": "userApplicationRoleConnection", "keyNameStart": 3 },
       "docs": {
         "description": "Returns the [application role connection](/docs/resources/user#application-role-connection-object) for the user.",
         "infos": ["Requires the `connections` OAuth2 scope."],
         "see": "/docs/resources/user#get-current-user-application-role-connection"
       }
     },
-    {
-      "key": "PutAPICurrentUserApplicationRoleConnection",
+    "PutAPICurrentUserApplicationRoleConnection": {
       "params": ["url.applicationId: Snowflake = botEnv.DISCORD_APP_ID", "data"],
       "overrides": { "apiRoute": "userApplicationRoleConnection", "name": "modifyRoleConnection" },
       "docs": {
@@ -1854,17 +1684,15 @@
         "see": "/docs/resources/user#update-current-user-application-role-connection"
       }
     },
-    {
-      "key": "GetAPIVoiceRegions",
+    "GetAPIVoiceRegions": {
       "params": [],
-      "overrides": { "name": "listVoiceRegions" },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns an array of [voice region](/docs/resources/voice#voice-region-object) objects that can be used when setting a voice or stage channel's [`rtc_region`](/docs/resources/channel#channel-object-channel-structure).",
         "see": "/docs/resources/voice#list-voice-regions"
       }
     },
-    {
-      "key": "GetAPIGuildVoiceStateUser",
+    "GetAPIGuildVoiceStateUser": {
       "params": ["url.guildId", "url.userId?"],
       "overrides": { "apiRoute": "guildVoiceState", "name": "getVoiceState" },
       "docs": {
@@ -1872,8 +1700,7 @@
         "see": "/docs/resources/voice#get-user-voice-state"
       }
     },
-    {
-      "key": "PatchAPIGuildVoiceStateCurrentMember",
+    "PatchAPIGuildVoiceStateCurrentMember": {
       "params": ["url.guildId", "data", "url.userId?"],
       "overrides": { "apiRoute": "guildVoiceState", "name": "modifyVoiceState" },
       "flags": ["returnVoid"],
@@ -1882,8 +1709,7 @@
         "see": "/docs/resources/voice#modify-current-user-voice-state"
       }
     },
-    {
-      "key": "PostAPIChannelWebhook",
+    "PostAPIChannelWebhook": {
       "params": ["url.channelId", "data"],
       "overrides": { "apiRoute": "webhook" },
       "docs": {
@@ -1892,28 +1718,25 @@
         "see": "/docs/resources/webhook#create-webhook"
       }
     },
-    {
-      "key": "GetAPIChannelWebhooks",
+    "GetAPIChannelWebhooks": {
       "params": ["url.channelId"],
-      "overrides": { "name": "listChannelWebhooks" },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a list of channel [webhook](/docs/resources/webhook#webhook-object) objects.",
         "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
         "see": "/docs/resources/webhook#get-channel-webhooks"
       }
     },
-    {
-      "key": "GetAPIGuildWebhooks",
+    "GetAPIGuildWebhooks": {
       "params": ["url.guildId"],
-      "overrides": { "name": "listGuildWebhooks" },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a list of guild [webhook](/docs/resources/webhook#webhook-object) objects.",
         "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
         "see": "/docs/resources/webhook#get-guild-webhooks"
       }
     },
-    {
-      "key": "GetAPIWebhook",
+    "GetAPIWebhook": {
       "params": ["url.webhookId", "url.webhookToken?: T"],
       "overrides": {
         "generic": "T extends string | undefined = undefined",
@@ -1928,8 +1751,7 @@
         "see": "/docs/resources/webhook#get-webhook"
       }
     },
-    {
-      "key": "PatchAPIWebhook",
+    "PatchAPIWebhook": {
       "params": ["url.webhookId", "data", "url.webhookToken?: T"],
       "overrides": {
         "dataType": "T extends string ? RESTPatchAPIWebhookWithTokenJSONBody : RESTPatchAPIWebhookJSONBody",
@@ -1943,8 +1765,7 @@
         "see": "/docs/resources/webhook#modify-webhook"
       }
     },
-    {
-      "key": "DeleteAPIWebhook",
+    "DeleteAPIWebhook": {
       "params": ["url.webhookId", "url.webhookToken?: string"],
       "flags": ["returnVoid"],
       "docs": {
@@ -1953,8 +1774,7 @@
         "see": "/docs/resources/webhook#delete-webhook"
       }
     },
-    {
-      "key": "PostAPIWebhookWithToken",
+    "PostAPIWebhookWithToken": {
       "params": ["url.webhookId", "url.webhookToken: string", "data", "params?"],
       "overrides": {
         "apiRoute": "webhook",
@@ -1974,8 +1794,7 @@
         "see": "/docs/resources/webhook#execute-webhook"
       }
     },
-    {
-      "key": "GetAPIWebhookWithTokenMessage",
+    "GetAPIWebhookWithTokenMessage": {
       "params": ["url.webhookId", "url.webhookToken: string", "url.messageId", "params?"],
       "overrides": { "apiRoute": "webhookMessage", "name": "getWebhookMessage" },
       "docs": {
@@ -1983,8 +1802,7 @@
         "see": "/docs/resources/webhook#get-webhook-message"
       }
     },
-    {
-      "key": "PatchAPIWebhookWithTokenMessage",
+    "PatchAPIWebhookWithTokenMessage": {
       "params": ["url.webhookId", "url.webhookToken: string", "url.messageId", "data", "params?"],
       "overrides": { "apiRoute": "webhookMessage", "name": "editWebhookMessage" },
       "flags": ["hasFiles", "hasStringableContent"],
@@ -1996,8 +1814,7 @@
         "see": "/docs/resources/webhook#edit-webhook-message"
       }
     },
-    {
-      "key": "DeleteAPIWebhookWithTokenMessage",
+    "DeleteAPIWebhookWithTokenMessage": {
       "params": ["url.webhookId", "url.webhookToken: string", "url.messageId", "params?"],
       "overrides": {
         "apiRoute": "webhookMessage",
@@ -2010,5 +1827,5 @@
         "see": "/docs/resources/webhook#delete-webhook-message"
       }
     }
-  ]
+  }
 }

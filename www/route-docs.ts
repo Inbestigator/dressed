@@ -1,39 +1,26 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import { routes } from "../packages/dressed/src/resources/make/data.json";
-
-function routeKeyToMethodName(method: string, key: string) {
-  const routeKey = key.slice(method.length).replace("API", "");
-  const prefix = {
-    Get: routeKey.endsWith("s") ? "list" : "get",
-    Post: "create",
-    Put: "add",
-    Patch: "modify",
-    Delete: "delete",
-  }[method];
-
-  const splitRoutes = routeKey.match(/[A-Z][a-z]+/g) ?? [];
-  return (
-    prefix +
-    (splitRoutes.length > 1 ? splitRoutes.slice(1) : splitRoutes)
-      .join("")
-      .slice(0, routeKey.endsWith("s") && method !== "Get" ? -1 : undefined)
-  );
-}
+import routeDefinitions, { routeKeyToMethodName } from "../packages/dressed/src/resources/make/data";
 
 mkdirSync("./content/resources", { recursive: true });
 
 const groups: Record<string, string[]> = {};
 
-for (const { docs, key, params, overrides: { name } = {} } of routes) {
+function makeCallouts(tag: string, docs: string[] = []) {
+  if (!docs.length) return "";
+  const lines = docs.map((i) => `>${docs.length > 1 ? " - " : " "}${i}`).join("\n");
+  return `\n> [!${tag}]\n${lines}`;
+}
+
+for (const [key, { docs, params, overrides = {}, flags }] of Object.entries(routeDefinitions)) {
   const method = (/[A-Z][a-z]+/.exec(key) ?? [])[0] ?? "";
-  const resolvedName = name ?? routeKeyToMethodName(method, key);
+  const resolvedName = overrides.name ?? routeKeyToMethodName(method, key, overrides.keyNameStart);
   const getVarName = resolvedName.replace(/[a-z]+/, "");
 
   const content = `
 ## [${resolvedName
     .match(/([A-Z]?[a-z]+|[A-Z]+(?![a-z]))/g)
     ?.map((w) => `${w[0].toUpperCase()}${w.slice(1)}`)
-    .join(" ")}](${docs.see})
+    .join(" ")}](${docs.see}) ${flags?.includes("deprecated") ? "- *Deprecated*" : ""}
 \`${key}\`
 
 ${docs.description}
@@ -46,9 +33,9 @@ ${method === "Get" ? `const ${getVarName[0].toLowerCase()}${getVarName.slice(1)}
     .join(", ")});
 \`\`\`
 
-${docs.infos ? `\n> [!INFO]\n${docs.infos.map((i) => `>${docs.infos.length > 1 ? " - " : " "}${i}`).join("\n")}` : ""}
-${docs.warns ? `\n> [!WARNING]\n${docs.warns.map((w) => `>${docs.warns.length > 1 ? " - " : " "}${w}`).join("\n")}` : ""}
-${docs.dangers ? `\n> [!DANGER]\n${docs.dangers.map((d) => `>${docs.dangers.length > 1 ? " - " : " "}${d}`).join("\n")}` : ""}
+${makeCallouts("INFO", docs.infos)}
+${makeCallouts("WARNING", docs.warns)}
+${makeCallouts("DANGER", docs.dangers)}
 `
     .trim()
     .replace(/\/docs/g, "https://discord.com/developers$&");
