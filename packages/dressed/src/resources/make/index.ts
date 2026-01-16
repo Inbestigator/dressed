@@ -52,7 +52,7 @@ ${Object.entries(routeDefinitions)
           dataType,
           dangerousExtraLogic,
           name,
-          splitKeyStart,
+          keyNameStart,
           returnType,
           messageKey,
           fileKey,
@@ -73,7 +73,7 @@ ${Object.entries(routeDefinitions)
       dataType ??= `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}${flags?.includes("form") ? "FormData" : "JSON"}Body${flags?.includes("hasFiles") ? fileTypeLine : ""}`;
       paramsType ??= `REST${key}Query`;
       messageKey ??= "";
-      name ??= routeKeyToMethodName(method, key, splitKeyStart);
+      name ??= routeKeyToMethodName(method, key, keyNameStart);
       returnType ??= flags?.includes("returnVoid") ? "void" : `REST${key}Result`;
       const jsdocs = [
         ` * ${docs.description}`,

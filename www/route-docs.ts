@@ -13,7 +13,7 @@ function makeCallouts(tag: string, docs: string[] = []) {
 
 for (const [key, { docs, params, overrides = {}, flags }] of Object.entries(routeDefinitions)) {
   const method = (/[A-Z][a-z]+/.exec(key) ?? [])[0] ?? "";
-  const resolvedName = overrides.name ?? routeKeyToMethodName(method, key, overrides.splitKeyStart);
+  const resolvedName = overrides.name ?? routeKeyToMethodName(method, key, overrides.keyNameStart);
   const getVarName = resolvedName.replace(/[a-z]+/, "");
 
   const content = `

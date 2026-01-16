@@ -40,7 +40,7 @@
               "imports": { "type": "array", "items": { "type": "string" } },
               "messageKey": { "type": "string", "pattern": "^\\..+$" },
               "name": { "type": "string" },
-              "splitKeyStart": { "type": "number" },
+              "keyNameStart": { "type": "number" },
               "paramsType": { "type": "string" },
               "returnType": { "type": "string" }
             },

@@ -175,7 +175,7 @@
     },
     "GetAPIAuditLog": {
       "params": ["url.guildId", "params?"],
-      "overrides": { "apiRoute": "guildAuditLog", "splitKeyStart": 0 },
+      "overrides": { "apiRoute": "guildAuditLog", "keyNameStart": 0 },
       "docs": {
         "description": "Returns an [audit log](/docs/resources/audit-log#audit-log-object) object for the guild.",
         "infos": [
@@ -284,7 +284,7 @@
     },
     "GetAPIChannelInvites": {
       "params": ["url.channelId"],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a list of [invite](/docs/resources/invite#invite-object) objects (with [invite metadata](/docs/resources/invite#invite-metadata-object)) for the channel.",
         "infos": ["Only usable for guild channels.", "Requires the `MANAGE_CHANNELS` permission."],
@@ -293,12 +293,8 @@
     },
     "PostAPIChannelInvite": {
       "params": ["url.channelId", "data?"],
-      "overrides": {
-        "apiRoute": "channelInvites",
-        "splitKeyStart": 0,
-        "fileKey": ".target_users_file"
-      },
-      "flags": ["form", "hasFiles", "singlefile"],
+      "overrides": { "apiRoute": "channelInvites", "keyNameStart": 0, "fileKey": ".target_users_file" },
+      "flags": ["hasFiles", "singlefile"],
       "docs": {
         "description": "Create a new [invite](/docs/resources/invite#invite-object) object for the channel.",
         "infos": ["Only usable for guild channels.", "Requires the `CREATE_INSTANT_INVITE` permission."],
@@ -512,7 +508,7 @@
     },
     "GetAPIApplicationEmojis": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns an object containing a list of [emoji](/docs/resources/emoji#emoji-object) objects for the given application under the `items` key.",
         "infos": [
@@ -523,7 +519,7 @@
     },
     "GetAPIApplicationEmoji": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId"],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns an [emoji](/docs/resources/emoji#emoji-object) object for the given application and emoji IDs.",
         "infos": ["Includes the `user` field."],
@@ -532,7 +528,7 @@
     },
     "PostAPIApplicationEmoji": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
-      "overrides": { "apiRoute": "applicationEmojis", "splitKeyStart": 0 },
+      "overrides": { "apiRoute": "applicationEmojis", "keyNameStart": 0 },
       "docs": {
         "description": "Create a new emoji for the application.",
         "infos": [
@@ -546,15 +542,12 @@
     },
     "PatchAPIApplicationEmoji": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId", "data"],
-      "overrides": { "splitKeyStart": 0 },
-      "docs": {
-        "description": "Modify the given emoji.",
-        "see": "/docs/resources/emoji#modify-application-emoji"
-      }
+      "overrides": { "keyNameStart": 0 },
+      "docs": { "description": "Modify the given emoji.", "see": "/docs/resources/emoji#modify-application-emoji" }
     },
     "DeleteAPIApplicationEmoji": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId"],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete the given emoji.",
@@ -620,7 +613,7 @@
     },
     "GetAPIGatewayBot": {
       "params": [],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns an object based on the information in [Get Gateway](/docs/events/gateway#get-gateway), plus additional metadata that can help during the operation of large or [sharded](/docs/events/gateway#sharding) bots. Unlike the [Get Gateway](/docs/events/gateway#get-gateway), this route should not be cached for extended periods of time as the value is not guaranteed to be the same per-call, and changes as the bot joins/leaves guilds.",
         "warns": ["This endpoint requires authentication using a valid bot token."],
@@ -742,10 +735,7 @@
       "params": ["data"],
       "overrides": { "apiRoute": "guilds" },
       "flags": ["deprecated"],
-      "docs": {
-        "description": "Create a new guild.",
-        "see": "/docs/change-log#guild-create-deprecation"
-      }
+      "docs": { "description": "Create a new guild.", "see": "/docs/change-log#guild-create-deprecation" }
     },
     "GetAPIGuild": {
       "params": ["url.guildId", "params?"],
@@ -759,7 +749,7 @@
     },
     "GetAPIGuildPreview": {
       "params": ["url.guildId"],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns the [guild preview](/docs/resources/guild#guild-preview-object) object for the given id.",
         "infos": [
@@ -782,10 +772,7 @@
     "DeleteAPIGuild": {
       "params": ["url.guildId"],
       "flags": ["deprecated", "returnVoid"],
-      "docs": {
-        "description": "Delete a guild.",
-        "see": "/docs/change-log#guild-create-deprecation"
-      }
+      "docs": { "description": "Delete a guild.", "see": "/docs/change-log#guild-create-deprecation" }
     },
     "GetAPIGuildChannels": {
       "params": ["url.guildId"],
@@ -1041,7 +1028,7 @@
     },
     "GetAPIGuildVoiceRegions": {
       "params": ["url.guildId"],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a list of [voice region](/docs/resources/voice#voice-region-object) objects for the guild.",
         "infos": ["Unlike the similar `/voice` route, this returns VIP servers when the guild is VIP-enabled."],
@@ -1271,10 +1258,7 @@
     },
     "DeleteAPIChannelMessageUserReaction": {
       "params": ["url.channelId", "url.messageId", "url.emoji: string", "url.userId?"],
-      "overrides": {
-        "dangerousExtraLogic": "emoji=encodeURIComponent(emoji); userId??=\"@me\"",
-        "splitKeyStart": 3
-      },
+      "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji); userId??=\"@me\"", "keyNameStart": 3 },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete a user's reaction, defaults to removing the current user's reaction for a message.",
@@ -1393,7 +1377,7 @@
     },
     "DeleteAPIChannelMessagesPin": {
       "params": ["url.channelId", "url.messageId"],
-      "overrides": { "splitKeyStart": 2 },
+      "overrides": { "keyNameStart": 2 },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Unpin a message in a channel.",
@@ -1447,7 +1431,7 @@
       "params": ["url.guildId: Snowflake = \"\""],
       "overrides": {
         "apiRoute": "[guildId ? \"guildSoundboardSounds\":\"soundboardDefaultSounds\"]",
-        "splitKeyStart": 2
+        "keyNameStart": 2
       },
       "docs": {
         "description": "Returns an array of [soundboard sound](/docs/resources/soundboard#soundboard-sound-object) objects that can be used by all users.\n * @param guildId Returns a list of the guild's soundboard sounds.",
@@ -1459,7 +1443,7 @@
     },
     "GetAPIGuildSoundboardSound": {
       "params": ["url.guildId", "url.soundId"],
-      "overrides": { "splitKeyStart": 2 },
+      "overrides": { "keyNameStart": 2 },
       "docs": {
         "description": "Returns a [soundboard sound](/docs/resources/soundboard#soundboard-sound-object) object for the given sound id.",
         "infos": [
@@ -1470,7 +1454,7 @@
     },
     "PostAPIGuildSoundboardSound": {
       "params": ["url.guildId", "data"],
-      "overrides": { "apiRoute": "guildSoundboardSounds", "splitKeyStart": 2 },
+      "overrides": { "apiRoute": "guildSoundboardSounds", "keyNameStart": 2 },
       "docs": {
         "description": "Create a new soundboard sound for the guild.",
         "infos": [
@@ -1482,7 +1466,7 @@
     },
     "PatchAPIGuildSoundboardSound": {
       "params": ["url.guildId", "url.soundId", "data"],
-      "overrides": { "splitKeyStart": 2 },
+      "overrides": { "keyNameStart": 2 },
       "docs": {
         "description": "Modify the given soundboard sound.",
         "infos": [
@@ -1494,7 +1478,7 @@
     },
     "DeleteAPIGuildSoundboardSound": {
       "params": ["url.guildId", "url.soundId"],
-      "overrides": { "splitKeyStart": 2 },
+      "overrides": { "keyNameStart": 2 },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete the given soundboard sound.",
@@ -1551,7 +1535,7 @@
     },
     "GetStickerPacks": {
       "params": [],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a list of available sticker packs.",
         "see": "/docs/resources/sticker#list-sticker-packs"
@@ -1559,7 +1543,7 @@
     },
     "GetAPIStickerPack": {
       "params": ["url.packId"],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a [sticker pack](/docs/resources/sticker#sticker-pack-object) object for the given sticker pack ID.",
         "see": "/docs/resources/sticker#get-sticker-pack"
@@ -1577,7 +1561,7 @@
     },
     "GetAPIGuildSticker": {
       "params": ["url.guildId", "url.stickerId"],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a [sticker](/docs/resources/sticker#sticker-object) object for the given guild and sticker IDs.",
         "infos": [
@@ -1656,7 +1640,7 @@
     },
     "GetAPICurrentUserGuilds": {
       "params": ["params?"],
-      "overrides": { "apiRoute": "userGuilds", "splitKeyStart": 2 },
+      "overrides": { "apiRoute": "userGuilds", "keyNameStart": 2 },
       "docs": {
         "description": "Returns a list of partial [guild](/docs/resources/guild#guild-object) objects the current user is a member of.",
         "infos": [
@@ -1704,7 +1688,7 @@
     },
     "GetAPICurrentUserConnections": {
       "params": [],
-      "overrides": { "apiRoute": "userConnections", "splitKeyStart": 2 },
+      "overrides": { "apiRoute": "userConnections", "keyNameStart": 2 },
       "docs": {
         "description": "Returns a list of [connection](/docs/resources/user#connection-object) objects.",
         "infos": ["Requires the `connections` OAuth2 scope."],
@@ -1713,7 +1697,7 @@
     },
     "GetAPICurrentUserApplicationRoleConnection": {
       "params": ["url.applicationId: Snowflake = botEnv.DISCORD_APP_ID"],
-      "overrides": { "apiRoute": "userApplicationRoleConnection", "splitKeyStart": 3 },
+      "overrides": { "apiRoute": "userApplicationRoleConnection", "keyNameStart": 3 },
       "docs": {
         "description": "Returns the [application role connection](/docs/resources/user#application-role-connection-object) for the user.",
         "infos": ["Requires the `connections` OAuth2 scope."],
@@ -1731,7 +1715,7 @@
     },
     "GetAPIVoiceRegions": {
       "params": [],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns an array of [voice region](/docs/resources/voice#voice-region-object) objects that can be used when setting a voice or stage channel's [`rtc_region`](/docs/resources/channel#channel-object-channel-structure).",
         "see": "/docs/resources/voice#list-voice-regions"
@@ -1765,7 +1749,7 @@
     },
     "GetAPIChannelWebhooks": {
       "params": ["url.channelId"],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a list of channel [webhook](/docs/resources/webhook#webhook-object) objects.",
         "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
@@ -1774,7 +1758,7 @@
     },
     "GetAPIGuildWebhooks": {
       "params": ["url.guildId"],
-      "overrides": { "splitKeyStart": 0 },
+      "overrides": { "keyNameStart": 0 },
       "docs": {
         "description": "Returns a list of guild [webhook](/docs/resources/webhook#webhook-object) objects.",
         "infos": ["Requires the `MANAGE_WEBHOOKS` permission."],
