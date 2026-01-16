@@ -164,7 +164,6 @@ export interface BaseInteractionMethods {
     } & Q,
     $req?: CallConfig,
   ) => InteractionCallbackResponse<Q>;
-
   /**
    * For components, edit the message the component was attached to
    * @param data The new data for the component message
@@ -178,7 +177,6 @@ export interface BaseInteractionMethods {
         } & Q),
     $req?: CallConfig,
   ) => InteractionCallbackResponse<Q>;
-
   /**
    * For components, ACK an interaction and edit the original message later; the user does not see a loading state
    */
@@ -186,7 +184,6 @@ export interface BaseInteractionMethods {
     params?: Q,
     $req?: CallConfig,
   ) => InteractionCallbackResponse<Q>;
-
   /**
    * Edit the initial interaction response
    * @param data The new data for the response message

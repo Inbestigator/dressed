@@ -385,7 +385,8 @@
       "overrides": { "apiRoute": "threadMembers" },
       "flags": ["returnVoid"],
       "docs": {
-        "description": "Adds a member to a thread.\n * @param userId Member to add, defaults to self",
+        "description": "Adds a member to a thread.",
+        "params": { "userId": "Member to add, defaults to self" },
         "infos": ["Adding another member requires the ability to send messages in the thread."],
         "see": "/docs/resources/channel#add-thread-member"
       }
@@ -395,7 +396,8 @@
       "overrides": { "name": "removeThreadMember", "apiRoute": "threadMembers" },
       "flags": ["returnVoid"],
       "docs": {
-        "description": "Removes a member from a thread.\n * @param userId Member to remove, defaults to self",
+        "description": "Removes a member from a thread.",
+        "params": { "userId": "Member to remove, defaults to self" },
         "infos": [
           "Requires the ability to send messages in the thread.",
           "Removing another member also requires the thread is not archived."
@@ -844,7 +846,7 @@
         "imports": ["type RESTPatchAPICurrentGuildMemberJSONBody"]
       },
       "docs": {
-        "description": "Modify attributes of a [guild member](/docs/resources/guild#guild-member-object), defaults to self.",
+        "description": "Modify attributes of a [guild member](/docs/resources/guild#guild-member-object).",
         "see": "/docs/resources/guild#modify-guild-member"
       }
     },
@@ -1233,7 +1235,7 @@
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete a user's reaction, defaults to removing the current user's reaction for a message.",
-        "see": "/docs/resources/message#delete-reaction"
+        "see": "/docs/resources/message#delete-user-reaction"
       }
     },
     "GetAPIChannelMessageReactionUsers": {
@@ -1405,7 +1407,8 @@
         "keyNameStart": 2
       },
       "docs": {
-        "description": "Returns an array of [soundboard sound](/docs/resources/soundboard#soundboard-sound-object) objects that can be used by all users.\n * @param guildId Returns a list of the guild's soundboard sounds.",
+        "description": "Returns an array of [soundboard sound](/docs/resources/soundboard#soundboard-sound-object) objects that can be used by all users.",
+        "params": { "guildId": "Returns a list of the guild's soundboard sounds" },
         "infos": [
           "Includes `user` fields if the bot has the `CREATE_GUILD_EXPRESSIONS` or `MANAGE_GUILD_EXPRESSIONS` permission."
         ],
@@ -1701,11 +1704,13 @@
       }
     },
     "PatchAPIGuildVoiceStateCurrentMember": {
+      "TODO": "Refactor this in general, maybe have `@me | string & {}`",
       "params": ["url.guildId", "data", "url.userId?"],
       "overrides": { "apiRoute": "guildVoiceState", "name": "modifyVoiceState" },
       "flags": ["returnVoid"],
       "docs": {
-        "description": "Updates a user's voice state, defaults to self.\n * @param data.request_to_speak_timestamp Not usable for other users",
+        "description": "Updates a user's voice state, defaults to self.",
+        "params": { "data.request_to_speak_timestamp": "Not usable for other users" },
         "see": "/docs/resources/voice#modify-current-user-voice-state"
       }
     },
