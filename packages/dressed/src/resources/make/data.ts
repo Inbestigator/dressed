@@ -16,14 +16,14 @@ export default routes as Record<
       name?: string;
       paramsType?: string;
       returnType?: string;
-      splitKeyStart?: number;
+      keyNameStart?: number;
     };
     flags?: ("deprecated" | "form" | "hasFiles" | "hasStringableContent" | "returnVoid" | "singlefile")[];
     docs: { description: string; infos?: string[]; warns?: string[]; dangers?: string[]; see: string };
   }
 >;
 
-export function routeKeyToMethodName(method: string, key: string, splitKeyStart = 1) {
+export function routeKeyToMethodName(method: string, key: string, keyNameStart = 1) {
   const routeKey = key.slice(method.length).replace("API", "");
   const prefix = {
     Get: routeKey.endsWith("s") ? "list" : "get",
@@ -35,7 +35,7 @@ export function routeKeyToMethodName(method: string, key: string, splitKeyStart 
   const splitRoutes = routeKey.match(/[A-Z][a-z]+/g) ?? [];
   return (
     prefix +
-    (splitRoutes.length > 1 ? splitRoutes.slice(splitKeyStart) : splitRoutes)
+    (splitRoutes.length > 1 ? splitRoutes.slice(keyNameStart) : splitRoutes)
       .join("")
       .slice(0, routeKey.endsWith("s") && method !== "Get" ? -1 : undefined)
   );
