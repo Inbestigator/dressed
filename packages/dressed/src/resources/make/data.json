@@ -844,7 +844,7 @@
         "imports": ["type RESTPatchAPICurrentGuildMemberJSONBody"]
       },
       "docs": {
-        "description": "Modify attributes of a [guild member](/docs/resources/guild#guild-member-object), defaults to self.",
+        "description": "Modify attributes of a [guild member](/docs/resources/guild#guild-member-object).",
         "see": "/docs/resources/guild#modify-guild-member"
       }
     },
@@ -1233,7 +1233,7 @@
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete a user's reaction, defaults to removing the current user's reaction for a message.",
-        "see": "/docs/resources/message#delete-reaction"
+        "see": "/docs/resources/message#delete-user-reaction"
       }
     },
     "GetAPIChannelMessageReactionUsers": {
@@ -1701,6 +1701,7 @@
       }
     },
     "PatchAPIGuildVoiceStateCurrentMember": {
+      "TODO": "Refactor this in general, maybe have `@me | string & {}`",
       "params": ["url.guildId", "data", "url.userId?"],
       "overrides": { "apiRoute": "guildVoiceState", "name": "modifyVoiceState" },
       "flags": ["returnVoid"],
