@@ -149,7 +149,7 @@
       }
     },
     "PutAPIApplicationRoleConnectionMetadata": {
-      "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
       "overrides": { "name": "modifyAppRoleConnectionMetadata" },
       "docs": {
         "description": "Updates and returns a list of [application role connection metadata](/docs/resources/application-role-connection-metadata#application-role-connection-metadata-object) objects for the given application.",
@@ -1169,6 +1169,20 @@
         "see": "/docs/resources/invite#delete-invite"
       }
     },
+    "GetAPIInviteTargetUsers": {
+      "params": ["url.code: string"],
+      "docs": {
+        "description": "Gets the users allowed to see and accept this invite.",
+        "see": "/docs/resources/invite#get-target-users"
+      }
+    },
+    "PatchAPIInviteTargetUsers": {
+      "params": ["url.code: string", "params"],
+      "docs": {
+        "description": "Updates the users allowed to see and accept this invite.",
+        "see": "/docs/resources/invite#update-target-users"
+      }
+    },
     "GetAPIChannelMessages": {
       "params": ["url.channelId", "params?"],
       "docs": {
@@ -1219,7 +1233,7 @@
     },
     "PutAPIChannelMessageOwnReaction": {
       "params": ["url.channelId", "url.messageId", "url.emoji: string"],
-      "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)", "name": "createReaction" },
+      "overrides": { "name": "createReaction", "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Create a reaction for the message.",
