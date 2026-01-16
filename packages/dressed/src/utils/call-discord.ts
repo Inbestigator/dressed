@@ -39,7 +39,7 @@ function isBufferLike(value: unknown): value is Buffer | Uint8Array {
   return value instanceof ArrayBuffer || value instanceof Uint8Array || value instanceof Uint8ClampedArray;
 }
 
-function processFiles(files: RawFile[], body: BodyInit, flattenBodyInForm?: boolean) {
+function processFiles(files: RawFile[], body: BodyInit) {
   if (typeof body === "object" && body !== null) {
     if ("files" in body) delete body.files;
     if ("file" in body) delete body.file;
@@ -47,11 +47,7 @@ function processFiles(files: RawFile[], body: BodyInit, flattenBodyInForm?: bool
 
   const formData = new FormData();
 
-  if (body && flattenBodyInForm) {
-    for (const [key, value] of Object.entries(body)) {
-      formData.append(key, value);
-    }
-  } else if (body) {
+  if (body) {
     formData.append("payload_json", JSON.stringify(body));
   }
 
@@ -80,11 +76,10 @@ export async function callDiscord(
     params?: unknown;
     body?: unknown;
     files?: RawFile[];
-    flattenBodyInForm?: boolean;
   },
   $req: CallConfig = {},
 ): Promise<Response> {
-  const { params, files, flattenBodyInForm, ...options } = { ...init };
+  const { params, files, ...options } = { ...init };
   const reqsConfig = serverConfig.requests;
   const {
     authorization = reqsConfig?.authorization ?? `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
@@ -100,7 +95,7 @@ export async function callDiscord(
       url.searchParams.append(key, typeof value === "string" ? value : JSON.stringify(value));
     }
   }
-  if (files?.length) options.body = processFiles(files, options.body as BodyInit, flattenBodyInForm);
+  if (files?.length) options.body = processFiles(files, options.body as BodyInit);
   else if (options.body) options.body = JSON.stringify(options.body);
 
   const req = new Request(url, {

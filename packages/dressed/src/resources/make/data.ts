@@ -19,7 +19,14 @@ export default routes as Record<
       keyNameStart?: number;
     };
     flags?: ("deprecated" | "form" | "hasFiles" | "hasStringableContent" | "returnVoid" | "singlefile")[];
-    docs: { description: string; infos?: string[]; warns?: string[]; dangers?: string[]; see: string };
+    docs: {
+      description: string;
+      params?: Record<string, string>;
+      infos?: string[];
+      warns?: string[];
+      dangers?: string[];
+      see: string;
+    };
   }
 >;
 
