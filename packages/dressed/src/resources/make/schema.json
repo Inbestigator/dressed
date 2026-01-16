@@ -55,6 +55,7 @@
             "type": "object",
             "properties": {
               "description": { "type": "string" },
+              "params": { "type": "object", "additionalProperties": { "type": "string" } },
               "infos": { "type": "array", "items": { "type": "string" } },
               "warns": { "type": "array", "items": { "type": "string" } },
               "dangers": { "type": "array", "items": { "type": "string" } },

@@ -77,6 +77,7 @@ ${Object.entries(routeDefinitions)
       returnType ??= flags?.includes("returnVoid") ? "void" : `REST${key}Result`;
       const jsdocs = [
         ` * ${docs.description}`,
+        docs.params && Object.entries(docs.params).map(([k, v]) => ` * @param ${k} ${v}`),
         docs.infos?.map((i) => ` * @info ${i}`),
         docs.warns?.map((w) => ` * @warn ${w}`),
         docs.dangers?.map((d) => ` * @danger ${d}`),
