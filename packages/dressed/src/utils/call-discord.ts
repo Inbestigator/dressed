@@ -1,5 +1,6 @@
 import { Buffer } from "node:buffer";
 import { type RESTError, type RESTErrorData, RouteBases } from "discord-api-types/v10";
+import { filetypeinfo } from "magic-bytes.js";
 import type { RawFile } from "../types/file.ts";
 import { botEnv, serverConfig } from "./env.ts";
 import logger from "./log.ts";
@@ -34,6 +35,10 @@ export interface CallConfig {
   bucketTTL?: number;
 }
 
+function isBufferLike(value: unknown): value is Buffer | Uint8Array {
+  return value instanceof ArrayBuffer || value instanceof Uint8Array || value instanceof Uint8ClampedArray;
+}
+
 function processFiles(files: RawFile[], body: BodyInit, flattenBodyInForm?: boolean) {
   if (typeof body === "object" && body !== null) {
     if ("files" in body) delete body.files;
@@ -41,17 +46,6 @@ function processFiles(files: RawFile[], body: BodyInit, flattenBodyInForm?: bool
   }
 
   const formData = new FormData();
-
-  for (const [index, file] of files.entries()) {
-    const fileKey = file.key ?? `files[${index}]`;
-    formData.append(
-      fileKey,
-      new Blob([Buffer.isBuffer(file.data) ? Buffer.from(file.data) : file.data.toString()], {
-        type: file.contentType,
-      }),
-      file.name,
-    );
-  }
 
   if (body && flattenBodyInForm) {
     for (const [key, value] of Object.entries(body)) {
@@ -61,6 +55,21 @@ function processFiles(files: RawFile[], body: BodyInit, flattenBodyInForm?: bool
     formData.append("payload_json", JSON.stringify(body));
   }
 
+  for (const [index, file] of files.entries()) {
+    const key = file.key ?? `files[${index}]`;
+    if (isBufferLike(file.data)) {
+      const type = filetypeinfo(file.data)[0]?.mime ?? "application/octet-stream";
+      formData.append(
+        key,
+        new Blob([Buffer.from(file.data)], {
+          type: file.contentType ?? { "image/apng": "image/png" }[type] ?? type,
+        }),
+        file.name,
+      );
+    } else {
+      formData.append(key, new Blob([file.data.toString()], { type: file.contentType }), file.name);
+    }
+  }
   return formData;
 }
 
