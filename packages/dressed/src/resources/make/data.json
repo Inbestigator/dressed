@@ -149,7 +149,7 @@
       }
     },
     "PutAPIApplicationRoleConnectionMetadata": {
-      "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
       "overrides": { "name": "modifyAppRoleConnectionMetadata" },
       "docs": {
         "description": "Updates and returns a list of [application role connection metadata](/docs/resources/application-role-connection-metadata#application-role-connection-metadata-object) objects for the given application.",
@@ -1231,7 +1231,7 @@
     },
     "PutAPIChannelMessageOwnReaction": {
       "params": ["url.channelId", "url.messageId", "url.emoji: string"],
-      "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)", "name": "createReaction" },
+      "overrides": { "name": "createReaction", "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Create a reaction for the message.",
@@ -1239,8 +1239,7 @@
           "This endpoint requires the `READ_MESSAGE_HISTORY` permission to be present on the current user. Additionally, if nobody else has reacted to the message using this emoji, this endpoint requires the `ADD_REACTIONS` permission to be present on the current user."
         ],
         "see": "/docs/resources/message#create-reaction"
-      },
-      "TODO": "Remove 'name' and add keyNameStart: 3 to rename fn to `addReaction`"
+      }
     },
     "DeleteAPIChannelMessageUserReaction": {
       "params": ["url.channelId", "url.messageId", "url.emoji: string", "url.userId?"],
