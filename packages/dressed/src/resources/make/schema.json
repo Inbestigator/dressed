@@ -3,10 +3,9 @@
   "type": "object",
   "properties": {
     "routes": {
-      "type": "array",
-      "items": {
+      "type": "object",
+      "additionalProperties": {
         "properties": {
-          "key": { "type": "string" },
           "params": {
             "type": "array",
             "items": {
@@ -41,6 +40,7 @@
               "imports": { "type": "array", "items": { "type": "string" } },
               "messageKey": { "type": "string", "pattern": "^\\..+$" },
               "name": { "type": "string" },
+              "splitKeyStart": { "type": "number" },
               "paramsType": { "type": "string" },
               "returnType": { "type": "string" }
             },
@@ -62,11 +62,13 @@
             },
             "required": ["description", "see"],
             "additionalProperties": false
-          }
+          },
+          "TODO": { "type": "string" }
         },
-        "required": ["key", "params", "docs"],
+        "required": ["params", "docs"],
         "additionalProperties": false
       }
     }
-  }
+  },
+  "required": ["routes"]
 }

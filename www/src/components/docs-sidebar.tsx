@@ -16,7 +16,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
-import routeData from "@/../../packages/dressed/src/resources/make/data.json";
+import routeDefinitions from "@/../../packages/dressed/src/resources/make/data";
 import { NavMain } from "@/components/nav-main";
 import {
   Sidebar,
@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const files = new Set<string>();
-for (const { docs } of routeData.routes) {
+for (const { docs } of Object.values(routeDefinitions)) {
   const url = new URL(docs.see, "http://0");
   const segments = url.pathname.split("/").filter(Boolean);
   files.add(segments.pop() ?? "misc");

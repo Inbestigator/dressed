@@ -1,25 +1,6 @@
 import { writeFileSync } from "node:fs";
 import { $ } from "bun";
-import routeData from "./data.json";
-
-function routeKeyToMethodName(method: string, key: string) {
-  const routeKey = key.slice(method.length).replace("API", "");
-  const prefix = {
-    Get: routeKey.endsWith("s") ? "list" : "get",
-    Post: "create",
-    Put: "add",
-    Patch: "modify",
-    Delete: "delete",
-  }[method];
-
-  const splitRoutes = routeKey.match(/[A-Z][a-z]+/g) ?? [];
-  return (
-    prefix +
-    (splitRoutes.length > 1 ? splitRoutes.slice(1) : splitRoutes)
-      .join("")
-      .slice(0, routeKey.endsWith("s") && method !== "Get" ? -1 : undefined)
-  );
-}
+import routeDefinitions, { routeKeyToMethodName } from "./data";
 
 writeFileSync(
   "./src/resources/generated.resources.ts",
@@ -28,8 +9,8 @@ import {
   Routes,
   ${Array.from(
     new Set(
-      routeData.routes
-        .flatMap(({ key, params, flags, overrides }) => {
+      Object.entries(routeDefinitions)
+        .flatMap(([key, { params, flags, overrides }]) => {
           const defaultDataType = `REST${key}${flags?.includes("form") ? "FormData" : "JSON"}Body`;
           const defaultReturnType = `REST${key}Result`;
           const defaultParamsType = `REST${key}Query`;
@@ -58,25 +39,28 @@ import type { RawFile } from "../types/file.ts";
 import { callDiscord, type CallConfig } from "../utils/call-discord.ts";
 import { botEnv } from "../utils/env.ts";
 
-${routeData.routes
+${Object.entries(routeDefinitions)
   .map(
-    ({
-      docs,
+    ([
       key,
-      params,
-      flags,
-      overrides: {
-        apiRoute,
-        dataType,
-        dangerousExtraLogic,
-        name,
-        returnType,
-        messageKey,
-        fileKey,
-        generic,
-        paramsType,
-      } = {},
-    }) => {
+      {
+        docs,
+        params,
+        flags,
+        overrides: {
+          apiRoute,
+          dataType,
+          dangerousExtraLogic,
+          name,
+          splitKeyStart,
+          returnType,
+          messageKey,
+          fileKey,
+          generic,
+          paramsType,
+        } = {},
+      },
+    ]) => {
       const method = (key.match(/[A-Z][a-z]+/) ?? [])[0] ?? "";
       const routeKey = key.slice(method.length).replace("API", "");
 
@@ -89,7 +73,7 @@ ${routeData.routes
       dataType ??= `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}${flags?.includes("form") ? "FormData" : "JSON"}Body${flags?.includes("hasFiles") ? fileTypeLine : ""}`;
       paramsType ??= `REST${key}Query`;
       messageKey ??= "";
-      name ??= routeKeyToMethodName(method, key);
+      name ??= routeKeyToMethodName(method, key, splitKeyStart);
       returnType ??= flags?.includes("returnVoid") ? "void" : `REST${key}Result`;
       const jsdocs = [
         ` * ${docs.description}`,
