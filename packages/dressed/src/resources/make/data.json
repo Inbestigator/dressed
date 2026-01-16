@@ -242,17 +242,11 @@
     },
     "GetAPIChannel": {
       "params": ["url.channelId"],
-      "docs": {
-        "description": "Get a channel by ID.",
-        "see": "/docs/resources/channel#get-channel"
-      }
+      "docs": { "description": "Get a channel by ID.", "see": "/docs/resources/channel#get-channel" }
     },
     "PatchAPIChannel": {
       "params": ["url.channelId", "data"],
-      "docs": {
-        "description": "Update a channel's settings.",
-        "see": "/docs/resources/channel#modify-channel"
-      }
+      "docs": { "description": "Update a channel's settings.", "see": "/docs/resources/channel#modify-channel" }
     },
     "DeleteAPIChannel": {
       "params": ["url.channelId"],
@@ -549,10 +543,7 @@
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId"],
       "overrides": { "keyNameStart": 0 },
       "flags": ["returnVoid"],
-      "docs": {
-        "description": "Delete the given emoji.",
-        "see": "/docs/resources/emoji#delete-application-emoji"
-      }
+      "docs": { "description": "Delete the given emoji.", "see": "/docs/resources/emoji#delete-application-emoji" }
     },
     "GetAPIEntitlements": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "params?"],
@@ -563,10 +554,7 @@
     },
     "GetAPIEntitlement": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
-      "docs": {
-        "description": "Returns an entitlement.",
-        "see": "/docs/resources/entitlement#get-entitlement"
-      }
+      "docs": { "description": "Returns an entitlement.", "see": "/docs/resources/entitlement#get-entitlement" }
     },
     "PostAPIEntitlementConsume": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.entitlementId"],
@@ -1243,10 +1231,7 @@
     },
     "PutAPIChannelMessageOwnReaction": {
       "params": ["url.channelId", "url.messageId", "url.emoji: string"],
-      "overrides": {
-        "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)",
-        "name": "createReaction"
-      },
+      "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)", "name": "createReaction" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Create a reaction for the message.",
@@ -1254,7 +1239,8 @@
           "This endpoint requires the `READ_MESSAGE_HISTORY` permission to be present on the current user. Additionally, if nobody else has reacted to the message using this emoji, this endpoint requires the `ADD_REACTIONS` permission to be present on the current user."
         ],
         "see": "/docs/resources/message#create-reaction"
-      }
+      },
+      "TODO": "Remove 'name' and add keyNameStart: 3 to rename fn to `addReaction`"
     },
     "DeleteAPIChannelMessageUserReaction": {
       "params": ["url.channelId", "url.messageId", "url.emoji: string", "url.userId?"],
