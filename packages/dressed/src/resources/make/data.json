@@ -1176,11 +1176,18 @@
         "see": "/docs/resources/invite#get-target-users"
       }
     },
-    "PatchAPIInviteTargetUsers": {
-      "params": ["url.code: string", "params"],
+    "PutAPIInviteTargetUsers": {
+      "params": ["url.code: string", "data"],
       "docs": {
         "description": "Updates the users allowed to see and accept this invite.",
         "see": "/docs/resources/invite#update-target-users"
+      }
+    },
+    "GetAPIInviteTargetUsersJobStatus": {
+      "params": ["url.code: string"],
+      "docs": {
+        "description": "Processing target users from a CSV when creating or updating an invite is done asynchronously. This endpoint allows you to check the status of that job.",
+        "see": "/docs/resources/invite#get-target-users-job-status"
       }
     },
     "GetAPIChannelMessages": {
