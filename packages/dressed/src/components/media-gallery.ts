@@ -23,17 +23,10 @@ export function MediaGallery(
 ): APIMediaGalleryComponent {
   if (Array.isArray(args[0]) && args.length === 2) {
     const [items, config] = args as [APIMediaGalleryItem[], Omit<APIMediaGalleryComponent, "items" | "type">];
-    return {
-      ...config,
-      items,
-      type: ComponentType.MediaGallery,
-    };
+    return { ...config, items, type: ComponentType.MediaGallery };
   } else {
     const items = args as APIMediaGalleryItem[];
-    return {
-      items,
-      type: ComponentType.MediaGallery,
-    };
+    return { items, type: ComponentType.MediaGallery };
   }
 }
 

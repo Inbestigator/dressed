@@ -6,8 +6,5 @@ import { type APIFileUploadComponent, ComponentType } from "discord-api-types/v1
  * Component for uploading files
  */
 export function FileUpload(config: Omit<APIFileUploadComponent, "type">): APIFileUploadComponent {
-  return {
-    ...config,
-    type: ComponentType.FileUpload,
-  };
+  return { ...config, type: ComponentType.FileUpload };
 }

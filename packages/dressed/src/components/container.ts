@@ -25,16 +25,9 @@ export function Container(
       APIComponentInContainer[],
       Omit<APIContainerComponent, "components" | "type">,
     ];
-    return {
-      ...config,
-      components,
-      type: ComponentType.Container,
-    };
+    return { ...config, components, type: ComponentType.Container };
   } else {
     const components = args as APIComponentInContainer[];
-    return {
-      components,
-      type: ComponentType.Container,
-    };
+    return { components, type: ComponentType.Container };
   }
 }

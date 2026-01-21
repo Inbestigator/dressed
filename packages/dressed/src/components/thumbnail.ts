@@ -14,9 +14,5 @@ export function Thumbnail(
   media: APIThumbnailComponent["media"] | string,
   config?: Omit<APIThumbnailComponent, "media" | "type">,
 ): APIThumbnailComponent {
-  return {
-    ...config,
-    media: typeof media === "string" ? { url: media } : media,
-    type: ComponentType.Thumbnail,
-  };
+  return { ...config, media: typeof media === "string" ? { url: media } : media, type: ComponentType.Thumbnail };
 }

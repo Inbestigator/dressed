@@ -31,9 +31,5 @@ export function Button(
   else if ("sku_id" in config) style = "Premium";
   else if ("url" in config) style = "Link";
 
-  return {
-    ...config,
-    style: ButtonStyle[style],
-    type: ComponentType.Button,
-  };
+  return { ...config, style: ButtonStyle[style], type: ComponentType.Button };
 }

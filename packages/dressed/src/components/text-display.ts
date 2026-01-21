@@ -14,9 +14,5 @@ export function TextDisplay(
   content: string,
   config?: Omit<APITextDisplayComponent, "content" | "type">,
 ): APITextDisplayComponent {
-  return {
-    ...config,
-    content,
-    type: ComponentType.TextDisplay,
-  };
+  return { ...config, content, type: ComponentType.TextDisplay };
 }

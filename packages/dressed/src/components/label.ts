@@ -15,11 +15,5 @@ export function Label(
   description?: string,
   config?: Omit<APILabelComponent, "label" | "component" | "description" | "type">,
 ): APILabelComponent {
-  return {
-    ...config,
-    label,
-    description,
-    component,
-    type: ComponentType.Label,
-  };
+  return { ...config, label, description, component, type: ComponentType.Label };
 }

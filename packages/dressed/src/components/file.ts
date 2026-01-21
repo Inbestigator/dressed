@@ -14,9 +14,5 @@ export function File(
   file: APIFileComponent["file"] | string,
   config?: Omit<APIFileComponent, "file" | "type">,
 ): APIFileComponent {
-  return {
-    ...config,
-    file: typeof file === "string" ? { url: file } : file,
-    type: ComponentType.File,
-  };
+  return { ...config, file: typeof file === "string" ? { url: file } : file, type: ComponentType.File };
 }
