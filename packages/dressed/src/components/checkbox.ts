@@ -12,6 +12,12 @@ import {
  */
 export function Checkbox(config: Omit<APICheckboxComponent, "type">): APICheckboxComponent;
 
+/**
+ * Creates an option to be used in a checkbox group
+ *
+ * @param label The user-facing name of the option (max 100 chars)
+ * @param value The dev-defined value of the option (max 100 chars)
+ */
 export function Checkbox(
   label: string,
   value: string,
