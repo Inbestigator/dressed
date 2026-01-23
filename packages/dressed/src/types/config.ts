@@ -33,10 +33,10 @@ export interface ServerConfig {
      */
     root?: string;
     /**
-     * File extensions to include when bundling handlers
-     * @default ["js", "ts", "mjs"]
+     * Glob patterns for handler files
+     * @default ["**\/*.{js,ts,mjs}"]
      */
-    extensions?: string[];
+    files?: string[];
   };
   /**
    * A layer before your individual handlers are executed.
