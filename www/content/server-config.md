@@ -15,7 +15,7 @@ import type { ServerConfig } from "dressed/server";
 export default {
   endpoint: "/bot",
   port: 3000,
-  build: { extensions: ["tsx", "ts"], root: "src/bot" },
+  build: { files: ["**/*.{ts,tsx}"], root: "src/bot" },
   middleware: {
     commands: (i) => [patchInteraction(i)],
     components: (i, a) => [patchInteraction(i), a],
@@ -37,9 +37,9 @@ The port to listen on, the default for this is `8000`.
 
 This is the source root that the server uses when assembling files, the default is `src`.
 
-### Build extensions
+### Build files
 
-The file extensions are used when bundling handlers and determine which files to include, by default it is `["js", "ts", "mjs"]`.
+Glob patterns used when bundling handlers to determine which files to include, by default it is `["**/*.{js,ts,mjs}"]`. Negation patterns can be used to exclude files, e.g. `"!**/*.test.ts"`.
 
 ### Middleware
 
