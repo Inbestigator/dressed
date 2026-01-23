@@ -49,7 +49,9 @@ export async function crawlDir(root: string, dir: string, patterns = ["**/*.{js,
     return [];
   }
 
-  const entries = await glob(patterns, { cwd: dirPath });
+  const ignore = patterns.filter((p) => p.startsWith("!")).map((p) => p.slice(1));
+  const include = patterns.filter((p) => !p.startsWith("!"));
+  const entries = await glob(include, { cwd: dirPath, ignore });
   return entries.map((e) => {
     const path = relative(cwd(), join(dirPath, e));
     return {
