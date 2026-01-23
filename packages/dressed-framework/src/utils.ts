@@ -1,9 +1,9 @@
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
-import { readdir } from "node:fs/promises";
 import { basename, extname, join, relative, resolve } from "node:path";
 import { cwd } from "node:process";
 import { logger } from "dressed/utils";
+import glob from "fast-glob";
 import type { WalkEntry } from "./types/walk.ts";
 
 const hash = (v: string) => createHash("sha1").update(v).digest("hex");
@@ -43,7 +43,7 @@ export function override<T>(a: Partial<T>, b: Partial<T>) {
   return result;
 }
 
-export async function crawlDir(root: string, dir: string, extensions = ["js", "ts", "mjs"]): Promise<WalkEntry[]> {
+export async function crawlDir(root: string, dir: string, patterns = ["**/*.{js,ts,mjs}"]): Promise<WalkEntry[]> {
   const dirPath = resolve(root, dir);
 
   if (!existsSync(dirPath)) {
@@ -51,11 +51,9 @@ export async function crawlDir(root: string, dir: string, extensions = ["js", "t
     return [];
   }
 
-  const entries = await readdir(dirPath, { recursive: true });
-  return entries
-    .filter((e) => extensions.includes(extname(e).slice(1)))
-    .map((e) => {
-      const path = relative(cwd(), join(dirPath, e));
-      return { name: basename(path, extname(path)), path };
-    });
+  const entries = await glob(patterns, { cwd: dirPath });
+  return entries.map((e) => {
+    const path = relative(cwd(), join(dirPath, e));
+    return { name: basename(path, extname(path)), path };
+  });
 }

@@ -24,10 +24,7 @@ program
     return parsed;
   })
   .option("-R, --root <root>", "Source root for the bot, defaults to `src`")
-  .option(
-    "-E, --extensions <extensions>",
-    "Comma separated list of file extensions to include when bundling handlers, defaults to `js, ts, mjs`",
-  )
+  .option("-f, --files <patterns...>", "Glob patterns for handler files, defaults to `**/*.{js,ts,mjs}`")
   .action(
     async ({
       instance,
@@ -35,19 +32,19 @@ program
       endpoint,
       port,
       root,
-      extensions,
+      files,
     }: {
       instance?: boolean;
       register?: boolean;
       endpoint?: string;
       port?: number;
       root?: string;
-      extensions?: string;
+      files?: string[];
     }) => {
       const { commands, components, events, configPath } = await build({
         endpoint,
         port,
-        build: { root, extensions: extensions?.split(",").map((e: string) => e.trim()) },
+        build: { root, files },
       });
       const categories = [commands, components, events];
 
@@ -84,4 +81,5 @@ ${instance ? "createServer(commands, components, events);" : ""}`.trim();
       exit();
     },
   );
+
 program.parse();
