@@ -24,6 +24,12 @@ export interface FieldValueGetters {
   channelSelect: () => APIInteractionDataResolvedChannel[];
   /** Return the file upload's values as an array of attachments - Component type must be a select with type `FileUpload` */
   fileUpload: () => APIAttachment[];
+  /** Return the radio group's selection value as a string - Component type must be a radio group */
+  radioGroup: () => string;
+  /** Return the checkbox group's selection values as an array of strings - Component type must be a checkbox group */
+  checkboxGroup: () => string[];
+  /** Return the checkbox's value as a boolean - Component type must be a checkbox */
+  checkbox: () => boolean;
 }
 
 const blurbs = {
@@ -34,6 +40,9 @@ const blurbs = {
   7: "a mentionable select",
   8: "a channel select",
   19: "a file upload",
+  21: "a radio group",
+  22: "a checkbox group",
+  23: "a checkbox",
 };
 
 export function getField<R extends boolean>(
@@ -52,7 +61,11 @@ export function getField<R extends boolean>(
     if (component.type !== type) {
       throw new Error(`The field ${custom_id} is ${blurbs[component.type]}, not ${blurbs[type]}`);
     }
-    if (component.type === ComponentType.TextInput) {
+    if (
+      component.type === ComponentType.TextInput ||
+      component.type === ComponentType.RadioGroup ||
+      component.type === ComponentType.Checkbox
+    ) {
       return component.value;
     } else {
       if (resolvedKey) {

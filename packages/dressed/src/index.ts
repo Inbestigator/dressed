@@ -1,12 +1,14 @@
 // Components
 export * from "./components/action-row.ts";
 export * from "./components/button.ts";
+export * from "./components/checkbox.ts";
 export * from "./components/command-option.ts";
 export * from "./components/container.ts";
 export * from "./components/file.ts";
 export * from "./components/file-upload.ts";
 export * from "./components/label.ts";
 export * from "./components/media-gallery.ts";
+export * from "./components/radio-group.ts";
 export * from "./components/section.ts";
 export * from "./components/select-menu.ts";
 export * from "./components/separator.ts";
