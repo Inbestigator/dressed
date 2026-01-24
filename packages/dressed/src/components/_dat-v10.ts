@@ -1,3 +1,4 @@
+// TODO remove this file
 import "discord-api-types/v10";
 
 declare module "discord-api-types/v10" {
