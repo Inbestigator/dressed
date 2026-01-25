@@ -15,7 +15,7 @@
     "dotenv": "^17.2.3",
     "enquirer": "^2.4.1",
     "esbuild": "^0.27.2",
-    "magic-bytes.js": "^1.12.1"
+    "magic-bytes.js": "^1.13.0"
   },
   "exports": {
     ".": "./dist/index.js",
