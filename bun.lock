@@ -13,7 +13,7 @@
     },
     "packages/dressed": {
       "name": "dressed",
-      "version": "1.10.2-rc.2",
+      "version": "2.0.0-canary.1",
       "dependencies": {
         "discord-api-types": "^0.38.37",
         "dotenv": "^17.2.3",
@@ -22,6 +22,7 @@
     },
     "packages/dressed-framework": {
       "name": "@dressed/framework",
+      "version": "0.1.0",
       "bin": {
         "dressed": "dist/bin/dressed.js",
       },
@@ -29,7 +30,7 @@
         "@dressed/matcher": "^1.4.0",
         "commander": "^14.0.2",
         "discord-api-types": "^0.38.37",
-        "dressed": "^1.10.2-rc.2",
+        "dressed": "^2.0.0-canary.1",
         "enquirer": "^2.4.1",
         "esbuild": "^0.27.2",
       },
