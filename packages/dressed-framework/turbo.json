@@ -3,11 +3,11 @@
   "extends": ["//"],
   "tasks": {
     "dist": {
-      "dependsOn": ["dressed#dist"],
+      "dependsOn": ["dressed#dist", "@dressed/matcher#dist"],
       "outputs": ["dist/**"]
     },
     "check-types": {
-      "dependsOn": ["dressed#dist"]
+      "dependsOn": ["dressed#dist", "@dressed/matcher#dist"]
     }
   }
 }
