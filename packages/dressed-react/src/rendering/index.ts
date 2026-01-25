@@ -16,7 +16,6 @@ export function render(children: ReactNode, callback: RendererCallback) {
     () => {},
     () => {},
     () => {},
-    null,
   );
 
   if (container !== null) reconciler.updateContainer(children, container);
