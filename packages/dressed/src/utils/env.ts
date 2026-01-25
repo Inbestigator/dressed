@@ -1,5 +1,5 @@
 import { env } from "node:process";
-import type { ServerConfig } from "../server/index.ts";
+import type { ServerConfig } from "../types/config.ts";
 import { loadEnvConfig } from "./dotenv.ts";
 
 interface BotEnvs {
@@ -10,9 +10,8 @@ interface BotEnvs {
 
 loadEnvConfig();
 
-// @ts-expect-error Compatability with 1.10.0
-// TODO Remove globalThis.DRESSED_CONFIG before next major version
-export const serverConfig: ServerConfig = globalThis.DRESSED_CONFIG ?? {};
+/** Configuration for all API requests */
+export const serverConfig: ServerConfig = {};
 
 export const botEnv: BotEnvs = new Proxy({} as BotEnvs, {
   get(_, key: keyof BotEnvs) {

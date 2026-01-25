@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 
+import { randomUUID } from "node:crypto";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { cwd, exit } from "node:process";
 import { Command, InvalidArgumentError } from "commander";
 import { parse } from "dotenv";
+import { logger } from "dressed/utils";
 import Enquirer from "enquirer";
-import build from "../server/build/build.ts";
-import bundleFiles from "../server/build/bundle.ts";
-import { categoryExports, importFileString, normalizeImportPath } from "../utils/build.ts";
-import logger from "../utils/log.ts";
+import build from "../build/build.ts";
+import bundleFiles from "../build/bundle.ts";
+import { categoryExports, importFileString, normalizeImportPath } from "../utils.ts";
 
 const program = new Command().name("dressed").description("A sleek, serverless-ready Discord bot framework.");
 
@@ -52,7 +53,7 @@ program
         port,
         build: { root, extensions: extensions?.split(",").map((e: string) => e.trim()) },
       });
-      const categories = [commands, components, events];
+      const categories = [commands, components, events].map((c) => c.map((f) => ({ ...f, path: randomUUID() })));
 
       const outputContent = `
 ${
@@ -65,11 +66,11 @@ import config from "${configPath ? normalizeImportPath(configPath) : "./dressed.
 Object.assign(serverConfig, config);
 ${[categories.map((c) => c.map(importFileString)), categoryExports(categories)].flat(2).join("")}
 export { config };
-${register ? "installCommands(commands);" : ""}
+${register ? "registerCommands(commands.map((c) => ({ ...c.exports.config, name: c.name })));" : ""}
 ${instance ? "createServer(commands, components, events);" : ""}`.trim();
       const jsContent = 'export * from "./index.mjs";';
       const typeContent =
-        'import type { CommandData, ComponentData, EventData, ServerConfig } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
+        'import type { CommandData, ComponentData, EventData, ServerConfig } from "@dressed/framework";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
 
       writeFileSync(".dressed/tmp/index.ts", outputContent);
       await bundleFiles(".dressed/tmp/index.ts", ".dressed");

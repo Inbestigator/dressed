@@ -16,9 +16,7 @@ export const setupEvents: ReturnType<typeof createHandlerSetup<EventData, APIWeb
     }),
     findItem(event, items) {
       const item = items.find((i) => i.data.type === event.type);
-      if (!item) {
-        return;
-      }
+      if (!item) return;
       return [item, [event.data]];
     },
   });

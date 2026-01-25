@@ -1,10 +1,10 @@
 import { appendFileSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, extname, resolve } from "node:path";
-import { getApp } from "../../resources/generated.resources.ts";
-import type { CommandData, ComponentData, EventData, ServerConfig } from "../../types/config.ts";
-import { categoryExports, crawlDir, importFileString, override } from "../../utils/build.ts";
-import { botEnv, serverConfig } from "../../utils/env.ts";
-import logger from "../../utils/log.ts";
+import { getApp } from "dressed";
+import type { CommandData, ComponentData, EventData } from "dressed/server";
+import { botEnv, logger, serverConfig } from "dressed/utils";
+import type { ServerConfig } from "../types/config.ts";
+import { categoryExports, crawlDir, importFileString, override } from "../utils.ts";
 import bundleFiles from "./bundle.ts";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";

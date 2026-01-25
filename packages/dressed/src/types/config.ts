@@ -9,7 +9,7 @@ import type {
 } from "discord-api-types/v10";
 import type { CallConfig } from "../utils/call-discord.ts";
 import type { CommandHandler, ComponentHandler, EventHandler } from "./handlers.ts";
-import type { AnyFn, Promisable } from "./utilities.ts";
+import type { Promisable } from "./utilities.ts";
 
 /**
  * The configuration for the server.
@@ -118,25 +118,15 @@ export type CommandConfig = ChatInputConfig | ContextMenuConfig | PrimaryEntryPo
 
 export interface BaseData<T, M extends object = object> {
   name: string;
-  path: string;
-  uid: string;
   data: T;
-  /** @deprecated Use the `default` key in `exports` instead */
-  run?: AnyFn; // TODO Remove before next major release
-  exports: M & { default: AnyFn };
+  exports: M & { default: CallableFunction };
 }
 
-/**
- * Command data object in the `commands` array outputted from `build()`
- */
-export type CommandData = BaseData<{ config?: CommandConfig }, { autocomplete?: AnyFn; config?: CommandConfig }>;
+/** A standard command data object */
+export type CommandData = BaseData<undefined, { autocomplete?: CallableFunction; config?: CommandConfig }>;
 
-/**
- * Component data object in the `components` array outputted from `build()`
- */
+/** A standard component data object */
 export type ComponentData = BaseData<{ regex: string; category: string; score: number }, { pattern?: string | RegExp }>;
 
-/**
- * Event data object in the `events` array outputted from `build()`
- */
+/** A standard event data object */
 export type EventData = BaseData<{ type: string }>;

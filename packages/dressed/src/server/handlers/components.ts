@@ -35,11 +35,7 @@ export const setupComponents: ReturnType<
       interaction.data.custom_id,
       categoryItems.map((c) => new RegExp(c.data.regex)),
     );
-
-    if (index === -1 || !match) {
-      return;
-    }
-
+    if (index === -1 || !match) return;
     const item = categoryItems[index];
     const { groups: args = {} } = match;
     return [item, [interaction, args]];

@@ -10,7 +10,6 @@ import {
 } from "discord-api-types/v10";
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../types/config.ts";
 import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
-import { override } from "../utils/build.ts";
 import { serverConfig } from "../utils/env.ts";
 import logger from "../utils/log.ts";
 import { createInteraction } from "./extenders/interaction.ts";
@@ -174,4 +173,23 @@ export async function handleEvent(
       return 404;
     }
   }
+}
+
+/** Deep merges two objects, producing a new object where values from `b` override those from `a`. */
+function override<T>(a: Partial<T>, b: Partial<T>) {
+  const result = { ...a };
+
+  for (const key in b) {
+    const k = key as keyof T;
+    const bv = b[k];
+    const av = a[k];
+
+    if (bv !== undefined && typeof bv === "object" && bv !== null && !Array.isArray(bv)) {
+      result[k] = override(av ?? {}, bv) as T[typeof k];
+    } else if (bv !== undefined) {
+      result[k] = bv as T[typeof k];
+    }
+  }
+
+  return result;
 }

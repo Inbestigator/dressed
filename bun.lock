@@ -14,6 +14,14 @@
     "packages/dressed": {
       "name": "dressed",
       "version": "1.10.2-rc.2",
+      "dependencies": {
+        "discord-api-types": "^0.38.37",
+        "dotenv": "^17.2.3",
+        "magic-bytes.js": "^1.12.1",
+      },
+    },
+    "packages/dressed-framework": {
+      "name": "@dressed/framework",
       "bin": {
         "dressed": "dist/bin/dressed.js",
       },
@@ -21,10 +29,9 @@
         "@dressed/matcher": "^1.4.0",
         "commander": "^14.0.2",
         "discord-api-types": "^0.38.37",
-        "dotenv": "^17.2.3",
+        "dressed": "^1.10.2-rc.2",
         "enquirer": "^2.4.1",
         "esbuild": "^0.27.2",
-        "magic-bytes.js": "^1.12.1",
       },
     },
     "packages/dressed-matcher": {
@@ -114,6 +121,8 @@
     "@biomejs/cli-win32-arm64": ["@biomejs/cli-win32-arm64@2.3.11", "", { "os": "win32", "cpu": "arm64" }, "sha512-PZQ6ElCOnkYapSsysiTy0+fYX+agXPlWugh6+eQ6uPKI3vKAqNp6TnMhoM3oY2NltSB89hz59o8xIfOdyhi9Iw=="],
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.3.11", "", { "os": "win32", "cpu": "x64" }, "sha512-43VrG813EW+b5+YbDbz31uUsheX+qFKCpXeY9kfdAx+ww3naKxeVkTD9zLIWxUPfJquANMHrmW3wbe/037G0Qg=="],
+
+    "@dressed/framework": ["@dressed/framework@workspace:packages/dressed-framework"],
 
     "@dressed/matcher": ["@dressed/matcher@workspace:packages/dressed-matcher"],
 

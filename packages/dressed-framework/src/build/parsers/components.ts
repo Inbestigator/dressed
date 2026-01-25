@@ -1,7 +1,7 @@
 import { sep } from "node:path";
 import { patternToRegex, scorePattern } from "@dressed/matcher";
-import type { ComponentData } from "../../../types/config.ts";
-import { warnSymbol } from "../../../utils/log.ts";
+import type { ComponentData } from "dressed/server";
+import { logger } from "dressed/utils";
 import { createHandlerParser } from "./index.ts";
 
 const validComponentCategories = new Set(["buttons", "modals", "selects"]);
@@ -20,7 +20,7 @@ export const parseComponents: ReturnType<typeof createHandlerParser<ComponentDat
     const category = getCategory(path);
 
     if (!category)
-      throw new Error(`${warnSymbol} Category for "${name}" could not be determined, skipping`, {
+      throw new Error(`${logger.symbols.warn} Category for "${name}" could not be determined, skipping`, {
         cause: "dressed-parsing",
       });
 

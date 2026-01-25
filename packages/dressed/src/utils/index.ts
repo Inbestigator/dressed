@@ -7,4 +7,4 @@
 export * from "./call-discord.ts";
 // Utils
 export * from "./env.ts";
-export * from "./snowflakes.ts";
+export { default as logger } from "./log.ts";
