@@ -30,9 +30,9 @@
   ],
   "homepage": "https://dressed.js.org",
   "keywords": [
-    "bot",
+    "framework",
     "serverless",
-    "discord",
+    "dressed",
     "discord-bot"
   ],
   "license": "MIT",
