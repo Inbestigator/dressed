@@ -10,6 +10,7 @@ exports[`Build bot 1`] = `
         "default": [native code],
       },
       "name": "ping",
+      "path": "tests/src/commands/ping.ts",
     },
   ],
   "components": [
@@ -24,6 +25,7 @@ exports[`Build bot 1`] = `
         "pattern": [native code],
       },
       "name": "button",
+      "path": "tests/src/components/buttons/button.ts",
     },
   ],
   "config": {
@@ -41,6 +43,7 @@ exports[`Build bot 1`] = `
         "default": [native code],
       },
       "name": "ApplicationAuthorized",
+      "path": "tests/src/events/ApplicationAuthorized.ts",
     },
   ],
 }

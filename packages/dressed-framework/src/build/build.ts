@@ -1,7 +1,6 @@
 import { appendFileSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, extname, resolve } from "node:path";
 import { getApp } from "dressed";
-import type { CommandData, ComponentData, EventData } from "dressed/server";
 import { botEnv, logger, serverConfig } from "dressed/utils";
 import type { ServerConfig } from "../types/config.ts";
 import { categoryExports, crawlDir, importFileString, override } from "../utils.ts";
@@ -17,9 +16,9 @@ export default async function build(
   config: ServerConfig = {},
   { bundle = bundleFiles }: { bundle?: typeof bundleFiles } = {},
 ): Promise<{
-  commands: CommandData[];
-  components: ComponentData[];
-  events: EventData[];
+  commands: ReturnType<typeof parseCommands>;
+  components: ReturnType<typeof parseComponents>;
+  events: ReturnType<typeof parseEvents>;
   config: ServerConfig;
   configPath?: string;
 }> {

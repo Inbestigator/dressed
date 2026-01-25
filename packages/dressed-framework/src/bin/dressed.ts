@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import { randomUUID } from "node:crypto";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { cwd, exit } from "node:process";
@@ -53,12 +52,12 @@ program
         port,
         build: { root, extensions: extensions?.split(",").map((e: string) => e.trim()) },
       });
-      const categories = [commands, components, events].map((c) => c.map((f) => ({ ...f, path: randomUUID() })));
+      const categories = [commands, components, events];
 
       const outputContent = `
 ${
   instance || register
-    ? `import { ${[instance && "createServer", register && "installCommands"].filter(Boolean)} } from "dressed/server";`
+    ? `import { ${[instance && "createServer", register && "registerCommands"].filter(Boolean)} } from "dressed/server";`
     : ""
 }
 import { serverConfig } from "dressed/utils";
@@ -66,7 +65,7 @@ import config from "${configPath ? normalizeImportPath(configPath) : "./dressed.
 Object.assign(serverConfig, config);
 ${[categories.map((c) => c.map(importFileString)), categoryExports(categories)].flat(2).join("")}
 export { config };
-${register ? "registerCommands(commands.map((c) => ({ ...c.exports.config, name: c.name })));" : ""}
+${register ? "registerCommands(commands);" : ""}
 ${instance ? "createServer(commands, components, events);" : ""}`.trim();
       const jsContent = 'export * from "./index.mjs";';
       const typeContent =

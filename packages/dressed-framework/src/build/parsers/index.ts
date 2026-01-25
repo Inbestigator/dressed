@@ -10,18 +10,19 @@ interface ParserItemMessages {
 }
 
 type ImportedEntry<T extends BaseData<unknown>> = WalkEntry & { exports: T["exports"] };
+type EntriesAnd<T> = (WalkEntry & T)[];
 
 export function createHandlerParser<T extends BaseData<Record<keyof T["data"], unknown> | undefined>>(options: {
   colNames: string[];
   uniqueKeys?: (keyof T["data"])[];
   itemMessages: ((file: ImportedEntry<T>) => ParserItemMessages) | ParserItemMessages;
   createData: (file: ImportedEntry<T>, tree: ReturnType<typeof logTree>) => T["data"];
-  postMortem?: (items: T[]) => T[];
-}): (files: ImportedEntry<T>[], base?: string) => T[] {
+  postMortem?: (items: EntriesAnd<T>) => EntriesAnd<T>;
+}): (files: ImportedEntry<T>[], base?: string) => EntriesAnd<T> {
   return (files, base) => {
     if (files.length === 0) return [];
     const tree = logTree(...options.colNames);
-    let items: T[] = [];
+    let items: EntriesAnd<T> = [];
 
     for (const [i, file] of Object.entries(files)) {
       let data: T["data"];
@@ -64,7 +65,7 @@ export function createHandlerParser<T extends BaseData<Record<keyof T["data"], u
         tree.chop();
         continue;
       }
-      items.push({ name: file.name, data, exports: file.exports } as T);
+      items.push({ ...file, data } as EntriesAnd<T>[number]);
     }
 
     if (options.postMortem) items = options.postMortem(items);
