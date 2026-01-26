@@ -57,16 +57,16 @@ ${
     ? `import { ${[instance && "createServer", register && "registerCommands"].filter(Boolean)} } from "dressed/server";`
     : ""
 }
-import { serverConfig } from "dressed/utils";
+import { config as dressedConfig } from "dressed/utils";
 import config from "${configPath ? normalizeImportPath(configPath) : "./dressed.config.mjs"}";
-Object.assign(serverConfig, config);
+Object.assign(dressedConfig, config);
 ${[categories.map((c) => c.map(importFileString)), categoryExports(categories)].flat(2).join("")}
 export { config };
 ${register ? "registerCommands(commands);" : ""}
 ${instance ? "createServer(commands, components, events);" : ""}`.trim();
       const jsContent = 'export * from "./index.mjs";';
       const typeContent =
-        'import type { ServerConfig } from "@dressed/framework";import type { CommandData, ComponentData, EventData } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: ServerConfig;';
+        'import type { DressedConfig } from "@dressed/framework";import type { CommandData, ComponentData, EventData } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: DressedConfig;';
 
       writeFileSync(".dressed/tmp/index.ts", outputContent);
       await bundleFiles(".dressed/tmp/index.ts", ".dressed");

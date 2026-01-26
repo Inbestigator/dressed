@@ -33,7 +33,7 @@ export default function Home() {
         </Button>
         <div className="flex items-center">
           <Button title="NPM package" className="rounded-r-none border-r-0" variant="outline" size="lg" asChild>
-            <Link href="https://www.npmjs.com/package/dressed" target="_blank" rel="noreferrer">
+            <Link href="https://npmjs.com/dressed" target="_blank" rel="noreferrer">
               <NPMLogo className="size-8" />
             </Link>
           </Button>

@@ -1,10 +1,10 @@
-import type { BaseData, ServerConfig } from "../../types/config.ts";
+import type { BaseData, DressedConfig } from "../../types/config.ts";
 import type { Promisable } from "../../types/utilities.ts";
 import logger from "../../utils/log.ts";
 
 interface SetupItemMessages<T, P> {
   noItem: string;
-  middlewareKey: keyof NonNullable<ServerConfig["middleware"]>;
+  middlewareKey: keyof NonNullable<DressedConfig["middleware"]>;
   pending: (data: T, props: P) => string;
 }
 

@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { env } from "node:process";
-import { botEnv, serverConfig } from "dressed/utils";
+import { botEnv, config } from "dressed/utils";
 
 test("Environment variables", () => {
   expect(() => botEnv.DISCORD_APP_ID).toThrow();
@@ -9,7 +9,7 @@ test("Environment variables", () => {
 
   expect(botEnv.DISCORD_APP_ID).toMatchSnapshot();
 
-  serverConfig.requests = { env: { DISCORD_APP_ID: "overriden_app_id" } };
+  config.requests = { env: { DISCORD_APP_ID: "overriden_app_id" } };
 
   expect(botEnv.DISCORD_APP_ID).toMatchSnapshot();
 });

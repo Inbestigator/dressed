@@ -1,9 +1,7 @@
-import type { ServerConfig as CoreServerConfig } from "dressed/server";
+import type { DressedConfig as CoreDressedConfig } from "dressed/server";
 
-/**
- * The configuration for the server.
- */
-export interface ServerConfig extends CoreServerConfig {
+/** Configuration for various Dressed services. */
+export interface DressedConfig extends CoreDressedConfig {
   /** Build configuration */
   build?: {
     /**

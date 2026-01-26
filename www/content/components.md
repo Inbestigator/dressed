@@ -104,4 +104,4 @@ Will handle either `ticket` (no `action` argument) or `ticket-open`/`ticket-clos
 
 ### Learn More
 
-This behavior is powered by [@dressed/matcher](https://www.npmjs.com/package/@dressed/matcher).
+This behavior is powered by [@dressed/matcher](https://npmjs.com/@dressed/matcher).

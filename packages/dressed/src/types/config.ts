@@ -11,10 +11,8 @@ import type { CallConfig } from "../utils/call-discord.ts";
 import type { CommandHandler, ComponentHandler, EventHandler } from "./handlers.ts";
 import type { Promisable } from "./utilities.ts";
 
-/**
- * The configuration for the server.
- */
-export interface ServerConfig {
+/** Configuration for various Dressed services. */
+export interface DressedConfig {
   /**
    * The endpoint to listen on
    * @default "/"
@@ -25,25 +23,10 @@ export interface ServerConfig {
    * @default 8000
    */
   port?: number;
-  /** Build configuration */
-  build?: {
-    /**
-     * Source root for the bot
-     * @default "src"
-     */
-    root?: string;
-    /**
-     * File extensions to include when bundling handlers
-     * @default ["js", "ts", "mjs"]
-     */
-    extensions?: string[];
-  };
   /**
    * A layer before your individual handlers are executed.
    * The return values are the props passed to your handler.
-   *
-   * If you don't want to modify the handler's props, directly return the middleware's props.
-   *
+   * @tip If you don't want to modify the handler's props, directly return the middleware's props.
    * @example
    * {
    *   // Passthroughed props
@@ -73,11 +56,20 @@ export interface ServerConfig {
 }
 
 interface BaseCommandConfig {
-  /** Type of the command, defaults to `ChatInput` */
+  /**
+   * Type of the command
+   * @default "ChatInput"
+   */
   type?: keyof typeof ApplicationCommandType;
-  /** Interaction context(s) where the command can be used, only for globally-scoped commands. Defaults to all */
+  /**
+   * Interaction context(s) where the command can be used, only for globally-scoped commands
+   * @default ["Guild", "BotDM", "PrivateChannel"]
+   */
   contexts?: (keyof typeof InteractionContextType)[];
-  /** Where a command can be installed, also called its supported installation context. Defaults to both */
+  /**
+   * Where a command can be installed, also called its supported installation context.
+   * @default "Guild" & "User"
+   */
   integration_type?: "Guild" | "User";
   /** The guilds this command is available in, this prop will cause the command to become guild-scoped */
   guilds?: Snowflake[];
@@ -111,9 +103,7 @@ type PrimaryEntryPointConfig = CommandTypeConfig<
   }
 >;
 
-/**
- * Configuration for a specific command.
- */
+/** Configuration for a specific command. */
 export type CommandConfig = ChatInputConfig | ContextMenuConfig | PrimaryEntryPointConfig;
 
 export interface BaseData<T, M extends object = object> {

@@ -9,8 +9,8 @@ export type {
   BaseData,
   CommandData,
   ComponentData,
+  DressedConfig,
   EventData,
-  ServerConfig,
 } from "../types/config.ts";
 export type * from "../types/file.ts";
 export type {
