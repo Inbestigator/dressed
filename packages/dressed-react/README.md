@@ -7,7 +7,7 @@ If you manually call the render function yourself, you can use the old component
 ## 📦 Install
 
 ```sh
-bun add dressed react @dressed/react
+bun add react @dressed/react
 ```
 
 ## 🚀 Usage
@@ -19,7 +19,6 @@ import { patchInteraction, ActionRow, Button } from "@dressed/react";
 
 export default async function ping(interaction: CommandInteraction) {
   const patched = patchInteraction(interaction);
-
   await patched.reply(
     <>
       Pong!

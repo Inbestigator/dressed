@@ -7,7 +7,7 @@ Upgrading from using Dressed's components to React should be fairly straightforw
 ## Installation
 
 ```sh caption="Let's start by installing React and the React lib"
-bun add dressed react @dressed/react
+bun add react @dressed/react
 ```
 
 ## Usage
@@ -141,7 +141,7 @@ await createMessage(
     <Suspense fallback="Fetching products...">
       <Products promise={fetch("https://dummyjson.com/products?limit=3").then((r) => r.json())} />
     </Suspense>
-  </Container>
+  </Container>,
 );
 ```
 

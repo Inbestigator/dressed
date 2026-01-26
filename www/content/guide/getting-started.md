@@ -7,9 +7,9 @@ This assumes that you have created your bot on the Discord Dev dashboard, have o
 To initialize your project, you can run these commands:
 
 ```sh
-bun init my-bot # Select the 'Blank' option
+bun create dressed my-bot blank
 cd my-bot
-bun add dressed
+bun install
 ```
 
 You can now create a file named `.env`, and place your token in it like this:
@@ -20,7 +20,7 @@ DISCORD_TOKEN="<your bot token>"
 
 Now open your `.gitignore` file and add a new line ".dressed" at the end, Dressed bundles your files into JavaScript for use at runtime, they and some information data are outputted in a `.dressed` folder.
 
-For this guide, our files wil be laid out according to the opinionated file system similarly to this:
+For this guide, our files wil be laid out according to the framework's opinionated file system similarly to this:
 
 ```sh
 src
@@ -57,11 +57,11 @@ This is all we need; you can now register the command to Discord!
 
 ### Register commands
 
-Dressed has a built in function named `installCommands` that will create commands from your files. Using `-r` in the `dressed build` command automatically includes it in the output file.
+Dressed has a built in function named `registerCommands` that will create commands from your files. Using `-r` in the `dressed build` command automatically includes it in the output file.
 
 ```sh
 bun dressed build -r
-bun .dressed # This runs the outputted file with the `installCommands` function
+bun .dressed # This runs the outputted file with the `registerCommands` function
 ```
 
 Now if you refresh your Discord client, you should see that the new `/ping` command has appeared.
