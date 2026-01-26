@@ -25,7 +25,7 @@ export default function Home() {
         <span className="font-bold text-[max(36px,min(5vw,72px))] text-white">Deploy Anywhere</span>
       </h1>
       <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl">
-        A sleek, serverless-ready Discord bot framework.
+        A sleek, serverless-ready Discord API library.
       </p>
       <div className="flex flex-wrap justify-center gap-4">
         <Button className="text-base" asChild size="lg">

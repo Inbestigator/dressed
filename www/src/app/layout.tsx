@@ -8,7 +8,7 @@ const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono"
 
 export const metadata: Metadata = {
   title: { default: "Dressed", template: "%s - Dressed" },
-  description: "A sleek, serverless-ready Discord bot framework.",
+  description: "A sleek, serverless-ready Discord API library.",
   openGraph: { images: ["/dressed_small.webp"] },
   twitter: { card: "summary" },
 };

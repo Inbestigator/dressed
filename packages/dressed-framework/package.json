@@ -1,7 +1,7 @@
 {
   "name": "@dressed/framework",
   "version": "0.2.0",
-  "description": "A sleek, serverless-ready Discord bot framework.",
+  "description": "A framework for creating Discord bots using Dressed.",
   "scripts": {
     "dist": "rm -fr dist && tsc",
     "check-types": "tsc --noEmit",
@@ -31,7 +31,7 @@
     "framework",
     "serverless",
     "dressed",
-    "discord-bot"
+    "discord"
   ],
   "license": "MIT",
   "repository": {
