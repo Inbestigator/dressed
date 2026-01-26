@@ -19,16 +19,16 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
 
+    environment: production
+
     permissions:
       contents: read
       id-token: write
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@v2
 
       - name: Install Dependencies
         run: bun install --frozen-lockfile

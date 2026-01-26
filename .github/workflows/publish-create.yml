@@ -1,21 +1,14 @@
-name: Publish Scoped Package
+name: Publish Create-Dressed
 
 on:
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
-      package:
-        description: "Which package to publish (@dressed/...)"
-        required: true
-        type: "choice"
-        options:
-          - "framework"
-          - "matcher"
-          - "react"
-          - "ws"
       prerelease:
         description: "Mark as a release candidate"
         required: false
-        default: false
+        default: true
         type: "boolean"
 
 jobs:
@@ -44,11 +37,15 @@ jobs:
         run: bun turbo dist
 
       - name: Authenticate with NPM
-        run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_SCOPE_TOKEN }}
+        run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
 
       - name: Publish to NPM
-        working-directory: packages/dressed-${{inputs.package}}
+        working-directory: packages/create-dressed
         env:
-          TAG: ${{ inputs.prerelease && 'rc' || 'latest' }}
+          TAG: ${{ (inputs.prerelease || github.event.release.prerelease) && 'rc' || 'latest' }}
         run: |
           bunx npm publish --provenance --access public --tag "$TAG"
+
+      - name: Publish to JSR
+        working-directory: packages/create-dressed
+        run: bunx jsr publish
