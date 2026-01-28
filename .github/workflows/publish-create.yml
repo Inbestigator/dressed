@@ -45,7 +45,3 @@ jobs:
           TAG: ${{ (inputs.prerelease || github.event.release.prerelease) && 'rc' || 'latest' }}
         run: |
           bunx npm publish --provenance --access public --tag "$TAG"
-
-      - name: Publish to JSR
-        working-directory: packages/create-dressed
-        run: bunx jsr publish
