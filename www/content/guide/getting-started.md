@@ -1,6 +1,6 @@
 # Getting started
 
-This assumes that you have created your bot on the Discord Dev dashboard, have obtained your token, and have added it to a guild.
+This assumes that you have created your bot on the Discord Dev dashboard, have obtained your token, and have added it to a guild. This bot will make use of [@dressed/framework](https://npmjs.com/@dressed/framework) for bundling your handler files.
 
 ## Init
 
@@ -11,14 +11,6 @@ bun create dressed my-bot blank
 cd my-bot
 bun install
 ```
-
-You can now create a file named `.env`, and place your token in it like this:
-
-```env
-DISCORD_TOKEN="<your bot token>"
-```
-
-Now open your `.gitignore` file and add a new line ".dressed" at the end, Dressed bundles your files into JavaScript for use at runtime, they and some information data are outputted in a `.dressed` folder.
 
 For this guide, our files wil be laid out according to the framework's opinionated file system similarly to this:
 

@@ -1,6 +1,6 @@
 # Components
 
-The component IDs are determined by their file name, here's a typical component
+In the framework, component IDs are determined by their file name, here's a typical component
 structure:
 
 ```sh
