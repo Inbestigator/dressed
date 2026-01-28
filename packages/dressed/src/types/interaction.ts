@@ -1,6 +1,8 @@
 import type {
   APIApplicationCommandAutocompleteInteraction,
   APIApplicationCommandInteraction,
+  APIApplicationCommandOption,
+  APIAttachment,
   APIChatInputApplicationCommandInteraction,
   APIInteraction,
   APIInteractionDataResolvedChannel,
@@ -22,32 +24,38 @@ import type {
 import type { editWebhookMessage, executeWebhook } from "../resources/generated.resources.ts";
 import type { createInteractionCallback } from "../resources/interactions.ts";
 import type { getField } from "../server/extenders/fields.ts";
-import type { getOption, OptionValueGetters } from "../server/extenders/options.ts";
 import type { CallConfig } from "../utils/call-discord.ts";
 import type { ChatInputConfig, CommandConfig } from "./config.ts";
 import type { RawFile } from "./file.ts";
-import type { Requirable } from "./utilities.ts";
 
 export type InteractionCallbackResponse<O extends RESTPostAPIInteractionCallbackQuery> = Promise<
   O["with_response"] extends true ? RESTPostAPIInteractionCallbackWithResponseResult : null
 >;
 
-// TODO return the value directly instead of getters
-export type GetOptionFn<T extends ChatInputConfig> = <
-  N extends NonNullable<T["options"]>[number]["name"],
-  R extends boolean,
-  O extends Extract<NonNullable<T["options"]>[number], { name: N }>,
->(
-  name: N,
-  ...[required]: O["required"] extends true ? [R] : [R?]
-) => Requirable<
-  R,
-  Pick<
-    OptionValueGetters<N, { options: O extends { options: unknown[] } ? O["options"] : [] }>,
-    // biome-ignore format: These don't need individual lines
-    NonNullable<["", "subcommand", "subcommandGroup", "string", "integer", "boolean", "user", "channel", "role", "mentionable", "number", "attachment"][O["type"]]>
-  >
->;
+export type OptionValue<P extends APIApplicationCommandOption, R = true> = [
+  never,
+  {
+    name: P extends { name: infer N } ? N : never;
+    options: P extends { options: APIApplicationCommandOption[] } ? MapOptions<P["options"], R> : undefined;
+  },
+  {
+    name: P extends { name: infer N } ? N : never;
+    subcommands: P extends { options: APIApplicationCommandOption[] } ? MapOptions<P["options"], R> : undefined;
+  },
+  string,
+  number,
+  boolean,
+  APIUser,
+  APIInteractionDataResolvedChannel,
+  APIRole,
+  APIUser | APIRole,
+  number,
+  APIAttachment,
+][P["type"]];
+
+type MapOptions<T extends APIApplicationCommandOption[], R = true> = {
+  [P in T[number] as P["name"]]: P["required"] extends R ? OptionValue<P, R> : OptionValue<P, R> | undefined;
+};
 
 /**
  * A command interaction, includes methods for responding to the interaction.
@@ -56,14 +64,8 @@ export type CommandInteraction<T extends keyof typeof ApplicationCommandType | C
   | "ChatInput"
   | Extract<CommandConfig, { type?: "ChatInput" }>
   ? APIChatInputApplicationCommandInteraction & {
-      /**
-       * Get an option from the interaction
-       * @param name The name of the option
-       * @param required Whether the option is required
-       */
-      getOption: T extends object
-        ? GetOptionFn<T>
-        : <N extends string, R extends boolean>(name: N, required?: R) => ReturnType<typeof getOption<N, R>>;
+      /** Command options provided by the user */
+      options: T extends object ? (T["options"] extends object ? MapOptions<T["options"]> : undefined) : AnyOptions;
     }
   : T extends "Message" | { type: "Message" }
     ? APIMessageApplicationCommandInteraction & { target: APIMessage }
@@ -72,22 +74,31 @@ export type CommandInteraction<T extends keyof typeof ApplicationCommandType | C
       : APIPrimaryEntryPointCommandInteraction) &
   Omit<BaseInteractionMethods, "update" | "deferUpdate" | "sendChoices">;
 
-type Derequire<T> = T extends { options: readonly (infer O)[] }
-  ? Omit<T, "options"> & { options: (Omit<Derequire<O>, "required"> & { required: false })[] }
-  : T;
+type AnyOptions = Record<
+  string,
+  | { name: string; options: AnyOptions }
+  | { name: string; subcommands: AnyOptions }
+  | string
+  | number
+  | boolean
+  | APIUser
+  | APIInteractionDataResolvedChannel
+  | APIRole
+  | (APIUser | APIRole)
+  | APIAttachment
+>;
 
 /**
  * A command autocomplete interaction, includes methods for responding to the interaction.
  */
 export type CommandAutocompleteInteraction<T extends ChatInputConfig | undefined = undefined> =
   APIApplicationCommandAutocompleteInteraction & {
-    /**
-     * Get an option from the interaction
-     * @param name The name of the option
-     */
-    getOption: T extends object
-      ? GetOptionFn<Derequire<T>>
-      : <N extends string>(name: N) => OptionValueGetters<N> | undefined;
+    /** Command options provided by the user */
+    options: T extends object
+      ? T["options"] extends object
+        ? MapOptions<T["options"], never>
+        : undefined
+      : AnyOptions;
   } & Omit<
       BaseInteractionMethods,
       "deferReply" | "deferUpdate" | "editReply" | "followUp" | "reply" | "showModal" | "update"
@@ -111,10 +122,10 @@ export type MessageComponentInteraction<T extends "Button" | keyof ResolvedSelec
     } & (T extends keyof ResolvedSelectValues | undefined
       ? {
           /**
-           * Get the resolved values from the user's selections
+           * Resolved values from the user's selections
            * @warn Only available on select menus
            */
-          getValues: () => ResolvedSelectValues[T extends keyof ResolvedSelectValues ? T : keyof ResolvedSelectValues];
+          values: ResolvedSelectValues[T extends keyof ResolvedSelectValues ? T : keyof ResolvedSelectValues];
         }
       : unknown);
 

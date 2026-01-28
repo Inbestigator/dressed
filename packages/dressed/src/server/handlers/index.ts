@@ -32,9 +32,7 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
 
       try {
         const handler = item.exports[key as keyof typeof item.exports];
-        if (!handler) {
-          throw new Error(`Unable to find '${String(key)}' in exports`);
-        }
+        if (!handler) throw new Error(`Unable to find '${String(key)}' in exports`);
         const args = middleware ? await middleware(...props) : props;
         await handler(...args);
       } catch (e) {

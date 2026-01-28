@@ -77,26 +77,37 @@ await interaction.showModal({
 
 ## Command interactions
 
-This method is only available for command interactions
+### options
 
-### getOption
-
-Retrieves an option from the command, provides functions to retrieve the value.
-
-**Parameters**
-
-- `name`: Name of the option.
-- `required`: If true, throws an error if the option is not present.
+The options filled in by the user, you can make this typed by adding it to the generic in `CommandInteraction`.
 
 ```ts
-const user = interaction.getOption("user", true).user();
+// export const config = {
+//   options: [CommandOption({ name: "user", description: "The user", type: "User" })],
+// } satisfies CommandConfig;
+//
+const user = interaction.options.user;
+//           ^? const interaction: CommandInteraction<typeof config>
 ```
 
 ---
 
 ## Command autocomplete interactions
 
-This method is only available for command autocomplete interactions
+### options
+
+The options filled in by the user, you can make this typed by adding it to the generic in `CommandAutocompleteInteraction`.
+
+All options are treated as optional, as the user may be filling them out in any order.
+
+```ts
+// export const config = {
+//   options: [CommandOption({ name: "user", description: "The user", type: "User" })],
+// } satisfies CommandConfig;
+
+const user = interaction.options.user;
+//           ^? const interaction: CommandAutocompleteInteraction<typeof config>
+```
 
 ### sendChoices
 
@@ -117,7 +128,14 @@ interaction.sendChoices([
 
 ## Message component interactions
 
-This method is only available for components
+### values
+
+For selectmenus this is will be an array of the resolved values submitted by the user. You can choose what type it'll be by specifying the generic in `MessageComponentInteraction`.
+
+```ts
+const users = interaction.values;
+//            ^? const interaction: MessageComponentInteraction<"UserSelect">
+```
 
 ### update
 
@@ -134,8 +152,6 @@ await interaction.update("Updated content");
 ---
 
 ## Modal submit interactions
-
-This method is only available for modal responses
 
 ### getField
 

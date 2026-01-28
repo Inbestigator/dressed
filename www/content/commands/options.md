@@ -24,8 +24,10 @@ export const config = {
 } satisfies CommandConfig;
 
 export default function (interaction: CommandInteraction<typeof config>) {
-  const required = interaction.getOption("required", true).string(); // string
-  const optional = interaction.getOption("optional")?.string(); // string | undefined
+  const {
+    required, // string
+    optional, // string | undefined
+  } = interaction.options;
 }
 ```
 
@@ -69,14 +71,10 @@ export const config = {
 } satisfies CommandConfig;
 
 export default function (interaction: CommandInteraction<typeof config>) {
-  const subcommand =
-    interaction.getOption("foo")?.subcommand() ||
-    interaction.getOption("group")?.subcommandGroup().getSubcommand("bar");
-
+  const subcommand = interaction.options.foo || interaction.options.group?.subcommands.bar;
   switch (subcommand?.name) {
     case "foo": {
-      const baz = subcommand.getOption("baz", true).number();
-      return interaction.reply(`${baz} is a pretty big number!`);
+      return interaction.reply(`${subcommand.options.baz} is a pretty big number!`);
     }
     case "bar": {
       return interaction.reply("Bar");
