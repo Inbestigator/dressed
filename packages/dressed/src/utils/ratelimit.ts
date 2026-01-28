@@ -116,10 +116,12 @@ export function checkLimit(req: Request, bucketTTL: number) {
         resolveChecker(r.clone());
         return r;
       });
-      const ct = req.headers.get("content-type") ?? "";
-      collector.bodies.push(
-        req[ct.includes("multipart/form-data") || req.body instanceof FormData ? "formData" : "json"](),
-      );
+      if (req.method !== "GET") {
+        const ct = req.headers.get("content-type") ?? "";
+        collector.bodies.push(
+          req[ct.includes("multipart/form-data") || req.body instanceof FormData ? "formData" : "json"](),
+        );
+      }
       collector.prev = { processReq, req };
       return collector as Collector;
     }
@@ -134,13 +136,17 @@ export function checkLimit(req: Request, bucketTTL: number) {
             if (
               isLast ||
               prev.req.headers.get("authorization") !== req.headers.get("authorization") ||
-              req.url !== prev.req.url
+              req.url !== prev.req.url ||
+              req.method !== prev.req.method
             ) {
-              return prev.processReq(combineBodies(await Promise.all(collector.bodies), prev.req), collector.resolve);
+              return prev.processReq(
+                prev.req.method === "GET" ? prev.req : combineBodies(await Promise.all(collector.bodies), prev.req),
+                collector.resolve,
+              );
             }
             return collectReq(collector, req);
           }
-          if (req.method === "PATCH" && !isLast) {
+          if ((req.method === "PATCH" || req.method === "GET") && !isLast) {
             let resolve!: Collector["resolve"];
             const promise = new Promise<Response>((r) => {
               resolve = r;
