@@ -11,8 +11,10 @@
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
     "commander": "^14.0.2",
-    "dressed": "^2.0.0-canary.1",
     "esbuild": "^0.27.2"
+  },
+  "peerDependencies": {
+    "dressed": "^2.0.0-canary.1"
   },
   "exports": {
     ".": "./dist/index.js",

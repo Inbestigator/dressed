@@ -21,9 +21,6 @@
         "enquirer": "^2.4.1",
         "tar": "^7.5.6",
       },
-      "devDependencies": {
-        "@types/degit": "^2.8.6",
-      },
     },
     "packages/dressed": {
       "name": "dressed",
@@ -44,8 +41,10 @@
       "dependencies": {
         "@dressed/matcher": "^1.4.0",
         "commander": "^14.0.2",
-        "dressed": "^2.0.0-canary.1",
         "esbuild": "^0.27.2",
+      },
+      "peerDependencies": {
+        "dressed": "^2.0.0-canary.1",
       },
     },
     "packages/dressed-matcher": {
@@ -391,8 +390,6 @@
     "@types/bun": ["@types/bun@1.3.6", "", { "dependencies": { "bun-types": "1.3.6" } }, "sha512-uWCv6FO/8LcpREhenN1d1b6fcspAB+cefwD7uti8C8VffIv0Um08TKMn98FynpTiU38+y2dUO55T11NgDt8VAA=="],
 
     "@types/debug": ["@types/debug@4.1.12", "", { "dependencies": { "@types/ms": "*" } }, "sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ=="],
-
-    "@types/degit": ["@types/degit@2.8.6", "", {}, "sha512-y0M7sqzsnHB6cvAeTCBPrCQNQiZe8U4qdzf8uBVmOWYap5MMTN/gB2iEqrIqFiYcsyvP74GnGD5tgsHttielFw=="],
 
     "@types/estree": ["@types/estree@1.0.8", "", {}, "sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w=="],
 

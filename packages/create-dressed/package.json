@@ -30,8 +30,5 @@
     "type": "git",
     "url": "git+https://github.com/Inbestigator/dressed.git",
     "directory": "packages/create-dressed"
-  },
-  "devDependencies": {
-    "@types/degit": "^2.8.6"
   }
 }
