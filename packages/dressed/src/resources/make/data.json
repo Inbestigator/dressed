@@ -296,9 +296,8 @@
       }
     },
     "DeleteAPIChannelPermission": {
-      "TODO": "rename to something like `deleteChannelPermission`",
       "params": ["url.channelId", "url.overwriteId"],
-      "overrides": { "name": "deleteChannelPermissions" },
+      "overrides": { "keyNameStart": 0 },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete a channel permission overwrite for a user or role in a channel.",
@@ -1139,9 +1138,8 @@
       }
     },
     "PutAPIGuildIncidentActions": {
-      "TODO": "rename to `modifyIncidentActions`",
       "params": ["url.guildId", "data"],
-      "overrides": { "name": "modifyGuildIncidentActions" },
+      "overrides": { "name": "modifyIncidentActions" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Modifies the incident actions of the guild.",
@@ -1230,8 +1228,8 @@
       }
     },
     "DeleteAPIChannelMessageUserReaction": {
-      "params": ["url.channelId", "url.messageId", "url.emoji: string", "url.userId?"],
-      "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji); userId??=\"@me\"", "keyNameStart": 3 },
+      "params": ["url.channelId", "url.messageId", "url.userId: \"@me\" | Snowflake & {}", "url.emoji: string"],
+      "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)", "keyNameStart": 3 },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete a user's reaction, defaults to removing the current user's reaction for a message.",
@@ -1704,8 +1702,7 @@
       }
     },
     "PatchAPIGuildVoiceStateCurrentMember": {
-      "TODO": "Refactor this in general, maybe have `@me | string & {}`",
-      "params": ["url.guildId", "data", "url.userId?"],
+      "params": ["url.guildId", "url.userId: \"@me\" | Snowflake & {}", "data"],
       "overrides": { "apiRoute": "guildVoiceState", "name": "modifyVoiceState" },
       "flags": ["returnVoid"],
       "docs": {

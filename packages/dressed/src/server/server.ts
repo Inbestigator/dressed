@@ -175,7 +175,7 @@ export async function handleEvent(
   }
 }
 
-/** Deep merges two objects, producing a new object where values from `b` override those from `a`. */
+/** Deep merges two objects, producing a new object where values from {@link b} override those from {@link a}. */
 function override<T>(a: Partial<T>, b: Partial<T>) {
   const result = { ...a };
 

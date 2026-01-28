@@ -69,8 +69,7 @@ export function getField<R extends boolean>(
     }
   };
 
-  // TODO Remove this assign and just return the getters before next major release
-  return Object.assign(component.type === ComponentType.TextInput ? component.value : {}, {
+  return {
     stringSelect: returnValue(ComponentType.StringSelect),
     textInput: returnValue(ComponentType.TextInput),
     userSelect: returnValue(ComponentType.UserSelect, "users"),
@@ -90,5 +89,5 @@ export function getField<R extends boolean>(
     },
     channelSelect: returnValue(ComponentType.ChannelSelect, "channels"),
     fileUpload: returnValue(ComponentType.FileUpload, "attachments"),
-  }) as ReturnType<typeof getField<R>>;
+  } as ReturnType<typeof getField<R>>;
 }

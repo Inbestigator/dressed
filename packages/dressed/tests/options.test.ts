@@ -4,25 +4,9 @@ import { createInteraction } from "dressed/server";
 
 const command = {
   type: 2,
-  data: {
-    options: [
-      {
-        name: "option1",
-        type: 5,
-        value: true,
-      },
-    ],
-  },
+  data: { type: 1, options: [{ name: "option1", type: 5, value: true }] },
 } as APIApplicationCommandInteraction;
 const interaction = createInteraction(command);
 
-test("Check for existing option", () => {
-  expect(interaction.getOption("option1", true).boolean()).toBeTrue();
-  expect(interaction.getOption("option1")?.boolean()).toBeTrue();
-});
-
-test("Check for non existing option", () => {
-  expect(() => interaction.getOption("option2", true)).toThrowError(new Error(`Required option "option2" not found`));
-  const option = interaction.getOption("option3");
-  expect(option).toBeUndefined();
-});
+test("Check for existing option", () => expect(interaction.options.option1).toBeTrue());
+test("Check for non existing option", () => expect(interaction.options.option2).toBeUndefined());
