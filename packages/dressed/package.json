@@ -1,6 +1,6 @@
 {
   "name": "dressed",
-  "version": "2.0.0-canary.1",
+  "version": "2.0.0-rc.1",
   "description": "A sleek, serverless-ready Discord API library.",
   "scripts": {
     "dist": "rm -fr dist && bun --bun ./src/resources/make && tsc",
