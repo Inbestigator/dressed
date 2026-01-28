@@ -13,7 +13,7 @@ import { parseEvents } from "./parsers/events.ts";
  * Builds the bot imports and other variables.
  */
 export default async function build(
-  config: DressedConfig = {},
+  config: Omit<DressedConfig, "middleware"> = {},
   { bundle = bundleFiles }: { bundle?: typeof bundleFiles } = {},
 ): Promise<{
   commands: ReturnType<typeof parseCommands>;

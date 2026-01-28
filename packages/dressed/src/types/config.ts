@@ -11,8 +11,8 @@ import type { CallConfig } from "../utils/call-discord.ts";
 import type { CommandHandler, ComponentHandler, EventHandler } from "./handlers.ts";
 import type { Promisable } from "./utilities.ts";
 
-/** Configuration for various Dressed services. */
-export interface DressedConfig {
+/** Configuration for a server. */
+export interface ServerConfig {
   /**
    * The endpoint to listen on
    * @default "/"
@@ -43,6 +43,10 @@ export interface DressedConfig {
     components?: (...p: Parameters<ComponentHandler>) => Promisable<unknown[]>;
     events?: (...p: Parameters<EventHandler>) => Promisable<unknown[]>;
   };
+}
+
+/** Configuration for various Dressed services. */
+export interface DressedConfig extends ServerConfig {
   /** Configuration for all API requests */
   requests?: CallConfig;
   /**

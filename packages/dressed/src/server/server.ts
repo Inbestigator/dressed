@@ -8,7 +8,7 @@ import {
   ApplicationWebhookType,
   InteractionType,
 } from "discord-api-types/v10";
-import type { CommandData, ComponentData, DressedConfig, EventData } from "../types/config.ts";
+import type { CommandData, ComponentData, EventData, ServerConfig } from "../types/config.ts";
 import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
 import { config as dressedConfig } from "../utils/env.ts";
 import logger from "../utils/log.ts";
@@ -26,7 +26,7 @@ export function createServer(
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
   events: EventRunner | EventData[],
-  config: DressedConfig = {},
+  config: ServerConfig = {},
 ): Server {
   config = override(dressedConfig, config);
   const endpoint = new URL(config.endpoint ?? "/", `http://localhost:${config.port ?? 8000}`);
@@ -80,7 +80,7 @@ export async function handleRequest(
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
   events: EventRunner | EventData[],
-  config = dressedConfig,
+  config: ServerConfig = dressedConfig,
 ): Promise<Response> {
   const body = await req.text();
   const verified = await verifySignature(
@@ -117,7 +117,7 @@ export async function handleInteraction(
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
   json: ReturnType<typeof JSON.parse>,
-  middleware: DressedConfig["middleware"],
+  middleware: ServerConfig["middleware"],
 ): Promise<200 | 202 | 404> {
   switch (json.type) {
     case InteractionType.Ping: {
@@ -156,7 +156,7 @@ export async function handleInteraction(
 export async function handleEvent(
   events: EventRunner | EventData[],
   json: ReturnType<typeof JSON.parse>,
-  middleware: DressedConfig["middleware"],
+  middleware: ServerConfig["middleware"],
 ): Promise<200 | 202 | 404> {
   switch (json.type) {
     case ApplicationWebhookType.Ping: {

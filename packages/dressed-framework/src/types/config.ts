@@ -1,4 +1,4 @@
-import type { DressedConfig as CoreDressedConfig } from "dressed/server";
+import type { DressedConfig as CoreDressedConfig } from "dressed/utils";
 
 /** Configuration for various Dressed services. */
 export interface DressedConfig extends CoreDressedConfig {
