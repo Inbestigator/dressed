@@ -1,13 +1,13 @@
 # Creating messages with React
 
-[@dressed/react](https://www.npmjs.com/package/@dressed/react) is a library that lets you build messages and modals using React components, which are rendered into a standard JSON payload. The library supports most modern React features; however, when deploying to serverless platforms, you should avoid relying on post-render updates (such as state changes, suspenses, or effects), as the execution environment may not persist long enough to apply them.
+[@dressed/react](https://npmjs.com/@dressed/react) is a library that lets you build messages and modals using React components, which are rendered into a standard JSON payload. The library supports most modern React features; however, when deploying to serverless platforms, you should avoid relying on post-render updates (such as state changes, suspenses, or effects), as the execution environment may not persist long enough to apply them.
 
 Upgrading from using Dressed's components to React should be fairly straightforward, as the syntax for Dressed is intentionally similar looking to JSX.
 
 ## Installation
 
 ```sh caption="Let's start by installing React and the React lib"
-bun add dressed react @dressed/react
+bun add react @dressed/react
 ```
 
 ## Usage
@@ -57,11 +57,11 @@ const components = (
 >
 > ```ts title="dressed.config.ts"
 > import { patchInteraction } from "@dressed/react";
-> import { ServerConfig } from "dressed/server";
+> import { DressedConfig } from "dressed/server";
 >
 > export default {
 >   build: { extensions: ["ts", "tsx"] },
-> } satisfies ServerConfig;
+> } satisfies DressedConfig;
 > ```
 
 ## Sending a message
@@ -141,7 +141,7 @@ await createMessage(
     <Suspense fallback="Fetching products...">
       <Products promise={fetch("https://dummyjson.com/products?limit=3").then((r) => r.json())} />
     </Suspense>
-  </Container>
+  </Container>,
 );
 ```
 
@@ -206,12 +206,12 @@ If you don't want to bother manually patching the interaction every time, then y
 
 ```ts title="dressed.config.ts"
 import { patchInteraction } from "@dressed/react";
-import { ServerConfig } from "dressed/server";
+import { DressedConfig } from "dressed/server";
 
 export default {
   middleware: {
     commands: (i) => [patchInteraction(i)],
     components: (i, a) => [patchInteraction(i), a],
   },
-} satisfies ServerConfig;
+} satisfies DressedConfig;
 ```

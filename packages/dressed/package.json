@@ -1,7 +1,7 @@
 {
   "name": "dressed",
-  "version": "1.10.2-rc.2",
-  "description": "A sleek, serverless-ready Discord bot framework.",
+  "version": "2.0.0-canary.1",
+  "description": "A sleek, serverless-ready Discord API library.",
   "scripts": {
     "dist": "rm -fr dist && bun --bun ./src/resources/make && tsc",
     "check-types": "tsc --noEmit",
@@ -10,23 +10,16 @@
   },
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
-    "commander": "^14.0.2",
     "discord-api-types": "^0.38.37",
     "dotenv": "^17.2.3",
-    "enquirer": "^2.4.1",
-    "esbuild": "^0.27.2",
-    "magic-bytes.js": "^1.13.0"
+    "magic-bytes.js": "^1.12.1"
   },
   "exports": {
     ".": "./dist/index.js",
     "./server": "./dist/server/index.js",
-    "./build": "./dist/server/build/index.js",
     "./utils": "./dist/utils/index.js"
   },
   "type": "module",
-  "bin": {
-    "dressed": "dist/bin/dressed.js"
-  },
   "types": "./dist/index.d.ts",
   "files": [
     "dist"

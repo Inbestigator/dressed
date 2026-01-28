@@ -1,4 +1,4 @@
-import logger from "../../utils/log.ts";
+import { logger } from "dressed/utils";
 
 /** Log a table of values with titles */
 export default function logTree(...titles: string[]): {

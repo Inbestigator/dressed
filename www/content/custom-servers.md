@@ -15,7 +15,7 @@ app.post("/bot", ({ req }) => handleRequest(req.raw, commands, components, event
 export default app;
 ```
 
-The `handleInteraction` function is great for things like initiating a Dressed handler from within a [@dressed/ws](https://www.npmjs.com/package/@dressed/ws) event.
+The `handleInteraction` function is great for things like initiating a Dressed handler from within a [@dressed/ws](https://npmjs.com/@dressed/ws) event.
 
 ```ts showLineNumbers
 import { createInteraction, handleInteraction } from "dressed/server";

@@ -2,7 +2,7 @@ import { Buffer } from "node:buffer";
 import { type RESTError, type RESTErrorData, RouteBases } from "discord-api-types/v10";
 import { filetypeinfo } from "magic-bytes.js";
 import type { RawFile } from "../types/file.ts";
-import { botEnv, serverConfig } from "./env.ts";
+import { botEnv, config } from "./env.ts";
 import logger from "./log.ts";
 import { checkLimit } from "./ratelimit.ts";
 
@@ -80,7 +80,7 @@ export async function callDiscord(
   $req: CallConfig = {},
 ): Promise<Response> {
   const { params, files, ...options } = { ...init };
-  const reqsConfig = serverConfig.requests;
+  const reqsConfig = config.requests;
   const {
     authorization = reqsConfig?.authorization ?? `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
     tries = reqsConfig?.tries ?? 3,

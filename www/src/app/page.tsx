@@ -25,7 +25,7 @@ export default function Home() {
         <span className="font-bold text-[max(36px,min(5vw,72px))] text-white">Deploy Anywhere</span>
       </h1>
       <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl">
-        A sleek, serverless-ready Discord bot framework.
+        A sleek, serverless-ready Discord API library.
       </p>
       <div className="flex flex-wrap justify-center gap-4">
         <Button className="text-base" asChild size="lg">
@@ -33,7 +33,7 @@ export default function Home() {
         </Button>
         <div className="flex items-center">
           <Button title="NPM package" className="rounded-r-none border-r-0" variant="outline" size="lg" asChild>
-            <Link href="https://www.npmjs.com/package/dressed" target="_blank" rel="noreferrer">
+            <Link href="https://npmjs.com/dressed" target="_blank" rel="noreferrer">
               <NPMLogo className="size-8" />
             </Link>
           </Button>

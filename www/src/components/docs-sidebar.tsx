@@ -79,8 +79,8 @@ const data = [
     ],
   },
   {
-    title: "Server Config",
-    url: "/docs/server-config",
+    title: "Dressed Config",
+    url: "/docs/dressed-config",
     icon: IconSettings,
   },
   {

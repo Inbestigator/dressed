@@ -1,4 +1,4 @@
-name: Publish
+name: Publish Create-Dressed
 
 on:
   release:
@@ -40,12 +40,12 @@ jobs:
         run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
 
       - name: Publish to NPM
-        working-directory: packages/dressed
+        working-directory: packages/create-dressed
         env:
           TAG: ${{ (inputs.prerelease || github.event.release.prerelease) && 'rc' || 'latest' }}
         run: |
           bunx npm publish --provenance --access public --tag "$TAG"
 
       - name: Publish to JSR
-        working-directory: packages/dressed
+        working-directory: packages/create-dressed
         run: bunx jsr publish

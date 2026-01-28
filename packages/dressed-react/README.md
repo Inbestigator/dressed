@@ -7,7 +7,7 @@ If you manually call the render function yourself, you can use the old component
 ## 📦 Install
 
 ```sh
-bun add dressed react @dressed/react
+bun add react @dressed/react
 ```
 
 ## 🚀 Usage
@@ -19,7 +19,6 @@ import { patchInteraction, ActionRow, Button } from "@dressed/react";
 
 export default async function ping(interaction: CommandInteraction) {
   const patched = patchInteraction(interaction);
-
   await patched.reply(
     <>
       Pong!
@@ -34,20 +33,17 @@ export default async function ping(interaction: CommandInteraction) {
 
 If you don't want to manually patch every interaction, you can use middleware:
 
-```ts
-// dressed.config.ts
+```ts title="dressed.config.ts"
 import { patchInteraction } from "@dressed/react";
-import type { ServerConfig } from "dressed/server";
+import type { DressedConfig } from "dressed/server";
 
-const config: ServerConfig = {
+export default {
   build: { extensions: ["tsx", "ts"] },
   middleware: {
     commands: (i) => [patchInteraction(i)],
     components: (i, a) => [patchInteraction(i), a],
   },
-};
-
-export default config;
+} satisfies DressedConfig;
 ```
 
 > [!IMPORTANT]
