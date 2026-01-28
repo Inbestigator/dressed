@@ -53,8 +53,6 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
           case ComponentType.Label:
             components.push(component.component);
             break;
-          case ComponentType.TextDisplay:
-            continue;
         }
       }
       return {

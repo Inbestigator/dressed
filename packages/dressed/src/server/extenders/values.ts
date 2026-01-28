@@ -9,9 +9,7 @@ export function parseValues(input: APIMessageComponentInteraction) {
   if (!isMessageComponentSelectMenuInteraction(input)) return;
   const resolved: Partial<APIInteractionDataResolved> = "resolved" in input.data ? input.data.resolved : {};
   const returnValues = (resolvedKey: keyof APIInteractionDataResolved) => {
-    if (!resolved?.[resolvedKey]) {
-      throw new Error(`No ${resolvedKey} found`);
-    }
+    if (!resolved?.[resolvedKey]) throw new Error(`No ${resolvedKey} found`);
     return input.data.values.map((v) => resolved[resolvedKey]?.[v]);
   };
   switch (input.data.component_type) {
