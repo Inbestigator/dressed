@@ -1,7 +1,9 @@
 import type {
   APIApplicationCommandAutocompleteInteraction,
+  APIApplicationCommandBasicOption,
   APIApplicationCommandInteraction,
   APIApplicationCommandOption,
+  APIApplicationCommandSubcommandOption,
   APIAttachment,
   APIChatInputApplicationCommandInteraction,
   APIInteraction,
@@ -15,6 +17,7 @@ import type {
   APIRole,
   APIUser,
   APIUserApplicationCommandInteraction,
+  ApplicationCommandOptionType,
   ApplicationCommandType,
   ComponentType,
   InteractionResponseType,
@@ -27,20 +30,41 @@ import type { getField } from "../server/extenders/fields.ts";
 import type { CallConfig } from "../utils/call-discord.ts";
 import type { ChatInputConfig, CommandConfig } from "./config.ts";
 import type { RawFile } from "./file.ts";
+import type { Requirable } from "./utilities.ts";
 
 export type InteractionCallbackResponse<O extends RESTPostAPIInteractionCallbackQuery> = Promise<
   O["with_response"] extends true ? RESTPostAPIInteractionCallbackWithResponseResult : null
 >;
 
-export type OptionValue<P extends APIApplicationCommandOption, R = true> = [
+type OptionValue<P extends APIApplicationCommandOption, R = true> = [
   never,
   {
+    /**
+     * The key provided to the command config
+     * @example
+     * export const config = {
+     *   options: [
+     *     CommandOption({ type: "Subcommand", name: "foo" }),
+     *     CommandOption({ type: "Subcommand", name: "bar" }),
+     *   ],
+     * } satisfies CommandConfig;
+     * const { options }: CommandInteraction<typeof config>;
+     * const subcommand = options.foo ?? options.bar;
+     * if (subcommand?.name === "foo") {
+     *   console.log("Bar");
+     * } else {
+     *   console.log("Bar");
+     * }
+     */
     name: P extends { name: infer N } ? N : never;
-    options: P extends { options: APIApplicationCommandOption[] } ? MapOptions<P["options"], R> : undefined;
+    /** Subcommand options provided by the user */
+    options: MapOptions<P extends { options: APIApplicationCommandBasicOption[] } ? P["options"] : [], R>;
   },
   {
+    /** The key provided to the command config */
     name: P extends { name: infer N } ? N : never;
-    subcommands: P extends { options: APIApplicationCommandOption[] } ? MapOptions<P["options"], R> : undefined;
+    /** Subcommand group subcommand selected by the user */
+    subcommands: MapOptions<P extends { options: APIApplicationCommandSubcommandOption[] } ? P["options"] : [], R>;
   },
   string,
   number,
@@ -53,19 +77,56 @@ export type OptionValue<P extends APIApplicationCommandOption, R = true> = [
   APIAttachment,
 ][P["type"]];
 
-type MapOptions<T extends APIApplicationCommandOption[], R = true> = {
-  [P in T[number] as P["name"]]: P["required"] extends R ? OptionValue<P, R> : OptionValue<P, R> | undefined;
+export type MapOptions<T extends APIApplicationCommandOption[], R = true> = {
+  [P in T[number] as P["name"]]: Requirable<P["required"] extends R ? true : false, OptionValue<P, R>>;
 };
+
+type CommandOption<T = ApplicationCommandOptionType> = T extends
+  | ApplicationCommandOptionType.Subcommand
+  | ApplicationCommandOptionType.SubcommandGroup
+  ? Omit<Extract<APIApplicationCommandOption, { type: T }>, "options"> & {
+      options: CommandOption<
+        T extends ApplicationCommandOptionType.SubcommandGroup
+          ? ApplicationCommandOptionType.Subcommand
+          : Exclude<
+              ApplicationCommandOptionType,
+              ApplicationCommandOptionType.Subcommand | ApplicationCommandOptionType.SubcommandGroup
+            >
+      >[];
+    }
+  : Extract<APIApplicationCommandOption, { type: T }>;
+
+/**
+ * The resolved value of a standalone application command option.
+ * @remark It's encouraged to pass your config into the {@link CommandInteraction}'s generic
+ * instead of manually adding type casts
+ * @example
+ * const user = interaction.options.user as CommandOptionValue<"User">;
+ * //    ^? const user: APIUser | undefined
+ */
+export type CommandOptionValue<
+  T extends keyof typeof ApplicationCommandOptionType = keyof typeof ApplicationCommandOptionType,
+  R extends boolean = false,
+> = Requirable<R, OptionValue<CommandOption<(typeof ApplicationCommandOptionType)[T]>>>;
 
 /**
  * A command interaction, includes methods for responding to the interaction.
+ * @example
+ * export const config = {
+ *   options: [CommandOption({ type: "User", name: "user" })],
+ * } satisfies CommandConfig;
+ * const interaction: CommandInteraction<typeof config>;
+ * const { user } = interaction.options;
+ * //      ^? const user: APIUser | undefined
  */
 export type CommandInteraction<T extends keyof typeof ApplicationCommandType | CommandConfig = "ChatInput"> = (T extends
   | "ChatInput"
   | Extract<CommandConfig, { type?: "ChatInput" }>
   ? APIChatInputApplicationCommandInteraction & {
       /** Command options provided by the user */
-      options: T extends object ? (T["options"] extends object ? MapOptions<T["options"]> : undefined) : AnyOptions;
+      options: MapOptions<
+        T extends object ? (T extends { options: APIApplicationCommandOption[] } ? T["options"] : []) : CommandOption[]
+      >;
     }
   : T extends "Message" | { type: "Message" }
     ? APIMessageApplicationCommandInteraction & { target: APIMessage }
@@ -73,32 +134,16 @@ export type CommandInteraction<T extends keyof typeof ApplicationCommandType | C
       ? APIUserApplicationCommandInteraction & { target: APIUser & { member?: APIInteractionDataResolvedGuildMember } }
       : APIPrimaryEntryPointCommandInteraction) &
   Omit<BaseInteractionMethods, "update" | "deferUpdate" | "sendChoices">;
-
-type AnyOptions = Record<
-  string,
-  | { name: string; options: AnyOptions }
-  | { name: string; subcommands: AnyOptions }
-  | string
-  | number
-  | boolean
-  | APIUser
-  | APIInteractionDataResolvedChannel
-  | APIRole
-  | (APIUser | APIRole)
-  | APIAttachment
->;
-
 /**
  * A command autocomplete interaction, includes methods for responding to the interaction.
  */
 export type CommandAutocompleteInteraction<T extends ChatInputConfig | undefined = undefined> =
   APIApplicationCommandAutocompleteInteraction & {
     /** Command options provided by the user */
-    options: T extends object
-      ? T["options"] extends object
-        ? MapOptions<T["options"], never>
-        : undefined
-      : AnyOptions;
+    options: MapOptions<
+      T extends object ? (T extends { options: APIApplicationCommandOption[] } ? T["options"] : []) : CommandOption[],
+      never
+    >;
   } & Omit<
       BaseInteractionMethods,
       "deferReply" | "deferUpdate" | "editReply" | "followUp" | "reply" | "showModal" | "update"

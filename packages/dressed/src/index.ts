@@ -22,6 +22,7 @@ export type { Event } from "./types/event.ts";
 export type {
   CommandAutocompleteInteraction,
   CommandInteraction,
+  CommandOptionValue,
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "./types/interaction.ts";

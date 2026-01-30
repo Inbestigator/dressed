@@ -25,7 +25,7 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
       switch (input.data.type) {
         case ApplicationCommandType.ChatInput:
           // @ts-expect-error Property is on return type
-          input.options = parseOptions("options" in input.data ? input.data.options : [], input.data.resolved);
+          input.options = parseOptions(input.data.options, input.data.resolved);
           break;
         case ApplicationCommandType.User:
           // @ts-expect-error Property is on return type

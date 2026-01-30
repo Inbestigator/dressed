@@ -1,39 +1,27 @@
 import {
   type APIApplicationCommandInteractionDataOption,
+  type APIApplicationCommandOption,
   type APIInteractionDataResolved,
   type APIRole,
   type APIUser,
   ApplicationCommandOptionType,
 } from "discord-api-types/v10";
-import type { OptionValue } from "../../types/interaction.ts";
-
-type AnyOptionValue = OptionValue<{ type: number; name: string; description: string; options: [] }>;
+import type { CommandOptionValue, MapOptions } from "../../types/interaction.ts";
 
 export function parseOptions(
-  options?: APIApplicationCommandInteractionDataOption[],
+  options: APIApplicationCommandInteractionDataOption[] = [],
   resolved?: APIInteractionDataResolved,
-): Record<string, AnyOptionValue> | undefined {
-  if (!options?.length) return;
+): MapOptions<APIApplicationCommandOption[]> {
   return Object.fromEntries(
     options.map((option) => {
-      let value: AnyOptionValue;
+      let value: CommandOptionValue;
       switch (option.type) {
         case ApplicationCommandOptionType.Subcommand: {
-          value = { name: option.name, options: parseOptions(option.options, resolved) } as OptionValue<{
-            type: ApplicationCommandOptionType.Subcommand;
-            name: string;
-            description: string;
-            options: [];
-          }>;
+          value = { name: option.name, options: parseOptions(option.options, resolved) };
           break;
         }
         case ApplicationCommandOptionType.SubcommandGroup: {
-          value = { name: option.name, subcommands: parseOptions(option.options, resolved) } as OptionValue<{
-            type: ApplicationCommandOptionType.SubcommandGroup;
-            name: string;
-            description: string;
-            options: [];
-          }>;
+          value = { name: option.name, subcommands: parseOptions(option.options, resolved) };
           break;
         }
         case ApplicationCommandOptionType.String:
