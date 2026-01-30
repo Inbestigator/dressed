@@ -16,7 +16,7 @@ import { Label } from "./label.ts";
 export function Checkbox(config: Omit<APICheckboxComponent, "type">): APICheckboxComponent;
 
 /**
- * An option to be used in a checkbox group
+ * An option to be used in a checkbox group.
  * @param label User-facing name of the option (max 100 chars)
  * @param value Dev-defined value of the option (max 100 chars)
  */

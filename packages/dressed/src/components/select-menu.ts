@@ -49,7 +49,7 @@ export function SelectMenu<K extends keyof typeof SelectType>(
 }
 
 /**
- * An option to be used in a select menu
+ * An option to be used in a select menu.
  * @param label User-facing name of the option (max 100 chars)
  * @param value Dev-defined value of the option (max 100 chars)
  */

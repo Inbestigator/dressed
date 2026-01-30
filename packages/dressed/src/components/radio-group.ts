@@ -24,7 +24,7 @@ export function RadioGroup(config: Omit<APIRadioGroupComponent, "type">): APIRad
 }
 
 /**
- * An option to be used in a radio group
+ * An option to be used in a radio group.
  * @param label User-facing name of the option (max 100 chars)
  * @param value Dev-defined value of the option (max 100 chars)
  */
