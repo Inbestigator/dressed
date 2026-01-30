@@ -6,7 +6,6 @@ import {
   type APIRadioGroupComponent,
   ComponentType,
 } from "discord-api-types/v10";
-import { TextInput } from "./text-input.ts";
 
 /**
  * A top-level layout component.
