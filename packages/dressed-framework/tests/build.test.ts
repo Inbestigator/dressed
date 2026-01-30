@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import build from "dressed/build";
+import build from "@dressed/framework/build";
 
 test("Build bot", async () => {
   const result = await build({ build: { root: "tests/src" } });

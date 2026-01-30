@@ -21,26 +21,14 @@ bun add dressed
 ```
 
 ```ts
-// src/commands/ping.ts
-import type { CommandConfig, CommandInteraction } from "dressed";
+// index.ts
+import { createMessage } from "dressed";
 
-export const config = {
-  description: "Checks the API latency",
-} satisfies CommandConfig;
-
-export default async function (interaction: CommandInteraction<typeof config>) {
-  const start = Date.now();
-  const res = await interaction.deferReply({ ephemeral: true, with_response: true });
-  const delay = Date.parse(res.resource?.message?.timestamp ?? "") - start;
-  await interaction.editReply(`🏓 ${delay}ms`);
-}
+createMessage("<CHANNEL_ID>", "Hello from Dressed!");
 ```
 
-You can then build and run the bot with:
-
 ```sh
-bun dressed build -ir
-bun .dressed
+bun index.ts
 ```
 
 For more information on how to create a simple bot, check out [the getting started guide](https://dressed.js.org/docs/guide/getting-started).

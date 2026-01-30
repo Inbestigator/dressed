@@ -3,20 +3,22 @@ import { existsSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { basename, extname, join, relative, resolve } from "node:path";
 import { cwd } from "node:process";
-import type { WalkEntry } from "../types/walk.ts";
-import logger from "./log.ts";
+import { logger } from "dressed/utils";
+import type { WalkEntry } from "./types/walk.ts";
+
+const hash = (v: string) => createHash("sha1").update(v).digest("hex");
 
 export const normalizeImportPath = (path: string) => relative(".dressed/tmp", path).replace(/\\/g, "/");
 
 export function importFileString(file: WalkEntry) {
-  return `import * as h${file.uid} from "${normalizeImportPath(file.path)}";`;
+  return `import * as h${hash(file.path)} from "${normalizeImportPath(file.path)}";`;
 }
 
 export function categoryExports(categories: WalkEntry[][]) {
   return categories.map(
     (c, i) =>
       `export const ${["commands", "components", "events"][i]} = [${c.map((f) => {
-        const exportKey = `"exports":h${f.uid}`;
+        const exportKey = `"exports":h${hash(f.path)}`;
         return JSON.stringify({ ...f, exports: null }).replace('"exports":null', exportKey);
       })}];`,
   );
@@ -54,10 +56,6 @@ export async function crawlDir(root: string, dir: string, extensions = ["js", "t
     .filter((e) => extensions.includes(extname(e).slice(1)))
     .map((e) => {
       const path = relative(cwd(), join(dirPath, e));
-      return {
-        name: basename(path, extname(path)),
-        path,
-        uid: createHash("sha1").update(path).digest("hex"),
-      };
+      return { name: basename(path, extname(path)), path };
     });
 }

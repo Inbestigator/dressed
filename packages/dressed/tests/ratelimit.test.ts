@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import { createMessage } from "dressed";
-import { serverConfig } from "dressed/utils";
+import { config } from "dressed/utils";
 
 interface Bucket {
   resetAt: number;
@@ -94,10 +94,8 @@ beforeAll(() => {
 
 afterAll(() => server.stop());
 
-Object.assign(serverConfig, {
-  // Normally tries defaults to 3, but for the purposes of these tests there shouldn't be any wiggle room
-  requests: { tries: 0, authorization: "", routeBase: "http://localhost:6556" },
-});
+// Normally tries defaults to 3, but for the purposes of these tests there shouldn't be any wiggle room
+config.requests = { tries: 0, authorization: "", routeBase: "http://localhost:6556" };
 
 test("Ratelimit delaying", () => {
   expect(Promise.all(Array.from({ length: 5 }, () => createMessage("wait_for_me", "test")))).resolves.toMatchSnapshot();

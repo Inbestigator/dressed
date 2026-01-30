@@ -1,10 +1,9 @@
 import { appendFileSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, extname, resolve } from "node:path";
-import { getApp } from "../../resources/generated.resources.ts";
-import type { CommandData, ComponentData, EventData, ServerConfig } from "../../types/config.ts";
-import { categoryExports, crawlDir, importFileString, override } from "../../utils/build.ts";
-import { botEnv, serverConfig } from "../../utils/env.ts";
-import logger from "../../utils/log.ts";
+import { getApp } from "dressed";
+import { botEnv, config as dressedConfig, logger } from "dressed/utils";
+import type { DressedConfig } from "../types/config.ts";
+import { categoryExports, crawlDir, importFileString, override } from "../utils.ts";
 import bundleFiles from "./bundle.ts";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";
@@ -14,13 +13,13 @@ import { parseEvents } from "./parsers/events.ts";
  * Builds the bot imports and other variables.
  */
 export default async function build(
-  config: ServerConfig = {},
+  config: Omit<DressedConfig, "middleware"> = {},
   { bundle = bundleFiles }: { bundle?: typeof bundleFiles } = {},
 ): Promise<{
-  commands: CommandData[];
-  components: ComponentData[];
-  events: EventData[];
-  config: ServerConfig;
+  commands: ReturnType<typeof parseCommands>;
+  components: ReturnType<typeof parseComponents>;
+  events: ReturnType<typeof parseEvents>;
+  config: DressedConfig;
   configPath?: string;
 }> {
   mkdirSync(".dressed/tmp", { recursive: true });
@@ -32,7 +31,7 @@ export default async function build(
     await bundle(configPath, ".dressed/tmp");
     const { default: importedConfig } = await import(resolve(configOutPath));
     config = override(importedConfig, config);
-    Object.assign(serverConfig, override(serverConfig, config));
+    Object.assign(dressedConfig, override(dressedConfig, config));
   } else {
     writeFileSync(configOutPath, `export default ${JSON.stringify(config)}`);
   }
