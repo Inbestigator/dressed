@@ -109,21 +109,21 @@ export type CommandOptionValue<
   R extends boolean = false,
 > = Requirable<R, OptionValue<CommandOption<(typeof ApplicationCommandOptionType)[T]>>>;
 
-/**
- * A command interaction, includes methods for responding to the interaction.
- * @example
- * export const config = {
- *   options: [CommandOption({ type: "User", name: "user" })],
- * } satisfies CommandConfig;
- * const interaction: CommandInteraction<typeof config>;
- * const { user } = interaction.options;
- * //      ^? const user: APIUser | undefined
- */
+/** A command interaction, includes methods for responding to the interaction. */
 export type CommandInteraction<T extends keyof typeof ApplicationCommandType | CommandConfig = "ChatInput"> = (T extends
   | "ChatInput"
   | Extract<CommandConfig, { type?: "ChatInput" }>
   ? APIChatInputApplicationCommandInteraction & {
-      /** Command options provided by the user */
+      /**
+       * Resolved command options provided by the user.
+       * @example
+       * export const config = {
+       *   options: [CommandOption({ type: "User", name: "user" })],
+       * } satisfies CommandConfig;
+       * const interaction: CommandInteraction<typeof config>;
+       * const { user } = interaction.options;
+       * //      ^? const user: APIUser | undefined
+       */
       options: MapOptions<
         T extends object ? (T extends { options: APIApplicationCommandOption[] } ? T["options"] : []) : CommandOption[]
       >;
@@ -139,7 +139,17 @@ export type CommandInteraction<T extends keyof typeof ApplicationCommandType | C
  */
 export type CommandAutocompleteInteraction<T extends ChatInputConfig | undefined = undefined> =
   APIApplicationCommandAutocompleteInteraction & {
-    /** Command options provided by the user */
+    /**
+     * Resolved command options provided by the user.
+     * @important All options are possibly undefined within an autocomplete interaction
+     * @example
+     * export const config = {
+     *   options: [CommandOption({ type: "String", name: "reason", autocomplete: true, required: true })],
+     * } satisfies CommandConfig;
+     * const interaction: CommandAutocompleteInteraction<typeof config>;
+     * const { reason } = interaction.options;
+     * //      ^? const reason: string | undefined
+     */
     options: MapOptions<
       T extends object ? (T extends { options: APIApplicationCommandOption[] } ? T["options"] : []) : CommandOption[],
       never
