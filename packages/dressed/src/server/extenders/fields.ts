@@ -32,18 +32,8 @@ export interface FieldValueGetters {
   checkbox: () => boolean;
 }
 
-const blurbs = {
-  3: "a string select",
-  4: "a text input",
-  5: "a user select",
-  6: "a role select",
-  7: "a mentionable select",
-  8: "a channel select",
-  19: "a file upload",
-  21: "a radio group",
-  22: "a checkbox group",
-  23: "a checkbox",
-};
+const blurbify = (t: ComponentType) =>
+  `a ${(t === ComponentType.StringSelect ? "StringSelect" : ComponentType[t]).replace(/(.)([A-Z])/g, "$1 $2").toLowerCase()}`;
 
 export function getField<R extends boolean>(
   custom_id: string,
@@ -59,7 +49,7 @@ export function getField<R extends boolean>(
 
   const returnValue = (type: ModalSubmitComponent["type"], resolvedKey?: keyof APIInteractionDataResolved) => () => {
     if (component.type !== type) {
-      throw new Error(`The field ${custom_id} is ${blurbs[component.type]}, not ${blurbs[type]}`);
+      throw new Error(`The field ${custom_id} is ${blurbify(component.type)}, not ${blurbify(type)}`);
     }
     if (
       component.type === ComponentType.TextInput ||
@@ -90,7 +80,7 @@ export function getField<R extends boolean>(
     roleSelect: returnValue(ComponentType.RoleSelect, "roles"),
     mentionableSelect() {
       if (component.type !== ComponentType.MentionableSelect) {
-        throw new Error(`The field ${component.custom_id} is ${blurbs[component.type]}, not a mentionable select`);
+        throw new Error(`The field ${component.custom_id} is ${blurbify(component.type)}, not a mentionable select`);
       }
       if (!resolved?.users && !resolved?.roles) {
         throw new Error(`No mentionables found for field ${component.custom_id}`);
