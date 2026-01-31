@@ -2,8 +2,6 @@ import {
   type APIApplicationCommandInteractionDataOption,
   type APIApplicationCommandOption,
   type APIInteractionDataResolved,
-  type APIRole,
-  type APIUser,
   ApplicationCommandOptionType,
 } from "discord-api-types/v10";
 import type { CommandOptionValue, MapOptions } from "../../types/interaction.ts";
@@ -40,16 +38,16 @@ export function parseOptions(
           ];
           if (!resolvedKey) throw new Error("Could not determine key of option");
           if (!resolved?.[resolvedKey]) {
-            throw new Error(`No ${resolvedKey} found for option ${option.name}`);
+            throw new Error(`No ${resolvedKey} found for option "${option.name}"`);
           }
           value = resolved[resolvedKey][option.value];
           break;
         }
         case ApplicationCommandOptionType.Mentionable: {
           if (!resolved?.users && !resolved?.roles) {
-            throw new Error(`No mentionables found for option ${option.name}`);
+            throw new Error(`No mentionables found for option "${option.name}"`);
           }
-          value = (resolved.users?.[option.value] ?? resolved.roles?.[option.value]) as APIUser | APIRole;
+          value = resolved.users?.[option.value] ?? resolved.roles?.[option.value];
           break;
         }
       }

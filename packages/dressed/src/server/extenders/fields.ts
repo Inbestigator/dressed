@@ -49,7 +49,7 @@ export function getField<R extends boolean>(
 
   const returnValue = (type: ModalSubmitComponent["type"], resolvedKey?: keyof APIInteractionDataResolved) => () => {
     if (component.type !== type) {
-      throw new Error(`The field ${custom_id} is ${blurbify(component.type)}, not ${blurbify(type)}`);
+      throw new Error(`The field "${custom_id}" is ${blurbify(component.type)}, not ${blurbify(type)}`);
     }
     if (
       component.type === ComponentType.TextInput ||
@@ -60,7 +60,7 @@ export function getField<R extends boolean>(
     } else {
       if (resolvedKey) {
         if (!resolved?.[resolvedKey]) {
-          throw new Error(`No ${resolvedKey} found for field ${component.custom_id}`);
+          throw new Error(`No ${resolvedKey} found for field "${component.custom_id}"`);
         }
         const resolveds = [];
         for (const value of component.values) {
@@ -79,10 +79,10 @@ export function getField<R extends boolean>(
     roleSelect: returnValue(ComponentType.RoleSelect, "roles"),
     mentionableSelect() {
       if (component.type !== ComponentType.MentionableSelect) {
-        throw new Error(`The field ${component.custom_id} is ${blurbify(component.type)}, not a mentionable select`);
+        throw new Error(`The field "${component.custom_id}" is ${blurbify(component.type)}, not a mentionable select`);
       }
       if (!resolved?.users && !resolved?.roles) {
-        throw new Error(`No mentionables found for field ${component.custom_id}`);
+        throw new Error(`No mentionables found for field "${component.custom_id}"`);
       }
       const mentionables = [];
       for (const value of component.values) {
@@ -92,5 +92,8 @@ export function getField<R extends boolean>(
     },
     channelSelect: returnValue(ComponentType.ChannelSelect, "channels"),
     fileUpload: returnValue(ComponentType.FileUpload, "attachments"),
+    radioGroup: returnValue(ComponentType.RadioGroup),
+    checkboxGroup: returnValue(ComponentType.CheckboxGroup),
+    checkbox: returnValue(ComponentType.Checkbox),
   } as ReturnType<typeof getField<R>>;
 }
