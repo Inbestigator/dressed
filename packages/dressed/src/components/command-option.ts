@@ -8,7 +8,7 @@ type CommandOptionMap = {
 };
 
 /**
- * Creates an application command option
+ * A parameter available for users to fill in chat input commands
  */
 export function CommandOption<
   K extends keyof typeof ApplicationCommandOptionType,

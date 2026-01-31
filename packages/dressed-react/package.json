@@ -9,7 +9,7 @@
   "dependencies": {
     "@types/react": "^19.2.10",
     "@types/react-reconciler": "^0.33.0",
-    "discord-api-types": "^0.38.37",
+    "discord-api-types": "^0.38.38",
     "react-reconciler": "npm:@dressed/react-reconciler"
   },
   "peerDependencies": {
