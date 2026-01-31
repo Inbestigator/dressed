@@ -2,7 +2,7 @@
 
 Options are defined in your [command config](/docs/commands/config) and are filled in by users to be sent with the interaction.
 
-You can access options using the `getOption` function on `interaction`. While it isn't required, including your command's config in the type will unlock name autocomplete and smart function determination in `getOption`.
+You can access the resolved values of options using the `options` field on `interaction`. While it isn't required, including your command's config in the type will unlock name autocomplete and smart type determination in `options`.
 
 ```ts
 import { type CommandConfig, type CommandInteraction, CommandOption } from "dressed";

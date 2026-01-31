@@ -27,15 +27,16 @@ The config object supports all of the [Discord application command option type](
 Passing your config into the type for your command interaction will unlock option autocomplete.
 
 ```ts
-import type { CommandConfig, CommandInteraction } from "dressed";
+import { type CommandConfig, type CommandInteraction, CommandOption } from "dressed";
 
-// You must use `satisfies`, as it means that the contents of your config aren't overriden.
+// You must use the `satisfies` keyword, as it doesn't override the contents of your config.
 // ❌ `config: CommandConfig = { ... }`
 // ❌ `config = { ... } as CommandConfig`
 export const config = { ... } satisfies CommandConfig;
 
 export default function myCommand(interaction: CommandInteraction<typeof config>) {
-  // Passing in config means that the names of options and the type is automatically suggested
-  console.log(interaction.getOption("animal", true).string());
+  // Passing in config means that the names/types of options are automatically determined
+  console.log(interaction.options.animal);
+  //                              ^? (property) animal: string
 }
 ```
