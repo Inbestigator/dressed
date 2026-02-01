@@ -1228,7 +1228,7 @@
       }
     },
     "DeleteAPIChannelMessageUserReaction": {
-      "params": ["url.channelId", "url.messageId", "url.userId: \"@me\" | Snowflake & {}", "url.emoji: string"],
+      "params": ["url.channelId", "url.messageId", "url.emoji: string", "url.userId: \"@me\" | Snowflake & {}"],
       "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)", "keyNameStart": 3 },
       "flags": ["returnVoid"],
       "docs": {
