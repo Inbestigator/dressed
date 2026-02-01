@@ -380,23 +380,21 @@
       }
     },
     "PutAPIChannelThreadMembers": {
-      "params": ["url.threadId", "url.userId?"],
+      "params": ["url.threadId", "url.userId: \"@me\" | Snowflake & {}"],
       "overrides": { "apiRoute": "threadMembers" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Adds a member to a thread.",
-        "params": { "userId": "Member to add, defaults to self" },
         "infos": ["Adding another member requires the ability to send messages in the thread."],
         "see": "/docs/resources/channel#add-thread-member"
       }
     },
     "DeleteAPIChannelThreadMembers": {
-      "params": ["url.threadId", "url.userId?"],
+      "params": ["url.threadId", "url.userId: \"@me\" | Snowflake & {}"],
       "overrides": { "name": "removeThreadMember", "apiRoute": "threadMembers" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Removes a member from a thread.",
-        "params": { "userId": "Member to remove, defaults to self" },
         "infos": [
           "Requires the ability to send messages in the thread.",
           "Removing another member also requires the thread is not archived."
@@ -1232,7 +1230,7 @@
       "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)", "keyNameStart": 3 },
       "flags": ["returnVoid"],
       "docs": {
-        "description": "Delete a user's reaction, defaults to removing the current user's reaction for a message.",
+        "description": "Delete a user's reaction for a message.",
         "see": "/docs/resources/message#delete-user-reaction"
       }
     },
@@ -1596,9 +1594,9 @@
       }
     },
     "GetAPIUser": {
-      "params": ["url.userId?"],
+      "params": ["url.userId: \"@me\" | Snowflake & {}"],
       "docs": {
-        "description": "Returns a [user](/docs/resources/user#user-object) object for a given user ID, defaults to self.",
+        "description": "Returns a [user](/docs/resources/user#user-object) object for a given user ID.",
         "see": "/docs/resources/user#get-user"
       }
     },
@@ -1694,20 +1692,25 @@
       }
     },
     "GetAPIGuildVoiceStateUser": {
-      "params": ["url.guildId", "url.userId?"],
+      "params": ["url.guildId", "url.userId: \"@me\" | Snowflake & {}"],
       "overrides": { "apiRoute": "guildVoiceState", "name": "getVoiceState" },
       "docs": {
-        "description": "Returns the specified user's [voice state](/docs/resources/voice#voice-state-object) in the guild, defaults to self.",
+        "description": "Returns the specified user's [voice state](/docs/resources/voice#voice-state-object) in the guild.",
         "see": "/docs/resources/voice#get-user-voice-state"
       }
     },
     "PatchAPIGuildVoiceStateCurrentMember": {
-      "params": ["url.guildId", "url.userId: \"@me\" | Snowflake & {}", "data"],
-      "overrides": { "apiRoute": "guildVoiceState", "name": "modifyVoiceState" },
+      "params": ["url.guildId", "url.userId: T", "data"],
+      "overrides": {
+        "apiRoute": "guildVoiceState",
+        "name": "modifyVoiceState",
+        "dataType": "T extends \"@me\" ? RESTPatchAPIGuildVoiceStateCurrentMemberJSONBody : RESTPatchAPIGuildVoiceStateUserJSONBody",
+        "generic": "T extends \"@me\" | Snowflake & {}",
+        "imports": ["type RESTPatchAPIGuildVoiceStateUserJSONBody"]
+      },
       "flags": ["returnVoid"],
       "docs": {
-        "description": "Updates a user's voice state, defaults to self.",
-        "params": { "data.request_to_speak_timestamp": "Not usable for other users" },
+        "description": "Updates a user's voice state.",
         "see": "/docs/resources/voice#modify-current-user-voice-state"
       }
     },
