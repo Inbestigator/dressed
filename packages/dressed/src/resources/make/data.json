@@ -3,7 +3,7 @@
   "routes": {
     "GetAPIApplicationCommands": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "params?"],
-      "overrides": { "name": "listGlobalCommands" },
+      "overrides": { "name": "listAppCommands" },
       "docs": {
         "description": "Fetch all of the global commands for your application.",
         "warns": [
@@ -14,7 +14,7 @@
     },
     "PostAPIApplicationCommands": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
-      "overrides": { "name": "createGlobalCommand" },
+      "overrides": { "name": "createAppCommand" },
       "docs": {
         "description": "Create a new global command.",
         "warns": [
@@ -25,7 +25,7 @@
     },
     "GetAPIApplicationCommand": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.commandId"],
-      "overrides": { "name": "getGlobalCommand" },
+      "overrides": { "name": "getAppCommand" },
       "docs": {
         "description": "Fetch a global command for your application.",
         "see": "/docs/interactions/application-commands#get-global-application-command"
@@ -33,7 +33,7 @@
     },
     "PatchAPIApplicationCommand": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.commandId", "data"],
-      "overrides": { "name": "modifyGlobalCommand" },
+      "overrides": { "name": "modifyAppCommand" },
       "docs": {
         "description": "Edit a global command.",
         "see": "/docs/interactions/application-commands#edit-global-application-command"
@@ -41,7 +41,7 @@
     },
     "DeleteAPIApplicationCommand": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.commandId"],
-      "overrides": { "name": "deleteGlobalCommand" },
+      "overrides": { "name": "deleteAppCommand" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Deletes a global command.",
@@ -50,7 +50,7 @@
     },
     "PutAPIApplicationCommands": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
-      "overrides": { "name": "bulkOverwriteGlobalCommands" },
+      "overrides": { "name": "bulkOverwriteAppCommands" },
       "docs": {
         "description": "Takes a list of application commands, overwriting the existing global command list for this application.",
         "dangers": [
@@ -287,7 +287,7 @@
     },
     "PostAPIChannelInvite": {
       "params": ["url.channelId", "data?"],
-      "overrides": { "apiRoute": "channelInvites", "keyNameStart": 0, "fileKey": ".target_users_file" },
+      "overrides": { "apiRoute": "channelInvites", "fileKey": ".target_users_file" },
       "flags": ["hasFiles", "singlefile"],
       "docs": {
         "description": "Create a new [invite](/docs/resources/invite#invite-object) object for the channel.",
@@ -501,7 +501,7 @@
     },
     "GetAPIApplicationEmojis": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
-      "overrides": { "keyNameStart": 0 },
+      "overrides": { "name": "listAppEmojis" },
       "docs": {
         "description": "Returns an object containing a list of [emoji](/docs/resources/emoji#emoji-object) objects for the given application under the `items` key.",
         "infos": [
@@ -512,7 +512,7 @@
     },
     "GetAPIApplicationEmoji": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId"],
-      "overrides": { "keyNameStart": 0 },
+      "overrides": { "name": "getAppEmoji" },
       "docs": {
         "description": "Returns an [emoji](/docs/resources/emoji#emoji-object) object for the given application and emoji IDs.",
         "infos": ["Includes the `user` field."],
@@ -521,7 +521,7 @@
     },
     "PostAPIApplicationEmoji": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
-      "overrides": { "apiRoute": "applicationEmojis", "keyNameStart": 0 },
+      "overrides": { "apiRoute": "applicationEmojis", "name": "createAppEmoji" },
       "docs": {
         "description": "Create a new emoji for the application.",
         "infos": [
@@ -535,12 +535,12 @@
     },
     "PatchAPIApplicationEmoji": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId", "data"],
-      "overrides": { "keyNameStart": 0 },
+      "overrides": { "name": "modifyAppEmoji" },
       "docs": { "description": "Modify the given emoji.", "see": "/docs/resources/emoji#modify-application-emoji" }
     },
     "DeleteAPIApplicationEmoji": {
       "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.emojiId"],
-      "overrides": { "keyNameStart": 0 },
+      "overrides": { "name": "deleteAppEmoji" },
       "flags": ["returnVoid"],
       "docs": { "description": "Delete the given emoji.", "see": "/docs/resources/emoji#delete-application-emoji" }
     },
@@ -664,15 +664,6 @@
         "see": "/docs/resources/guild-template#get-guild-template"
       }
     },
-    "PostAPITemplateCreateGuild": {
-      "params": ["url.code: string", "data"],
-      "overrides": { "apiRoute": "template", "name": "createFromTemplate" },
-      "flags": ["deprecated"],
-      "docs": {
-        "description": "Returns a [guild template](/docs/resources/guild-template#guild-template-object) object for the given code.",
-        "see": "/docs/change-log#guild-create-deprecation"
-      }
-    },
     "GetAPIGuildTemplates": {
       "params": ["url.guildId"],
       "docs": {
@@ -718,12 +709,6 @@
         "see": "/docs/resources/guild-template#delete-guild-template"
       }
     },
-    "PostAPIGuilds": {
-      "params": ["data"],
-      "overrides": { "apiRoute": "guilds" },
-      "flags": ["deprecated"],
-      "docs": { "description": "Create a new guild.", "see": "/docs/change-log#guild-create-deprecation" }
-    },
     "GetAPIGuild": {
       "params": ["url.guildId", "params?"],
       "docs": {
@@ -755,11 +740,6 @@
         ],
         "see": "/docs/resources/guild#modify-guild"
       }
-    },
-    "DeleteAPIGuild": {
-      "params": ["url.guildId"],
-      "flags": ["deprecated", "returnVoid"],
-      "docs": { "description": "Delete a guild.", "see": "/docs/change-log#guild-create-deprecation" }
     },
     "GetAPIGuildChannels": {
       "params": ["url.guildId"],
@@ -969,16 +949,6 @@
         "description": "Modify a guild role.",
         "infos": ["Requires the `MANAGE_ROLES` permission."],
         "see": "/docs/resources/guild#modify-guild-role"
-      }
-    },
-    "PostAPIGuildsMFA": {
-      "params": ["url.guildId", "data"],
-      "overrides": { "apiRoute": "guildMFA", "name": "modifyMFALevel" },
-      "flags": ["deprecated"],
-      "docs": {
-        "description": "Modify a guild's MFA level.",
-        "infos": ["Requires guild ownership."],
-        "see": "/docs/change-log#guild-create-deprecation"
       }
     },
     "DeleteAPIGuildRole": {
@@ -1310,17 +1280,6 @@
           "This endpoint will not delete messages older than 2 weeks, and will fail with a 400 BAD REQUEST if any message provided is older than that or if any duplicate message IDs are provided."
         ],
         "see": "/docs/resources/message#bulk-delete-messages"
-      }
-    },
-    "GetAPIChannelPins": {
-      "params": ["url.channelId"],
-      "flags": ["deprecated"],
-      "docs": {
-        "description": "Gets the first 50 pinned messages in a channel, returning an array of [message](/docs/resources/message#message-object) objects on success.",
-        "infos": [
-          "Requires the `VIEW_CHANNEL` permission. If the user is missing the `READ_MESSAGE_HISTORY` permission in the channel, then no pins will be returned."
-        ],
-        "see": "/docs/resources/message#get-pinned-messages-deprecated"
       }
     },
     "GetAPIChannelMessagesPins": {
@@ -1699,19 +1658,19 @@
         "see": "/docs/resources/voice#get-user-voice-state"
       }
     },
-    "PatchAPIGuildVoiceStateCurrentMember": {
+    "PatchAPIGuildVoiceStateUser": {
       "params": ["url.guildId", "url.userId: T", "data"],
       "overrides": {
         "apiRoute": "guildVoiceState",
         "name": "modifyVoiceState",
         "dataType": "T extends \"@me\" ? RESTPatchAPIGuildVoiceStateCurrentMemberJSONBody : RESTPatchAPIGuildVoiceStateUserJSONBody",
         "generic": "T extends \"@me\" | Snowflake & {}",
-        "imports": ["type RESTPatchAPIGuildVoiceStateUserJSONBody"]
+        "imports": ["type RESTPatchAPIGuildVoiceStateCurrentMemberJSONBody"]
       },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Updates a user's voice state.",
-        "see": "/docs/resources/voice#modify-current-user-voice-state"
+        "see": "/docs/resources/voice#modify-user-voice-state"
       }
     },
     "PostAPIChannelWebhook": {
