@@ -1,26 +1,20 @@
 import { expect, test } from "bun:test";
-import {
-  ActionRow,
-  Button,
-  Checkbox,
-  CheckboxGroup,
-  CommandOption,
-  Container,
-  File,
-  FileUpload,
-  Label,
-  MediaGallery,
-  MediaGalleryItem,
-  RadioGroup,
-  RadioGroupOption,
-  Section,
-  SelectMenu,
-  SelectMenuOption,
-  Separator,
-  TextDisplay,
-  TextInput,
-  Thumbnail,
-} from "dressed";
+import { ActionRow } from "./action-row.ts";
+import { Button } from "./button.ts";
+import { Checkbox, CheckboxGroup } from "./checkbox.ts";
+import { CommandOption } from "./command-option.ts";
+import { Container } from "./container.ts";
+import { File } from "./file.ts";
+import { FileUpload } from "./file-upload.ts";
+import { Label } from "./label.ts";
+import { MediaGallery, MediaGalleryItem } from "./media-gallery.ts";
+import { RadioGroup, RadioGroupOption } from "./radio-group.ts";
+import { Section } from "./section.ts";
+import { SelectMenu, SelectMenuOption } from "./select-menu.ts";
+import { Separator } from "./separator.ts";
+import { TextDisplay } from "./text-display.ts";
+import { TextInput } from "./text-input.ts";
+import { Thumbnail } from "./thumbnail.ts";
 
 test("Command option function", () => {
   expect(
@@ -127,6 +121,7 @@ test("Thumbnail component", () => {
 
 test("Media gallery component", () => {
   expect(MediaGallery([MediaGalleryItem("https://example.com")], { id: 1 })).toMatchSnapshot();
+  expect(MediaGallery(MediaGalleryItem("https://example.com"))).toMatchSnapshot();
 });
 
 test("File component", () => {
@@ -142,6 +137,15 @@ test("Container component", () => {
     Container(
       ActionRow(Button({ label: "Click me", custom_id: "1" }), Button({ label: "Click me", custom_id: "2" })),
       Separator(),
+    ),
+  ).toMatchSnapshot();
+  expect(
+    Container(
+      [
+        ActionRow(Button({ label: "Click me", custom_id: "1" }), Button({ label: "Click me", custom_id: "2" })),
+        Separator(),
+      ],
+      { id: 1 },
     ),
   ).toMatchSnapshot();
 });

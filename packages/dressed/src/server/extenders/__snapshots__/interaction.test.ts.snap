@@ -1,0 +1,10 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`Check for subcommand 1`] = `
+{
+  "name": "subcommand1",
+  "options": {
+    "option2": "test",
+  },
+}
+`;

@@ -132,6 +132,19 @@ exports[`Media gallery component 1`] = `
 }
 `;
 
+exports[`Media gallery component 2`] = `
+{
+  "items": [
+    {
+      "media": {
+        "url": "https://example.com",
+      },
+    },
+  ],
+  "type": 12,
+}
+`;
+
 exports[`File component 1`] = `
 {
   "file": {
@@ -173,6 +186,36 @@ exports[`Container component 1`] = `
       "type": 14,
     },
   ],
+  "type": 17,
+}
+`;
+
+exports[`Container component 2`] = `
+{
+  "components": [
+    {
+      "components": [
+        {
+          "custom_id": "1",
+          "label": "Click me",
+          "style": 1,
+          "type": 2,
+        },
+        {
+          "custom_id": "2",
+          "label": "Click me",
+          "style": 1,
+          "type": 2,
+        },
+      ],
+      "type": 1,
+    },
+    {
+      "spacing": 1,
+      "type": 14,
+    },
+  ],
+  "id": 1,
   "type": 17,
 }
 `;

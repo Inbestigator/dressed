@@ -1,0 +1,38 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`parseOptions parseOptions 1`] = `
+{
+  "attachment": {
+    "id": "f1",
+  },
+  "boolean": true,
+  "channel": {
+    "id": "c1",
+  },
+  "integer": -1,
+  "mentionable": {
+    "id": "u1",
+  },
+  "number": 0.5,
+  "role": {
+    "id": "r1",
+  },
+  "string": "test",
+  "subcommand": {
+    "name": "subcommand",
+    "options": {},
+  },
+  "subcommand-group": {
+    "name": "subcommand-group",
+    "subcommands": {
+      "subcommand": {
+        "name": "subcommand",
+        "options": {},
+      },
+    },
+  },
+  "user": {
+    "id": "u1",
+  },
+}
+`;

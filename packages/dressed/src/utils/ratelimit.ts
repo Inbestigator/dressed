@@ -3,6 +3,7 @@ import { setTimeout } from "node:timers";
 type ExtractedBodyType = object | FormData;
 
 interface Collector {
+  key: string;
   bodies: Promise<ExtractedBodyType>[];
   promise: Promise<Response>;
   resolve: (r: Response) => void;
@@ -19,8 +20,7 @@ interface Bucket {
 
 export const buckets = new Map<string, Bucket>();
 export const bucketIds = new Map<string, string>();
-
-let globalReset = -1;
+export const resets = { global: -1 };
 
 function ensureBucket(id: string) {
   const bucketId = bucketIds.get(id) ?? id;
@@ -34,9 +34,7 @@ function ensureBucket(id: string) {
   return bucket;
 }
 
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const cleanup = (bucketId: string) => () => {
   buckets.delete(bucketId);
@@ -47,11 +45,12 @@ const cleanup = (bucketId: string) => () => {
 
 export function checkLimit(req: Request, bucketTTL: number) {
   return new Promise<[Request, (v: Response) => void] | Response>((resolveChecker) => {
-    const bucketIdKey = `${req.method}:${req.url}`;
+    const auth = req.headers.get("authorization");
+    const bucketIdKey = `${req.method}:${new URL(req.url).pathname}:${auth}`;
     const bucket = ensureBucket(bucketIdKey);
 
     async function processReq(req: Request, cb?: (res: Response) => void) {
-      const deltaG = globalReset - Date.now();
+      const deltaG = resets.global - Date.now();
 
       if (deltaG > 0) {
         await delay(deltaG);
@@ -71,7 +70,7 @@ export function checkLimit(req: Request, bucketTTL: number) {
         req,
         (res) => {
           cb?.(res.clone());
-          const bucketId = res.headers.get("x-ratelimit-bucket");
+          let bucketId = res.headers.get("x-ratelimit-bucket");
           const limit = Number.parseInt(res.headers.get("x-ratelimit-limit") ?? "", 10);
           const remaining = Number.parseInt(res.headers.get("x-ratelimit-remaining") ?? "", 10);
           const resetAfter = Number.parseFloat(res.headers.get("x-ratelimit-reset-after") ?? "");
@@ -83,11 +82,12 @@ export function checkLimit(req: Request, bucketTTL: number) {
           buckets.delete(bucketIdKey);
 
           if (scope === "global" && !Number.isNaN(retryAfter)) {
-            globalReset = Date.now() + retryAfter * 1000;
+            resets.global = Date.now() + retryAfter * 1000;
             return resolveRequest(undefined);
           }
           if ([limit, remaining, resetAfter].some(Number.isNaN) || !bucketId) return resolveRequest(undefined);
 
+          bucketId += `:${auth}`;
           bucketIds.set(bucketIdKey, bucketId);
 
           const bucket = ensureBucket(bucketIdKey);
@@ -132,26 +132,22 @@ export function checkLimit(req: Request, bucketTTL: number) {
       bucket.promise
         .then(async (collector) => {
           if (collector) {
-            const { prev } = collector;
-            if (
-              isLast ||
-              prev.req.headers.get("authorization") !== req.headers.get("authorization") ||
-              req.url !== prev.req.url ||
-              req.method !== prev.req.method
-            ) {
+            if (collector.key === bucketIdKey) collector = collectReq(collector, req);
+            if (isLast || collector.key !== bucketIdKey) {
+              const { prev } = collector;
               return prev.processReq(
                 prev.req.method === "GET" ? prev.req : combineBodies(await Promise.all(collector.bodies), prev.req),
                 collector.resolve,
               );
             }
-            return collectReq(collector, req);
+            return collector;
           }
           if ((req.method === "PATCH" || req.method === "GET") && !isLast) {
             let resolve!: Collector["resolve"];
             const promise = new Promise<Response>((r) => {
               resolve = r;
             });
-            return collectReq({ bodies: [], promise, resolve }, req);
+            return collectReq({ key: bucketIdKey, bodies: [], promise, resolve }, req);
           }
         })
         .then((c) => c ?? processReq(req)),
