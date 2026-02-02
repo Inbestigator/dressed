@@ -134,6 +134,26 @@ export type CommandInteraction<T extends keyof typeof ApplicationCommandType | C
       ? APIUserApplicationCommandInteraction & { target: APIUser & { member?: APIInteractionDataResolvedGuildMember } }
       : APIPrimaryEntryPointCommandInteraction) &
   Omit<BaseInteractionMethods, "update" | "deferUpdate" | "sendChoices">;
+
+type Join<P extends string, N extends string> = P extends "" ? N : `${P}.${N}`;
+
+type Focused<T extends APIApplicationCommandOption, P extends string = ""> = T extends {
+  type:
+    | ApplicationCommandOptionType.String
+    | ApplicationCommandOptionType.Integer
+    | ApplicationCommandOptionType.Number;
+  autocomplete: true;
+  name: infer N extends string;
+}
+  ? Join<P, N>
+  : T extends {
+        type: ApplicationCommandOptionType.Subcommand | ApplicationCommandOptionType.SubcommandGroup;
+        name: infer N extends string;
+        options: readonly APIApplicationCommandOption[];
+      }
+    ? Focused<T["options"][number], Join<P, N>>
+    : never;
+
 /**
  * A command autocomplete interaction, includes methods for responding to the interaction.
  */
@@ -154,6 +174,8 @@ export type CommandAutocompleteInteraction<T extends ChatInputConfig | undefined
       T extends object ? (T extends { options: APIApplicationCommandOption[] } ? T["options"] : []) : CommandOption[],
       never
     >;
+    /** The option the user is currently typing */
+    focused: T extends { options: APIApplicationCommandOption[] } ? Focused<T["options"][number]> : string;
   } & Omit<
       BaseInteractionMethods,
       "deferReply" | "deferUpdate" | "editReply" | "followUp" | "reply" | "showModal" | "update"

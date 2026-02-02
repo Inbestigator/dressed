@@ -12,7 +12,7 @@ import type {
   ModalSubmitInteraction,
 } from "../../types/interaction.ts";
 import { getField } from "./fields.ts";
-import { parseOptions } from "./options.ts";
+import { getFocused, parseOptions } from "./options.ts";
 import { baseInteractionMethods } from "./responses.ts";
 import { parseValues } from "./values.ts";
 
@@ -20,8 +20,11 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
   const methods = baseInteractionMethods(input);
 
   switch (input.type) {
-    case InteractionType.ApplicationCommand:
-    case InteractionType.ApplicationCommandAutocomplete: {
+    // biome-ignore lint/suspicious/noFallthroughSwitchClause: Options should be handled on both autocomplete and commands
+    case InteractionType.ApplicationCommandAutocomplete: // NOSONAR
+      // @ts-expect-error Property is on return type
+      input.focused = getFocused(input.data.options)?.slice(1);
+    case InteractionType.ApplicationCommand: {
       switch (input.data.type) {
         case ApplicationCommandType.ChatInput:
           // @ts-expect-error Property is on return type

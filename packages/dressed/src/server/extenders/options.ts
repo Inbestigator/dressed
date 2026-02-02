@@ -55,3 +55,13 @@ export function parseOptions(
     }),
   );
 }
+
+export function getFocused(options: APIApplicationCommandInteractionDataOption[] = [], path = ""): string | undefined {
+  for (const option of options) {
+    if ("focused" in option && option.focused) return `${path}.${option.name}`;
+    if ("options" in option) {
+      const focused = getFocused(option.options, `${path}.${option.name}`);
+      if (focused) return focused;
+    }
+  }
+}
