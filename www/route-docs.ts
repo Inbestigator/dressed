@@ -17,10 +17,10 @@ for (const [key, { docs, params, overrides = {}, flags }] of Object.entries(rout
   const getVarName = resolvedName.replace(/[a-z]+/, "");
 
   const content = `
-## [${resolvedName
-    .match(/([A-Z]?[a-z]+|[A-Z]+(?![a-z]))/g)
-    ?.map((w) => `${w[0].toUpperCase()}${w.slice(1)}`)
-    .join(" ")}](${docs.see}) ${flags?.includes("deprecated") ? "- *Deprecated*" : ""}
+## [${docs.see
+    .split("#")[1]
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase())}](${docs.see}) ${flags?.includes("deprecated") ? "- *Deprecated*" : ""}
 \`${key}\`
 
 ${docs.description}

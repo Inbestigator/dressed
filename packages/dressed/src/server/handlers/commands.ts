@@ -8,7 +8,7 @@ import {
   type RESTPutAPIApplicationCommandsJSONBody,
   type RESTPutAPIApplicationGuildCommandsJSONBody,
 } from "discord-api-types/v10";
-import { bulkOverwriteGlobalCommands, bulkOverwriteGuildCommands } from "../../resources/generated.resources.ts";
+import { bulkOverwriteAppCommands, bulkOverwriteGuildCommands } from "../../resources/generated.resources.ts";
 import type { CommandConfig, CommandData } from "../../types/config.ts";
 import type { CommandAutocompleteInteraction, CommandInteraction } from "../../types/interaction.ts";
 import logger from "../../utils/log.ts";
@@ -60,7 +60,7 @@ export async function registerCommands(commands: CommandData[]) {
 
   for (const [scope, commands] of scopes) {
     if (scope === "global") {
-      await bulkOverwriteGlobalCommands(commands);
+      await bulkOverwriteAppCommands(commands);
     } else {
       await bulkOverwriteGuildCommands(scope, commands as never);
     }
