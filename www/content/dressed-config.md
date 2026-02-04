@@ -87,6 +87,6 @@ The build object is only available when using the config with the framework. The
 
 This is the source root that the server uses when assembling files, the default is `src`.
 
-#### Build files
+#### Build include
 
 Glob patterns used when bundling handlers to determine which files to include, by default it is `["**/*.{js,ts,mjs}"]`. Negation patterns can be used to exclude files, e.g. `"!**/*.test.ts"`.

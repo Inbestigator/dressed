@@ -24,7 +24,7 @@ program
     return parsed;
   })
   .option("-R, --root <root>", "Source root for the bot, defaults to `src`")
-  .option("-f, --files <patterns...>", "Glob patterns for handler files, defaults to `**/*.{js,ts,mjs}`")
+  .option("-I, --include <includes...>", "Glob patterns for handler files, defaults to `**/*.{js,ts,mjs}`")
   .action(
     async ({
       instance,
@@ -32,19 +32,19 @@ program
       endpoint,
       port,
       root,
-      files,
+      include,
     }: {
       instance?: boolean;
       register?: boolean;
       endpoint?: string;
       port?: number;
       root?: string;
-      files?: string[];
+      include?: string[];
     }) => {
       const { commands, components, events, configPath } = await build({
         endpoint,
         port,
-        build: { root, files },
+        build: { root, include },
       });
       const categories = [commands, components, events];
 

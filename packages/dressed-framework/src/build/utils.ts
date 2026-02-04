@@ -28,7 +28,7 @@ export function generateCategoryExports(categories: WalkEntry[][]) {
 }
 
 /** Recursively check for files */
-export async function crawlDir(root: string, dir: string, patterns = ["**/*.{js,ts,mjs}"]): Promise<WalkEntry[]> {
+export async function crawlDir(root: string, dir: string, include = ["**/*.{js,ts,mjs}"]): Promise<WalkEntry[]> {
   const dirPath = resolve(root, dir);
 
   if (!existsSync(dirPath)) {
@@ -36,7 +36,7 @@ export async function crawlDir(root: string, dir: string, patterns = ["**/*.{js,
     return [];
   }
 
-  const entries = await glob(patterns, { cwd: dirPath });
+  const entries = await glob(include, { cwd: dirPath });
   return entries.map((e) => {
     const path = relative(cwd(), join(dirPath, e));
     return { name: basename(path, extname(path)), path };
