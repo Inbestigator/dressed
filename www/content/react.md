@@ -53,14 +53,14 @@ const components = (
 ```
 
 > [!TIP]
-> By default, the `dressed build` command doesn't recognize `tsx` files, so you have to add a glob pattern either in the cli arguments (`dressed build -f "**/*.{ts,tsx}"`) or your config file.
+> By default, the `dressed build` command doesn't recognize `tsx` files, so you have to add a glob pattern either in the cli arguments (`dressed build -I '**/*.{ts,tsx}'`) or your config file.
 >
 > ```ts title="dressed.config.ts"
 > import { patchInteraction } from "@dressed/react";
 > import { DressedConfig } from "dressed/server";
 >
 > export default {
->   build: { files: ["**/*.{ts,tsx}"] },
+>   build: { include: ["**/*.{ts,tsx}"] },
 > } satisfies DressedConfig;
 > ```
 

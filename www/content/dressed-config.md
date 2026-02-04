@@ -15,7 +15,7 @@ import { patchInteraction } from "@dressed/react";
 export default {
   endpoint: "/bot",
   port: 3000,
-  build: { files: ["**/*.{ts,tsx}"], root: "src/bot" },
+  build: { include: ["**/*.{ts,tsx}", "!**/*.test.ts"], root: "src/bot" },
   middleware: {
     commands: (i) => [patchInteraction(i)],
     components: (i, a) => [patchInteraction(i), a],
