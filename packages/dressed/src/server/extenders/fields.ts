@@ -25,7 +25,7 @@ export interface FieldValueGetters {
   /** Return the file upload's values as an array of attachments - Component type must be a select with type `FileUpload` */
   fileUpload: () => APIAttachment[];
   /** Return the radio group's selection value as a string - Component type must be a radio group */
-  radioGroup: () => string;
+  radioGroup: () => string | null;
   /** Return the checkbox group's selection values as an array of strings - Component type must be a checkbox group */
   checkboxGroup: () => string[];
   /** Return the checkbox's value as a boolean - Component type must be a checkbox */
@@ -59,12 +59,13 @@ export function getField<R extends boolean>(
       return component.value;
     } else {
       if (resolvedKey) {
-        if (!resolved?.[resolvedKey]) {
-          throw new Error(`No ${resolvedKey} found for field "${component.custom_id}"`);
-        }
         const resolveds = [];
-        for (const value of component.values) {
-          resolveds.push(resolved[resolvedKey][value]);
+        if (resolved?.[resolvedKey]) {
+          for (const value of component.values) {
+            resolveds.push(resolved[resolvedKey][value]);
+          }
+        } else if (component.values.length) {
+          throw new Error(`No ${resolvedKey} found for field "${component.custom_id}"`);
         }
         return resolveds;
       }
