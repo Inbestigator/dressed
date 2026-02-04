@@ -2,11 +2,17 @@ import { expect, test } from "bun:test";
 import {
   ActionRow,
   Button,
+  Checkbox,
+  CheckboxGroup,
   CommandOption,
   Container,
   File,
+  FileUpload,
+  Label,
   MediaGallery,
   MediaGalleryItem,
+  RadioGroup,
+  RadioGroupOption,
   Section,
   SelectMenu,
   SelectMenuOption,
@@ -16,12 +22,13 @@ import {
   Thumbnail,
 } from "dressed";
 
-test("Button component", () => {
+test("Command option function", () => {
   expect(
-    Button({
-      label: "Click me",
-      custom_id: "button_id",
-      style: "Primary",
+    CommandOption({
+      name: "test",
+      description: "test",
+      type: "String",
+      max_length: 10,
     }),
   ).toMatchSnapshot();
 });
@@ -30,13 +37,12 @@ test("Action row component", () => {
   expect(ActionRow()).toMatchSnapshot();
 });
 
-test("Command option component", () => {
+test("Button component", () => {
   expect(
-    CommandOption({
-      name: "test",
-      description: "test",
-      type: "String",
-      max_length: 10,
+    Button({
+      label: "Click me",
+      custom_id: "button_id",
+      style: "Primary",
     }),
   ).toMatchSnapshot();
 });
@@ -138,4 +144,55 @@ test("Container component", () => {
       Separator(),
     ),
   ).toMatchSnapshot();
+});
+
+test("Label component", () => {
+  expect(
+    Label(
+      "What did you find interesting about the game?",
+      TextInput({
+        custom_id: "game_feedback",
+        label: "Write your feedback here...",
+        style: "Paragraph",
+        min_length: 100,
+        max_length: 4000,
+        required: true,
+      }),
+      "Please give us as much detail as possible so we can improve the game!",
+    ),
+  ).toMatchSnapshot();
+});
+
+test("File upload component", () => {
+  expect(FileUpload({ custom_id: "file_upload" })).toMatchSnapshot();
+});
+
+test("Radio group component", () => {
+  expect(
+    RadioGroup({
+      custom_id: "satisfaction",
+      options: [
+        RadioGroupOption("Great", "great", { default: true }),
+        RadioGroupOption("Okay", "okay"),
+        RadioGroupOption("Needs work", "needs_work"),
+      ],
+      required: true,
+    }),
+  ).toMatchSnapshot();
+});
+
+test("Checkbox group component", () => {
+  expect(
+    CheckboxGroup({
+      custom_id: "improvements",
+      options: [Checkbox("Performance", "perf"), Checkbox("UI", "ui"), Checkbox("Docs", "docs", { default: true })],
+      min_values: 1,
+      max_values: 3,
+      required: true,
+    }),
+  ).toMatchSnapshot();
+});
+
+test("Checkbox component", () => {
+  expect(Checkbox({ custom_id: "subscribe" })).toMatchSnapshot();
 });

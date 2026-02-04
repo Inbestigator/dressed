@@ -2,7 +2,7 @@
 
 Options are defined in your [command config](/docs/commands/config) and are filled in by users to be sent with the interaction.
 
-You can access options using the `getOption` function on `interaction`. While it isn't required, including your command's config in the type will unlock name autocomplete and smart function determination in `getOption`.
+You can access the resolved values of options using the `options` field on `interaction`. While it isn't required, including your command's config in the type will unlock name autocomplete and smart type determination in `options`.
 
 ```ts
 import { type CommandConfig, type CommandInteraction, CommandOption } from "dressed";
@@ -24,8 +24,10 @@ export const config = {
 } satisfies CommandConfig;
 
 export default function (interaction: CommandInteraction<typeof config>) {
-  const required = interaction.getOption("required", true).string(); // string
-  const optional = interaction.getOption("optional")?.string(); // string | undefined
+  const {
+    required, // string
+    optional, // string | undefined
+  } = interaction.options;
 }
 ```
 
@@ -69,14 +71,10 @@ export const config = {
 } satisfies CommandConfig;
 
 export default function (interaction: CommandInteraction<typeof config>) {
-  const subcommand =
-    interaction.getOption("foo")?.subcommand() ||
-    interaction.getOption("group")?.subcommandGroup().getSubcommand("bar");
-
+  const subcommand = interaction.options.foo || interaction.options.group?.subcommands.bar;
   switch (subcommand?.name) {
     case "foo": {
-      const baz = subcommand.getOption("baz", true).number();
-      return interaction.reply(`${baz} is a pretty big number!`);
+      return interaction.reply(`${subcommand.options.baz} is a pretty big number!`);
     }
     case "bar": {
       return interaction.reply("Bar");

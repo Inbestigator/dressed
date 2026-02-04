@@ -1,11 +1,11 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`Button component 1`] = `
+exports[`Command option function 1`] = `
 {
-  "custom_id": "button_id",
-  "label": "Click me",
-  "style": 1,
-  "type": 2,
+  "description": "test",
+  "max_length": 10,
+  "name": "test",
+  "type": 3,
 }
 `;
 
@@ -16,12 +16,12 @@ exports[`Action row component 1`] = `
 }
 `;
 
-exports[`Command option component 1`] = `
+exports[`Button component 1`] = `
 {
-  "description": "test",
-  "max_length": 10,
-  "name": "test",
-  "type": 3,
+  "custom_id": "button_id",
+  "label": "Click me",
+  "style": 1,
+  "type": 2,
 }
 `;
 
@@ -174,5 +174,84 @@ exports[`Container component 1`] = `
     },
   ],
   "type": 17,
+}
+`;
+
+exports[`Label component 1`] = `
+{
+  "component": {
+    "custom_id": "game_feedback",
+    "label": "Write your feedback here...",
+    "max_length": 4000,
+    "min_length": 100,
+    "required": true,
+    "style": 2,
+    "type": 4,
+  },
+  "description": "Please give us as much detail as possible so we can improve the game!",
+  "label": "What did you find interesting about the game?",
+  "type": 18,
+}
+`;
+
+exports[`File upload component 1`] = `
+{
+  "custom_id": "file_upload",
+  "type": 19,
+}
+`;
+
+exports[`Radio group component 1`] = `
+{
+  "custom_id": "satisfaction",
+  "options": [
+    {
+      "default": true,
+      "label": "Great",
+      "value": "great",
+    },
+    {
+      "label": "Okay",
+      "value": "okay",
+    },
+    {
+      "label": "Needs work",
+      "value": "needs_work",
+    },
+  ],
+  "required": true,
+  "type": 21,
+}
+`;
+
+exports[`Checkbox group component 1`] = `
+{
+  "custom_id": "improvements",
+  "max_values": 3,
+  "min_values": 1,
+  "options": [
+    {
+      "label": "Performance",
+      "value": "perf",
+    },
+    {
+      "label": "UI",
+      "value": "ui",
+    },
+    {
+      "default": true,
+      "label": "Docs",
+      "value": "docs",
+    },
+  ],
+  "required": true,
+  "type": 22,
+}
+`;
+
+exports[`Checkbox component 1`] = `
+{
+  "custom_id": "subscribe",
+  "type": 23,
 }
 `;

@@ -6,7 +6,7 @@ import { Command, InvalidArgumentError } from "commander";
 import { logger } from "dressed/utils";
 import build from "../build/build.ts";
 import bundleFiles from "../build/bundle.ts";
-import { categoryExports, importFileString, normalizeImportPath } from "../utils.ts";
+import { generateCategoryExports, generateFileImport, normalizeImportPath } from "../build/utils.ts";
 
 const program = new Command().name("dressed").description("A sleek, serverless-ready Discord bot framework.");
 
@@ -57,7 +57,7 @@ ${
 import { config as dressedConfig } from "dressed/utils";
 import config from "${configPath ? normalizeImportPath(configPath) : "./dressed.config.mjs"}";
 Object.assign(dressedConfig, config);
-${[categories.map((c) => c.map(importFileString)), categoryExports(categories)].flat(2).join("")}
+${[categories.map((c) => c.map(generateFileImport)), generateCategoryExports(categories)].flat(2).join("")}
 export { config };
 ${register ? "registerCommands(commands);" : ""}
 ${instance ? "createServer(commands, components, events);" : ""}`.trim();
