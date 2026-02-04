@@ -10,9 +10,11 @@ export interface DressedConfig extends CoreDressedConfig {
      */
     root?: string;
     /**
-     * File extensions to include when bundling handlers
-     * @default ["js", "ts", "mjs"]
+     * Glob patterns for handler files to include
+     * @default ["**\/*.{js,ts,mjs}"]
+     * @example ["**\/*.{ts,tsx}", "!**\/*.test.ts"]
+     * // Exclude test files
      */
-    extensions?: string[];
+    include?: string[];
   };
 }
