@@ -112,7 +112,7 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
           resolve(Object.assign(res ?? {}, { $container: container }));
         });
         if (!$req?.persistContainer) {
-          setTimeout(() => reconciler.updateContainer(null, container), createdAt + 6e4 * 15 - Date.now()).unref();
+          setTimeout(() => reconciler.updateContainer(null, container), createdAt + 6e4 * 15 - Date.now()).unref?.();
         }
       });
     };
