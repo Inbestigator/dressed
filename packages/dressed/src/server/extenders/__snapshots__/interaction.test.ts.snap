@@ -1,10 +1,225 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`Check for subcommand 1`] = `
+exports[`createInteraction ApplicationCommand 0 1`] = `
 {
-  "name": "subcommand1",
-  "options": {
-    "option2": "test",
+  "data": {
+    "resolved": {
+      "messages": {
+        "u1": {
+          "id": "m1",
+        },
+      },
+      "users": {
+        "u1": {
+          "id": "u1",
+        },
+      },
+    },
+    "type": 1,
   },
+  "deferReply": [Function: deferReply],
+  "deferUpdate": [Function: deferUpdate],
+  "editReply": [Function: editReply],
+  "followUp": [Function: followUp],
+  "history": [],
+  "options": {},
+  "reply": [Function: reply],
+  "sendChoices": [Function: sendChoices],
+  "showModal": [Function: showModal],
+  "type": 2,
+  "update": [Function: update],
+  "user": undefined,
 }
 `;
+
+exports[`createInteraction ApplicationCommand 1 1`] = `
+{
+  "data": {
+    "resolved": {
+      "messages": {
+        "u1": {
+          "id": "m1",
+        },
+      },
+      "users": {
+        "u1": {
+          "id": "u1",
+        },
+      },
+    },
+    "target_id": "u1",
+    "type": 2,
+  },
+  "deferReply": [Function: deferReply],
+  "deferUpdate": [Function: deferUpdate],
+  "editReply": [Function: editReply],
+  "followUp": [Function: followUp],
+  "history": [],
+  "reply": [Function: reply],
+  "sendChoices": [Function: sendChoices],
+  "showModal": [Function: showModal],
+  "target": {
+    "id": "u1",
+    "member": undefined,
+  },
+  "type": 2,
+  "update": [Function: update],
+  "user": undefined,
+}
+`;
+
+exports[`createInteraction ApplicationCommand 2 1`] = `
+{
+  "data": {
+    "resolved": {
+      "messages": {
+        "u1": {
+          "id": "m1",
+        },
+      },
+      "users": {
+        "u1": {
+          "id": "u1",
+        },
+      },
+    },
+    "target_id": "u1",
+    "type": 3,
+  },
+  "deferReply": [Function: deferReply],
+  "deferUpdate": [Function: deferUpdate],
+  "editReply": [Function: editReply],
+  "followUp": [Function: followUp],
+  "history": [],
+  "reply": [Function: reply],
+  "sendChoices": [Function: sendChoices],
+  "showModal": [Function: showModal],
+  "target": {
+    "id": "m1",
+  },
+  "type": 2,
+  "update": [Function: update],
+  "user": undefined,
+}
+`;
+
+exports[`createInteraction MessageComponent 0 1`] = `
+{
+  "data": {
+    "resolved": {
+      "messages": {
+        "u1": {
+          "id": "m1",
+        },
+      },
+      "users": {
+        "u1": {
+          "id": "u1",
+        },
+      },
+    },
+    "type": 3,
+  },
+  "deferReply": [Function: deferReply],
+  "deferUpdate": [Function: deferUpdate],
+  "editReply": [Function: editReply],
+  "followUp": [Function: followUp],
+  "history": [],
+  "reply": [Function: reply],
+  "sendChoices": [Function: sendChoices],
+  "showModal": [Function: showModal],
+  "type": 3,
+  "update": [Function: update],
+  "user": undefined,
+  "values": undefined,
+}
+`;
+
+exports[`createInteraction ApplicationCommandAutocomplete 0 1`] = `
+{
+  "data": {
+    "resolved": {
+      "messages": {
+        "u1": {
+          "id": "m1",
+        },
+      },
+      "users": {
+        "u1": {
+          "id": "u1",
+        },
+      },
+    },
+    "type": 1,
+  },
+  "deferReply": [Function: deferReply],
+  "deferUpdate": [Function: deferUpdate],
+  "editReply": [Function: editReply],
+  "focused": undefined,
+  "followUp": [Function: followUp],
+  "history": [],
+  "options": {},
+  "reply": [Function: reply],
+  "sendChoices": [Function: sendChoices],
+  "showModal": [Function: showModal],
+  "type": 4,
+  "update": [Function: update],
+  "user": undefined,
+}
+`;
+
+exports[`createInteraction ModalSubmit 0 1`] = `
+{
+  "data": {
+    "components": [
+      {
+        "components": [
+          {
+            "custom_id": "textInput",
+            "type": 4,
+            "value": "test",
+          },
+        ],
+        "type": 1,
+      },
+      {
+        "component": {
+          "custom_id": "userSelect",
+          "type": 5,
+          "values": [
+            "u1",
+          ],
+        },
+        "type": 18,
+      },
+    ],
+    "resolved": {
+      "messages": {
+        "u1": {
+          "id": "m1",
+        },
+      },
+      "users": {
+        "u1": {
+          "id": "u1",
+        },
+      },
+    },
+    "type": 5,
+  },
+  "deferReply": [Function: deferReply],
+  "deferUpdate": [Function: deferUpdate],
+  "editReply": [Function: editReply],
+  "followUp": [Function: followUp],
+  "getField": [Function],
+  "history": [],
+  "reply": [Function: reply],
+  "sendChoices": [Function: sendChoices],
+  "showModal": [Function: showModal],
+  "type": 5,
+  "update": [Function: update],
+  "user": undefined,
+}
+`;
+
+exports[`createInteraction Ping 0 1`] = `null`;

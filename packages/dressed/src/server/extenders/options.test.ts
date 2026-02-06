@@ -8,7 +8,7 @@ import {
   type APIUser,
   ApplicationCommandOptionType,
 } from "discord-api-types/v10";
-import { parseOptions } from "./options.ts";
+import { getFocused, parseOptions } from "./options.ts";
 
 const options: APIApplicationCommandInteractionDataOption[] = [
   { name: "subcommand", type: ApplicationCommandOptionType.Subcommand },
@@ -35,17 +35,71 @@ const resolved: APIInteractionDataResolved = {
   attachments: { f1: { id: "f1" } as APIAttachment },
 };
 
-describe("parseOptions", () => {
-  test("parseOptions", () => {
-    expect(parseOptions(options, resolved)).toMatchSnapshot();
-  });
+test("parseOptions", () => {
+  expect(parseOptions(options, resolved)).toMatchSnapshot();
 });
 
-describe("getField : missing resolved data", () => {
+describe("missing resolved data", () => {
   test("no resolved object", () => {
     expect(() => parseOptions([options[5]])).toThrow('No users found for option "user"');
   });
   test("mentionable select with no resolved object", () => {
     expect(() => parseOptions([options[8]])).toThrow('No mentionables found for option "mentionable"');
+  });
+});
+
+describe("getFocused", () => {
+  test("returns focused option at top level", () => {
+    const options: APIApplicationCommandInteractionDataOption[] = [
+      { name: "query", type: ApplicationCommandOptionType.String, value: "test", focused: true },
+    ];
+    expect(getFocused(options)).toBe(".query");
+  });
+
+  test("returns focused option inside a subcommand", () => {
+    const options: APIApplicationCommandInteractionDataOption[] = [
+      {
+        name: "search",
+        type: ApplicationCommandOptionType.Subcommand,
+        options: [{ name: "query", type: ApplicationCommandOptionType.String, value: "test", focused: true }],
+      },
+    ];
+    expect(getFocused(options)).toBe(".search.query");
+  });
+
+  test("returns focused option inside a subcommand group", () => {
+    const options: APIApplicationCommandInteractionDataOption[] = [
+      {
+        name: "admin",
+        type: ApplicationCommandOptionType.SubcommandGroup,
+        options: [
+          {
+            name: "ban",
+            type: ApplicationCommandOptionType.Subcommand,
+            options: [{ name: "reason", type: ApplicationCommandOptionType.String, value: "test", focused: true }],
+          },
+        ],
+      },
+    ];
+    expect(getFocused(options)).toBe(".admin.ban.reason");
+  });
+
+  test("returns first focused option when multiple are present", () => {
+    const options: APIApplicationCommandInteractionDataOption[] = [
+      { name: "one", type: ApplicationCommandOptionType.String, value: "test", focused: true },
+      { name: "two", type: ApplicationCommandOptionType.String, value: "test", focused: true },
+    ];
+    expect(getFocused(options)).toBe(".one");
+  });
+
+  test("returns undefined when no option is focused", () => {
+    const options: APIApplicationCommandInteractionDataOption[] = [
+      { name: "query", type: ApplicationCommandOptionType.String, value: "test" },
+    ];
+    expect(getFocused(options)).toBeUndefined();
+  });
+
+  test("returns undefined for empty options", () => {
+    expect(getFocused([])).toBeUndefined();
   });
 });

@@ -1,6 +1,6 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`parseOptions parseOptions 1`] = `
+exports[`parseOptions 1`] = `
 {
   "attachment": {
     "id": "f1",

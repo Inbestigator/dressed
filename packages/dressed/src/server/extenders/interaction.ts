@@ -18,8 +18,9 @@ import { parseValues } from "./values.ts";
 
 export function createInteraction<T extends APIInteraction>(input: T): Interaction<T> {
   const methods = baseInteractionMethods(input);
-
   switch (input.type) {
+    case InteractionType.Ping:
+      return null as Interaction<T>;
     // biome-ignore lint/suspicious/noFallthroughSwitchClause: Options should be handled on both autocomplete and commands
     case InteractionType.ApplicationCommandAutocomplete: // NOSONAR
       // @ts-expect-error Property is on return type
@@ -39,7 +40,7 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
           break;
         case ApplicationCommandType.Message:
           // @ts-expect-error Property is on return type
-          input.target = data.resolved.messages[input.data.target_id];
+          input.target = input.data.resolved.messages[input.data.target_id];
       }
       return { ...input, ...methods } as CommandInteraction<keyof typeof ApplicationCommandType> as Interaction<T>;
     }
@@ -63,9 +64,6 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
         ...methods,
         getField: (c, r) => getField(c, r ?? false, components, input.data.resolved),
       } as ModalSubmitInteraction as Interaction<T>;
-    }
-    default: {
-      return null as Interaction<T>;
     }
   }
 }
