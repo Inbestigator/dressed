@@ -15,7 +15,7 @@ import { patchInteraction } from "@dressed/react";
 export default {
   endpoint: "/bot",
   port: 3000,
-  build: { extensions: ["tsx", "ts"], root: "src/bot" },
+  build: { include: ["**/*.{ts,tsx}", "!**/*.test.ts"], root: "src/bot" },
   middleware: {
     commands: (i) => [patchInteraction(i)],
     components: (i, a) => [patchInteraction(i), a],
@@ -87,6 +87,6 @@ The build object is only available when using the config with the framework. The
 
 This is the source root that the server uses when assembling files, the default is `src`.
 
-#### Build extensions
+#### Build include
 
-The file extensions are used when bundling handlers and determine which files to include, by default it is `["js", "ts", "mjs"]`.
+Glob patterns used when bundling handlers to determine which files to include, by default it is `["**/*.{js,ts,mjs}"]`. Negation patterns can be used to exclude files, e.g. `"!**/*.test.ts"`.

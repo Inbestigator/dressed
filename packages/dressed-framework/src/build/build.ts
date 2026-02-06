@@ -38,7 +38,7 @@ export default async function build(
 
   const root = config.build?.root ?? "src";
   const categories = ["commands", "components", "events"];
-  const files = await Promise.all(categories.map((d) => crawlDir(root, d, config.build?.extensions)));
+  const files = await Promise.all(categories.map((d) => crawlDir(root, d, config.build?.include)));
   const entriesPath = ".dressed/tmp/entries.ts";
 
   writeFileSync(

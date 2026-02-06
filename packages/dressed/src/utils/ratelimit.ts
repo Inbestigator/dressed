@@ -99,7 +99,8 @@ export function checkLimit(req: Request, bucketTTL: number) {
 
           clearTimeout(bucket.cleaner);
           if (bucketTTL !== -1) {
-            bucket.cleaner = setTimeout(cleanup(bucketId), bucketTTL * 1000).unref();
+            // Unref isn't present on cf workers
+            bucket.cleaner = setTimeout(cleanup(bucketId), bucketTTL * 1000).unref?.();
           }
 
           resolveRequest(undefined);

@@ -11,7 +11,8 @@
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
     "commander": "^14.0.2",
-    "esbuild": "^0.27.2"
+    "esbuild": "^0.27.2",
+    "fast-glob": "^3.3.3"
   },
   "peerDependencies": {
     "dressed": "^2.0.0-canary.1"
