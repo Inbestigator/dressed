@@ -20,7 +20,7 @@ type ReactivatedInteraction<T> = OverrideMethodParams<
       // @ts-expect-error
       ...(Parameters<T[K]> extends readonly [...infer P]
         ? [
-            data?: Omit<Exclude<P[0], string>, "content" | "components">,
+            data?: Omit<Exclude<P[0], string>, "content" | "components" | "embeds">,
             $req?: P[1] & {
               /**
                * Do not set the contents of your response to `null` after 15 minutes (when Discord deletes the original interaction) in order to conserve resources.
