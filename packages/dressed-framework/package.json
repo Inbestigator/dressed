@@ -1,0 +1,45 @@
+{
+  "name": "@dressed/framework",
+  "version": "0.3.0",
+  "description": "A framework for creating Discord bots using Dressed.",
+  "scripts": {
+    "dist": "rm -fr dist && tsc",
+    "check-types": "tsc --noEmit",
+    "test": "bun test",
+    "dry-publish": "bun publish --dry-run"
+  },
+  "dependencies": {
+    "@dressed/matcher": "^1.4.0",
+    "commander": "^14.0.2",
+    "esbuild": "^0.27.2",
+    "fast-glob": "^3.3.3"
+  },
+  "peerDependencies": {
+    "dressed": "^2.0.0-canary.1"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./build": "./dist/build/index.js"
+  },
+  "type": "module",
+  "bin": {
+    "dressed": "dist/bin/dressed.js"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://dressed.js.org",
+  "keywords": [
+    "framework",
+    "serverless",
+    "dressed",
+    "discord"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inbestigator/dressed.git",
+    "directory": "packages/dressed-framework"
+  }
+}

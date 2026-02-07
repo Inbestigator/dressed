@@ -10,8 +10,7 @@ import {
 } from "discord-api-types/v10";
 import type { CommandData, ComponentData, EventData, ServerConfig } from "../types/config.ts";
 import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
-import { override } from "../utils/build.ts";
-import { serverConfig } from "../utils/env.ts";
+import { config as dressedConfig } from "../utils/env.ts";
 import logger from "../utils/log.ts";
 import { createInteraction } from "./extenders/interaction.ts";
 import { setupCommands } from "./handlers/commands.ts";
@@ -29,7 +28,7 @@ export function createServer(
   events: EventRunner | EventData[],
   config: ServerConfig = {},
 ): Server {
-  config = override(serverConfig, config);
+  config = override(dressedConfig, config);
   const endpoint = new URL(config.endpoint ?? "/", `http://localhost:${config.port ?? 8000}`);
   const server = createHttpServer(async (req, res) => {
     if (req.url !== endpoint.pathname) {
@@ -81,7 +80,7 @@ export async function handleRequest(
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
   events: EventRunner | EventData[],
-  config = serverConfig,
+  config: ServerConfig = dressedConfig,
 ): Promise<Response> {
   const body = await req.text();
   const verified = await verifySignature(
@@ -174,4 +173,23 @@ export async function handleEvent(
       return 404;
     }
   }
+}
+
+/** Deep merges two objects, producing a new object where values from {@link b} override those from {@link a}. */
+function override<T>(a: Partial<T>, b: Partial<T>) {
+  const result = { ...a };
+
+  for (const key in b) {
+    const k = key as keyof T;
+    const bv = b[k];
+    const av = a[k];
+
+    if (bv !== undefined && typeof bv === "object" && bv !== null && !Array.isArray(bv)) {
+      result[k] = override(av ?? {}, bv) as T[typeof k];
+    } else if (bv !== undefined) {
+      result[k] = bv as T[typeof k];
+    }
+  }
+
+  return result;
 }

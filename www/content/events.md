@@ -2,7 +2,7 @@
 
 **Be advised that currently the events that Discord sends over webhooks are very limited.**
 
-The event are determined by their file name, here's a typical event
+In the framework, events are determined by their file name, here's a typical event
 structure:
 
 ```sh

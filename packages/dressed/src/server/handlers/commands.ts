@@ -8,7 +8,7 @@ import {
   type RESTPutAPIApplicationCommandsJSONBody,
   type RESTPutAPIApplicationGuildCommandsJSONBody,
 } from "discord-api-types/v10";
-import { bulkOverwriteGlobalCommands, bulkOverwriteGuildCommands } from "../../resources/generated.resources.ts";
+import { bulkOverwriteAppCommands, bulkOverwriteGuildCommands } from "../../resources/generated.resources.ts";
 import type { CommandConfig, CommandData } from "../../types/config.ts";
 import type { CommandAutocompleteInteraction, CommandInteraction } from "../../types/interaction.ts";
 import logger from "../../utils/log.ts";
@@ -35,9 +35,9 @@ function normalizeData(config: CommandConfig) {
 }
 
 /**
- * Installs commands to the Discord API
+ * Registers application commands to the Discord API
  */
-export async function installCommands(commands: CommandData[]) {
+export async function registerCommands(commands: CommandData[]) {
   logger.defer("Registering commands");
 
   const scopes = new Map<string, RESTPutAPIApplicationCommandsJSONBody | RESTPutAPIApplicationGuildCommandsJSONBody>([
@@ -45,16 +45,7 @@ export async function installCommands(commands: CommandData[]) {
   ]);
 
   for (const command of commands) {
-    if (command.exports === null) return;
-    if ("config" in command.data) {
-      logger.warn(
-        "In the next major version of Dressed, command config must be passed in using `command.exports` instead of `command.data`",
-      );
-      command.exports.config = command.data.config; // TODO Remove check before next major release
-    }
-
     const config = normalizeData(command.exports.config ?? ({} as CommandConfig));
-
     for (const guild of config.guilds ?? ["global"]) {
       scopes.set(
         guild,
@@ -69,7 +60,7 @@ export async function installCommands(commands: CommandData[]) {
 
   for (const [scope, commands] of scopes) {
     if (scope === "global") {
-      await bulkOverwriteGlobalCommands(commands);
+      await bulkOverwriteAppCommands(commands);
     } else {
       await bulkOverwriteGuildCommands(scope, commands as never);
     }
@@ -93,9 +84,7 @@ export const setupCommands: ReturnType<
   }),
   findItem(interaction, items) {
     const item = items.find((i) => i.name === interaction.data.name);
-    if (!item) {
-      return;
-    }
+    if (!item) return;
     return [item, [interaction]];
   },
 });

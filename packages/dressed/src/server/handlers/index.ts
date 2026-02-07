@@ -31,16 +31,8 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
       logger.defer(pendingText);
 
       try {
-        let handler: T["run"] | undefined;
-        if (key && item.exports) {
-          handler = item.exports[key as keyof typeof item.exports];
-          if (!handler) {
-            throw new Error(`Unable to find '${String(key)}' in exports`);
-          }
-        } else {
-          handler = item.run;
-        }
-        if (!handler) throw new Error("Unable to find a handler to execute");
+        const handler = item.exports[key as keyof typeof item.exports];
+        if (!handler) throw new Error(`Unable to find '${String(key)}' in exports`);
         const args = middleware ? await middleware(...props) : props;
         await handler(...args);
       } catch (e) {

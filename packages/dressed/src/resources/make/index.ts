@@ -1,6 +1,6 @@
 import { writeFileSync } from "node:fs";
 import { $ } from "bun";
-import routeDefinitions, { routeKeyToMethodName } from "./data";
+import routeDefinitions, { routeKeyToMethodName } from "./data.ts";
 
 writeFileSync(
   "./src/resources/generated.resources.ts",

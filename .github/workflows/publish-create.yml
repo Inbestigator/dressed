@@ -1,0 +1,47 @@
+name: Publish Create-Dressed
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        description: "Mark as a release candidate"
+        required: false
+        default: true
+        type: "boolean"
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+  publish:
+    name: Build and Publish
+    needs: test
+    runs-on: ubuntu-latest
+
+    environment: Production
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build Package
+        run: bun turbo dist
+
+      - name: Authenticate with NPM
+        run: npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to NPM
+        working-directory: packages/create-dressed
+        env:
+          TAG: ${{ (inputs.prerelease || github.event.release.prerelease) && 'rc' || 'latest' }}
+        run: |
+          bunx npm publish --provenance --access public --tag "$TAG"

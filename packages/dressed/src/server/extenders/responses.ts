@@ -78,15 +78,7 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
       history.push("editReply");
       return editWebhookMessage(interaction.application_id, interaction.token, "@original", data, undefined, $req);
     },
-    followUp(
-      data:
-        | string
-        | (APIInteractionResponseCallbackData & {
-            files?: RawFile[];
-            ephemeral?: boolean;
-          }),
-      $req,
-    ) {
+    followUp(data: string | (APIInteractionResponseCallbackData & { files?: RawFile[]; ephemeral?: boolean }), $req) {
       history.push("followUp");
       if (typeof data === "object" && data.ephemeral) {
         data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;

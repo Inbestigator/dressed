@@ -1,0 +1,300 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`Command option function 1`] = `
+{
+  "description": "test",
+  "max_length": 10,
+  "name": "test",
+  "type": 3,
+}
+`;
+
+exports[`Action row component 1`] = `
+{
+  "components": [],
+  "type": 1,
+}
+`;
+
+exports[`Button component 1`] = `
+{
+  "custom_id": "button_id",
+  "label": "Click me",
+  "style": 1,
+  "type": 2,
+}
+`;
+
+exports[`String select menu component 1`] = `
+{
+  "custom_id": "select_id",
+  "options": [
+    {
+      "label": "test",
+      "value": "test",
+    },
+  ],
+  "type": 3,
+}
+`;
+
+exports[`Channel select menu component 1`] = `
+{
+  "custom_id": "select_id",
+  "type": 8,
+}
+`;
+
+exports[`User select menu component 1`] = `
+{
+  "custom_id": "select_id",
+  "type": 5,
+}
+`;
+
+exports[`Role select menu component 1`] = `
+{
+  "custom_id": "select_id",
+  "type": 6,
+}
+`;
+
+exports[`Mentionable select menu component 1`] = `
+{
+  "custom_id": "select_id",
+  "type": 7,
+}
+`;
+
+exports[`Text input component 1`] = `
+{
+  "custom_id": "input_id",
+  "label": "test",
+  "style": 1,
+  "type": 4,
+}
+`;
+
+exports[`Text input component 2`] = `
+{
+  "custom_id": "input_id",
+  "label": "test",
+  "style": 2,
+  "type": 4,
+}
+`;
+
+exports[`Section component 1`] = `
+{
+  "accessory": {
+    "custom_id": "button_id",
+    "label": "Click me",
+    "style": 1,
+    "type": 2,
+  },
+  "components": [
+    {
+      "content": "test",
+      "type": 10,
+    },
+  ],
+  "type": 9,
+}
+`;
+
+exports[`Text display component 1`] = `
+{
+  "content": "test",
+  "type": 10,
+}
+`;
+
+exports[`Thumbnail component 1`] = `
+{
+  "media": {
+    "url": "https://example.com",
+  },
+  "type": 11,
+}
+`;
+
+exports[`Media gallery component 1`] = `
+{
+  "id": 1,
+  "items": [
+    {
+      "media": {
+        "url": "https://example.com",
+      },
+    },
+  ],
+  "type": 12,
+}
+`;
+
+exports[`Media gallery component 2`] = `
+{
+  "items": [
+    {
+      "media": {
+        "url": "https://example.com",
+      },
+    },
+  ],
+  "type": 12,
+}
+`;
+
+exports[`File component 1`] = `
+{
+  "file": {
+    "url": "https://example.com",
+  },
+  "type": 13,
+}
+`;
+
+exports[`Separator component 1`] = `
+{
+  "spacing": 1,
+  "type": 14,
+}
+`;
+
+exports[`Container component 1`] = `
+{
+  "components": [
+    {
+      "components": [
+        {
+          "custom_id": "1",
+          "label": "Click me",
+          "style": 1,
+          "type": 2,
+        },
+        {
+          "custom_id": "2",
+          "label": "Click me",
+          "style": 1,
+          "type": 2,
+        },
+      ],
+      "type": 1,
+    },
+    {
+      "spacing": 1,
+      "type": 14,
+    },
+  ],
+  "type": 17,
+}
+`;
+
+exports[`Container component 2`] = `
+{
+  "components": [
+    {
+      "components": [
+        {
+          "custom_id": "1",
+          "label": "Click me",
+          "style": 1,
+          "type": 2,
+        },
+        {
+          "custom_id": "2",
+          "label": "Click me",
+          "style": 1,
+          "type": 2,
+        },
+      ],
+      "type": 1,
+    },
+    {
+      "spacing": 1,
+      "type": 14,
+    },
+  ],
+  "id": 1,
+  "type": 17,
+}
+`;
+
+exports[`Label component 1`] = `
+{
+  "component": {
+    "custom_id": "game_feedback",
+    "label": "Write your feedback here...",
+    "max_length": 4000,
+    "min_length": 100,
+    "required": true,
+    "style": 2,
+    "type": 4,
+  },
+  "description": "Please give us as much detail as possible so we can improve the game!",
+  "label": "What did you find interesting about the game?",
+  "type": 18,
+}
+`;
+
+exports[`File upload component 1`] = `
+{
+  "custom_id": "file_upload",
+  "type": 19,
+}
+`;
+
+exports[`Radio group component 1`] = `
+{
+  "custom_id": "satisfaction",
+  "options": [
+    {
+      "default": true,
+      "label": "Great",
+      "value": "great",
+    },
+    {
+      "label": "Okay",
+      "value": "okay",
+    },
+    {
+      "label": "Needs work",
+      "value": "needs_work",
+    },
+  ],
+  "required": true,
+  "type": 21,
+}
+`;
+
+exports[`Checkbox group component 1`] = `
+{
+  "custom_id": "improvements",
+  "max_values": 3,
+  "min_values": 1,
+  "options": [
+    {
+      "label": "Performance",
+      "value": "perf",
+    },
+    {
+      "label": "UI",
+      "value": "ui",
+    },
+    {
+      "default": true,
+      "label": "Docs",
+      "value": "docs",
+    },
+  ],
+  "required": true,
+  "type": 22,
+}
+`;
+
+exports[`Checkbox component 1`] = `
+{
+  "custom_id": "subscribe",
+  "type": 23,
+}
+`;

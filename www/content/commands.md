@@ -1,6 +1,6 @@
 # Commands
 
-The command names are determined by their file name, here's a typical command
+In the framework, command names are determined by their file name, here's a typical command
 structure:
 
 ```sh

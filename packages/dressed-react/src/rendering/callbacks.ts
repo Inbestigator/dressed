@@ -35,7 +35,7 @@ export function registerHandler(id: string, handler: Handler, fallback?: string)
   clearTimeout(handlers.get(id)?.$handlerCleaner);
   handlers.set(
     id,
-    Object.assign(handler, { $handlerCleaner: setTimeout(() => handlers.delete(id), 6e4 * 30).unref() }),
+    Object.assign(handler, { $handlerCleaner: setTimeout(() => handlers.delete(id), 6e4 * 30).unref?.() }),
   );
   const fbText = fallback ? `-${fallback}` : "";
   return { custom_id: `@dressed/react-handler-${id}${fbText}` };

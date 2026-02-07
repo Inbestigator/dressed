@@ -6,9 +6,15 @@
     "url": "git+https://github.com/Inbestigator/dressed.git",
     "directory": "packages/dressed-react"
   },
+  "dependencies": {
+    "@types/react": "^19.2.10",
+    "@types/react-reconciler": "^0.33.0",
+    "discord-api-types": "^0.38.38",
+    "react-reconciler": "npm:@dressed/react-reconciler"
+  },
   "peerDependencies": {
-    "dressed": "^1.10.1",
-    "react": "^19.2.3"
+    "dressed": "^1.10.1 || ^2.0.0-canary.2",
+    "react": "^19.2.4"
   },
   "exports": {
     ".": "./dist/index.js",
@@ -32,13 +38,5 @@
     "dry-publish": "bun publish --dry-run"
   },
   "type": "module",
-  "types": "./dist/index.d.ts",
-  "dependencies": {
-    "discord-api-types": "^0.38.37",
-    "react-reconciler": "npm:@dressed/react-reconciler"
-  },
-  "devDependencies": {
-    "@types/react": "^19.2.8",
-    "@types/react-reconciler": "^0.32.3"
-  }
+  "types": "./dist/index.d.ts"
 }

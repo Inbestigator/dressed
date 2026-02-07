@@ -1,6 +1,10 @@
 import type {
   APIApplicationCommandAutocompleteInteraction,
+  APIApplicationCommandBasicOption,
   APIApplicationCommandInteraction,
+  APIApplicationCommandOption,
+  APIApplicationCommandSubcommandOption,
+  APIAttachment,
   APIChatInputApplicationCommandInteraction,
   APIInteraction,
   APIInteractionDataResolvedChannel,
@@ -13,6 +17,7 @@ import type {
   APIRole,
   APIUser,
   APIUserApplicationCommandInteraction,
+  ApplicationCommandOptionType,
   ApplicationCommandType,
   ComponentType,
   InteractionResponseType,
@@ -22,7 +27,6 @@ import type {
 import type { editWebhookMessage, executeWebhook } from "../resources/generated.resources.ts";
 import type { createInteractionCallback } from "../resources/interactions.ts";
 import type { getField } from "../server/extenders/fields.ts";
-import type { getOption, OptionValueGetters } from "../server/extenders/options.ts";
 import type { CallConfig } from "../utils/call-discord.ts";
 import type { ChatInputConfig, CommandConfig } from "./config.ts";
 import type { RawFile } from "./file.ts";
@@ -32,38 +36,97 @@ export type InteractionCallbackResponse<O extends RESTPostAPIInteractionCallback
   O["with_response"] extends true ? RESTPostAPIInteractionCallbackWithResponseResult : null
 >;
 
-// TODO return the value directly instead of getters
-export type GetOptionFn<T extends ChatInputConfig> = <
-  N extends NonNullable<T["options"]>[number]["name"],
-  R extends boolean,
-  O extends Extract<NonNullable<T["options"]>[number], { name: N }>,
->(
-  name: N,
-  ...[required]: O["required"] extends true ? [R] : [R?]
-) => Requirable<
-  R,
-  Pick<
-    OptionValueGetters<N, { options: O extends { options: unknown[] } ? O["options"] : [] }>,
-    // biome-ignore format: These don't need individual lines
-    NonNullable<["", "subcommand", "subcommandGroup", "string", "integer", "boolean", "user", "channel", "role", "mentionable", "number", "attachment"][O["type"]]>
-  >
->;
+type OptionValue<P extends APIApplicationCommandOption, R = true> = [
+  never,
+  {
+    /**
+     * The key provided to the command config
+     * @example
+     * export const config = {
+     *   options: [
+     *     CommandOption({ type: "Subcommand", name: "foo" }),
+     *     CommandOption({ type: "Subcommand", name: "bar" }),
+     *   ],
+     * } satisfies CommandConfig;
+     * const { options }: CommandInteraction<typeof config>;
+     * const subcommand = options.foo ?? options.bar;
+     * if (subcommand?.name === "foo") {
+     *   console.log("Bar");
+     * } else {
+     *   console.log("Bar");
+     * }
+     */
+    name: P extends { name: infer N } ? N : never;
+    /** Subcommand options provided by the user */
+    options: MapOptions<P extends { options: APIApplicationCommandBasicOption[] } ? P["options"] : [], R>;
+  },
+  {
+    /** The key provided to the command config */
+    name: P extends { name: infer N } ? N : never;
+    /** Subcommand group subcommand selected by the user */
+    subcommands: MapOptions<P extends { options: APIApplicationCommandSubcommandOption[] } ? P["options"] : [], R>;
+  },
+  string,
+  number,
+  boolean,
+  APIUser,
+  APIInteractionDataResolvedChannel,
+  APIRole,
+  APIUser | APIRole,
+  number,
+  APIAttachment,
+][P["type"]];
+
+export type MapOptions<T extends APIApplicationCommandOption[], R = true> = {
+  [P in T[number] as P["name"]]: Requirable<P["required"] extends R ? true : false, OptionValue<P, R>>;
+};
+
+type CommandOption<T = ApplicationCommandOptionType> = T extends
+  | ApplicationCommandOptionType.Subcommand
+  | ApplicationCommandOptionType.SubcommandGroup
+  ? Omit<Extract<APIApplicationCommandOption, { type: T }>, "options"> & {
+      options: CommandOption<
+        T extends ApplicationCommandOptionType.SubcommandGroup
+          ? ApplicationCommandOptionType.Subcommand
+          : Exclude<
+              ApplicationCommandOptionType,
+              ApplicationCommandOptionType.Subcommand | ApplicationCommandOptionType.SubcommandGroup
+            >
+      >[];
+    }
+  : Extract<APIApplicationCommandOption, { type: T }>;
 
 /**
- * A command interaction, includes methods for responding to the interaction.
+ * The resolved value of a standalone application command option.
+ * @remark It's encouraged to pass your config into the {@link CommandInteraction}'s generic
+ * instead of manually adding type casts
+ * @example
+ * const user = interaction.options.user as CommandOptionValue<"User">;
+ * //    ^? const user: APIUser | undefined
  */
+export type CommandOptionValue<
+  T extends keyof typeof ApplicationCommandOptionType = keyof typeof ApplicationCommandOptionType,
+  R extends boolean = false,
+> = Requirable<R, OptionValue<CommandOption<(typeof ApplicationCommandOptionType)[T]>>>;
+
+/** A command interaction, includes methods for responding to the interaction. */
 export type CommandInteraction<T extends keyof typeof ApplicationCommandType | CommandConfig = "ChatInput"> = (T extends
   | "ChatInput"
   | Extract<CommandConfig, { type?: "ChatInput" }>
   ? APIChatInputApplicationCommandInteraction & {
       /**
-       * Get an option from the interaction
-       * @param name The name of the option
-       * @param required Whether the option is required
+       * Resolved command options provided by the user.
+       * @example
+       * export const config = {
+       *   options: [CommandOption({ type: "User", name: "user" })],
+       * } satisfies CommandConfig;
+       * const interaction: CommandInteraction<typeof config>;
+       * const { user } = interaction.options;
+       * //      ^? const user: APIUser | undefined
        */
-      getOption: T extends object
-        ? GetOptionFn<T>
-        : <N extends string, R extends boolean>(name: N, required?: R) => ReturnType<typeof getOption<N, R>>;
+      options: MapOptions<
+        T extends object ? (T extends { options: APIApplicationCommandOption[] } ? T["options"] : []) : CommandOption[]
+      >;
     }
   : T extends "Message" | { type: "Message" }
     ? APIMessageApplicationCommandInteraction & { target: APIMessage }
@@ -72,9 +135,24 @@ export type CommandInteraction<T extends keyof typeof ApplicationCommandType | C
       : APIPrimaryEntryPointCommandInteraction) &
   Omit<BaseInteractionMethods, "update" | "deferUpdate" | "sendChoices">;
 
-type Derequire<T> = T extends { options: readonly (infer O)[] }
-  ? Omit<T, "options"> & { options: (Omit<Derequire<O>, "required"> & { required: false })[] }
-  : T;
+type Join<P extends string, N extends string> = P extends "" ? N : `${P}.${N}`;
+
+type Focused<T extends APIApplicationCommandOption, P extends string = ""> = T extends {
+  type:
+    | ApplicationCommandOptionType.String
+    | ApplicationCommandOptionType.Integer
+    | ApplicationCommandOptionType.Number;
+  autocomplete: true;
+  name: infer N extends string;
+}
+  ? Join<P, N>
+  : T extends {
+        type: ApplicationCommandOptionType.Subcommand | ApplicationCommandOptionType.SubcommandGroup;
+        name: infer N extends string;
+        options: readonly APIApplicationCommandOption[];
+      }
+    ? Focused<T["options"][number], Join<P, N>>
+    : never;
 
 /**
  * A command autocomplete interaction, includes methods for responding to the interaction.
@@ -82,12 +160,22 @@ type Derequire<T> = T extends { options: readonly (infer O)[] }
 export type CommandAutocompleteInteraction<T extends ChatInputConfig | undefined = undefined> =
   APIApplicationCommandAutocompleteInteraction & {
     /**
-     * Get an option from the interaction
-     * @param name The name of the option
+     * Resolved command options provided by the user.
+     * @important All options are possibly undefined within an autocomplete interaction
+     * @example
+     * export const config = {
+     *   options: [CommandOption({ type: "String", name: "reason", autocomplete: true, required: true })],
+     * } satisfies CommandConfig;
+     * const interaction: CommandAutocompleteInteraction<typeof config>;
+     * const { reason } = interaction.options;
+     * //      ^? const reason: string | undefined
      */
-    getOption: T extends object
-      ? GetOptionFn<Derequire<T>>
-      : <N extends string>(name: N) => OptionValueGetters<N> | undefined;
+    options: MapOptions<
+      T extends object ? (T extends { options: APIApplicationCommandOption[] } ? T["options"] : []) : CommandOption[],
+      never
+    >;
+    /** The option the user is currently typing */
+    focused: T extends { options: APIApplicationCommandOption[] } ? Focused<T["options"][number]> : string;
   } & Omit<
       BaseInteractionMethods,
       "deferReply" | "deferUpdate" | "editReply" | "followUp" | "reply" | "showModal" | "update"
@@ -111,10 +199,10 @@ export type MessageComponentInteraction<T extends "Button" | keyof ResolvedSelec
     } & (T extends keyof ResolvedSelectValues | undefined
       ? {
           /**
-           * Get the resolved values from the user's selections
+           * Resolved values from the user's selections
            * @warn Only available on select menus
            */
-          getValues: () => ResolvedSelectValues[T extends keyof ResolvedSelectValues ? T : keyof ResolvedSelectValues];
+          values: ResolvedSelectValues[T extends keyof ResolvedSelectValues ? T : keyof ResolvedSelectValues];
         }
       : unknown);
 
@@ -127,8 +215,6 @@ export type ModalSubmitInteraction = APIModalSubmitInteraction &
      * Get a field from the user's submission
      * @param custom_id The custom_id of the field
      * @param required Whether the field is required
-     *
-     * **The returned string is deprecated, use `.textInput()` to fetch the value of a text input in the future**
      */
     getField: <R extends boolean>(custom_id: string, required?: R) => ReturnType<typeof getField<R>>;
   };

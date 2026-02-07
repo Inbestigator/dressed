@@ -5,11 +5,10 @@
   "exports": {
     ".": "./src/index.ts",
     "./server": "./src/server/index.ts",
-    "./build": "./src/server/build/index.ts",
     "./utils": "./src/utils/index.ts"
   },
   "publish": {
     "include": ["README.md", "src"],
-    "exclude": ["dist", "!src/resources/generated.resources.ts", "src/resources/make"]
+    "exclude": ["dist", "!src/resources/generated.resources.ts", "src/resources/make", "**/*.test.ts"]
   }
 }

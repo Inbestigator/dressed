@@ -1,0 +1,50 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`Build bot 1`] = `
+{
+  "commands": [
+    {
+      "data": undefined,
+      "exports": {
+        "config": [native code],
+        "default": [native code],
+      },
+      "name": "ping",
+      "path": "tests/src/commands/ping.ts",
+    },
+  ],
+  "components": [
+    {
+      "data": {
+        "category": "buttons",
+        "regex": "^button_(?<arg>.+?)$",
+        "score": 0.3888888888888889,
+      },
+      "exports": {
+        "default": [native code],
+        "pattern": [native code],
+      },
+      "name": "button",
+      "path": "tests/src/components/buttons/button.ts",
+    },
+  ],
+  "config": {
+    "build": {
+      "root": "tests/src",
+    },
+  },
+  "configPath": undefined,
+  "events": [
+    {
+      "data": {
+        "type": "APPLICATION_AUTHORIZED",
+      },
+      "exports": {
+        "default": [native code],
+      },
+      "name": "ApplicationAuthorized",
+      "path": "tests/src/events/ApplicationAuthorized.ts",
+    },
+  ],
+}
+`;
