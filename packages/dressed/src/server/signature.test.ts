@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { env } from "node:process";
-import { verifySignature } from "dressed/server";
+import { verifySignature } from "./signature.ts";
 
 const stamp = "0";
 const publicKey = "66a27ecb1443a21f793f55fb80b2a9a8335bcd0b8421d1a5fa21491aeb1fe394";

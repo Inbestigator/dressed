@@ -1,0 +1,16 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`baseInteractionMethods 1`] = `
+{
+  "deferReply": [Function: deferReply],
+  "deferUpdate": [Function: deferUpdate],
+  "editReply": [Function: editReply],
+  "followUp": [Function: followUp],
+  "history": [],
+  "reply": [Function: reply],
+  "sendChoices": [Function: sendChoices],
+  "showModal": [Function: showModal],
+  "update": [Function: update],
+  "user": undefined,
+}
+`;

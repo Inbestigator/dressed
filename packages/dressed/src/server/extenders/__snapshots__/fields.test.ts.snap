@@ -1,0 +1,63 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`getField string select 1`] = `
+[
+  "a",
+  "b",
+]
+`;
+
+exports[`getField text input 1`] = `"test"`;
+
+exports[`getField user select 1`] = `
+[
+  {
+    "id": "u1",
+  },
+]
+`;
+
+exports[`getField role select 1`] = `
+[
+  {
+    "id": "r1",
+  },
+]
+`;
+
+exports[`getField mentionable select 1`] = `
+[
+  {
+    "id": "u1",
+  },
+  {
+    "id": "r1",
+  },
+]
+`;
+
+exports[`getField channel select 1`] = `
+[
+  {
+    "id": "c1",
+  },
+]
+`;
+
+exports[`getField file upload 1`] = `
+[
+  {
+    "id": "f1",
+  },
+]
+`;
+
+exports[`getField radio group 1`] = `"yes"`;
+
+exports[`getField checkbox group 1`] = `
+[
+  "x",
+]
+`;
+
+exports[`getField checkbox 1`] = `true`;

@@ -1,0 +1,42 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`parseValues StringSelect 1`] = `
+[
+  "test",
+]
+`;
+
+exports[`parseValues UserSelect 1`] = `
+[
+  {
+    "id": "u1",
+  },
+]
+`;
+
+exports[`parseValues RoleSelect 1`] = `
+[
+  {
+    "id": "r1",
+  },
+]
+`;
+
+exports[`parseValues MentionableSelect 1`] = `
+[
+  {
+    "id": "u1",
+  },
+  {
+    "id": "r1",
+  },
+]
+`;
+
+exports[`parseValues ChannelSelect 1`] = `
+[
+  {
+    "id": "c1",
+  },
+]
+`;
