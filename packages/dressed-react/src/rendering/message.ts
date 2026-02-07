@@ -23,7 +23,7 @@ export type WithContainer<T> = T & {
 export function createMessage(
   channelId: Snowflake,
   components: ReactNode,
-  data: Omit<Exclude<Parameters<typeof dressedCreateMessage>[1], string>, "content" | "components"> = {},
+  data: Omit<Exclude<Parameters<typeof dressedCreateMessage>[1], string>, "content" | "components" | "embeds"> = {},
   $req?: CallConfig,
 ) {
   data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
@@ -63,7 +63,7 @@ export function editMessage(
   channelId: Snowflake,
   messageId: Snowflake,
   components: ReactNode,
-  data: Omit<Exclude<Parameters<typeof dressedEditMessage>[2], string>, "content" | "components"> = {},
+  data: Omit<Exclude<Parameters<typeof dressedEditMessage>[2], string>, "content" | "components" | "embeds"> = {},
   $req?: CallConfig,
 ) {
   data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
