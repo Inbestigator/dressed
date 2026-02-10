@@ -30,7 +30,7 @@ const resolved: APIInteractionDataResolved = {
   attachments: { f1: { id: "f1" } as APIAttachment },
 };
 
-const getters: (keyof FieldValueGetters)[] = [
+const getters: (keyof FieldValueGetters<true>)[] = [
   "stringSelect",
   "textInput",
   "userSelect",
