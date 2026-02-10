@@ -9,7 +9,7 @@ import {
 } from "discord-api-types/v10";
 import type { Requirable } from "../../types/utilities.ts";
 
-export interface FieldValueGetters {
+export interface FieldValueGetters<R extends boolean> {
   /** Return the select menu's values as an array of strings - Component must be a select with type `String` */
   stringSelect: () => string[];
   /** Return the input's value as a string - Component must be a text input */
@@ -25,7 +25,7 @@ export interface FieldValueGetters {
   /** Return the file upload's values as an array of attachments - Component type must be a select with type `FileUpload` */
   fileUpload: () => APIAttachment[];
   /** Return the radio group's selection value as a string - Component type must be a radio group */
-  radioGroup: () => string | null;
+  radioGroup: () => Requirable<R, string, null>;
   /** Return the checkbox group's selection values as an array of strings - Component type must be a checkbox group */
   checkboxGroup: () => string[];
   /** Return the checkbox's value as a boolean - Component type must be a checkbox */
@@ -40,7 +40,7 @@ export function getField<R extends boolean>(
   required: R,
   components: ModalSubmitComponent[],
   resolved?: APIInteractionDataResolved,
-): Requirable<R, FieldValueGetters> {
+): Requirable<R, FieldValueGetters<R>> {
   const component = components.find((c) => c.custom_id === custom_id);
   if (!component) {
     if (required) throw new Error(`Required field "${custom_id}" not found`);
