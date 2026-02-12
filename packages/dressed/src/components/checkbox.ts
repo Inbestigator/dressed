@@ -9,8 +9,9 @@ import { Label } from "./label.ts";
 /**
  * A single interactive component for simple yes/no style questions.
  * @important Checkboxes must be placed inside a {@link Label}.
+ * @tip While you cannot set a checkbox as required, you can use a {@link CheckboxGroup} with a single option and `required` to achieve similar functionality.
  * @example
- * Label("Subscribe to updates?", Checkbox({ custom_id: "subscribe" }))
+ * Label("Do you like me?", Checkbox({ custom_id: "like_checkbox" }), "😳😳😳")
  * @see https://discord.com/developers/docs/components/reference#checkbox
  */
 export function Checkbox(config: Omit<APICheckboxComponent, "type">): APICheckboxComponent;
@@ -40,14 +41,18 @@ export function Checkbox(
  * @important Checkbox Groups must be placed inside a {@link Label}.
  * @example
  * Label(
- *   "Which areas should we improve?",
+ *   "Which days are you free?",
  *   CheckboxGroup({
- *     custom_id: "improvements",
- *     options: [Checkbox("Performance", "perf"), Checkbox("UI", "ui"), Checkbox("Docs", "docs", { default: true })],
- *     min_values: 1,
- *     max_values: 3,
- *     required: true,
+ *     custom_id: "event_checkbox",
+ *     options: [
+ *       Checkbox("March 4th", "march-4"),
+ *       Checkbox("March 5th", "march-5"),
+ *       Checkbox("March 7th", "march-7", { description: "I know this is a Saturday and is tough" }),
+ *       Checkbox("March 9th", "march-9"),
+ *       Checkbox("March 10th", "march-10"),
+ *     ],
  *   }),
+ *   "Choose all of the days you're able to meet up.",
  * )
  * @see https://discord.com/developers/docs/components/reference#checkbox-group
  */
