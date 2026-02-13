@@ -133,13 +133,15 @@ export function checkLimit(req: Request, bucketTTL: number) {
       bucket.promise
         .then(async (collector) => {
           if (collector) {
-            if (collector.key === bucketIdKey) collector = collectReq(collector, req);
-            if (isLast || collector.key !== bucketIdKey) {
-              const { prev } = collector;
-              return prev.processReq(
+            const isSameKey = collector.key === bucketIdKey;
+            if (isSameKey) collector = collectReq(collector, req);
+            if (isLast || !isSameKey) {
+              const { prev, resolve } = collector;
+              await prev.processReq(
                 prev.req.method === "GET" ? prev.req : combineBodies(await Promise.all(collector.bodies), prev.req),
-                collector.resolve,
+                resolve,
               );
+              return isSameKey ? false : undefined; // Makes the second `then` also process if (and only if) a new dest
             }
             return collector;
           }
@@ -151,7 +153,7 @@ export function checkLimit(req: Request, bucketTTL: number) {
             return collectReq({ key: bucketIdKey, bodies: [], promise, resolve }, req);
           }
         })
-        .then((c) => c ?? processReq(req)),
+        .then((c) => (c ?? processReq(req)) || undefined),
       {
         thened() {
           isLast = false;
