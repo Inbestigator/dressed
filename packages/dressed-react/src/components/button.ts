@@ -24,24 +24,24 @@ interface ButtonWithOnClick extends Omit<ButtonWithCustomId, "custom_id"> {
   fallback?: string;
 }
 
-export function Button(props: ButtonWithCustomId): ReactElement<APIButtonComponentWithCustomId>;
-export function Button(props: ButtonWithOnClick): ReactElement<APIButtonComponentWithCustomId>;
+export function Button(config: ButtonWithCustomId): ReactElement<APIButtonComponentWithCustomId>;
+export function Button(config: ButtonWithOnClick): ReactElement<APIButtonComponentWithCustomId>;
 export function Button(
-  props: Omit<APIButtonComponentWithSKUId, "type" | "style">,
+  config: Omit<APIButtonComponentWithSKUId, "type" | "style">,
 ): ReactElement<APIButtonComponentWithSKUId>;
 export function Button(
-  props: Omit<APIButtonComponentWithURL, "type" | "style">,
+  config: Omit<APIButtonComponentWithURL, "type" | "style">,
 ): ReactElement<APIButtonComponentWithURL>;
 
 export function Button(
-  props:
+  config:
     | ButtonWithCustomId
     | ButtonWithOnClick
     | Omit<APIButtonComponentWithSKUId, "type" | "style">
     | Omit<APIButtonComponentWithURL, "type" | "style">,
 ): ReactElement<APIButtonComponent> {
-  const component = DressedComponent(props as never);
-  return createElement("dressed-node", component);
+  const props = DressedComponent(config as never);
+  return createElement("dressed-node", props);
 }
 
 export async function parseButton<
