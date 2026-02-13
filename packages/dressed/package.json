@@ -1,6 +1,6 @@
 {
   "name": "dressed",
-  "version": "2.0.0-rc.1",
+  "version": "2.0.0-rc.2",
   "description": "A sleek, serverless-ready Discord API library.",
   "scripts": {
     "dist": "rm -fr dist && bun --bun ./src/resources/make && tsc",
@@ -11,7 +11,7 @@
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
     "discord-api-types": "^0.38.38",
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.3.1",
     "magic-bytes.js": "^1.12.1"
   },
   "exports": {
