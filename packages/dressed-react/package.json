@@ -1,6 +1,6 @@
 {
   "name": "@dressed/react",
-  "version": "1.8.5-rc.1",
+  "version": "1.8.5-rc.1.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Inbestigator/dressed.git",
@@ -13,7 +13,7 @@
     "react-reconciler": "npm:@dressed/react-reconciler"
   },
   "peerDependencies": {
-    "dressed": "^1.10.1 || ^2.0.0-canary.2",
+    "dressed": "^2.0.0-canary.2",
     "react": "^19.2.4"
   },
   "exports": {

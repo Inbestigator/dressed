@@ -9,13 +9,7 @@ export function Checkbox(config: APICheckboxGroupOption): ReactElement<APICheckb
 export function Checkbox(
   config: Omit<APICheckboxComponent, "type"> | APICheckboxGroupOption,
 ): ReactElement<APICheckboxComponent | APICheckboxGroupOption> {
-  const props =
-    "label" in config
-      ? DressedComponent(config.label, config.value, {
-          default: config.default,
-          description: config.description,
-        })
-      : DressedComponent(config);
+  const props = "label" in config ? DressedComponent(config.label, config.value, config) : DressedComponent(config);
   return createElement("dressed-node", props as never);
 }
 

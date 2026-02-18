@@ -89,7 +89,10 @@ export async function parseNode(node: ComponentNode): Promise<APIMessageComponen
     case ComponentType.Thumbnail:
     case ComponentType.File:
     case ComponentType.Separator:
-    case ComponentType.FileUpload: {
+    case ComponentType.FileUpload:
+    case ComponentType.RadioGroup:
+    case ComponentType.CheckboxGroup:
+    case ComponentType.Checkbox: {
       return node.props;
     }
     case ComponentType.Section: {
