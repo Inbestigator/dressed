@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function DocsLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function DocsLayout({ children }: Readonly<React.PropsWithChildren>) {
   return (
     <SidebarProvider>
       <div className="fixed inset-0 -z-1 bg-sidebar" />

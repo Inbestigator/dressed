@@ -1,6 +1,6 @@
 import { type APISelectMenuComponent, type APISelectMenuOption, ComponentType } from "discord-api-types/v10";
 import { SelectMenu as DressedComponent, SelectMenuOption as DressedOption } from "dressed";
-import { createElement, type ReactElement, type ReactNode } from "react";
+import { createElement, type PropsWithChildren, type ReactElement, type ReactNode } from "react";
 import type { Node } from "../react/node.ts";
 import { registerHandler } from "../rendering/callbacks.ts";
 import type { MessageComponentInteraction } from "../rendering/interaction.ts";
@@ -13,7 +13,7 @@ type SelectMap = {
 
 type SelectMenuWithCustomId<K extends SelectType> = Omit<SelectMap[`${K}Select`], "type" | "options"> & {
   type: K;
-} & (K extends "String" ? { children: ReactNode } : object);
+} & (K extends "String" ? PropsWithChildren : object);
 
 type SelectMenuWithOnClick<K extends SelectType> = Omit<SelectMenuWithCustomId<K>, "custom_id"> & {
   /**
