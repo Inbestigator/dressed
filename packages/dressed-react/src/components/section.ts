@@ -1,14 +1,17 @@
 import type { APISectionComponent } from "discord-api-types/v10";
 import { Section as DressedComponent } from "dressed";
-import { createElement, type ReactElement, type ReactNode } from "react";
+import { createElement, type PropsWithChildren, type ReactElement, type ReactNode } from "react";
 import { type ComponentNode, parseNode } from "../react/renderer.ts";
 
 interface SectionProps extends Omit<APISectionComponent, "accessory" | "components" | "type"> {
-  children: ReactNode;
   accessory: ReactNode;
 }
 
-export function Section({ children, accessory, ...rest }: SectionProps): ReactElement<APISectionComponent> {
+export function Section({
+  children,
+  accessory,
+  ...rest
+}: PropsWithChildren<SectionProps>): ReactElement<APISectionComponent> {
   const props = DressedComponent([], null as never, rest);
   return createElement("dressed-node", props, accessory, children);
 }

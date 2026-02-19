@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary" },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<React.PropsWithChildren>) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} flex min-h-dvh flex-col antialiased`}>

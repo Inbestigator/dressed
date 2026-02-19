@@ -1,13 +1,12 @@
 import type { APIMediaGalleryComponent, APIMediaGalleryItem } from "discord-api-types/v10";
 import { MediaGallery as DressedComponent, MediaGalleryItem as DressedItem } from "dressed";
-import { createElement, type ReactNode } from "react";
+import { createElement, type PropsWithChildren } from "react";
 import type { Node } from "../react/node.ts";
 
-interface MediaGalleryProps extends Omit<APIMediaGalleryComponent, "items" | "type"> {
-  children: ReactNode;
-}
-
-export function MediaGallery({ children, ...rest }: MediaGalleryProps) {
+export function MediaGallery({
+  children,
+  ...rest
+}: PropsWithChildren<Omit<APIMediaGalleryComponent, "items" | "type">>) {
   const props = DressedComponent([], rest);
   return createElement("dressed-node", props, children);
 }

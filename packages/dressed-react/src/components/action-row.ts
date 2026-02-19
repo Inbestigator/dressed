@@ -1,13 +1,11 @@
 import type { APIActionRowComponent, APIComponentInActionRow } from "discord-api-types/v10";
 import { ActionRow as DressedComponent } from "dressed";
-import { createElement, type ReactElement, type ReactNode } from "react";
+import { createElement, type PropsWithChildren, type ReactElement } from "react";
 import { type ComponentNode, parseNode } from "../react/renderer.ts";
 
 export function ActionRow({
   children,
-}: {
-  children: ReactNode;
-}): ReactElement<APIActionRowComponent<APIComponentInActionRow>> {
+}: PropsWithChildren): ReactElement<APIActionRowComponent<APIComponentInActionRow>> {
   const props = DressedComponent();
   return createElement("dressed-node", props, children);
 }
