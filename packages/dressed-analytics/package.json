@@ -1,0 +1,34 @@
+{
+  "name": "@dressed/analytics",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inbestigator/dressed.git",
+    "directory": "packages/dressed-analytics"
+  },
+  "peerDependencies": {
+    "dressed": "^1.9.1"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./cache": "./dist/cache/index.js"
+  },
+  "description": "Get logs on the actions going on within each interaction.",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://dressed.js.org",
+  "keywords": [
+    "dressed",
+    "analytics",
+    "discord"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "dist": "rm -fr dist && tsc",
+    "check-types": "tsc --noEmit",
+    "dry-publish": "bun publish --dry-run"
+  },
+  "type": "module",
+  "types": "./dist/index.d.ts"
+}
