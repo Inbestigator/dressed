@@ -92,8 +92,8 @@ async function fetchMissingVars() {
 
       appendFileSync(".env", `\n${envLines.join("\n")}`);
     }
-  } catch {
-    logger.error("Failed to fetch missing variables");
+  } catch (e) {
+    logger.error(new Error("Failed to fetch missing variables", { cause: e }));
   }
 }
 

@@ -1,10 +1,9 @@
-import type { BaseData, ServerConfig } from "../../types/config.ts";
+import type { BaseData } from "../../types/config.ts";
 import type { Promisable } from "../../types/utilities.ts";
 import logger from "../../utils/log.ts";
 
 interface SetupItemMessages<T, P> {
   noItem: string;
-  middlewareKey: keyof NonNullable<ServerConfig["middleware"]>;
   pending: (data: T, props: P) => string;
 }
 
@@ -33,15 +32,13 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
       try {
         const handler = item.exports[key as keyof typeof item.exports];
         if (!handler) throw new Error(`Unable to find '${String(key)}' in exports`);
-        const args = middleware ? await middleware(...props) : props;
-        await handler(...args);
+        await handler(...((await middleware?.(...props)) ?? props));
       } catch (e) {
         const text = pendingText.replace("Running", "Failed to run");
         if (e instanceof Error) {
-          logger.error(`${text} - ${e.message}`);
+          logger.error(new Error(`${text} - ${e.message}`, { cause: e }));
         } else {
-          logger.error(text);
-          logger.raw.error(e);
+          logger.error(new Error(text, { cause: e }));
         }
       }
     };

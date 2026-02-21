@@ -1,3 +1,4 @@
+import { logger } from "dressed/utils";
 import type { ConnectionActions } from "./gateway.ts";
 
 /**
@@ -18,7 +19,7 @@ export function startAutoResharder(connection: ConnectionActions, interval = 480
         await connection.shards.reshard(target);
       }
     } catch (e) {
-      console.error("Failed to auto-reshard:", e);
+      logger.error(new Error("Failed to auto-reshard", { cause: e }));
     }
   }
   calculateShards();

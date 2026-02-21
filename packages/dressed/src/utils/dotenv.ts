@@ -56,5 +56,6 @@ export function loadEnvConfig() {
       files.push({ path: envFile, contents, env: {} });
     } catch {}
   }
+
   processEnv(files);
 }

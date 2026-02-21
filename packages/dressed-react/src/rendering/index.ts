@@ -1,3 +1,4 @@
+import { logger } from "dressed/utils";
 import type { ReactNode } from "react";
 import { reconciler } from "../react/reconciler.ts";
 import { createRenderer, type RendererCallback } from "../react/renderer.ts";
@@ -12,7 +13,7 @@ export function render(children: ReactNode, callback: RendererCallback) {
     false,
     null,
     "dressed",
-    (error: Error) => console.error(error),
+    logger.error,
     () => {},
     () => {},
     () => {},

@@ -111,14 +111,14 @@ export async function callDiscord(
     }
 
     const error = (await res.json()) as RESTError;
-    logger.error(`${error.message} (${error.code ?? res.status})`);
+    logger.error(new Error(`${error.message} (${error.code ?? res.status})`, { cause: { req, res } }));
 
     if (error.errors) logErrorData(error.errors);
 
     throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`, { cause: res });
   }
 
-  const limiter = await checkLimit(req, bucketTTL);
+  const limiter = await checkLimit((await config.observability?.onBeforeFetch?.(req)) ?? req, bucketTTL);
 
   if (limiter instanceof Response) return handleRes(limiter);
 

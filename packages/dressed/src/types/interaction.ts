@@ -51,7 +51,7 @@ type OptionValue<P extends APIApplicationCommandOption, R = true> = [
      * const { options }: CommandInteraction<typeof config>;
      * const subcommand = options.foo ?? options.bar;
      * if (subcommand?.name === "foo") {
-     *   console.log("Bar");
+     *   console.log("Foo");
      * } else {
      *   console.log("Bar");
      * }

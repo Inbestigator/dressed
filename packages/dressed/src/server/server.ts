@@ -1,10 +1,7 @@
 import { createServer as createHttpServer, type Server } from "node:http";
 import {
-  type APIApplicationCommandAutocompleteInteraction,
-  type APIApplicationCommandInteraction,
-  type APIMessageComponentInteraction,
-  type APIModalSubmitInteraction,
-  type APIWebhookEventBody,
+  type APIInteraction,
+  type APIWebhookEvent,
   ApplicationWebhookType,
   InteractionType,
 } from "discord-api-types/v10";
@@ -28,8 +25,9 @@ export function createServer(
   events: EventRunner | EventData[],
   config: ServerConfig = {},
 ): Server {
-  config = override(dressedConfig, config);
-  const endpoint = new URL(config.endpoint ?? "/", `http://localhost:${config.port ?? 8000}`);
+  config = override(dressedConfig.server ?? {}, config);
+  const port = config.port ?? 8000;
+  const endpoint = new URL(config.endpoint ?? "/", `http://localhost:${port}`);
   const server = createHttpServer(async (req, res) => {
     if (req.url !== endpoint.pathname) {
       return res.writeHead(404).end();
@@ -37,29 +35,27 @@ export function createServer(
       return res.writeHead(405).end();
     }
 
-    const handlerRes = await handleRequest(
-      new Request(endpoint, {
-        method: "POST",
-        // @ts-expect-error Headers will init from an object, the type is just weird
-        headers: req.headers,
-        // @ts-expect-error The node:http req reads to a body
-        body: req,
-        duplex: "half", // Undici throws if this isn't present when body is a stream -inb
-      }),
-      commands,
-      components,
-      events,
-      config,
-    );
+    const stdReq = new Request(endpoint, {
+      method: "POST",
+      // @ts-expect-error Headers will init from an object, the type is just weird
+      headers: req.headers,
+      // @ts-expect-error The node:http req reads to a body
+      body: req,
+      duplex: "half", // Undici throws if this isn't present when body is a stream -inb
+    });
+
+    dressedConfig.observability?.onServerRequest?.(stdReq);
+
+    const handlerRes = await handleRequest(stdReq, commands, components, events);
+
+    dressedConfig.observability?.onServerResponded?.(handlerRes);
 
     res.writeHead(handlerRes.status, { "Content-Type": "application/json" }).end(await handlerRes.text());
   });
 
-  const port = config.port ?? 8000;
-  const shutdown = () => server.close(() => process.exit());
-
   server.listen(port, "0.0.0.0", () => logger.succeed("Bot is now listening on", endpoint.href));
 
+  const shutdown = () => server.close(() => process.exit());
   process.on("SIGTERM", shutdown);
   process.on("SIGINT", shutdown);
 
@@ -68,19 +64,17 @@ export function createServer(
 
 /**
  * Handles a request from Discord.
- * @param req The request from Discord
+ * @param req The incoming request
  * @param commands A list of commands or the function to run a command
  * @param components A list of components or the function to run a component
  * @param events A list of events or the function to run an event
- * @param config Configuration for your server
- * @returns The response to send back to Discord
+ * @returns The response to send back
  */
 export async function handleRequest(
   req: Request,
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
   events: EventRunner | EventData[],
-  config: ServerConfig = dressedConfig,
 ): Promise<Response> {
   const body = await req.text();
   const verified = await verifySignature(
@@ -90,7 +84,7 @@ export async function handleRequest(
   );
 
   if (!verified) {
-    logger.error("Invalid signature");
+    logger.error(new Error("Invalid signature"));
     return new Response(null, { status: 401 });
   }
 
@@ -99,77 +93,71 @@ export async function handleRequest(
     let status: number;
     // The interaction response token
     if ("token" in json) {
-      status = await handleInteraction(commands, components, json, config.middleware);
+      status = await handleInteraction(commands, components, json);
     } else {
-      status = await handleEvent(events, json, config.middleware);
+      status = await handleEvent(events, json);
     }
     return new Response(status === 200 ? '{"type":1}' : null, { status });
   } catch (error) {
-    logger.error("Failed to process request:", error);
+    logger.error(new Error("Failed to process request", { cause: error }));
     return new Response(null, { status: 500 });
   }
 }
 
 /**
- * Runs an interaction, takes functions to run commands/components/middleware and the request body
+ * Runs an interaction, takes functions to run commands/components and the interaction body.
  */
 export async function handleInteraction(
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
-  json: ReturnType<typeof JSON.parse>,
-  middleware: ServerConfig["middleware"],
+  interaction: APIInteraction,
 ): Promise<200 | 202 | 404> {
-  switch (json.type) {
+  dressedConfig.observability?.onServerInteraction?.(interaction);
+  switch (interaction.type) {
     case InteractionType.Ping: {
       logger.succeed("Received ping test");
       return 200;
     }
     case InteractionType.ApplicationCommand: {
-      const interaction = createInteraction(json as APIApplicationCommandInteraction);
       const runCommand = typeof commands === "function" ? commands : setupCommands(commands);
-      await runCommand(interaction, middleware?.commands as Parameters<typeof runCommand>[1]);
+      await runCommand(createInteraction(interaction), dressedConfig.observability?.onBeforeCommand as never);
       return 202;
     }
     case InteractionType.ApplicationCommandAutocomplete: {
-      const interaction = createInteraction(json as APIApplicationCommandAutocompleteInteraction);
       const runCommand = typeof commands === "function" ? commands : setupCommands(commands);
-      await runCommand(interaction, undefined, "autocomplete");
+      await runCommand(createInteraction(interaction), undefined, "autocomplete");
       return 202;
     }
     case InteractionType.MessageComponent:
     case InteractionType.ModalSubmit: {
-      const interaction = createInteraction(json as APIMessageComponentInteraction | APIModalSubmitInteraction);
       const runComponent = typeof components === "function" ? components : setupComponents(components);
-      await runComponent(interaction, middleware?.components);
+      await runComponent(createInteraction(interaction), dressedConfig.observability?.onBeforeComponent);
       return 202;
     }
     default: {
-      logger.error("Received unknown interaction type:", json.type);
+      logger.error(new Error("Received invalid interaction", { cause: interaction }));
       return 404;
     }
   }
 }
 
 /**
- * Runs an event, takes a function to run events/middleware and the request body
+ * Runs an event, takes a function to run events and the event body.
  */
-export async function handleEvent(
-  events: EventRunner | EventData[],
-  json: ReturnType<typeof JSON.parse>,
-  middleware: ServerConfig["middleware"],
-): Promise<200 | 202 | 404> {
-  switch (json.type) {
+export async function handleEvent(events: EventRunner | EventData[], event: APIWebhookEvent): Promise<200 | 202 | 404> {
+  dressedConfig.observability?.onServerEvent?.(event);
+  switch (event.type) {
     case ApplicationWebhookType.Ping: {
       logger.succeed("Received ping test");
       return 200;
     }
     case ApplicationWebhookType.Event: {
       const runEvent = typeof events === "function" ? events : setupEvents(events);
-      await runEvent(json.event as APIWebhookEventBody, middleware?.events);
+      await runEvent(event.event, dressedConfig.observability?.onBeforeEvent);
       return 202;
     }
     default: {
-      logger.error("Received unknown event type:", json.type);
+      logger.error(new Error("Received invalid event", { cause: event }));
       return 404;
     }
   }
