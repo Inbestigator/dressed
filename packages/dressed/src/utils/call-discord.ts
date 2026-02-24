@@ -102,11 +102,11 @@ export async function callDiscord(
     headers: { authorization, ...(files?.length ? {} : { "content-type": "application/json" }) },
     ...(options as RequestInit),
   });
-  let observeRes: (r: Response) => void;
+  let observeRes: ((r: Response) => void) | undefined;
   config.observability?.onFetch?.(req.clone(), new Promise<Response>((r) => (observeRes = r)));
 
   async function handleRes(res: Response) {
-    observeRes(res.clone());
+    observeRes?.(res.clone());
     if (res.ok) return res;
     if (res.status === 429 && tries > 0) {
       $req.tries = tries - 1;
