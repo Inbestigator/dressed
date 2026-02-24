@@ -67,17 +67,15 @@ export interface DressedConfig {
      * @tip If you don't want to modify the request, either directly return the input or undefined.
      */
     onBeforeFetch?: (req: Readonly<Request>) => Promisable<Request>;
-    /** Executed after the API returns a response. */
-    onCallResponse?: (res: Readonly<Response>) => unknown;
     onError?: (error: unknown) => unknown;
-    /** Executed before an incoming interaction is handled. */
+    /** Executed before calling the API. {@link res} will resolve with the API response upon completion. */
+    onFetch?: (req: Readonly<Request>, res: Readonly<Promise<Response>>) => unknown;
+    /** Executed before an incoming event is handled. */
     onServerEvent?: (event: APIWebhookEvent) => unknown;
     /** Executed before an incoming interaction is handled. */
     onServerInteraction?: (interaction: Readonly<APIInteraction>) => unknown;
-    /** Executed on an incoming request to the bot server. */
-    onServerRequest?: (res: Readonly<Request>) => unknown;
-    /** Executed when the bot server finishes processing an incoming request. */
-    onServerResponded?: (res: Readonly<Response>) => unknown;
+    /** Executed before an incoming request to the bot server is handled. {@link res} will resolve with the server's response upon handling. */
+    onServerRequest?: (req: Readonly<Request>, res: Readonly<Promise<Response>>) => unknown;
   };
 }
 

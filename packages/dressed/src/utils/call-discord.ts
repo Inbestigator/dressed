@@ -102,15 +102,18 @@ export async function callDiscord(
     headers: { authorization, ...(files?.length ? {} : { "content-type": "application/json" }) },
     ...(options as RequestInit),
   });
+  let observeRes: (r: Response) => void;
+  config.observability?.onFetch?.(req.clone(), new Promise<Response>((r) => (observeRes = r)));
 
   async function handleRes(res: Response) {
+    observeRes(res.clone());
     if (res.ok) return res;
     if (res.status === 429 && tries > 0) {
       $req.tries = tries - 1;
       return callDiscord(endpoint, init, $req);
     }
 
-    const error = (await res.json()) as RESTError;
+    const error: RESTError = await res.json();
     logger.error(new Error(`${error.message} (${error.code ?? res.status})`, { cause: { req, res } }));
 
     if (error.errors) logErrorData(error.errors);

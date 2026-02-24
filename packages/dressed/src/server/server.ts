@@ -44,11 +44,12 @@ export function createServer(
       duplex: "half", // Undici throws if this isn't present when body is a stream -inb
     });
 
-    dressedConfig.observability?.onServerRequest?.(stdReq);
+    let observeRes: ((r: Response) => void) | undefined;
+    dressedConfig.observability?.onServerRequest?.(stdReq.clone(), new Promise<Response>((r) => (observeRes = r)));
 
     const handlerRes = await handleRequest(stdReq, commands, components, events);
 
-    dressedConfig.observability?.onServerResponded?.(handlerRes);
+    observeRes?.(handlerRes.clone());
 
     res.writeHead(handlerRes.status, { "Content-Type": "application/json" }).end(await handlerRes.text());
   });
