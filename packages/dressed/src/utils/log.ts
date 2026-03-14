@@ -1,6 +1,11 @@
 import { config } from "./env.ts";
 
-const logger = {
+type Logger = {
+  symbols: { error: string; warn: string };
+  raw: Record<"error" | "info" | "log" | "warn", typeof console.log>;
+} & Record<"defer" | "error" | "succeed" | "warn", typeof console.log>;
+
+const logger: Logger = {
   symbols: { error: "\u001B[31m✖\u001B[39m", warn: "\u001B[33m⚠\u001B[39m" },
   raw: {
     error: (...s: Parameters<typeof console.error>) => config.logger !== false && console.error(...s),

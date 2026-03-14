@@ -7,7 +7,7 @@
     "directory": "packages/dressed-ws"
   },
   "peerDependencies": {
-    "dressed": "^1.9.1"
+    "dressed": "^2.0.0-canary.1"
   },
   "exports": {
     ".": "./dist/index.js",

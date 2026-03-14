@@ -6,7 +6,7 @@ interface SeparatorProps extends Omit<APISeparatorComponent, "type" | "spacing">
   spacing?: keyof typeof SeparatorSpacingSize;
 }
 
-export function Separator({ spacing, ...props }: SeparatorProps): ReactElement<APISeparatorComponent> {
-  const component = DressedComponent({ spacing, ...props });
-  return createElement("dressed-node", component);
+export function Separator(config: SeparatorProps): ReactElement<APISeparatorComponent> {
+  const props = DressedComponent(config);
+  return createElement("dressed-node", props);
 }

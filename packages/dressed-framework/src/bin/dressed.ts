@@ -41,13 +41,8 @@ program
       root?: string;
       include?: string[];
     }) => {
-      const { commands, components, events, configPath } = await build({
-        endpoint,
-        port,
-        build: { root, include },
-      });
+      const { commands, components, events, configPath } = await build({ endpoint, port, build: { root, include } });
       const categories = [commands, components, events];
-
       const outputContent = `
 ${
   instance || register

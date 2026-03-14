@@ -1,6 +1,6 @@
 import { type APISelectMenuComponent, type APISelectMenuOption, ComponentType } from "discord-api-types/v10";
 import { SelectMenu as DressedComponent, SelectMenuOption as DressedOption } from "dressed";
-import { createElement, type ReactElement, type ReactNode } from "react";
+import { createElement, type PropsWithChildren, type ReactElement, type ReactNode } from "react";
 import type { Node } from "../react/node.ts";
 import { registerHandler } from "../rendering/callbacks.ts";
 import type { MessageComponentInteraction } from "../rendering/interaction.ts";
@@ -13,7 +13,7 @@ type SelectMap = {
 
 type SelectMenuWithCustomId<K extends SelectType> = Omit<SelectMap[`${K}Select`], "type" | "options"> & {
   type: K;
-} & (K extends "String" ? { children: ReactNode } : object);
+} & (K extends "String" ? PropsWithChildren : object);
 
 type SelectMenuWithOnClick<K extends SelectType> = Omit<SelectMenuWithCustomId<K>, "custom_id"> & {
   /**
@@ -26,23 +26,23 @@ type SelectMenuWithOnClick<K extends SelectType> = Omit<SelectMenuWithCustomId<K
 };
 
 export function SelectMenu<K extends SelectType>(
-  props: SelectMenuWithCustomId<K> & { type: K },
+  config: SelectMenuWithCustomId<K> & { type: K },
 ): ReactElement<SelectMap[`${K}Select`]>;
 export function SelectMenu<K extends SelectType>(
-  props: SelectMenuWithOnClick<K> & { type: K },
+  config: SelectMenuWithOnClick<K> & { type: K },
 ): ReactElement<SelectMap[`${K}Select`]>;
 
 export function SelectMenu<K extends SelectType>(
-  props: SelectMenuWithCustomId<K> | SelectMenuWithOnClick<K>,
+  config: SelectMenuWithCustomId<K> | SelectMenuWithOnClick<K>,
 ): ReactElement<SelectMap[`${K}Select`]> {
-  const { children, ...rest } = props as Record<string, unknown>;
-  const component = DressedComponent(rest as never);
-  return createElement("dressed-node", component as never, children as ReactNode);
+  const { children, ...rest } = config as Record<string, unknown>;
+  const props = DressedComponent(rest as never);
+  return createElement("dressed-node", props as never, children as ReactNode);
 }
 
-export function SelectMenuOption(props: APISelectMenuOption): ReactElement<APISelectMenuOption> {
-  const component = DressedOption(props.label, props.value, props);
-  return createElement("dressed-node", component);
+export function SelectMenuOption({ label, value, ...rest }: APISelectMenuOption): ReactElement<APISelectMenuOption> {
+  const props = DressedOption(label, value, rest);
+  return createElement("dressed-node", props);
 }
 
 export function parseSelectMenu<

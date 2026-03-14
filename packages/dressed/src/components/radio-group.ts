@@ -6,16 +6,18 @@ import { Label } from "./label.ts";
  * @important Radio Groups must be placed inside a {@link Label}.
  * @example
  * Label(
- *   "How satisfied are you?",
+ *   "Choose your class",
  *   RadioGroup({
- *     custom_id: "satisfaction",
+ *     custom_id: "class_radio",
  *     options: [
- *       RadioGroupOption("Great", "great", { default: true }),
- *       RadioGroupOption("Okay", "okay"),
- *       RadioGroupOption("Needs work", "needs_work"),
+ *       RadioGroupOption("Warrior", "warrior", { description: "Strong and brave" }),
+ *       RadioGroupOption("Rogue", "rogue", { description: "Weak and squishy" }),
+ *       RadioGroupOption("Wizard", "wizard", { description: "Nerd" }),
+ *       RadioGroupOption("Bard", "bard", { description: "Annoys everyone" }),
+ *       RadioGroupOption("Witch Doctor", "witch_doctor", { description: "Actually a pretty cool option" }),
  *     ],
- *     required: true,
  *   }),
+ *   "Your class detertmines the style of play for your character.",
  * )
  * @see https://discord.com/developers/docs/components/reference#radio-group
  */

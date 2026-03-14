@@ -6,7 +6,7 @@ interface TextInputProps extends Omit<APITextInputComponent, "type" | "style"> {
   style?: keyof typeof TextInputStyle;
 }
 
-export function TextInput({ style, ...props }: TextInputProps): ReactElement<APITextInputComponent> {
-  const component = DressedComponent({ style, ...props });
-  return createElement("dressed-node", component);
+export function TextInput(config: TextInputProps): ReactElement<APITextInputComponent> {
+  const props = DressedComponent(config);
+  return createElement("dressed-node", props);
 }
