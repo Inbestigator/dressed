@@ -5,7 +5,7 @@ import {
   ApplicationWebhookType,
   InteractionType,
 } from "discord-api-types/v10";
-import type { CommandData, ComponentData, EventData, ServerConfig } from "../types/config.ts";
+import type { CommandData, ComponentData, DressedConfig, EventData, ServerConfig } from "../types/config.ts";
 import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
 import { config as dressedConfig } from "../utils/env.ts";
 import logger from "../utils/log.ts";
@@ -14,6 +14,16 @@ import { setupCommands } from "./handlers/commands.ts";
 import { setupComponents } from "./handlers/components.ts";
 import { setupEvents } from "./handlers/events.ts";
 import { verifySignature } from "./signature.ts";
+
+createServer([], [], [], {
+  hooks: {
+    async onServerRequest(_req, res) {
+      const value = await res;
+      value.json();
+      return "Asd";
+    },
+  },
+});
 
 /**
  * Starts a server to handle interactions.
@@ -25,7 +35,8 @@ export function createServer(
   events: EventRunner | EventData[],
   config: ServerConfig = {},
 ): Server {
-  config = override(dressedConfig.server ?? {}, config);
+  config = { ...dressedConfig.server, ...config };
+  const hooks = { ...dressedConfig.hooks, ...config.hooks };
   const port = config.port ?? 8000;
   const endpoint = new URL(config.endpoint ?? "/", `http://localhost:${port}`);
   const server = createHttpServer(async (req, res) => {
@@ -45,9 +56,9 @@ export function createServer(
     });
 
     let observeRes: ((r: Response) => void) | undefined;
-    dressedConfig.observability?.onServerRequest?.(stdReq.clone(), new Promise<Response>((r) => (observeRes = r)));
+    hooks?.onServerRequest?.(stdReq.clone(), new Promise<Response>((r) => (observeRes = r)));
 
-    const handlerRes = await handleRequest(stdReq, commands, components, events);
+    const handlerRes = await handleRequest(stdReq, commands, components, events, hooks);
 
     observeRes?.(handlerRes.clone());
 
@@ -76,6 +87,7 @@ export async function handleRequest(
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
   events: EventRunner | EventData[],
+  hooks: Parameters<typeof handleInteraction>[3] & Parameters<typeof handleEvent>[2] = dressedConfig.hooks ?? {},
 ): Promise<Response> {
   const body = await req.text();
   const verified = await verifySignature(
@@ -94,9 +106,9 @@ export async function handleRequest(
     let status: number;
     // The interaction response token
     if ("token" in json) {
-      status = await handleInteraction(commands, components, json);
+      status = await handleInteraction(commands, components, json, hooks);
     } else {
-      status = await handleEvent(events, json);
+      status = await handleEvent(events, json, hooks);
     }
     return new Response(status === 200 ? '{"type":1}' : null, { status });
   } catch (error) {
@@ -112,8 +124,8 @@ export async function handleInteraction(
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
   interaction: APIInteraction,
+  hooks: Pick<NonNullable<DressedConfig["hooks"]>, "onBeforeCommand" | "onBeforeComponent"> = dressedConfig.hooks ?? {},
 ): Promise<200 | 202 | 404> {
-  dressedConfig.observability?.onServerInteraction?.(interaction);
   switch (interaction.type) {
     case InteractionType.Ping: {
       logger.succeed("Received ping test");
@@ -121,7 +133,7 @@ export async function handleInteraction(
     }
     case InteractionType.ApplicationCommand: {
       const runCommand = typeof commands === "function" ? commands : setupCommands(commands);
-      await runCommand(createInteraction(interaction), dressedConfig.observability?.onBeforeCommand as never);
+      await runCommand(createInteraction(interaction), hooks.onBeforeCommand as never);
       return 202;
     }
     case InteractionType.ApplicationCommandAutocomplete: {
@@ -132,7 +144,7 @@ export async function handleInteraction(
     case InteractionType.MessageComponent:
     case InteractionType.ModalSubmit: {
       const runComponent = typeof components === "function" ? components : setupComponents(components);
-      await runComponent(createInteraction(interaction), dressedConfig.observability?.onBeforeComponent);
+      await runComponent(createInteraction(interaction), hooks.onBeforeComponent);
       return 202;
     }
     default: {
@@ -145,8 +157,11 @@ export async function handleInteraction(
 /**
  * Runs an event, takes a function to run events and the event body.
  */
-export async function handleEvent(events: EventRunner | EventData[], event: APIWebhookEvent): Promise<200 | 202 | 404> {
-  dressedConfig.observability?.onServerEvent?.(event);
+export async function handleEvent(
+  events: EventRunner | EventData[],
+  event: APIWebhookEvent,
+  hooks: Pick<NonNullable<DressedConfig["hooks"]>, "onBeforeEvent"> = dressedConfig.hooks ?? {},
+): Promise<200 | 202 | 404> {
   switch (event.type) {
     case ApplicationWebhookType.Ping: {
       logger.succeed("Received ping test");
@@ -154,7 +169,7 @@ export async function handleEvent(events: EventRunner | EventData[], event: APIW
     }
     case ApplicationWebhookType.Event: {
       const runEvent = typeof events === "function" ? events : setupEvents(events);
-      await runEvent(event.event, dressedConfig.observability?.onBeforeEvent);
+      await runEvent(event.event, hooks.onBeforeEvent);
       return 202;
     }
     default: {
@@ -162,23 +177,4 @@ export async function handleEvent(events: EventRunner | EventData[], event: APIW
       return 404;
     }
   }
-}
-
-/** Deep merges two objects, producing a new object where values from {@link b} override those from {@link a}. */
-function override<T>(a: Partial<T>, b: Partial<T>) {
-  const result = { ...a };
-
-  for (const key in b) {
-    const k = key as keyof T;
-    const bv = b[k];
-    const av = a[k];
-
-    if (bv !== undefined && typeof bv === "object" && bv !== null && !Array.isArray(bv)) {
-      result[k] = override(av ?? {}, bv) as T[typeof k];
-    } else if (bv !== undefined) {
-      result[k] = bv as T[typeof k];
-    }
-  }
-
-  return result;
 }

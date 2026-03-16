@@ -1,6 +1,4 @@
 import type {
-  APIInteraction,
-  APIWebhookEvent,
   ApplicationCommandType,
   InteractionContextType,
   PermissionFlagsBits,
@@ -10,9 +8,48 @@ import type {
   Snowflake,
 } from "discord-api-types/v10";
 import { createServer } from "../server/server.ts";
-import type { CallConfig } from "../utils/call-discord.ts";
+import type { botEnv } from "../utils/env.ts";
 import type { CommandHandler, ComponentHandler, EventHandler } from "./handlers.ts";
 import type { Promisable } from "./utilities.ts";
+
+/** Optional extra config for the layer before fetch */
+export interface CallConfig {
+  /**
+   * The authorization string to use
+   * @default `Bot {env.DISCORD_TOKEN}`
+   */
+  authorization?: string;
+  /**
+   * Number of retries when rate limited before the caller gives up
+   * @default 3
+   */
+  tries?: number;
+  /**
+   * The location which endpoints branch off from
+   * @default "https://discord.com/api/v10"
+   */
+  routeBase?: string;
+  /**
+   * Environment variables to use
+   * @default {botEnv}
+   */
+  env?: Partial<typeof botEnv>;
+  /**
+   * Delay in seconds before old ratelimit buckets are purged from the cache, set to -1 to disable
+   * @default 1,800 // 30 minutes
+   */
+  bucketTTL?: number;
+  hooks?: {
+    /**
+     * Executed right before calling the API, this runs before ratelimit delays happen.
+     * @important The return value of this function will be used as the {@link Request} object in the {@link fetch}.
+     * @tip If you don't want to modify the request, either directly return the input or `undefined`.
+     */
+    onBeforeFetch?: (req: Readonly<Request>) => Promisable<Request | undefined>;
+    /** Executed before calling the API. {@link res} will resolve with the API response upon completion. */
+    onFetch?: (req: Readonly<Request>, res: Readonly<Promise<Response>>) => unknown;
+  };
+}
 
 /** Configuration for {@link createServer}. */
 export interface ServerConfig {
@@ -26,57 +63,45 @@ export interface ServerConfig {
    * @default 8000
    */
   port?: number;
+  hooks?: {
+    /**
+     * A layer before your command handlers are executed.
+     * @important The return values of this function will be the props passed to your handler.
+     * @tip If you don't want to modify the handler's props, either directly return the input props or `undefined`.
+     */
+    onBeforeCommand?: (...p: Parameters<CommandHandler>) => Promisable<unknown[] | undefined>;
+    /**
+     * A layer before your component handlers are executed.
+     * @important The return values of this function will be the props passed to your handler.
+     * @tip If you don't want to modify the handler's props, either directly return the input props or `undefined`.
+     */
+    onBeforeComponent?: (...p: Parameters<ComponentHandler>) => Promisable<unknown[] | undefined>;
+    /**
+     * A layer before your event handlers are executed.
+     * @important The return values of this function will be the props passed to your handler.
+     * @tip If you don't want to modify the handler's props, either directly return the input props or `undefined`.
+     */
+    onBeforeEvent?: (...p: Parameters<EventHandler>) => Promisable<unknown[] | undefined>;
+    /** Executed before an incoming request to the bot server is handled. {@link res} will resolve with the server's response upon handling. */
+    onServerRequest?: (req: Readonly<Request>, res: Readonly<Promise<Response>>) => unknown;
+  };
 }
 
 /** Configuration for various Dressed services. */
 export interface DressedConfig {
-  /** Configuration for {@link createServer}. */
-  server?: ServerConfig;
   /** Configuration for all API requests. */
-  requests?: CallConfig;
-  observability?: {
-    /**
-     * Suppress log levels
-     * @example
-     * "Warn" // Emit warnings and errors
-     * "Error" // Only emit errors
-     * false // Emit nothing
-     */
-    logger?: "Warn" | "Error" | false;
-    /**
-     * A layer before your command handlers are executed.
-     * @important The return values of this function will be the props passed to your handler.
-     * @tip If you don't want to modify the handler's props, either directly return the input props or undefined.
-     */
-    onBeforeCommand?: (...p: Parameters<CommandHandler>) => Promisable<unknown[]>;
-    /**
-     * A layer before your component handlers are executed.
-     * @important The return values of this function will be the props passed to your handler.
-     * @tip If you don't want to modify the handler's props, either directly return the input props or undefined.
-     */
-    onBeforeComponent?: (...p: Parameters<ComponentHandler>) => Promisable<unknown[]>;
-    /**
-     * A layer before your event handlers are executed.
-     * @important The return values of this function will be the props passed to your handler.
-     * @tip If you don't want to modify the handler's props, either directly return the input props or undefined.
-     */
-    onBeforeEvent?: (...p: Parameters<EventHandler>) => Promisable<unknown[]>;
-    /**
-     * Executed right before calling the API, this runs after ratelimit delays happen.
-     * @important The return value of this function will be used as the request in the {@link fetch}.
-     * @tip If you don't want to modify the request, either directly return the input or undefined.
-     */
-    onBeforeFetch?: (req: Readonly<Request>) => Promisable<Request>;
-    onError?: (error: unknown) => unknown;
-    /** Executed before calling the API. {@link res} will resolve with the API response upon completion. */
-    onFetch?: (req: Readonly<Request>, res: Readonly<Promise<Response>>) => unknown;
-    /** Executed before an incoming event is handled. */
-    onServerEvent?: (event: APIWebhookEvent) => unknown;
-    /** Executed before an incoming interaction is handled. */
-    onServerInteraction?: (interaction: Readonly<APIInteraction>) => unknown;
-    /** Executed before an incoming request to the bot server is handled. {@link res} will resolve with the server's response upon handling. */
-    onServerRequest?: (req: Readonly<Request>, res: Readonly<Promise<Response>>) => unknown;
-  };
+  requests?: Omit<CallConfig, "hooks">;
+  /** Configuration for {@link createServer}. */
+  server?: Omit<ServerConfig, "hooks">;
+  /**
+   * Suppress log levels
+   * @example
+   * "Warn" // Emit warnings and errors
+   * "Error" // Only emit errors
+   * false // Emit nothing
+   */
+  logger?: "Warn" | "Error" | false;
+  hooks?: CallConfig["hooks"] & ServerConfig["hooks"] & { onError?: (error: unknown) => unknown };
 }
 
 interface BaseCommandConfig {

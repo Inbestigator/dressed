@@ -1,39 +1,11 @@
 import { Buffer } from "node:buffer";
 import { type RESTError, type RESTErrorData, RouteBases } from "discord-api-types/v10";
 import { filetypeinfo } from "magic-bytes.js";
+import type { CallConfig } from "../types/config.ts";
 import type { RawFile } from "../types/file.ts";
 import { botEnv, config } from "./env.ts";
 import logger from "./log.ts";
 import { checkLimit } from "./ratelimit.ts";
-
-/** Optional extra config for the layer before fetch */
-export interface CallConfig {
-  /**
-   * The authorization string to use
-   * @default `Bot {env.DISCORD_TOKEN}`
-   */
-  authorization?: string;
-  /**
-   * Number of retries when rate limited before the caller gives up
-   * @default 3
-   */
-  tries?: number;
-  /**
-   * The location which endpoints branch off from
-   * @default "https://discord.com/api/v10"
-   */
-  routeBase?: string;
-  /**
-   * Environment variables to use
-   * @default {botEnv}
-   */
-  env?: Partial<typeof botEnv>;
-  /**
-   * Delay in seconds before old ratelimit buckets are purged from the cache, set to -1 to disable
-   * @default 1,800 // 30 minutes
-   */
-  bucketTTL?: number;
-}
 
 function isBufferLike(value: unknown): value is Buffer | Uint8Array {
   return value instanceof ArrayBuffer || value instanceof Uint8Array || value instanceof Uint8ClampedArray;
@@ -71,22 +43,17 @@ function processFiles(files: RawFile[], body: BodyInit) {
 
 export async function callDiscord(
   endpoint: string,
-  init: Omit<RequestInit, "body"> & {
-    method: string;
-    params?: unknown;
-    body?: unknown;
-    files?: RawFile[];
-  },
+  init: Omit<RequestInit, "body"> & { method: string; params?: unknown; body?: unknown; files?: RawFile[] },
   $req: CallConfig = {},
 ): Promise<Response> {
   const { params, files, ...options } = { ...init };
-  const reqsConfig = config.requests;
   const {
-    authorization = reqsConfig?.authorization ?? `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
-    tries = reqsConfig?.tries ?? 3,
-    routeBase = reqsConfig?.routeBase ?? RouteBases.api,
-    bucketTTL = reqsConfig?.bucketTTL ?? 30 * 60,
-  } = $req;
+    authorization = `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
+    tries = 3,
+    routeBase = RouteBases.api,
+    bucketTTL = 30 * 60,
+  } = { ...config.requests, ...$req };
+  const hooks = { ...config.hooks, ...$req.hooks };
   const url = new URL(routeBase + endpoint);
 
   if (params) {
@@ -103,7 +70,7 @@ export async function callDiscord(
     ...(options as RequestInit),
   });
   let observeRes: ((r: Response) => void) | undefined;
-  config.observability?.onFetch?.(req.clone(), new Promise<Response>((r) => (observeRes = r)));
+  hooks.onFetch?.(req.clone(), new Promise<Response>((r) => (observeRes = r)));
 
   async function handleRes(res: Response) {
     observeRes?.(res.clone());
@@ -121,7 +88,7 @@ export async function callDiscord(
     throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`, { cause: res });
   }
 
-  const limiter = await checkLimit((await config.observability?.onBeforeFetch?.(req)) ?? req, bucketTTL);
+  const limiter = await checkLimit((await hooks.onBeforeFetch?.(req)) ?? req, bucketTTL);
 
   if (limiter instanceof Response) return handleRes(limiter);
 

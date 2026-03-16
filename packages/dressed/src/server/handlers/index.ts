@@ -12,9 +12,13 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
   findItem: (d: D, i: T[]) => [T, P] | undefined;
 }): (
   i: T[],
-) => (d: D, m?: (...props: P) => Promisable<unknown[]>, k?: keyof NonNullable<T["exports"]>) => Promise<void> {
+) => (
+  d: D,
+  h?: (...props: P) => Promisable<unknown[] | undefined>,
+  k?: keyof NonNullable<T["exports"]>,
+) => Promise<void> {
   return (items) =>
-    async (data, middleware, key = "default") => {
+    async (data, hook, key = "default") => {
       const [item, props] = options.findItem(data, items) ?? [];
       let itemMessages = options.itemMessages;
 
@@ -32,7 +36,7 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
       try {
         const handler = item.exports[key as keyof typeof item.exports];
         if (!handler) throw new Error(`Unable to find '${String(key)}' in exports`);
-        await handler(...((await middleware?.(...props)) ?? props));
+        await handler(...((await hook?.(...props)) ?? props));
       } catch (e) {
         const text = pendingText.replace("Running", "Failed to run");
         if (e instanceof Error) {

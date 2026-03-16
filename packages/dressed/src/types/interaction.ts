@@ -27,8 +27,7 @@ import type {
 import type { editWebhookMessage, executeWebhook } from "../resources/generated.resources.ts";
 import type { createInteractionCallback } from "../resources/interactions.ts";
 import type { getField } from "../server/extenders/fields.ts";
-import type { CallConfig } from "../utils/call-discord.ts";
-import type { ChatInputConfig, CommandConfig } from "./config.ts";
+import type { CallConfig, ChatInputConfig, CommandConfig } from "./config.ts";
 import type { RawFile } from "./file.ts";
 import type { Requirable } from "./utilities.ts";
 

@@ -11,7 +11,7 @@ beforeEach(() => {
 afterEach(() => mock.restore());
 
 test("logs everything when config.logger === undefined", async () => {
-  config.observability = { logger: undefined };
+  config.logger = undefined;
 
   logger.error(new Error("err"));
   logger.warn("warn");
@@ -25,7 +25,7 @@ test("logs everything when config.logger === undefined", async () => {
 });
 
 test("only allows warnings and errors when config.logger === 'Warn'", async () => {
-  config.observability = { logger: "Warn" };
+  config.logger = "Warn";
 
   logger.error(new Error("err"));
   logger.warn("warn");
@@ -39,7 +39,7 @@ test("only allows warnings and errors when config.logger === 'Warn'", async () =
 });
 
 test("only allows errors when config.logger === 'Error'", async () => {
-  config.observability = { logger: "Error" };
+  config.logger = "Error";
 
   logger.error(new Error("err"));
   logger.warn("warn");
@@ -53,7 +53,7 @@ test("only allows errors when config.logger === 'Error'", async () => {
 });
 
 test("does not log anything when config.logger === false", async () => {
-  config.observability = { logger: false };
+  config.logger = false;
 
   logger.error(new Error("err"));
   logger.warn("warn");
@@ -67,7 +67,7 @@ test("does not log anything when config.logger === false", async () => {
 });
 
 test("raw methods respect config flags directly", async () => {
-  config.observability = { logger: undefined };
+  config.logger = undefined;
 
   logger.raw.error("e");
   logger.raw.warn("w");
