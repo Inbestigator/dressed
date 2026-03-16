@@ -4,6 +4,7 @@ export { Button } from "./components/button.ts";
 export { Checkbox, CheckboxGroup } from "./components/checkbox.ts";
 export { Container } from "./components/container.ts";
 export { File } from "./components/file.ts";
+export { FileUpload } from "./components/file-upload.ts";
 export { Label } from "./components/label.ts";
 export { MediaGallery, MediaGalleryItem } from "./components/media-gallery.ts";
 export { RadioGroup, RadioGroupOption } from "./components/radio-group.ts";
