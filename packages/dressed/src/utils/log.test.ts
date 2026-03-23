@@ -13,12 +13,12 @@ afterEach(() => mock.restore());
 test("logs everything when config.logger === undefined", async () => {
   config.logger = undefined;
 
-  logger.error("err");
+  logger.error(new Error("err"));
   logger.warn("warn");
   logger.succeed("ok");
   logger.defer("wait");
 
-  expect(console.error).toHaveBeenCalledWith("\u001B[31m✖\u001B[39m", "err");
+  expect(console.error).toHaveBeenCalledWith("\u001B[31m✖\u001B[39m", new Error("err"));
   expect(console.warn).toHaveBeenCalledWith("\u001B[33m⚠\u001B[39m", "warn");
   expect(console.log).toHaveBeenCalledWith("\u001B[32m✔\u001B[39m", "ok");
   expect(console.info).toHaveBeenCalledWith("\u001B[34m…\u001B[39m", "wait");
@@ -27,12 +27,12 @@ test("logs everything when config.logger === undefined", async () => {
 test("only allows warnings and errors when config.logger === 'Warn'", async () => {
   config.logger = "Warn";
 
-  logger.error("err");
+  logger.error(new Error("err"));
   logger.warn("warn");
   logger.succeed("ok");
   logger.defer("wait");
 
-  expect(console.error).toHaveBeenCalledWith("\u001B[31m✖\u001B[39m", "err");
+  expect(console.error).toHaveBeenCalledWith("\u001B[31m✖\u001B[39m", new Error("err"));
   expect(console.warn).toHaveBeenCalledWith("\u001B[33m⚠\u001B[39m", "warn");
   expect(console.log).not.toHaveBeenCalled();
   expect(console.info).not.toHaveBeenCalled();
@@ -41,12 +41,12 @@ test("only allows warnings and errors when config.logger === 'Warn'", async () =
 test("only allows errors when config.logger === 'Error'", async () => {
   config.logger = "Error";
 
-  logger.error("err");
+  logger.error(new Error("err"));
   logger.warn("warn");
   logger.succeed("ok");
   logger.defer("wait");
 
-  expect(console.error).toHaveBeenCalledWith("\u001B[31m✖\u001B[39m", "err");
+  expect(console.error).toHaveBeenCalledWith("\u001B[31m✖\u001B[39m", new Error("err"));
   expect(console.warn).not.toHaveBeenCalled();
   expect(console.log).not.toHaveBeenCalled();
   expect(console.info).not.toHaveBeenCalled();
@@ -55,7 +55,7 @@ test("only allows errors when config.logger === 'Error'", async () => {
 test("does not log anything when config.logger === false", async () => {
   config.logger = false;
 
-  logger.error("err");
+  logger.error(new Error("err"));
   logger.warn("warn");
   logger.succeed("ok");
   logger.defer("wait");

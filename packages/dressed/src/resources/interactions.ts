@@ -1,8 +1,9 @@
 import type { APIInteractionResponse, RESTPostAPIInteractionCallbackQuery, Snowflake } from "discord-api-types/v10";
 import { InteractionResponseType, Routes } from "discord-api-types/v10";
+import type { CallConfig } from "../types/config.ts";
 import type { RawFile } from "../types/file.ts";
 import type { InteractionCallbackResponse } from "../types/interaction.ts";
-import { type CallConfig, callDiscord } from "../utils/call-discord.ts";
+import { callDiscord } from "../utils/call-discord.ts";
 
 /**
  * Respond to an interaction by sending a modal, message, or update the original.

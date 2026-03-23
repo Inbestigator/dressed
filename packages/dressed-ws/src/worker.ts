@@ -9,6 +9,7 @@ import {
   GatewayOpcodes,
   type GatewayReceivePayload,
 } from "discord-api-types/v10";
+import { logger } from "dressed/utils";
 
 assert(parentPort);
 
@@ -146,7 +147,7 @@ function connectShard(url: string, config: ShardConfig, resume?: { sessionId: st
       }
     }
   };
-  ws.onerror = (e) => console.error(`WebSocket error (shard ${config.shard[0]})`, e);
+  ws.onerror = (e) => logger.error(new Error(`WebSocket error (shard ${config.shard[0]})`, { cause: e }));
   ws.onclose = ({ code, reason }) => {
     if (shard.state === "Disconnecting") {
       code = WSCodes.GoingAway;
@@ -163,7 +164,7 @@ function connectShard(url: string, config: ShardConfig, resume?: { sessionId: st
       case GatewayCloseCodes.DisallowedIntents:
       case WSCodes.GoingAway: {
         shards.delete(shardId);
-        console.log(
+        logger.raw.log(
           `Connection closed with code ${code} - ${reason || "No reason provided"} (shard ${config.shard[0]})`,
         );
         break;

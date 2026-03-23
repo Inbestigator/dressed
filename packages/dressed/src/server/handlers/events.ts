@@ -11,7 +11,6 @@ export const setupEvents: ReturnType<typeof createHandlerSetup<EventData, APIWeb
   createHandlerSetup({
     itemMessages: (event) => ({
       noItem: `No event handler for "${event.type}"`,
-      middlewareKey: "events",
       pending: (item) => `Running event "${item.name}"`,
     }),
     findItem(event, items) {
