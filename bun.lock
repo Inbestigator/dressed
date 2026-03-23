@@ -48,6 +48,13 @@
         "dressed": "^2.0.0-canary.1",
       },
     },
+    "packages/dressed-analytics": {
+      "name": "@dressed/analytics",
+      "version": "0.0.0",
+      "peerDependencies": {
+        "dressed": "^1.9.1",
+      },
+    },
     "packages/dressed-matcher": {
       "name": "@dressed/matcher",
       "version": "1.4.0",
@@ -135,6 +142,8 @@
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.4.2", "", { "os": "win32", "cpu": "x64" }, "sha512-9ma7C4g8Sq3cBlRJD2yrsHXB1mnnEBdpy7PhvFrylQWQb4PoyCmPucdX7frvsSBQuFtIiKCrolPl/8tCZrKvgQ=="],
 
     "@dressed/framework": ["@dressed/framework@workspace:packages/dressed-framework"],
+
+    "@dressed/analytics": ["@dressed/analytics@workspace:packages/dressed-analytics"],
 
     "@dressed/matcher": ["@dressed/matcher@workspace:packages/dressed-matcher"],
 
