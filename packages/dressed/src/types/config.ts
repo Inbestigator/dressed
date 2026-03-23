@@ -12,6 +12,7 @@ import type {
 import { createServer } from "../server/server.ts";
 import type { botEnv } from "../utils/env.ts";
 import type { CommandHandler, ComponentHandler, EventHandler } from "./handlers.ts";
+import type { Interaction } from "./interaction.ts";
 import type { Promisable } from "./utilities.ts";
 
 /** Optional extra config for the layer before fetch. */
@@ -85,7 +86,7 @@ export interface ServerConfig {
      */
     onBeforeEvent?: (...p: Parameters<EventHandler>) => Promisable<unknown[] | undefined>;
     /** Executed when no command/component handler is found for the incoming interaction. */
-    onUnknownInteraction?: (interaction: APIInteraction) => unknown;
+    onUnknownInteraction?: (interaction: NonNullable<Interaction<APIInteraction>>) => unknown;
     /** Executed when no event handler is found for the incoming event. */
     onUnknownEvent?: (event: APIWebhookEventBody) => unknown;
     /** Executed before an incoming request to the bot server is handled. {@link res} will resolve with the server's response upon handling. */

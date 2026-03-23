@@ -26,7 +26,8 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
         itemMessages = itemMessages(data);
       }
       if (!item || !Array.isArray(props)) {
-        (await hooks.unknown?.(data)) || logger.warn(itemMessages.noItem);
+        if (hooks.unknown) await hooks.unknown(data);
+        else logger.warn(itemMessages.noItem);
         return;
       }
 
