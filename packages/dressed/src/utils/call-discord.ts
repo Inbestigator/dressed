@@ -88,7 +88,7 @@ export async function callDiscord(
     throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`, { cause: res });
   }
 
-  const limiter = await checkLimit((await hooks.onBeforeFetch?.(req)) ?? req, bucketTTL);
+  const limiter = await checkLimit((await hooks.onBeforeFetch?.(req.clone())) ?? req, bucketTTL);
 
   if (limiter instanceof Response) return handleRes(limiter);
 
