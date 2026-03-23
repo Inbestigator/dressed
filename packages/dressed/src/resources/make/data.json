@@ -259,7 +259,7 @@
         "warns": [
           "Deleting a guild channel cannot be undone. Use this with caution, as it is impossible to undo this action when performed on a guild channel. In contrast, when used with a private message, it is possible to undo the action by opening a private message with the recipient again."
         ],
-        "see": "/docs/resources/channel#deleteclose-channel"
+        "see": "/docs/resources/channel#delete%2Fclose-channel"
       }
     },
     "PutAPIChannelPermission": {
