@@ -15,16 +15,6 @@ import { setupComponents } from "./handlers/components.ts";
 import { setupEvents } from "./handlers/events.ts";
 import { verifySignature } from "./signature.ts";
 
-createServer([], [], [], {
-  hooks: {
-    async onServerRequest(_req, res) {
-      const value = await res;
-      value.json();
-      return "Asd";
-    },
-  },
-});
-
 /**
  * Starts a server to handle interactions.
  * @returns The server instance
@@ -56,7 +46,7 @@ export function createServer(
     });
 
     let observeRes: ((r: Response) => void) | undefined;
-    hooks?.onServerRequest?.(stdReq.clone(), new Promise<Response>((r) => (observeRes = r)));
+    hooks.onServerRequest?.(stdReq.clone(), new Promise<Response>((r) => (observeRes = r)));
 
     const handlerRes = await handleRequest(stdReq, commands, components, events, hooks);
 
@@ -124,8 +114,12 @@ export async function handleInteraction(
   commands: CommandRunner | CommandData[],
   components: ComponentRunner | ComponentData[],
   interaction: APIInteraction,
-  hooks: Pick<NonNullable<DressedConfig["hooks"]>, "onBeforeCommand" | "onBeforeComponent"> = dressedConfig.hooks ?? {},
+  hooks: Pick<
+    NonNullable<ServerConfig["hooks"]>,
+    "onBeforeCommand" | "onBeforeComponent" | "onUnknownInteraction"
+  > = dressedConfig.hooks ?? {},
 ): Promise<200 | 202 | 404> {
+  const unknown = hooks.onUnknownInteraction;
   switch (interaction.type) {
     case InteractionType.Ping: {
       logger.succeed("Received ping test");
@@ -133,18 +127,18 @@ export async function handleInteraction(
     }
     case InteractionType.ApplicationCommand: {
       const runCommand = typeof commands === "function" ? commands : setupCommands(commands);
-      await runCommand(createInteraction(interaction), hooks.onBeforeCommand as never);
+      await runCommand(createInteraction(interaction), { before: hooks.onBeforeCommand as never, unknown });
       return 202;
     }
     case InteractionType.ApplicationCommandAutocomplete: {
       const runCommand = typeof commands === "function" ? commands : setupCommands(commands);
-      await runCommand(createInteraction(interaction), undefined, "autocomplete");
+      await runCommand(createInteraction(interaction), { unknown }, "autocomplete");
       return 202;
     }
     case InteractionType.MessageComponent:
     case InteractionType.ModalSubmit: {
       const runComponent = typeof components === "function" ? components : setupComponents(components);
-      await runComponent(createInteraction(interaction), hooks.onBeforeComponent);
+      await runComponent(createInteraction(interaction), { before: hooks.onBeforeComponent, unknown });
       return 202;
     }
     default: {
@@ -160,7 +154,7 @@ export async function handleInteraction(
 export async function handleEvent(
   events: EventRunner | EventData[],
   event: APIWebhookEvent,
-  hooks: Pick<NonNullable<DressedConfig["hooks"]>, "onBeforeEvent"> = dressedConfig.hooks ?? {},
+  hooks: Pick<NonNullable<DressedConfig["hooks"]>, "onBeforeEvent" | "onUnknownEvent"> = dressedConfig.hooks ?? {},
 ): Promise<200 | 202 | 404> {
   switch (event.type) {
     case ApplicationWebhookType.Ping: {
@@ -169,7 +163,7 @@ export async function handleEvent(
     }
     case ApplicationWebhookType.Event: {
       const runEvent = typeof events === "function" ? events : setupEvents(events);
-      await runEvent(event.event, hooks.onBeforeEvent);
+      await runEvent(event.event, { before: hooks.onBeforeEvent, unknown: hooks.onUnknownEvent });
       return 202;
     }
     default: {

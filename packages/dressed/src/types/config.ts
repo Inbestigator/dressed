@@ -1,4 +1,6 @@
 import type {
+  APIInteraction,
+  APIWebhookEventBody,
   ApplicationCommandType,
   InteractionContextType,
   PermissionFlagsBits,
@@ -41,7 +43,7 @@ export interface CallConfig {
   bucketTTL?: number;
   hooks?: {
     /**
-     * Executed right before calling the API, this runs before ratelimit delays happen.
+     * Executed before calling the API, this runs before ratelimit delays happen.
      * @important The return value of this function will be used as the {@link Request} object in the {@link fetch}.
      * @tip If you don't want to modify the request, either directly return the input or `undefined`.
      */
@@ -82,6 +84,10 @@ export interface ServerConfig {
      * @tip If you don't want to modify the handler's props, either directly return the input props or `undefined`.
      */
     onBeforeEvent?: (...p: Parameters<EventHandler>) => Promisable<unknown[] | undefined>;
+    /** Executed when no command/component handler is found for the incoming interaction */
+    onUnknownInteraction?: (interaction: APIInteraction) => unknown;
+    /** Executed when no event handler is found for the incoming event */
+    onUnknownEvent?: (event: APIWebhookEventBody) => unknown;
     /** Executed before an incoming request to the bot server is handled. {@link res} will resolve with the server's response upon handling. */
     onServerRequest?: (req: Readonly<Request>, res: Readonly<Promise<Response>>) => unknown;
   };
