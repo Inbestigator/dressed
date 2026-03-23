@@ -49,9 +49,10 @@ export async function callDiscord(
   const { params, files, ...options } = { ...init };
   const {
     authorization = `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
-    tries = 3,
-    routeBase = RouteBases.api,
     bucketTTL = 30 * 60,
+    dangerouslyFastTrack,
+    routeBase = RouteBases.api,
+    tries = 3,
   } = { ...config.requests, ...$req };
   const hooks = { ...config.hooks, ...$req.hooks };
   const url = new URL(routeBase + endpoint);
@@ -65,12 +66,11 @@ export async function callDiscord(
   if (files?.length) options.body = processFiles(files, options.body as BodyInit);
   else if (options.body) options.body = JSON.stringify(options.body);
 
-  const req = new Request(url, {
+  let req = new Request(url, {
     headers: { authorization, ...(files?.length ? {} : { "content-type": "application/json" }) },
     ...(options as RequestInit),
   });
   let observeRes: ((r: Response) => void) | undefined;
-  hooks.onFetch?.(req.clone(), new Promise<Response>((r) => (observeRes = r)));
 
   async function handleRes(res: Response) {
     observeRes?.(res.clone());
@@ -88,12 +88,19 @@ export async function callDiscord(
     throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`, { cause: res });
   }
 
-  const limiter = await checkLimit((await hooks.onBeforeFetch?.(req.clone())) ?? req, bucketTTL);
+  req = (await hooks.onBeforeFetch?.(req.clone())) ?? req;
+
+  const limiter = dangerouslyFastTrack
+    ? ([req, () => {}] as [Request, (v: Response) => void])
+    : await checkLimit(req, bucketTTL);
 
   if (limiter instanceof Response) return handleRes(limiter);
 
-  const [limitedReq, updateLimit] = limiter;
-  const res = await fetch(limitedReq);
+  const [batchedReq, updateLimit] = limiter;
+
+  hooks.onFetch?.(batchedReq.clone(), new Promise<Response>((r) => (observeRes = r)));
+
+  const res = await fetch(batchedReq);
 
   updateLimit(res);
 
