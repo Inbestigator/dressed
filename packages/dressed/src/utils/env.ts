@@ -13,6 +13,7 @@ loadEnvConfig();
 /** The global configuration for various Dressed services. */
 export const config: DressedConfig = {};
 
+/** The loaded env vars pertaining to bots, overriden by {@link config}. */
 export const botEnv: BotEnvs = new Proxy({} as BotEnvs, {
   get(_, key: keyof BotEnvs) {
     const value = config.requests?.env?.[key] ?? env[key];

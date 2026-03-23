@@ -14,30 +14,30 @@ import type { botEnv } from "../utils/env.ts";
 import type { CommandHandler, ComponentHandler, EventHandler } from "./handlers.ts";
 import type { Promisable } from "./utilities.ts";
 
-/** Optional extra config for the layer before fetch */
+/** Optional extra config for the layer before fetch. */
 export interface CallConfig {
   /**
-   * The authorization string to use
+   * The authorization string to use.
    * @default `Bot {env.DISCORD_TOKEN}`
    */
   authorization?: string;
   /**
-   * Number of retries when rate limited before the caller gives up
+   * Number of retries when rate limited before the caller gives up.
    * @default 3
    */
   tries?: number;
   /**
-   * The location which endpoints branch off from
+   * The location which endpoints branch off from.
    * @default "https://discord.com/api/v10"
    */
   routeBase?: string;
   /**
-   * Environment variables to use
+   * Environment variables to use.
    * @default {botEnv}
    */
   env?: Partial<typeof botEnv>;
   /**
-   * Delay in seconds before old ratelimit buckets are purged from the cache, set to -1 to disable
+   * Delay in seconds before old ratelimit buckets are purged from the cache, set to `-1` to disable.
    * @default 1,800 // 30 minutes
    */
   bucketTTL?: number;
@@ -56,12 +56,12 @@ export interface CallConfig {
 /** Configuration for {@link createServer}. */
 export interface ServerConfig {
   /**
-   * The endpoint to listen on
+   * The endpoint to listen on.
    * @default "/"
    */
   endpoint?: string;
   /**
-   * The port to listen on
+   * The port to listen on.
    * @default 8000
    */
   port?: number;
@@ -84,9 +84,9 @@ export interface ServerConfig {
      * @tip If you don't want to modify the handler's props, either directly return the input props or `undefined`.
      */
     onBeforeEvent?: (...p: Parameters<EventHandler>) => Promisable<unknown[] | undefined>;
-    /** Executed when no command/component handler is found for the incoming interaction */
+    /** Executed when no command/component handler is found for the incoming interaction. */
     onUnknownInteraction?: (interaction: APIInteraction) => unknown;
-    /** Executed when no event handler is found for the incoming event */
+    /** Executed when no event handler is found for the incoming event. */
     onUnknownEvent?: (event: APIWebhookEventBody) => unknown;
     /** Executed before an incoming request to the bot server is handled. {@link res} will resolve with the server's response upon handling. */
     onServerRequest?: (req: Readonly<Request>, res: Readonly<Promise<Response>>) => unknown;
@@ -107,7 +107,11 @@ export interface DressedConfig {
    * false // Emit nothing
    */
   logger?: "Warn" | "Error" | false;
-  hooks?: CallConfig["hooks"] & ServerConfig["hooks"] & { onError?: (error: unknown) => unknown };
+  hooks?: CallConfig["hooks"] &
+    ServerConfig["hooks"] & {
+      /** Executed when an error is encountered. */
+      onError?: (error: unknown) => unknown;
+    };
 }
 
 interface BaseCommandConfig {
@@ -167,11 +171,11 @@ export interface BaseData<T, M extends object = object> {
   exports: M & { default: CallableFunction };
 }
 
-/** A standard command data object */
+/** A standard command data object. */
 export type CommandData = BaseData<undefined, { autocomplete?: CallableFunction; config?: CommandConfig }>;
 
-/** A standard component data object */
+/** A standard component data object. */
 export type ComponentData = BaseData<{ regex: string; category: string; score: number }, { pattern?: string | RegExp }>;
 
-/** A standard event data object */
+/** A standard event data object. */
 export type EventData = BaseData<{ type: string }>;
