@@ -20,3 +20,4 @@ export * from "./react/reconciler.ts";
 export * from "./rendering/index.ts";
 export * from "./rendering/interaction.ts";
 export * from "./rendering/message.ts";
+export * from "./rendering/reconstruct.ts";
