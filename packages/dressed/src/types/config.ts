@@ -28,11 +28,6 @@ export interface CallConfig {
    */
   bucketTTL?: number;
   /**
-   * Immediately fire the request instead of checking for ratelimits, also bypasses batching.
-   * @important Unless you're checking elsewhere, this *will* attract ratelimit errors
-   */
-  dangerouslyFastTrack?: boolean;
-  /**
    * Environment variables to use.
    * @default {botEnv}
    */
@@ -42,6 +37,11 @@ export interface CallConfig {
    * @default "https://discord.com/api/v10"
    */
   routeBase?: string;
+  /**
+   * Immediately fire the request instead of checking for ratelimits, also bypasses batching.
+   * @important Unless you're checking elsewhere, this *will* attract ratelimit errors
+   */
+  skipQueue?: boolean;
   /**
    * Number of retries when rate limited before the caller gives up.
    * @default 3

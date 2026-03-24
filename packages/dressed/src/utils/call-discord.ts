@@ -50,7 +50,7 @@ export async function callDiscord(
   const {
     authorization = `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
     bucketTTL = 30 * 60,
-    dangerouslyFastTrack,
+    skipQueue,
     routeBase = RouteBases.api,
     tries = 3,
   } = { ...config.requests, ...$req };
@@ -90,9 +90,7 @@ export async function callDiscord(
 
   req = (await hooks.onBeforeFetch?.(req.clone())) ?? req;
 
-  const limiter = dangerouslyFastTrack
-    ? ([req, () => {}] as [Request, (v: Response) => void])
-    : await checkLimit(req, bucketTTL);
+  const limiter = skipQueue ? ([req, () => {}] as [Request, (v: Response) => void]) : await checkLimit(req, bucketTTL);
 
   if (limiter instanceof Response) return handleRes(limiter);
 
