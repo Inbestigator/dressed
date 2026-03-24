@@ -50,8 +50,8 @@ export async function callDiscord(
   const {
     authorization = `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
     bucketTTL = 30 * 60,
-    skipQueue,
     routeBase = RouteBases.api,
+    skipQueue,
     tries = 3,
   } = { ...config.requests, ...$req };
   const hooks = { ...config.hooks, ...$req.hooks };
