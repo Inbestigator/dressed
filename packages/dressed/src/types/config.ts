@@ -23,25 +23,30 @@ export interface CallConfig {
    */
   authorization?: string;
   /**
-   * Number of retries when rate limited before the caller gives up.
-   * @default 3
+   * Delay in seconds before old ratelimit buckets are purged from the cache, set to `-1` to disable.
+   * @default 1,800 // 30 minutes
    */
-  tries?: number;
-  /**
-   * The location which endpoints branch off from.
-   * @default "https://discord.com/api/v10"
-   */
-  routeBase?: string;
+  bucketTTL?: number;
   /**
    * Environment variables to use.
    * @default {botEnv}
    */
   env?: Partial<typeof botEnv>;
   /**
-   * Delay in seconds before old ratelimit buckets are purged from the cache, set to `-1` to disable.
-   * @default 1,800 // 30 minutes
+   * The location which endpoints branch off from.
+   * @default "https://discord.com/api/v10"
    */
-  bucketTTL?: number;
+  routeBase?: string;
+  /**
+   * Immediately fire the request instead of checking for ratelimits, also bypasses batching.
+   * @important Unless you're checking elsewhere, this *will* attract ratelimit errors
+   */
+  skipQueue?: boolean;
+  /**
+   * Number of retries when rate limited before the caller gives up.
+   * @default 3
+   */
+  tries?: number;
   hooks?: {
     /**
      * Executed before calling the API, this runs before ratelimit delays happen.
@@ -96,10 +101,6 @@ export interface ServerConfig {
 
 /** Configuration for various Dressed services. */
 export interface DressedConfig {
-  /** Configuration for all API requests. */
-  requests?: Omit<CallConfig, "hooks">;
-  /** Configuration for {@link createServer}. */
-  server?: Omit<ServerConfig, "hooks">;
   /**
    * Suppress log levels
    * @example
@@ -108,6 +109,10 @@ export interface DressedConfig {
    * false // Emit nothing
    */
   logger?: "Warn" | "Error" | false;
+  /** Configuration for all API requests. */
+  requests?: Omit<CallConfig, "hooks">;
+  /** Configuration for {@link createServer}. */
+  server?: Omit<ServerConfig, "hooks">;
   hooks?: CallConfig["hooks"] &
     ServerConfig["hooks"] & {
       /** Executed when an error is encountered. */
@@ -150,17 +155,13 @@ export type ChatInputConfig = CommandTypeConfig<
 type ContextMenuConfig = CommandTypeConfig<
   RESTPostAPIContextMenuApplicationCommandsJSONBody,
   "options",
-  {
-    type: "Message" | "User";
-  }
+  { type: "Message" | "User" }
 >;
 
 type PrimaryEntryPointConfig = CommandTypeConfig<
   RESTPostAPIPrimaryEntryPointApplicationCommandJSONBody,
   "options",
-  {
-    type: "PrimaryEntryPoint";
-  }
+  { type: "PrimaryEntryPoint" }
 >;
 
 /** Configuration for a specific command. */
@@ -176,7 +177,7 @@ export interface BaseData<T, M extends object = object> {
 export type CommandData = BaseData<undefined, { autocomplete?: CallableFunction; config?: CommandConfig }>;
 
 /** A standard component data object. */
-export type ComponentData = BaseData<{ regex: string; category: string; score: number }, { pattern?: string | RegExp }>;
+export type ComponentData = BaseData<{ category: string; regex: string; score: number }, { pattern?: string | RegExp }>;
 
 /** A standard event data object. */
 export type EventData = BaseData<{ type: string }>;
