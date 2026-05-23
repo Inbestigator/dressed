@@ -9,6 +9,10 @@ test("Environment variables", () => {
 
   expect(botEnv.DISCORD_APP_ID).toBe("app_id");
 
+  botEnv.DISCORD_APP_ID = "overwritten_app_id";
+
+  expect(botEnv.DISCORD_APP_ID).toBe("overwritten_app_id");
+
   config.requests = { env: { DISCORD_APP_ID: "overriden_app_id" } };
 
   expect(botEnv.DISCORD_APP_ID).toBe("overriden_app_id");

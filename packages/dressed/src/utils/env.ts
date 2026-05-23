@@ -13,11 +13,26 @@ loadEnvConfig();
 /** The global configuration for various Dressed services. */
 export const config: DressedConfig = {};
 
-/** The loaded env vars pertaining to bots, overriden by {@link config}. */
-export const botEnv: BotEnvs = new Proxy({} as BotEnvs, {
-  get(_, key: keyof BotEnvs) {
-    const value = config.requests?.env?.[key] ?? env[key];
-    if (!value) throw new Error(`Missing ${key}: please set it in your environment variables.`);
-    return value;
-  },
-});
+/** The loaded env vars pertaining to bots, overriden by {@link config.requests.env}. */
+export const botEnv = Object.seal(
+  new Proxy(
+    {
+      DISCORD_APP_ID: env.DISCORD_APP_ID,
+      DISCORD_PUBLIC_KEY: env.DISCORD_PUBLIC_KEY,
+      DISCORD_TOKEN: env.DISCORD_TOKEN,
+    } as BotEnvs,
+    {
+      get(target, key: keyof BotEnvs) {
+        if (!(key in target)) return;
+        const value = config.requests?.env?.[key] || target[key] || env[key];
+        if (!value)
+          throw new Error(`Missing ${key}: try setting it in your environment variables or overwriting botEnv.${key}`);
+        return value;
+      },
+      set(target, key: keyof BotEnvs, value) {
+        target[key] = value;
+        return true;
+      },
+    },
+  ),
+);
