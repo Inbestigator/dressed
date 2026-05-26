@@ -29,10 +29,7 @@ export const botEnv = Object.seal(
           throw new Error(`Missing ${key}: try setting it in your environment variables or overwriting botEnv.${key}`);
         return value;
       },
-      set(target, key: keyof BotEnvs, value) {
-        target[key] = value;
-        return true;
-      },
+      set: (target, key: keyof BotEnvs, value) => (target[key] = value),
     },
   ),
 );
