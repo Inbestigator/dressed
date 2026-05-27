@@ -48,9 +48,18 @@ function processFiles(files: RawFile[], body: BodyInit) {
 }
 
 /** Simple signature-based MIME type detection without external dependencies */
-function guessMimeType(data: Uint8Array): string | undefined {
-  if (data.length < 4) return undefined;
-  const header = data.subarray(0, 16);
+function guessMimeType(data: Uint8Array): string | undefined {
+  let offset = 0;
+  // Skip UTF-8 BOM if present
+  if (data.length >= 3 && data[0] === 0xEF && data[1] === 0xBB && data[2] === 0xBF) {
+    offset = 3;
+  }
+  // Skip leading whitespace
+  while (offset < data.length && (data[offset] === 0x20 || data[offset] === 0x09 || data[offset] === 0x0a || data[offset] === 0x0d)) {
+    offset++;
+  }
+  if (data.length - offset < 4) return undefined;
+  const header = data.subarray(offset, offset + 16);
 
   // PNG
   if (header[0] === 0x89 && header[1] === 0x50 && header[2] === 0x4e && header[3] === 0x47) return "image/png";

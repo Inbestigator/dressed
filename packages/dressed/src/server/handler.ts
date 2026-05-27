@@ -38,6 +38,7 @@ export async function handleRequest(
     return new Response(null, { status: 401 });
   }
 
+  // Outer block protects against general runner/handler exceptions (500)
   try {
     const verified = await verifySignature(body, signature, timestamp);
 
@@ -46,7 +47,14 @@ export async function handleRequest(
       return new Response(null, { status: 401 });
     }
 
-    const json = JSON.parse(body);
+    let json: any;
+    // Inner block specifically isolates request body parsing errors (400)
+    try {
+      json = JSON.parse(body);
+    } catch (error) {
+      logger.error(new Error("Invalid JSON body", { cause: error }));
+      return new Response(null, { status: 400 });
+    }
 
     // Ensure payload evaluates to a structured non-null object
     if (typeof json !== "object" || json === null) {
@@ -55,7 +63,6 @@ export async function handleRequest(
     }
 
     let status: number;
-    // The interaction response token is now guaranteed safe to query with 'in'
     if ("token" in json) {
       status = await handleInteraction(commands, components, json, hooks);
     } else {
@@ -63,13 +70,8 @@ export async function handleRequest(
     }
     return new Response(status === 200 ? '{"type":1}' : null, { status });
   } catch (error) {
-    const isSyntaxError = error instanceof SyntaxError;
-    logger.error(
-      new Error(isSyntaxError ? "Invalid JSON body" : "Failed to process request", {
-        cause: error,
-      }),
-    );
-    return new Response(null, { status: isSyntaxError ? 400 : 500 });
+    logger.error(new Error("Failed to process request", { cause: error }));
+    return new Response(null, { status: 500 });
   }
 }
 
