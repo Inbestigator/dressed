@@ -124,6 +124,7 @@ describe("combines like PATCH requests", () => {
     expect(pending1).resolves.toBeInstanceOf(Response);
     expect(pending2).resolves.toBeInstanceOf(Response);
   });
+
   test("JSON", async () => {
     const req1 = new Request("https://api.test/collect", { method: "PATCH", body: JSON.stringify({ a: true }) });
     const req2 = new Request("https://api.test/collect", { method: "PATCH", body: JSON.stringify({ b: true }) });
@@ -137,6 +138,30 @@ describe("combines like PATCH requests", () => {
 
     applyBucketLimit(updateLimit, "collect", 1, 0, 0);
 
+    expect(pending1).resolves.toBeInstanceOf(Response);
+  });
+
+  test("strips content-length header on combined requests", async () => {
+    const req1 = new Request("https://api.test/collect", { 
+      method: "PATCH", 
+      body: JSON.stringify({ test: 1 }),
+      headers: { "content-length": "10" } 
+    });
+    const req2 = new Request("https://api.test/collect", { 
+      method: "PATCH", 
+      body: JSON.stringify({ test: 2 }),
+      headers: { "content-length": "10" } 
+    });
+
+    const pending1 = checkLimit(req1, -1) as Promise<NonCombinedLimit>;
+    const pending2 = checkLimit(req2, -1) as Promise<NonCombinedLimit>;
+
+    const [combinedReq, updateLimit] = await expectRequestUnblocks(pending2, req2);
+
+    // Assert that the old content-length was successfully stripped
+    expect(combinedReq.headers.get("content-length")).toBeNull();
+
+    applyBucketLimit(updateLimit, "collect", 1, 0, 0);
     expect(pending1).resolves.toBeInstanceOf(Response);
   });
 });
