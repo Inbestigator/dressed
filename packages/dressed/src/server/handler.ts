@@ -68,7 +68,10 @@ export async function handleRequest(
     } else {
       status = await handleEvent(events, json, hooks);
     }
-    return new Response(status === 200 ? '{"type":1}' : null, { status });
+    return new Response(status === 200 ? '{"type":1}' : null, {
+      status,
+      headers: status === 200 ? { "content-type": "application/json" } : undefined,
+    });
   } catch (error) {
     logger.error(new Error("Failed to process request", { cause: error }));
     return new Response(null, { status: 500 });
