@@ -1,5 +1,6 @@
-import { env } from "node:process";
 import type { DressedConfig } from "../types/config.ts";
+
+const env = globalThis.process?.env ?? {};
 
 interface BotEnvs {
   DISCORD_APP_ID: string;

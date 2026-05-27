@@ -68,14 +68,14 @@ function guessMimeType(data: Uint8Array): string | undefined {
     return "image/webp";
   }
   
-  // SVG (Catches raw <svg tags and standard <?xml file preambles)
-  if (header[0] === 0x3c) { 
-    if (header[1] === 0x73 && header[2] === 0x76 && header[3] === 0x67) return "image/svg+xml"; // <svg
-    if (header.length >= 5 && header[1] === 0x3f && header[2] === 0x78 && header[3] === 0x6d && header[4] === 0x6c) return "image/svg+xml"; // <?xml
+  // SVG (Catches raw <svg tags)
+  if (header[0] === 0x3c && header[1] === 0x73 && header[2] === 0x76 && header[3] === 0x67) return "image/svg+xml";
+
+  // MP4 (Specific check for MP4 containers)
+  if (header.length >= 12 && header[4] === 0x66 && header[5] === 0x74 && header[6] === 0x79 && header[7] === 0x70) {
+    const brand = String.fromCharCode(header[8], header[9], header[10], header[11]);
+    if (brand === "mp42" || brand === "isom" || brand === "iso2") return "video/mp4";
   }
-  
-  // MP4 (Broad ISO Base Media File check: mov, mp4, heic, avif)
-  if (header.length >= 8 && header[4] === 0x66 && header[5] === 0x74 && header[6] === 0x79 && header[7] === 0x70) return "video/mp4";
   
   // PDF
   if (header[0] === 0x25 && header[1] === 0x50 && header[2] === 0x44 && header[3] === 0x46) return "application/pdf";

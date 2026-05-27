@@ -38,7 +38,7 @@ function processEnv(loadedEnvFiles: LoadedEnvFiles) {
 }
 
 export function loadEnvConfig() {
-  if (process.env.__PROCESSED_ENV || process.env.DRESSED_NO_DOTENV) return;
+  if (typeof process === "undefined" || process.env.__PROCESSED_ENV || process.env.DRESSED_NO_DOTENV) return;
 
   // Actively invoke node:fs functions to catch platforms with stub implementations
   // that only throw at runtime (reference-only checks bypass these guards)

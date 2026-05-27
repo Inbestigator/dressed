@@ -38,14 +38,14 @@ export async function handleRequest(
     return new Response(null, { status: 401 });
   }
 
-  const verified = await verifySignature(body, signature, timestamp);
-
-  if (!verified) {
-    logger.error(new Error("Invalid signature"));
-    return new Response(null, { status: 401 });
-  }
-
   try {
+    const verified = await verifySignature(body, signature, timestamp);
+
+    if (!verified) {
+      logger.error(new Error("Invalid signature"));
+      return new Response(null, { status: 401 });
+    }
+
     const json = JSON.parse(body);
 
     // Ensure payload evaluates to a structured non-null object
