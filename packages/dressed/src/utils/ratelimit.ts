@@ -188,5 +188,8 @@ function combineBodies(bodies: ExtractedBodyType[], { url, method, headers }: Re
     headers.set("content-type", "application/json");
   }
 
+  // Remove the stale header so the underlying runtime engine can cleanly
+  // recompute the precise multi-part or string byte size automatically.
+  headers.delete("content-length");
   return new Request(url, { method, headers, body });
 }
