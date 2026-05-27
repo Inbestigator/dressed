@@ -24,8 +24,13 @@ function processFiles(files: RawFile[], body: BodyInit) {
   for (const [index, file] of files.entries()) {
     const key = file.key ?? `files[${index}]`;
     if (isBufferLike(file.data)) {
-      // Detect common MIME types from file signatures
-      const mime = file.contentType ?? guessMimeType(file.data as Uint8Array) ?? "application/octet-stream";
+      // Safely convert ArrayBuffer or other typed array buffers to a standard Uint8Array view
+      const bufferData = file.data instanceof Uint8Array
+        ? file.data
+        : new Uint8Array(file.data instanceof ArrayBuffer ? file.data : file.data.buffer);
+
+      // Detect common MIME types from file signatures safely
+      const mime = file.contentType ?? guessMimeType(bufferData) ?? "application/octet-stream";
       formData.append(
         key,
         new Blob([Buffer.from(file.data)], {

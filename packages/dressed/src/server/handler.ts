@@ -47,8 +47,15 @@ export async function handleRequest(
 
   try {
     const json = JSON.parse(body);
+
+    // Ensure payload evaluates to a structured non-null object
+    if (typeof json !== "object" || json === null) {
+      logger.error(new Error("Request body is not a JSON object"));
+      return new Response(null, { status: 400 });
+    }
+
     let status: number;
-    // The interaction response token
+    // The interaction response token is now guaranteed safe to query with 'in'
     if ("token" in json) {
       status = await handleInteraction(commands, components, json, hooks);
     } else {
@@ -56,8 +63,13 @@ export async function handleRequest(
     }
     return new Response(status === 200 ? '{"type":1}' : null, { status });
   } catch (error) {
-    logger.error(new Error("Failed to process request", { cause: error }));
-    return new Response(null, { status: 500 });
+    const isSyntaxError = error instanceof SyntaxError;
+    logger.error(
+      new Error(isSyntaxError ? "Invalid JSON body" : "Failed to process request", {
+        cause: error,
+      }),
+    );
+    return new Response(null, { status: isSyntaxError ? 400 : 500 });
   }
 }
 

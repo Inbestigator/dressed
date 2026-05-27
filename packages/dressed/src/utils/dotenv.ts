@@ -44,7 +44,6 @@ export function loadEnvConfig() {
   // that only throw at runtime (reference-only checks bypass these guards)
   try {
     statSync(".");
-    readFileSync(new URL(import.meta.url));
   } catch {
     return;
   }
