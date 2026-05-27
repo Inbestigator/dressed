@@ -38,14 +38,24 @@ function processEnv(loadedEnvFiles: LoadedEnvFiles) {
 }
 
 export function loadEnvConfig() {
-  if (process.env.__PROCESSED_ENV) return;
+  if (process.env.__PROCESSED_ENV || process.env.DRESSED_NO_DOTENV) return;
+
+  // Actively invoke node:fs functions to catch platforms with stub implementations
+  // that only throw at runtime (reference-only checks bypass these guards)
+  try {
+    statSync(".");
+    readFileSync(new URL(import.meta.url));
+  } catch {
+    return;
+  }
+
   const isTest = process.env.NODE_ENV === "test";
   const isDev = process.env.NODE_ENV === "development";
   const mode = isTest ? "test" : isDev ? "development" : "production"; // NOSONAR
   const dotenvFiles = [`.env.${mode}.local`, !isTest && `.env.local`, `.env.${mode}`, ".env"].filter(
     Boolean,
   ) as string[];
-  const files = [];
+  const files: LoadedEnvFiles = [];
 
   for (const envFile of dotenvFiles) {
     const dotEnvPath = join(".", envFile);

@@ -7,7 +7,13 @@
     "directory": "packages/dressed-ws"
   },
   "peerDependencies": {
-    "dressed": "^2.0.0-canary.1"
+    "dressed": "^2.0.0-canary.1",
+    "discord-api-types": "^0.37.0"
+  },
+  "peerDependenciesMeta": {
+    "discord-api-types": {
+      "optional": true
+    }
   },
   "exports": {
     ".": "./dist/index.js",
@@ -32,7 +38,5 @@
   },
   "type": "module",
   "types": "./dist/index.d.ts",
-  "dependencies": {
-    "discord-api-types": "^0.38.38"
-  }
+  "sideEffects": false
 }

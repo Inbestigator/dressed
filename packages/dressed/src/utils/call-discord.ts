@@ -1,6 +1,5 @@
 import { Buffer } from "node:buffer";
 import { type RESTError, type RESTErrorData, RouteBases } from "discord-api-types/v10";
-import { filetypeinfo } from "magic-bytes.js";
 import type { CallConfig } from "../types/config.ts";
 import type { RawFile } from "../types/file.ts";
 import { botEnv, config } from "./env.ts";
@@ -10,7 +9,6 @@ import { checkLimit } from "./ratelimit.ts";
 function isBufferLike(value: unknown): value is Buffer | Uint8Array {
   return value instanceof ArrayBuffer || value instanceof Uint8Array || value instanceof Uint8ClampedArray;
 }
-
 function processFiles(files: RawFile[], body: BodyInit) {
   if (typeof body === "object" && body !== null) {
     if ("files" in body) delete body.files;
@@ -26,11 +24,12 @@ function processFiles(files: RawFile[], body: BodyInit) {
   for (const [index, file] of files.entries()) {
     const key = file.key ?? `files[${index}]`;
     if (isBufferLike(file.data)) {
-      const type = filetypeinfo(file.data)[0]?.mime ?? "application/octet-stream";
+      // Detect common MIME types from file signatures
+      const mime = file.contentType ?? guessMimeType(file.data as Uint8Array) ?? "application/octet-stream";
       formData.append(
         key,
         new Blob([Buffer.from(file.data)], {
-          type: file.contentType ?? { "image/apng": "image/png" }[type] ?? type,
+          type: { "image/apng": "image/png" }[mime] ?? mime,
         }),
         file.name,
       );
@@ -39,6 +38,44 @@ function processFiles(files: RawFile[], body: BodyInit) {
     }
   }
   return formData;
+}
+
+/** Simple signature-based MIME type detection without external dependencies */
+function guessMimeType(data: Uint8Array): string | undefined {
+  if (data.length < 4) return undefined;
+  const header = data.subarray(0, 16);
+
+  // PNG
+  if (header[0] === 0x89 && header[1] === 0x50 && header[2] === 0x4e && header[3] === 0x47) return "image/png";
+  
+  // JPEG
+  if (header[0] === 0xff && header[1] === 0xd8) return "image/jpeg";
+  
+  // GIF
+  if (header[0] === 0x47 && header[1] === 0x49 && header[2] === 0x46) return "image/gif";
+  
+  // WebP
+  if (
+    header.length >= 12 && 
+    header[0] === 0x52 && header[1] === 0x49 && header[2] === 0x46 && header[3] === 0x46 && // RIFF
+    header[8] === 0x57 && header[9] === 0x45 && header[10] === 0x42 && header[11] === 0x50    // WEBP
+  ) {
+    return "image/webp";
+  }
+  
+  // SVG (Catches raw <svg tags and standard <?xml file preambles)
+  if (header[0] === 0x3c) { 
+    if (header[1] === 0x73 && header[2] === 0x76 && header[3] === 0x67) return "image/svg+xml"; // <svg
+    if (header.length >= 5 && header[1] === 0x3f && header[2] === 0x78 && header[3] === 0x6d && header[4] === 0x6c) return "image/svg+xml"; // <?xml
+  }
+  
+  // MP4 (Broad ISO Base Media File check: mov, mp4, heic, avif)
+  if (header.length >= 8 && header[4] === 0x66 && header[5] === 0x74 && header[6] === 0x79 && header[7] === 0x70) return "video/mp4";
+  
+  // PDF
+  if (header[0] === 0x25 && header[1] === 0x50 && header[2] === 0x44 && header[3] === 0x46) return "application/pdf";
+
+  return undefined;
 }
 
 export async function callDiscord(

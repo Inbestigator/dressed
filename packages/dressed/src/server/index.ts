@@ -23,6 +23,6 @@ export * from "./extenders/interaction.ts";
 export * from "./handlers/commands.ts";
 export * from "./handlers/components.ts";
 export * from "./handlers/events.ts";
-export * from "./handlers/index.ts";
+export * from "./handler.ts";
 export * from "./server.ts";
 export * from "./signature.ts";

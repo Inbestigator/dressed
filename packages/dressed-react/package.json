@@ -9,12 +9,17 @@
   "dependencies": {
     "@types/react": "^19.2.14",
     "@types/react-reconciler": "^0.33.0",
-    "discord-api-types": "^0.38.39",
     "react-reconciler": "npm:@dressed/react-reconciler"
   },
   "peerDependencies": {
     "dressed": "^2.0.0-canary.2",
+    "discord-api-types": "^0.37.0",
     "react": "^19.2.4"
+  },
+  "peerDependenciesMeta": {
+    "discord-api-types": {
+      "optional": true
+    }
   },
   "exports": {
     ".": "./dist/index.js",
@@ -38,5 +43,6 @@
     "dry-publish": "bun publish --dry-run"
   },
   "type": "module",
+  "sideEffects": false,
   "types": "./dist/index.d.ts"
 }

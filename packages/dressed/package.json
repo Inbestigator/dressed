@@ -9,18 +9,29 @@
     "dry-publish": "bun publish --dry-run && bunx --bun jsr publish --dry-run --allow-dirty"
   },
   "dependencies": {
-    "@dressed/matcher": "^1.4.0",
-    "discord-api-types": "^0.38.38",
-    "dotenv": "^17.3.1",
-    "magic-bytes.js": "^1.12.1"
+    "@dressed/matcher": "^1.4.0"
+  },
+  "peerDependencies": {
+    "discord-api-types": "^0.37.0",
+    "dotenv": "^17.0.0"
+  },
+  "peerDependenciesMeta": {
+    "discord-api-types": {
+      "optional": true
+    },
+    "dotenv": {
+      "optional": true
+    }
   },
   "exports": {
     ".": "./dist/index.js",
     "./server": "./dist/server/index.js",
-    "./utils": "./dist/utils/index.js"
+    "./utils": "./dist/utils/index.js",
+    "./handler": "./dist/handler/index.js"
   },
   "type": "module",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
   "files": [
     "dist"
   ],

@@ -27,10 +27,15 @@
       "version": "2.0.0-rc.2.1",
       "dependencies": {
         "@dressed/matcher": "^1.4.0",
-        "discord-api-types": "^0.38.38",
-        "dotenv": "^17.3.1",
-        "magic-bytes.js": "^1.12.1",
       },
+      "peerDependencies": {
+        "discord-api-types": "^0.37.0",
+        "dotenv": "^17.0.0",
+      },
+      "optionalPeers": [
+        "discord-api-types",
+        "dotenv",
+      ],
     },
     "packages/dressed-framework": {
       "name": "@dressed/framework",
@@ -58,23 +63,27 @@
       "dependencies": {
         "@types/react": "^19.2.14",
         "@types/react-reconciler": "^0.33.0",
-        "discord-api-types": "^0.38.39",
         "react-reconciler": "npm:@dressed/react-reconciler",
       },
       "peerDependencies": {
+        "discord-api-types": "^0.37.0",
         "dressed": "^2.0.0-canary.2",
         "react": "^19.2.4",
       },
+      "optionalPeers": [
+        "discord-api-types",
+      ],
     },
     "packages/dressed-ws": {
       "name": "@dressed/ws",
       "version": "0.4.6",
-      "dependencies": {
-        "discord-api-types": "^0.38.38",
-      },
       "peerDependencies": {
+        "discord-api-types": "^0.37.0",
         "dressed": "^2.0.0-canary.1",
       },
+      "optionalPeers": [
+        "discord-api-types",
+      ],
     },
     "www": {
       "name": "dressed-site",
@@ -476,7 +485,7 @@
 
     "devlop": ["devlop@1.1.0", "", { "dependencies": { "dequal": "^2.0.0" } }, "sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA=="],
 
-    "discord-api-types": ["discord-api-types@0.38.39", "", {}, "sha512-XRdDQvZvID1XvcFftjSmd4dcmMi/RL/jSy5sduBDAvCGFcNFHThdIQXCEBDZFe52lCNEzuIL0QJoKYAmRmxLUA=="],
+    "discord-api-types": ["discord-api-types@0.38.48", "", {}, "sha512-WFUE/2o0lBlLeCQonQ+Pu2RqHAqbytBJ2RlXR91gzk05InSS6k9ShzzLYoymrA4c2oRgRKGE7/VqQJNNdGWSxQ=="],
 
     "dotenv": ["dotenv@17.3.1", "", {}, "sha512-IO8C/dzEb6O3F9/twg6ZLXz164a2fhTnEWb95H23Dm4OuN+92NmEAlTrupP9VW6Jm3sO26tQlqyvyi4CsnY9GA=="],
 
@@ -591,8 +600,6 @@
     "longest-streak": ["longest-streak@3.1.0", "", {}, "sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g=="],
 
     "lowlight": ["lowlight@3.3.0", "", { "dependencies": { "@types/hast": "^3.0.0", "devlop": "^1.0.0", "highlight.js": "~11.11.0" } }, "sha512-0JNhgFoPvP6U6lE/UdVsSq99tn6DhjjpAj5MxG49ewd2mOBVtwWYIT8ClyABhq198aXXODMU6Ox8DrGy/CpTZQ=="],
-
-    "magic-bytes.js": ["magic-bytes.js@1.13.0", "", {}, "sha512-afO2mnxW7GDTXMm5/AoN1WuOcdoKhtgXjIvHmobqTD1grNplhGdv3PFOyjCVmrnOZBIT/gD/koDKpYG+0mvHcg=="],
 
     "magic-string": ["magic-string@0.30.21", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.5" } }, "sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ=="],
 

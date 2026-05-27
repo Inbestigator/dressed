@@ -26,7 +26,7 @@ Deploying is the last step in building your bot, it will be where Discord can se
    ```ts title="src / index.ts"
    // @ts-ignore Generated after build
    import { commands, components, events } from "../.dressed";
-   import { handleRequest, setupCommands, setupComponents, setupEvents } from "dressed/server";
+   import { handleRequest, setupCommands, setupComponents, setupEvents } from "dressed/handler";
 
    export default {
      fetch: (req: Request, _env: never, ctx: { waitUntil: <T>(f: T) => T }) =>

@@ -15,7 +15,7 @@ Deploying is the last step in building your bot, it will be where Discord can se
 2. ```ts title="netlify / functions / bot.mts"
    // @ts-ignore Generated after build
    import { commands, components, events } from "../../.dressed";
-   import { handleRequest } from "dressed/server";
+   import { handleRequest } from "dressed/handler";
 
    export default (req: Request) => handleRequest(req, commands, components, events);
    ```

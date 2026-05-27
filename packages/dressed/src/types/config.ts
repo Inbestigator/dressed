@@ -9,7 +9,7 @@ import type {
   RESTPostAPIPrimaryEntryPointApplicationCommandJSONBody,
   Snowflake,
 } from "discord-api-types/v10";
-import { createServer } from "../server/server.ts";
+import type { createServer } from "../server/server.ts";
 import type { botEnv } from "../utils/env.ts";
 import type { CommandHandler, ComponentHandler, EventHandler } from "./handlers.ts";
 import type { Interaction } from "./interaction.ts";
