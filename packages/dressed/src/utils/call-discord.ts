@@ -1,23 +1,12 @@
 import { type RESTError, type RESTErrorData, RouteBases } from "discord-api-types/v10";
-
 import type { CallConfig } from "../types/config.ts";
-
 import type { RawFile } from "../types/file.ts";
-
 import { botEnv, config } from "./env.ts";
+import { checkLimit } from "./ratelimit.ts";
+
 function isBufferLike(value: unknown): value is ArrayBuffer | Uint8Array | Uint8ClampedArray {
   return value instanceof ArrayBuffer || value instanceof Uint8Array || value instanceof Uint8ClampedArray;
 }
-import { checkLimit } from "./ratelimit.ts";
-
-
-
-function isBufferLike(value: unknown): value is ArrayBuffer | Uint8Array {
-
-  return value instanceof ArrayBuffer || value instanceof Uint8Array || value instanceof Uint8ClampedArray;
-
-}
-
 function processFiles(files: RawFile[], body: BodyInit) {
   if (typeof body === "object" && body !== null) {
     if ("files" in body) delete body.files;
