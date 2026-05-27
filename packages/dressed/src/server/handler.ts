@@ -29,7 +29,6 @@ export async function handleRequest(
   events: EventRunner | EventData[],
   hooks: Parameters<typeof handleInteraction>[3] & Parameters<typeof handleEvent>[2] = dressedConfig.hooks ?? {},
 ): Promise<Response> {
-  const body = await req.text();
   const signature = req.headers.get("x-signature-ed25519");
   const timestamp = req.headers.get("x-signature-timestamp");
 
@@ -40,6 +39,7 @@ export async function handleRequest(
 
   // Outer block protects against general runner/handler exceptions (500)
   try {
+    const body = await req.text();
     const verified = await verifySignature(body, signature, timestamp);
 
     if (!verified) {

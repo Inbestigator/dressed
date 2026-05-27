@@ -1,14 +1,13 @@
-import { Buffer } from "node:buffer";
-import { type RESTError, type RESTErrorData, RouteBases } from "discord-api-types/v10";
-import type { CallConfig } from "../types/config.ts";
-import type { RawFile } from "../types/file.ts";
-import { botEnv, config } from "./env.ts";
-import logger from "./log.ts";
-import { checkLimit } from "./ratelimit.ts";
-
-function isBufferLike(value: unknown): value is Buffer | Uint8Array {
-  return value instanceof ArrayBuffer || value instanceof Uint8Array || value instanceof Uint8ClampedArray;
-}
+import { type RESTError, type RESTErrorData, RouteBases } from "discord-api-types/v10";
+import type { CallConfig } from "../types/config.ts";
+import type { RawFile } from "../types/file.ts";
+import { botEnv, config } from "./env.ts";
+import logger from "./log.ts";
+import { checkLimit } from "./ratelimit.ts";
+
+function isBufferLike(value: unknown): value is ArrayBuffer | Uint8Array {
+  return value instanceof ArrayBuffer || value instanceof Uint8Array || value instanceof Uint8ClampedArray;
+}
 function processFiles(files: RawFile[], body: BodyInit) {
   if (typeof body === "object" && body !== null) {
     if ("files" in body) delete body.files;
@@ -23,43 +22,57 @@ function processFiles(files: RawFile[], body: BodyInit) {
 
   for (const [index, file] of files.entries()) {
     const key = file.key ?? `files[${index}]`;
-    if (isBufferLike(file.data)) {
-      // Safely convert ArrayBuffer or other typed array buffers to a standard Uint8Array view
-      const bufferData = file.data instanceof Uint8Array
-        ? file.data
-        : file.data instanceof ArrayBuffer
-          ? new Uint8Array(file.data)
-          : new Uint8Array(file.data.buffer, file.data.byteOffset, file.data.byteLength);
-
-      // Detect common MIME types from file signatures safely
-      const mime = file.contentType ?? guessMimeType(bufferData) ?? "application/octet-stream";
-      formData.append(
-        key,
-        new Blob([file.data], {
-          type: { "image/apng": "image/png" }[mime] ?? mime,
-        }),
-        file.name,
-      );
-    } else {
-      formData.append(key, new Blob([file.data.toString()], { type: file.contentType }), file.name);
-    }
+    if (typeof Blob !== "undefined" && file.data instanceof Blob) {
+      formData.append(key, file.data, file.name);
+    } else if (isBufferLike(file.data)) {
+      // Safely convert ArrayBuffer or other typed array buffers to a standard Uint8Array view
+      const bufferData = file.data instanceof Uint8Array
+        ? file.data
+        : file.data instanceof ArrayBuffer
+          ? new Uint8Array(file.data)
+          : new Uint8Array(file.data.buffer, file.data.byteOffset, file.data.byteLength);
+
+      // Detect common MIME types from file signatures safely
+      const mime = file.contentType ?? guessMimeType(bufferData) ?? "application/octet-stream";
+      formData.append(
+        key,
+        new Blob([file.data], {
+          type: { "image/apng": "image/png" }[mime] ?? mime,
+        }),
+        file.name,
+      );
+    } else {
+      formData.append(key, new Blob([file.data.toString()], { type: file.contentType }), file.name);
+    }
   }
   return formData;
 }
 
 /** Simple signature-based MIME type detection without external dependencies */
-function guessMimeType(data: Uint8Array): string | undefined {
-  let offset = 0;
-  // Skip UTF-8 BOM if present
-  if (data.length >= 3 && data[0] === 0xEF && data[1] === 0xBB && data[2] === 0xBF) {
-    offset = 3;
-  }
-  // Skip leading whitespace
-  while (offset < data.length && (data[offset] === 0x20 || data[offset] === 0x09 || data[offset] === 0x0a || data[offset] === 0x0d)) {
-    offset++;
-  }
-  if (data.length - offset < 4) return undefined;
-  const header = data.subarray(offset, offset + 16);
+function guessMimeType(data: Uint8Array): string | undefined {
+
+  let offset = 0;
+
+  // Skip UTF-8 BOM if present
+
+  if (data.length >= 3 && data[0] === 0xEF && data[1] === 0xBB && data[2] === 0xBF) {
+
+    offset = 3;
+
+  }
+
+  // Skip leading whitespace
+
+  while (offset < data.length && (data[offset] === 0x20 || data[offset] === 0x09 || data[offset] === 0x0a || data[offset] === 0x0d)) {
+
+    offset++;
+
+  }
+
+  if (data.length - offset < 4) return undefined;
+
+  const header = data.subarray(offset, offset + 16);
+
 
   // PNG
   if (header[0] === 0x89 && header[1] === 0x50 && header[2] === 0x4e && header[3] === 0x47) return "image/png";
