@@ -27,13 +27,15 @@ function processFiles(files: RawFile[], body: BodyInit) {
       // Safely convert ArrayBuffer or other typed array buffers to a standard Uint8Array view
       const bufferData = file.data instanceof Uint8Array
         ? file.data
-        : new Uint8Array(file.data instanceof ArrayBuffer ? file.data : file.data.buffer);
+        : file.data instanceof ArrayBuffer
+          ? new Uint8Array(file.data)
+          : new Uint8Array(file.data.buffer, file.data.byteOffset, file.data.byteLength);
 
       // Detect common MIME types from file signatures safely
       const mime = file.contentType ?? guessMimeType(bufferData) ?? "application/octet-stream";
       formData.append(
         key,
-        new Blob([Buffer.from(file.data)], {
+        new Blob([file.data], {
           type: { "image/apng": "image/png" }[mime] ?? mime,
         }),
         file.name,
@@ -68,8 +70,11 @@ function guessMimeType(data: Uint8Array): string | undefined {
     return "image/webp";
   }
   
-  // SVG (Catches raw <svg tags)
-  if (header[0] === 0x3c && header[1] === 0x73 && header[2] === 0x76 && header[3] === 0x67) return "image/svg+xml";
+  // SVG (Catches raw <svg or <?xml preambles)
+  if (
+    (header[0] === 0x3c && header[1] === 0x73 && header[2] === 0x76 && header[3] === 0x67) || // <svg
+    (header[0] === 0x3c && header[1] === 0x3f && header[2] === 0x78 && header[3] === 0x6d)    // <?xm
+  ) return "image/svg+xml";
 
   // MP4 (Specific check for MP4 containers)
   if (header.length >= 12 && header[4] === 0x66 && header[5] === 0x74 && header[6] === 0x79 && header[7] === 0x70) {
