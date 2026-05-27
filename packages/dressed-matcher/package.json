@@ -1,4 +1,5 @@
 {
+  "sideEffects": false,
   "name": "@dressed/matcher",
   "version": "1.4.0",
   "repository": {
