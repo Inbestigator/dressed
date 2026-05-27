@@ -57,7 +57,7 @@ export async function handleRequest(
     }
 
     // Ensure payload evaluates to a structured non-null object
-    if (typeof json !== "object" || json === null) {
+    if (typeof json !== "object" || json === null || Array.isArray(json)) {
       logger.error(new Error("Request body is not a JSON object"));
       return new Response(null, { status: 400 });
     }
