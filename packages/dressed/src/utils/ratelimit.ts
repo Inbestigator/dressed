@@ -1,5 +1,3 @@
-import { setTimeout } from "node:timers";
-
 type ExtractedBodyType = object | FormData;
 
 interface Collector {
@@ -187,6 +185,8 @@ function combineBodies(bodies: ExtractedBodyType[], { url, method, headers }: Re
   } else {
     headers.set("content-type", "application/json");
   }
+
+  console.log(headers.get("content-length"));
 
   return new Request(url, { method, headers, body });
 }

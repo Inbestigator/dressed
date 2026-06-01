@@ -1,4 +1,3 @@
-import { env } from "node:process";
 import type { DressedConfig } from "../types/config.ts";
 import { loadEnvConfig } from "./dotenv.ts";
 
@@ -17,14 +16,14 @@ export const config: DressedConfig = {};
 export const botEnv = Object.seal(
   new Proxy(
     {
-      DISCORD_APP_ID: env.DISCORD_APP_ID,
-      DISCORD_PUBLIC_KEY: env.DISCORD_PUBLIC_KEY,
-      DISCORD_TOKEN: env.DISCORD_TOKEN,
+      DISCORD_APP_ID: process?.env.DISCORD_APP_ID,
+      DISCORD_PUBLIC_KEY: process?.env.DISCORD_PUBLIC_KEY,
+      DISCORD_TOKEN: process?.env.DISCORD_TOKEN,
     } as BotEnvs,
     {
       get(target, key: keyof BotEnvs) {
         if (!(key in target)) return;
-        const value = config.requests?.env?.[key] || target[key] || env[key];
+        const value = config.requests?.env?.[key] || target[key] || process?.env[key];
         if (!value)
           throw new Error(`Missing ${key}: try setting it in your environment variables or overwriting botEnv.${key}`);
         return value;
