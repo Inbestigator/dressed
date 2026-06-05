@@ -22,10 +22,11 @@ export const botEnv = Object.seal(
     } as BotEnvs,
     {
       get(target, key: keyof BotEnvs) {
-        if (!(key in target)) return;
+        if (!(key in target)) throw new TypeError(`${key} is not a valid botEnv key`);
         const value = config.requests?.env?.[key] || target[key] || process?.env[key];
-        if (!value)
+        if (!value) {
           throw new Error(`Missing ${key}: try setting it in your environment variables or overwriting botEnv.${key}`);
+        }
         return value;
       },
       set: (target, key: keyof BotEnvs, value) => (target[key] = value),
