@@ -369,7 +369,7 @@
         "returnType": "APIThreadChannel & { message: APIMessage }",
         "messageKey": ".message"
       },
-      "flags": ["hasFiles", "hasStringableContent"],
+      "flags": ["hasFiles", "isMessage"],
       "docs": {
         "description": "Creates a new thread in a forum or a media channel, and sends a message within the created thread.",
         "infos": [
@@ -1160,7 +1160,7 @@
     "PostAPIChannelMessage": {
       "params": ["url.channelId", "data"],
       "overrides": { "apiRoute": "channelMessages" },
-      "flags": ["hasFiles", "hasStringableContent"],
+      "flags": ["hasFiles", "isMessage"],
       "docs": {
         "description": "Post a message to a guild text or DM channel.",
         "infos": [
@@ -1243,7 +1243,7 @@
     "PatchAPIChannelMessage": {
       "params": ["url.channelId", "url.messageId", "data"],
       "overrides": { "name": "editMessage" },
-      "flags": ["hasFiles", "hasStringableContent"],
+      "flags": ["hasFiles", "isMessage"],
       "docs": {
         "description": "Edit a previously sent message.",
         "infos": [
@@ -1748,7 +1748,7 @@
         "paramsType": "T",
         "returnType": "T[\"wait\"] extends true ? RESTPostAPIWebhookWithTokenWaitResult : void"
       },
-      "flags": ["hasFiles", "hasStringableContent"],
+      "flags": ["hasFiles", "isMessage"],
       "docs": {
         "description": "Execute a webhook.",
         "infos": [
@@ -1769,7 +1769,7 @@
     "PatchAPIWebhookWithTokenMessage": {
       "params": ["url.webhookId", "url.webhookToken: string", "url.messageId", "data", "params?"],
       "overrides": { "apiRoute": "webhookMessage", "name": "editWebhookMessage" },
-      "flags": ["hasFiles", "hasStringableContent"],
+      "flags": ["hasFiles", "isMessage"],
       "docs": {
         "description": "Edits a previously-sent webhook message from the same token.",
         "warns": [

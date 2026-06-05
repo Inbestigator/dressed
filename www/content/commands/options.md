@@ -15,19 +15,14 @@ export const config = {
       type: "String",
       required: true,
     }),
-    CommandOption({
-      name: "optional",
-      description: "This is optional",
-      type: "String",
-    }),
+    CommandOption({ name: "optional", description: "This is optional", type: "String" }),
   ],
 } satisfies CommandConfig;
 
 export default function (interaction: CommandInteraction<typeof config>) {
-  const {
-    required, // string
-    optional, // string | undefined
-  } = interaction.options;
+  const { required, optional } = interaction.options;
+  //      ^? const required: string
+  //                ^? const optional: string | undefined
 }
 ```
 
@@ -60,11 +55,7 @@ export const config = {
       description: "A subcommand group",
       type: "SubcommandGroup",
       options: [
-        CommandOption({
-          name: "bar",
-          description: "Another subcommand",
-          type: "Subcommand",
-        }),
+        CommandOption({ name: "bar", description: "Another subcommand", type: "Subcommand" }),
       ],
     }),
   ],

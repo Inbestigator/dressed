@@ -7,6 +7,7 @@ writeFileSync(
   `
 import {
   Routes,
+  MessageFlags,
   ${Array.from(
     new Set(
       Object.entries(routeDefinitions)
@@ -71,7 +72,11 @@ ${Object.entries(routeDefinitions)
       const fileGuaranteed = fileKey.endsWith("!");
       if (fileGuaranteed) fileKey = fileKey.slice(0, -1);
       const fileTypeLine = ` & { ${fileKey.slice(1)}${fileGuaranteed ? "" : "?"}: RawFile${flags?.includes("singlefile") ? "" : "[]"} }`;
-      dataType ??= `${flags?.includes("hasStringableContent") ? "string | " : ""}REST${key}${flags?.includes("form") ? "FormData" : "JSON"}Body${flags?.includes("hasFiles") ? fileTypeLine : ""}`;
+      const messageFlagsLine = ` & { 
+        /** Message flags, possibly combined as a bitfield */
+        flags?: MessageFlags | (keyof typeof MessageFlags)[]
+      }`;
+      dataType ??= `${flags?.includes("isMessage") ? "string | Omit<" : ""}REST${key}${flags?.includes("form") ? "FormData" : "JSON"}Body${flags?.includes("isMessage") ? `, "flags"> ${messageFlagsLine}` : ""}${flags?.includes("hasFiles") ? fileTypeLine : ""}`;
       paramsType ??= `REST${key}Query`;
       messageKey ??= "";
       name ??= routeKeyToMethodName(method, key, keyNameStart);
@@ -104,7 +109,13 @@ export async function ${name}${generic ? `<${generic}>` : ""}(${params
             return `${/^(url|var)\./.test(p) ? p.slice(4) : p === "data?" ? "data" : p}${paramType}`;
           })}): Promise<${returnType}> {
   ${dangerousExtraLogic}
-  ${flags?.includes("hasStringableContent") ? `if (typeof data${messageKey} === "string") data${messageKey} = { content: data${messageKey} };` : ""}
+  ${
+    flags?.includes("isMessage")
+      ? `if (typeof data${messageKey} !== "object") data${messageKey} = { content: String(data${messageKey}) };
+         // @ts-expect-error
+         else if (Array.isArray(data.flags)) data.flags = data.flags.reduce((f, p) => f | MessageFlags[p], 0);`
+      : ""
+  }
   const ${flags?.includes("returnVoid") ? "_res" : "res"} = await callDiscord(Routes${apiRoute.startsWith("[") ? apiRoute : `.${apiRoute[0].toLowerCase()}${apiRoute.slice(1)}`}(${params
     .filter((p) => p.startsWith("url."))
     .map((p) => (p.endsWith("?") ? p.slice(0, -1) : p))

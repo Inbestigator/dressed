@@ -1,4 +1,4 @@
-import { type ApplicationCommandType, MessageFlags } from "discord-api-types/v10";
+import type { ApplicationCommandType } from "discord-api-types/v10";
 import {
   type CommandConfig,
   type CommandInteraction as DressedCommandInteraction,
@@ -10,7 +10,7 @@ import type { createInteraction } from "dressed/server";
 import { type ComponentType, createElement, type PropsWithChildren, type ReactNode } from "react";
 import { reconciler } from "../react/reconciler.ts";
 import { render } from "./index.ts";
-import type { WithContainer } from "./message.ts";
+import { assignCV2, type WithContainer } from "./message.ts";
 
 type ReactivatedInteraction<T> = OverrideMethodParams<
   T,
@@ -82,7 +82,7 @@ export function patchInteraction<T extends NonNullable<ReturnType<typeof createI
     const original = interaction[method] as (d: unknown) => unknown;
 
     newInteraction[method] = (...[components, data = {}, $req]: Parameters<CommandInteraction["reply"]>) => {
-      data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
+      assignCV2(data);
 
       let followUpId: string | 0 | undefined;
       let pendingFollowUpEdit = false;

@@ -1,9 +1,19 @@
-import type { APIInteractionResponse, RESTPostAPIInteractionCallbackQuery, Snowflake } from "discord-api-types/v10";
-import { InteractionResponseType, Routes } from "discord-api-types/v10";
+import {
+  type APIInteractionResponse,
+  InteractionResponseType,
+  MessageFlags,
+  type RESTPostAPIInteractionCallbackQuery,
+  Routes,
+  type Snowflake,
+} from "discord-api-types/v10";
 import type { CallConfig } from "../types/config.ts";
 import type { RawFile } from "../types/file.ts";
 import type { InteractionCallbackResponse } from "../types/interaction.ts";
 import { callDiscord } from "../utils/call-discord.ts";
+
+type AddFlags<T> = T extends { flags?: MessageFlags }
+  ? Omit<T, "flags"> & { flags?: MessageFlags | (keyof typeof MessageFlags)[] }
+  : T;
 
 /**
  * Respond to an interaction by sending a modal, message, or update the original.
@@ -24,9 +34,11 @@ export async function createInteractionCallback<
   type: T,
   ...[data, files, params, $req]: E extends { data?: infer D }
     ? // This accounts for the different types submitting data or not
-      [...(E extends { data: object } ? [D] : [D?]), RawFile[]?, P?, CallConfig?]
+      [...(E extends { data: object } ? [AddFlags<D>] : [AddFlags<D>?]), RawFile[]?, P?, CallConfig?]
     : [undefined?, undefined?, P?, CallConfig?]
 ): InteractionCallbackResponse<P> {
+  // @ts-expect-error
+  if (Array.isArray(data?.flags)) data.flags = data.flags.reduce((f, p) => f | MessageFlags[p], 0);
   const res = await callDiscord(
     Routes.interactionCallback(interactionId, interactionToken),
     { method: "POST", body: { type: InteractionResponseType[type], data }, params, files },
