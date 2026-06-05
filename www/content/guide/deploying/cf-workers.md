@@ -10,7 +10,7 @@ Deploying is the last step in building your bot, it will be where Discord can se
    ```jsonc title="wrangler.jsonc"
    {
      "name": "", // The name of your worker. Alphanumeric characters and dashes only
-     "compatibility_date": "" // Today's date as: yyyy-mm-dd
+     "compatibility_date": "", // Today's date as: yyyy-mm-dd
    }
    ```
 2. Add the following to your `wrangler.jsonc`:
@@ -24,9 +24,9 @@ Deploying is the last step in building your bot, it will be where Discord can se
 3. Create or update `src/index.ts`:
 
    ```ts title="src / index.ts"
+   import { handleRequest, setupCommands, setupComponents, setupEvents } from "dressed/server";
    // @ts-ignore Generated after build
    import { commands, components, events } from "../.dressed";
-   import { handleRequest, setupCommands, setupComponents, setupEvents } from "dressed/server";
 
    export default {
      fetch: (req: Request, _env: never, ctx: { waitUntil: <T>(f: T) => T }) =>
@@ -34,7 +34,7 @@ Deploying is the last step in building your bot, it will be where Discord can se
          req,
          (...p) => ctx.waitUntil(setupCommands(commands)(...p)),
          (...p) => ctx.waitUntil(setupComponents(components)(...p)),
-         (...p) => ctx.waitUntil(setupEvents(events)(...p))
+         (...p) => ctx.waitUntil(setupEvents(events)(...p)),
        ),
    };
    ```

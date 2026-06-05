@@ -9,7 +9,7 @@ import type {
   RESTPostAPIPrimaryEntryPointApplicationCommandJSONBody,
   Snowflake,
 } from "discord-api-types/v10";
-import { createServer } from "../server/server.ts";
+import type { createServer } from "../server/server.ts";
 import type { botEnv } from "../utils/env.ts";
 import type { CommandHandler, ComponentHandler, EventHandler } from "./handlers.ts";
 import type { Interaction } from "./interaction.ts";
@@ -19,7 +19,7 @@ import type { Promisable } from "./utilities.ts";
 export interface CallConfig {
   /**
    * The authorization string to use.
-   * @default `Bot {env.DISCORD_TOKEN}`
+   * @default `Bot {botEnv.DISCORD_TOKEN}`
    */
   authorization?: string;
   /**
