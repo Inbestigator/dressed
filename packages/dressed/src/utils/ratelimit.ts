@@ -186,7 +186,5 @@ function combineBodies(bodies: ExtractedBodyType[], { url, method, headers }: Re
     headers.set("content-type", "application/json");
   }
 
-  console.log(headers.get("content-length"));
-
   return new Request(url, { method, headers, body });
 }
