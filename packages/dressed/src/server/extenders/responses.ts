@@ -6,7 +6,7 @@ import type { BaseInteractionMethods } from "../../types/interaction.ts";
 function assignEphemeral(data?: { ephemeral?: boolean; flags?: number | string[] }) {
   if (data?.ephemeral) {
     if (Array.isArray(data.flags)) {
-      data.flags.concat("Ephemeral");
+      data.flags.push("Ephemeral");
     } else {
       data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
     }

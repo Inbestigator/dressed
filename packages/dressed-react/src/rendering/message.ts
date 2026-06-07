@@ -18,7 +18,7 @@ export type WithContainer<T> = T & {
 
 export function assignCV2(data: { ephemeral?: boolean; flags?: number | string[] }) {
   if (Array.isArray(data.flags)) {
-    data.flags.concat("IsComponentsV2");
+    data.flags.push("IsComponentsV2");
   } else {
     data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
   }
