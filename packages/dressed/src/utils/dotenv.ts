@@ -7,11 +7,7 @@ import { join } from "node:path";
 import { type DotenvParseOutput, parse } from "dotenv";
 
 export type Env = { [key: string]: string | undefined };
-export type LoadedEnvFiles = Array<{
-  path: string;
-  contents: string;
-  env: Env;
-}>;
+export type LoadedEnvFiles = Array<{ path: string; contents: string; env: Env }>;
 
 const initialEnv: Env = { ...process.env };
 
@@ -56,5 +52,6 @@ export function loadEnvConfig() {
       files.push({ path: envFile, contents, env: {} });
     } catch {}
   }
+
   processEnv(files);
 }

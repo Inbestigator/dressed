@@ -1,5 +1,3 @@
-import { setTimeout } from "node:timers";
-
 type ExtractedBodyType = object | FormData;
 
 interface Collector {

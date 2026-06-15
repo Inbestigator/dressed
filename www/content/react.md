@@ -76,7 +76,7 @@ const components = (...);
 
 await createMessage("<channel_id>", {
   // @ts-expect-error The renderer outputs any type of component, but messages expect only a subset of them
-  components: (await render(components)).components,
+  components: await new Promise((r) => render(components, r)),
   flags: 1 << 15, // This tells Discord you're using only components and no content
 });
 ```

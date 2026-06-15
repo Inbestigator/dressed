@@ -47,5 +47,5 @@ export default {
 ```
 
 > [!IMPORTANT]
-> In order for Dressed to bundle your tsx/jsx files, the extension must be added to the build config's extensions array\
-> e.g. `dressed build -E tsx,ts`
+> In order for Dressed to bundle your tsx/jsx files, a glob containing them must be added to the build config's include array\
+> e.g. `dressed build -I '**/*.{ts,tsx}'`

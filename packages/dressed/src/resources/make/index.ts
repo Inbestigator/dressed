@@ -35,8 +35,9 @@ import {
     ),
   )}
 } from "discord-api-types/v10";
+import type { CallConfig } from "../types/config.ts";
 import type { RawFile } from "../types/file.ts";
-import { callDiscord, type CallConfig } from "../utils/call-discord.ts";
+import { callDiscord } from "../utils/call-discord.ts";
 import { botEnv } from "../utils/env.ts";
 
 ${Object.entries(routeDefinitions)

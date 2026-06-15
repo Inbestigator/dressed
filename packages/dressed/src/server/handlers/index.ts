@@ -1,10 +1,9 @@
-import type { BaseData, ServerConfig } from "../../types/config.ts";
+import type { BaseData } from "../../types/config.ts";
 import type { Promisable } from "../../types/utilities.ts";
 import logger from "../../utils/log.ts";
 
 interface SetupItemMessages<T, P> {
   noItem: string;
-  middlewareKey: keyof NonNullable<ServerConfig["middleware"]>;
   pending: (data: T, props: P) => string;
 }
 
@@ -13,9 +12,13 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
   findItem: (d: D, i: T[]) => [T, P] | undefined;
 }): (
   i: T[],
-) => (d: D, m?: (...props: P) => Promisable<unknown[]>, k?: keyof NonNullable<T["exports"]>) => Promise<void> {
+) => (
+  d: D,
+  h: { unknown?: (...p: [D]) => unknown; before?: (...p: P) => Promisable<unknown[] | undefined> },
+  k?: keyof NonNullable<T["exports"]>,
+) => Promise<void> {
   return (items) =>
-    async (data, middleware, key = "default") => {
+    async (data, hooks, key = "default") => {
       const [item, props] = options.findItem(data, items) ?? [];
       let itemMessages = options.itemMessages;
 
@@ -23,7 +26,8 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
         itemMessages = itemMessages(data);
       }
       if (!item || !Array.isArray(props)) {
-        logger.warn(itemMessages.noItem);
+        if (hooks.unknown) await hooks.unknown(data);
+        else logger.warn(itemMessages.noItem);
         return;
       }
 
@@ -33,15 +37,13 @@ export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unk
       try {
         const handler = item.exports[key as keyof typeof item.exports];
         if (!handler) throw new Error(`Unable to find '${String(key)}' in exports`);
-        const args = middleware ? await middleware(...props) : props;
-        await handler(...args);
+        await handler(...((await hooks.before?.(...props)) ?? props));
       } catch (e) {
         const text = pendingText.replace("Running", "Failed to run");
         if (e instanceof Error) {
-          logger.error(`${text} - ${e.message}`);
+          logger.error(new Error(`${text} - ${e.message}`, { cause: e }));
         } else {
-          logger.error(text);
-          logger.raw.error(e);
+          logger.error(new Error(text, { cause: e }));
         }
       }
     };

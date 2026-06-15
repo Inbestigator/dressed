@@ -4,7 +4,7 @@
  */
 
 // Types
-export type { DressedConfig } from "../types/config.ts";
+export type { CallConfig, DressedConfig } from "../types/config.ts";
 
 // Utils
 export * from "./call-discord.ts";

@@ -78,7 +78,6 @@ export const setupCommands: ReturnType<
 > = createHandlerSetup({
   itemMessages: (interaction) => ({
     noItem: `No command handler for "${interaction.data.name}"`,
-    middlewareKey: "commands",
     pending: (item) =>
       `Running${interaction.type === InteractionType.ApplicationCommandAutocomplete ? " autocomplete for " : " "}command "${item.name}"`,
   }),

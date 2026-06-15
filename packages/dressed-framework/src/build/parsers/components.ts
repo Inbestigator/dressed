@@ -19,22 +19,17 @@ export const parseComponents: ReturnType<typeof createHandlerParser<ComponentDat
   createData({ name, path, exports: { pattern = name } = {} }) {
     const category = getCategory(path);
 
-    if (!category)
+    if (!category) {
       throw new Error(`${logger.symbols.warn} Category for "${name}" could not be determined, skipping`, {
         cause: "dressed-parsing",
       });
+    }
 
     return {
       category,
       ...(pattern instanceof RegExp
-        ? {
-            regex: pattern.source,
-            score: scorePattern(pattern.source),
-          }
-        : {
-            regex: patternToRegex(pattern).source,
-            score: scorePattern(pattern),
-          }),
+        ? { regex: pattern.source, score: scorePattern(pattern.source) }
+        : { regex: patternToRegex(pattern).source, score: scorePattern(pattern) }),
     };
   },
   postMortem: (c) => c.sort((a, b) => b.data.score - a.data.score),

@@ -1,4 +1,3 @@
-import { env } from "node:process";
 import type { DressedConfig } from "../types/config.ts";
 import { loadEnvConfig } from "./dotenv.ts";
 
@@ -13,10 +12,24 @@ loadEnvConfig();
 /** The global configuration for various Dressed services. */
 export const config: DressedConfig = {};
 
-export const botEnv: BotEnvs = new Proxy({} as BotEnvs, {
-  get(_, key: keyof BotEnvs) {
-    const value = config.requests?.env?.[key] ?? env[key];
-    if (!value) throw new Error(`Missing ${key}: please set it in your environment variables.`);
-    return value;
-  },
-});
+/** The loaded env vars pertaining to bots, overriden by {@link config.requests.env}. */
+export const botEnv = Object.seal(
+  new Proxy(
+    {
+      DISCORD_APP_ID: process?.env.DISCORD_APP_ID,
+      DISCORD_PUBLIC_KEY: process?.env.DISCORD_PUBLIC_KEY,
+      DISCORD_TOKEN: process?.env.DISCORD_TOKEN,
+    } as BotEnvs,
+    {
+      get(target, key: keyof BotEnvs) {
+        if (!(key in target)) throw new TypeError(`${key} is not a valid botEnv key`);
+        const value = config.requests?.env?.[key] || target[key] || process?.env[key];
+        if (!value) {
+          throw new Error(`Missing ${key}: try setting it in your environment variables or overwriting botEnv.${key}`);
+        }
+        return value;
+      },
+      set: (target, key: keyof BotEnvs, value) => (target[key] = value),
+    },
+  ),
+);

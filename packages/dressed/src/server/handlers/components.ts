@@ -21,8 +21,7 @@ export const setupComponents: ReturnType<
     const category = getCategory(interaction).slice(0, -1);
     return {
       noItem: `No ${category} component handler for "${interaction.data.custom_id}"`,
-      middlewareKey: "components",
-      pending: (item, props) => {
+      pending(item, props) {
         const withArgs = ` with args: ${JSON.stringify(props[1])}`;
         return `Running ${category} "${item.name}"${Object.keys(props[1]).length > 0 ? withArgs : ""}`;
       },
