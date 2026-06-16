@@ -149,7 +149,7 @@
       }
     },
     "PutAPIApplicationRoleConnectionMetadata": {
-      "params": ["url.applicationId<botEnv.DISCORD_APP_ID"],
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "data"],
       "overrides": { "name": "modifyAppRoleConnectionMetadata" },
       "docs": {
         "description": "Updates and returns a list of [application role connection metadata](/docs/resources/application-role-connection-metadata#application-role-connection-metadata-object) objects for the given application.",
@@ -171,6 +171,13 @@
       "docs": {
         "description": "Edit properties of the app associated with the requesting bot user. Only properties that are passed will be updated.",
         "see": "/docs/resources/application#edit-current-application"
+      }
+    },
+    "GetAPIApplicationActivityInstance": {
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.instanceId"],
+      "docs": {
+        "description": "Returns a serialized activity instance, if it exists. Useful for [preventing unwanted activity sessions](/docs/activities/development-guides/multiplayer-experience#preventing-unwanted-activity-sessions).",
+        "see": "/docs/resources/application#get-application-activity-instance"
       }
     },
     "GetAPIAuditLog": {
@@ -1135,6 +1142,28 @@
         "see": "/docs/resources/invite#delete-invite"
       }
     },
+    "GetAPIInviteTargetUsers": {
+      "params": ["url.code: string"],
+      "docs": {
+        "description": "Gets the users allowed to see and accept this invite.",
+        "see": "/docs/resources/invite#get-target-users"
+      }
+    },
+    "PutAPIInviteTargetUsers": {
+      "params": ["url.code: string", "data"],
+      "flags": ["form"],
+      "docs": {
+        "description": "Updates the users allowed to see and accept this invite.",
+        "see": "/docs/resources/invite#update-target-users"
+      }
+    },
+    "GetAPIInviteTargetUsersJobStatus": {
+      "params": ["url.code: string"],
+      "docs": {
+        "description": "Processing target users from a CSV when creating or updating an invite is done asynchronously. This endpoint allows you to check the status of that job.",
+        "see": "/docs/resources/invite#get-target-users-job-status"
+      }
+    },
     "GetAPIChannelMessages": {
       "params": ["url.channelId", "params?"],
       "docs": {
@@ -1145,6 +1174,27 @@
           "The `before`, `after`, and `around` parameters are mutually exclusive, only one may be passed at a time."
         ],
         "see": "/docs/resources/message#get-channel-messages"
+      }
+    },
+    "GetAPIGuildMessagesSearch": {
+      "params": ["url.guildId", "params?"],
+      "overrides": {
+        "dangerousReturnLogic": "const body = await res.json();if (res.status === 202) return new Promise((r) => setTimeout(() => r(searchMessages(guildId, params, $req)),(body.retry_after||0.5)*1000));return body",
+        "name": "searchMessages",
+        "returnType": "APIMessageSearchResult",
+        "imports": ["type APIMessageSearchResult"]
+      },
+      "docs": {
+        "description": "Returns a list of messages without the `reactions` key that match a search query in the guild.",
+        "infos": [
+          "Requires the `READ_MESSAGE_HISTORY` permission.",
+          "Due to speed optimizations, search may return slightly fewer results than the limit specified when messages have not been accessed for a long time. Clients should not rely on the length of the messages array to paginate results.",
+          "When messages are actively being created or deleted, the total_results field may not be accurate."
+        ],
+        "warns": [
+          "This endpoint is restricted according to whether the `MESSAGE_CONTENT` [Privileged Intent](/docs/events/gateway#privileged-intents) is enabled for your application."
+        ],
+        "see": "/docs/resources/message#search-guild-messages"
       }
     },
     "GetAPIChannelMessage": {
@@ -1185,7 +1235,7 @@
     },
     "PutAPIChannelMessageOwnReaction": {
       "params": ["url.channelId", "url.messageId", "url.emoji: string"],
-      "overrides": { "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)", "name": "createReaction" },
+      "overrides": { "name": "createReaction", "dangerousExtraLogic": "emoji=encodeURIComponent(emoji)" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Create a reaction for the message.",
@@ -1342,11 +1392,11 @@
     "PostAPISendSoundboardSound": {
       "params": ["url.channelId", "data"],
       "overrides": {
-        "apiRoute": "sendSoundboardSound",
         "name": "sendSound",
         "dataType": "RESTPostAPISoundboardSendSoundJSONBody",
         "imports": ["type RESTPostAPISoundboardSendSoundJSONBody"]
       },
+      "flags": ["returnVoid"],
       "docs": {
         "description": "Send a soundboard sound to a voice channel the user is connected to.",
         "infos": [

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
-    "discord-api-types": "^0.38.38",
+    "discord-api-types": "^0.38.49-next.c79d369c.1781545901",
     "dotenv": "^17.3.1",
     "magic-bytes.js": "^1.12.1"
   },

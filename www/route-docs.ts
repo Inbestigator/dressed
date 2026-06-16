@@ -38,7 +38,7 @@ ${makeCallouts("WARNING", docs.warns)}
 ${makeCallouts("DANGER", docs.dangers)}
 `
     .trim()
-    .replace(/\/docs/g, "https://discord.com/developers$&");
+    .replace(/\/docs/g, "https://docs.discord.com/developers");
 
   const url = new URL(docs.see, "http://0");
   const segments = url.pathname.split("/").filter(Boolean);

@@ -53,6 +53,7 @@ ${Object.entries(routeDefinitions)
           apiRoute,
           dataType,
           dangerousExtraLogic,
+          dangerousReturnLogic,
           name,
           keyNameStart,
           returnType,
@@ -123,11 +124,11 @@ export async function ${name}${generic ? `<${generic}>` : ""}(${params
     .map((p) => (p.includes(":") ? p.split(/[?:]/)[0] : p).replace(/botEnv\.([A-Z_]+)/, "$req?.env?.$1??$&"))}), {
       ${[`method: "${method.toUpperCase()}"`, params.some((p) => p.startsWith("data")) && "body: data", params.some((p) => p.startsWith("params")) && "params", flags?.includes("hasFiles") && `files: ${fileValue}`].filter(Boolean)}
   }, $req);
-  ${flags?.includes("returnVoid") ? "" : "return res.json()"}
+  ${dangerousReturnLogic || (flags?.includes("returnVoid") ? "" : "return res.json()")}
 }
 `
           .trim()
-          .replace(/\/docs/g, "https://discord.com/developers$&"))();
+          .replace(/\/docs/g, "https://docs.discord.com/developers"))();
     },
   )
   .join("\n\n")}
