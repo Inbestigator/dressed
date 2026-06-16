@@ -54,7 +54,7 @@ export function SelectMenu<K extends keyof typeof SelectType>(
 ): SelectMap[`${K}Select`] {
   if (config.type === "Channel" && "channel_types" in config) {
     // @ts-expect-error
-    config.channel_types = config.channel_types?.map((t) => ChannelType[t]);
+    config.channel_types = config.channel_types?.map((t) => (typeof t === "string" ? ChannelType[t] : t));
   }
   return { ...config, type: SelectType[config.type] } as unknown as SelectMap[`${K}Select`];
 }
