@@ -173,6 +173,13 @@
         "see": "/docs/resources/application#edit-current-application"
       }
     },
+    "GetAPIApplicationActivityInstance": {
+      "params": ["url.applicationId<botEnv.DISCORD_APP_ID", "url.instanceId"],
+      "docs": {
+        "description": "Returns a serialized activity instance, if it exists. Useful for [preventing unwanted activity sessions](/docs/activities/development-guides/multiplayer-experience#preventing-unwanted-activity-sessions).",
+        "see": "/docs/resources/application#get-application-activity-instance"
+      }
+    },
     "GetAPIAuditLog": {
       "params": ["url.guildId", "params?"],
       "overrides": { "apiRoute": "guildAuditLog", "keyNameStart": 0 },
