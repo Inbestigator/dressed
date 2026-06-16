@@ -1195,8 +1195,7 @@
           "This endpoint is restricted according to whether the `MESSAGE_CONTENT` [Privileged Intent](/docs/events/gateway#privileged-intents) is enabled for your application."
         ],
         "see": "/docs/resources/message#search-guild-messages"
-      },
-      "TODO": "If the entity you are searching is not yet indexed, the endpoint will return a 202 accepted response. The response body will not contain any search results, and will look similar to an error response. You should retry the request after the timeframe specified in the retry_after field. If the retry_after field is 0, you should retry the request after a short delay."
+      }
     },
     "GetAPIChannelMessage": {
       "params": ["url.channelId", "url.messageId"],
