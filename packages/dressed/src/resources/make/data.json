@@ -1179,6 +1179,7 @@
     "GetAPIGuildMessagesSearch": {
       "params": ["url.guildId", "params?"],
       "overrides": {
+        "dangerousReturnLogic": "const body = await res.json();if (res.status === 202) return new Promise((r) => setTimeout(() => r(searchMessages(guildId, params, $req)),(body.retry_after||0.5)*1000));return body",
         "name": "searchMessages",
         "returnType": "APIMessageSearchResult",
         "imports": ["type APIMessageSearchResult"]
