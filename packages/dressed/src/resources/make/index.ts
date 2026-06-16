@@ -116,7 +116,7 @@ export async function ${name}${generic ? `<${generic}>` : ""}(${params
 }
 `
           .trim()
-          .replace(/\/docs/g, "https://discord.com/developers$&"))();
+          .replace(/\/docs/g, "https://docs.discord.com/developers"))();
     },
   )
   .join("\n\n")}

@@ -1144,6 +1144,7 @@
     },
     "PutAPIInviteTargetUsers": {
       "params": ["url.code: string", "data"],
+      "flags": ["form"],
       "docs": {
         "description": "Updates the users allowed to see and accept this invite.",
         "see": "/docs/resources/invite#update-target-users"
@@ -1167,6 +1168,27 @@
         ],
         "see": "/docs/resources/message#get-channel-messages"
       }
+    },
+    "GetAPIGuildMessagesSearch": {
+      "params": ["url.guildId", "params?"],
+      "overrides": {
+        "name": "searchMessages",
+        "returnType": "APIMessageSearchResult",
+        "imports": ["type APIMessageSearchResult"]
+      },
+      "docs": {
+        "description": "Returns a list of messages without the `reactions` key that match a search query in the guild.",
+        "infos": [
+          "Requires the `READ_MESSAGE_HISTORY` permission.",
+          "Due to speed optimizations, search may return slightly fewer results than the limit specified when messages have not been accessed for a long time. Clients should not rely on the length of the messages array to paginate results.",
+          "When messages are actively being created or deleted, the total_results field may not be accurate."
+        ],
+        "warns": [
+          "This endpoint is restricted according to whether the `MESSAGE_CONTENT` [Privileged Intent](/docs/events/gateway#privileged-intents) is enabled for your application."
+        ],
+        "see": "/docs/resources/message#search-guild-messages"
+      },
+      "TODO": "If the entity you are searching is not yet indexed, the endpoint will return a 202 accepted response. The response body will not contain any search results, and will look similar to an error response. You should retry the request after the timeframe specified in the retry_after field. If the retry_after field is 0, you should retry the request after a short delay."
     },
     "GetAPIChannelMessage": {
       "params": ["url.channelId", "url.messageId"],
@@ -1363,11 +1385,11 @@
     "PostAPISendSoundboardSound": {
       "params": ["url.channelId", "data"],
       "overrides": {
-        "apiRoute": "sendSoundboardSound",
         "name": "sendSound",
         "dataType": "RESTPostAPISoundboardSendSoundJSONBody",
         "imports": ["type RESTPostAPISoundboardSendSoundJSONBody"]
       },
+      "flags": ["returnVoid"],
       "docs": {
         "description": "Send a soundboard sound to a voice channel the user is connected to.",
         "infos": [
