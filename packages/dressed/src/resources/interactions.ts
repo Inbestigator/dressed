@@ -38,7 +38,7 @@ export async function createInteractionCallback<
     : [undefined?, undefined?, P?, CallConfig?]
 ): InteractionCallbackResponse<P> {
   // @ts-expect-error
-  if (Array.isArray(data?.flags)) data.flags = data.flags.reduce((f, p) => f | MessageFlags[p], 0);
+  if (Array.isArray(data?.flags)) data.flags = data.flags.reduce((p, f) => p | MessageFlags[f], 0);
   const res = await callDiscord(
     Routes.interactionCallback(interactionId, interactionToken),
     { method: "POST", body: { type: InteractionResponseType[type], data }, params, files },

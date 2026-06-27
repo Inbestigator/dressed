@@ -35,7 +35,7 @@ export function CommandOption<
 ): CommandOptionMap[K] & { name: N; required: R; options: O; autocomplete: A } {
   if (config.type === "Channel" && "channel_types" in config) {
     // @ts-expect-error
-    config.channel_types = config.channel_types?.map((t) => ChannelType[t]);
+    config.channel_types = config.channel_types?.map((t) => (typeof t === "string" ? ChannelType[t] : t));
   }
   return { ...config, type: ApplicationCommandOptionType[config.type] } as unknown as ReturnType<
     typeof CommandOption<K, N, R, O, A>

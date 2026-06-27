@@ -114,7 +114,7 @@ export async function ${name}${generic ? `<${generic}>` : ""}(${params
     flags?.includes("isMessage")
       ? `if (typeof data${messageKey} !== "object") data${messageKey} = { content: String(data${messageKey}) };
          // @ts-expect-error
-         else if (Array.isArray(data.flags)) data.flags = data.flags.reduce((f, p) => f | MessageFlags[p], 0);`
+         else if (Array.isArray(data.flags)) data.flags = data.flags.reduce((p, f) => p | MessageFlags[f], 0);`
       : ""
   }
   const ${flags?.includes("returnVoid") ? "_res" : "res"} = await callDiscord(Routes${apiRoute.startsWith("[") ? apiRoute : `.${apiRoute[0].toLowerCase()}${apiRoute.slice(1)}`}(${params
