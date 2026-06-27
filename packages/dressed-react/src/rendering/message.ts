@@ -16,6 +16,14 @@ export type WithContainer<T> = T & {
   $container: OpaqueRoot;
 };
 
+export function assignCV2(data: { ephemeral?: boolean; flags?: number | string[] }) {
+  if (Array.isArray(data.flags)) {
+    data.flags.push("IsComponentsV2");
+  } else {
+    data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
+  }
+}
+
 /**
  * Renders the provided children and posts a message to a guild text or DM channel with the `IsComponentsV2` flag.
  * @example createMessage(channelId, <Button label="Foo" />)
@@ -26,8 +34,7 @@ export function createMessage(
   data: Omit<Exclude<Parameters<typeof dressedCreateMessage>[1], string>, "content" | "components" | "embeds"> = {},
   $req?: CallConfig,
 ) {
-  data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
-
+  assignCV2(data);
   let messageId: string | 0 | undefined;
   let pendingEdit = false;
 
@@ -66,8 +73,7 @@ export function editMessage(
   data: Omit<Exclude<Parameters<typeof dressedEditMessage>[2], string>, "content" | "components" | "embeds"> = {},
   $req?: CallConfig,
 ) {
-  data.flags = (data.flags ?? 0) | MessageFlags.IsComponentsV2;
-
+  assignCV2(data);
   return new Promise<WithContainer<APIMessage>>((resolve) => {
     const { container } = render(components, async (c) => {
       if (c.length === 0) return;

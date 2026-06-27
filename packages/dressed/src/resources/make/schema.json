@@ -49,7 +49,7 @@
           },
           "flags": {
             "type": "array",
-            "items": { "enum": ["deprecated", "form", "hasFiles", "hasStringableContent", "returnVoid", "singlefile"] },
+            "items": { "enum": ["deprecated", "form", "hasFiles", "isMessage", "returnVoid", "singlefile"] },
             "uniqueItems": true
           },
           "docs": {

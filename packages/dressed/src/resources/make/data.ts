@@ -19,7 +19,7 @@ export default routes as Record<
       returnType?: string;
       keyNameStart?: number;
     };
-    flags?: ("deprecated" | "form" | "hasFiles" | "hasStringableContent" | "returnVoid" | "singlefile")[];
+    flags?: ("deprecated" | "form" | "hasFiles" | "isMessage" | "returnVoid" | "singlefile")[];
     docs: {
       description: string;
       params?: Record<string, string>;

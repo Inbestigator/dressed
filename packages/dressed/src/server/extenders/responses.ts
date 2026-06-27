@@ -1,25 +1,30 @@
-import {
-  type APIInteraction,
-  type APIInteractionResponseCallbackData,
-  type APIUser,
-  MessageFlags,
-} from "discord-api-types/v10";
+import { type APIInteraction, type APIUser, MessageFlags } from "discord-api-types/v10";
 import { editWebhookMessage, executeWebhook } from "../../resources/generated.resources.ts";
 import { createInteractionCallback } from "../../resources/interactions.ts";
-import type { RawFile } from "../../types/file.ts";
 import type { BaseInteractionMethods } from "../../types/interaction.ts";
+
+function assignEphemeral(data?: { ephemeral?: boolean; flags?: number | string[] }) {
+  if (data?.ephemeral) {
+    if (Array.isArray(data.flags)) {
+      data.flags.push("Ephemeral");
+    } else {
+      data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
+    }
+  }
+}
 
 export function baseInteractionMethods(interaction: APIInteraction): BaseInteractionMethods {
   const history: BaseInteractionMethods["history"] = [];
   return {
     reply(data, $req) {
       history.push("reply");
-      if (typeof data === "string") {
-        data = { content: data } as Extract<Parameters<BaseInteractionMethods["reply"]>[0], { content: string }>;
+      if (typeof data !== "object") {
+        data = { content: String(data) } as Extract<
+          Parameters<BaseInteractionMethods["reply"]>[0],
+          { content: string }
+        >;
       }
-      if (data.ephemeral) {
-        data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
-      }
+      assignEphemeral(data);
       const { files, ...rest } = data;
       return createInteractionCallback(
         interaction.id,
@@ -33,9 +38,7 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
     },
     deferReply(data, $req) {
       history.push("deferReply");
-      if (data?.ephemeral) {
-        data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
-      }
+      assignEphemeral(data);
       return createInteractionCallback(
         interaction.id,
         interaction.token,
@@ -48,8 +51,11 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
     },
     update(data, $req) {
       history.push("update");
-      if (typeof data === "string") {
-        data = { content: data } as Extract<Parameters<BaseInteractionMethods["update"]>[0], { content: string }>;
+      if (typeof data !== "object") {
+        data = { content: String(data) } as Extract<
+          Parameters<BaseInteractionMethods["update"]>[0],
+          { content: string }
+        >;
       }
       const { files, ...rest } = data;
       return createInteractionCallback(
@@ -78,11 +84,9 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
       history.push("editReply");
       return editWebhookMessage(interaction.application_id, interaction.token, "@original", data, undefined, $req);
     },
-    followUp(data: string | (APIInteractionResponseCallbackData & { files?: RawFile[]; ephemeral?: boolean }), $req) {
+    followUp(data, $req) {
       history.push("followUp");
-      if (typeof data === "object" && data.ephemeral) {
-        data.flags = (data.flags ?? 0) | MessageFlags.Ephemeral;
-      }
+      assignEphemeral(data);
       return executeWebhook(interaction.application_id, interaction.token, data, { wait: true }, $req);
     },
     showModal(data, params, $req) {

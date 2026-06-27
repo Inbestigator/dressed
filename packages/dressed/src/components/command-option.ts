@@ -1,4 +1,4 @@
-import { type APIApplicationCommandOption, ApplicationCommandOptionType } from "discord-api-types/v10";
+import { type APIApplicationCommandOption, ApplicationCommandOptionType, ChannelType } from "discord-api-types/v10";
 
 type CommandOptionMap = {
   [Key in keyof typeof ApplicationCommandOptionType]: Extract<
@@ -21,12 +21,22 @@ export function CommandOption<
   O extends K extends SubcommandKey ? CommandOptionMap[K]["options"] : never,
   A extends K extends FocusableKey ? boolean : never = K extends FocusableKey ? false : never,
 >(
-  config: Omit<CommandOptionMap[K], "type"> & { type: K; name: N; required?: R } & (K extends SubcommandKey
+  config: Omit<CommandOptionMap[K], "type" | "channel_types"> & {
+    type: K;
+    name: N;
+    required?: R;
+  } & (K extends SubcommandKey
       ? { options?: O }
       : K extends FocusableKey
         ? { autocomplete?: A }
-        : object),
+        : K extends "Channel"
+          ? { channel_types?: Exclude<keyof typeof ChannelType, "DM" | "GroupDM" | "GuildDirectory">[] }
+          : object),
 ): CommandOptionMap[K] & { name: N; required: R; options: O; autocomplete: A } {
+  if (config.type === "Channel" && "channel_types" in config) {
+    // @ts-expect-error
+    config.channel_types = config.channel_types?.map((t) => (typeof t === "string" ? ChannelType[t] : t));
+  }
   return { ...config, type: ApplicationCommandOptionType[config.type] } as unknown as ReturnType<
     typeof CommandOption<K, N, R, O, A>
   >;

@@ -1,4 +1,9 @@
-import type { APISelectMenuComponent, APISelectMenuOption, ComponentType } from "discord-api-types/v10";
+import {
+  type APISelectMenuComponent,
+  type APISelectMenuOption,
+  ChannelType,
+  type ComponentType,
+} from "discord-api-types/v10";
 import { ActionRow } from "./action-row.ts";
 import { Label } from "./label.ts";
 
@@ -43,9 +48,15 @@ type SelectMap = {
  * @see https://discord.com/developers/docs/components/reference#channel-select
  */
 export function SelectMenu<K extends keyof typeof SelectType>(
-  config: Omit<SelectMap[`${K}Select`], "type"> & { type: K },
+  config: Omit<SelectMap[`${K}Select`], "type" | "channel_types"> & { type: K } & (K extends "Channel"
+      ? { channel_types?: (keyof typeof ChannelType)[] }
+      : object),
 ): SelectMap[`${K}Select`] {
-  return { ...config, type: SelectType[config.type] } as SelectMap[`${K}Select`];
+  if (config.type === "Channel" && "channel_types" in config) {
+    // @ts-expect-error
+    config.channel_types = config.channel_types?.map((t) => (typeof t === "string" ? ChannelType[t] : t));
+  }
+  return { ...config, type: SelectType[config.type] } as unknown as SelectMap[`${K}Select`];
 }
 
 /**
