@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
-    "commander": "^14.0.3",
-    "esbuild": "^0.27.3",
+    "commander": "^15.0.0",
+    "esbuild": "^0.28.1",
     "fast-glob": "^3.3.3"
   },
   "peerDependencies": {

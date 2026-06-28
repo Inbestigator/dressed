@@ -8,10 +8,10 @@
     "dry-publish": "bun publish --dry-run"
   },
   "dependencies": {
-    "commander": "^14.0.2",
-    "dotenv": "^17.3.1",
+    "commander": "^15.0.0",
+    "dotenv": "^17.4.2",
     "enquirer": "^2.4.1",
-    "tar": "^7.5.9"
+    "tar": "^7.5.19"
   },
   "type": "module",
   "bin": "dist/index.js",

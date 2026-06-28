@@ -15,7 +15,8 @@
     "target": "ES2018",
     "verbatimModuleSyntax": true,
     "rootDir": "src",
-    "allowJs": true
+    "allowJs": true,
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"]
 }

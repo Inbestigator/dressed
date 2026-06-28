@@ -11,9 +11,10 @@
     "sourceMap": true,
     "strict": true,
     "stripInternal": true,
-    "target": "ES2018",
+    "target": "ES2022",
     "verbatimModuleSyntax": true,
-    "rootDir": "src"
+    "rootDir": "src",
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"]
 }
