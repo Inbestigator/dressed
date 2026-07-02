@@ -7,6 +7,7 @@ import {
 } from "discord-api-types/v10";
 import type { CommandData, ComponentData, DressedConfig, EventData, ServerConfig } from "../types/config.ts";
 import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
+import { loadEnvConfig } from "../utils/dotenv.ts";
 import { config as dressedConfig } from "../utils/env.ts";
 import logger from "../utils/log.ts";
 import { createInteraction } from "./extenders/interaction.ts";
@@ -14,6 +15,8 @@ import { setupCommands } from "./handlers/commands.ts";
 import { setupComponents } from "./handlers/components.ts";
 import { setupEvents } from "./handlers/events.ts";
 import { verifySignature } from "./signature.ts";
+
+loadEnvConfig();
 
 /**
  * Starts a server to handle interactions.

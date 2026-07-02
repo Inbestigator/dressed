@@ -1,13 +1,10 @@
 import type { DressedConfig } from "../types/config.ts";
-import { loadEnvConfig } from "./dotenv.ts";
 
 interface BotEnvs {
   DISCORD_APP_ID: string;
   DISCORD_PUBLIC_KEY: string;
   DISCORD_TOKEN: string;
 }
-
-loadEnvConfig();
 
 /** The global configuration for various Dressed services. */
 export const config: DressedConfig = {};
