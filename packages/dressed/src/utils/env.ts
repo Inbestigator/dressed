@@ -1,13 +1,10 @@
 import type { DressedConfig } from "../types/config.ts";
-import { loadEnvConfig } from "./dotenv.ts";
 
 interface BotEnvs {
   DISCORD_APP_ID: string;
   DISCORD_PUBLIC_KEY: string;
   DISCORD_TOKEN: string;
 }
-
-loadEnvConfig();
 
 /** The global configuration for various Dressed services. */
 export const config: DressedConfig = {};
@@ -25,7 +22,9 @@ export const botEnv = Object.seal(
         if (!(key in target)) throw new TypeError(`${key} is not a valid botEnv key`);
         const value = config.requests?.env?.[key] || target[key] || process?.env[key];
         if (!value) {
-          throw new Error(`Missing ${key}: try setting it in your environment variables or overwriting botEnv.${key}`);
+          throw new Error(
+            `Missing required configuration: ${key}\n\nSet it as an environment variable, or assign botEnv.${key}\n\nLearn more: https://nodejs.org/api/environment_variables.html`,
+          );
         }
         return value;
       },
