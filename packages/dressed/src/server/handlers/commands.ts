@@ -86,4 +86,9 @@ export const setupCommands: ReturnType<
     if (!item) return;
     return [item, [interaction]];
   },
+  cleanup: (interaction, v) =>
+    interaction.type === InteractionType.ApplicationCommandAutocomplete &&
+    !interaction.history.includes("sendChoices") &&
+    Array.isArray(v) &&
+    interaction.sendChoices(v),
 });

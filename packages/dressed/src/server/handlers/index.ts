@@ -7,44 +7,45 @@ interface SetupItemMessages<T, P> {
   pending: (data: T, props: P) => string;
 }
 
-export function createHandlerSetup<T extends BaseData<unknown>, D, P extends unknown[] = [D]>(options: {
+export function createHandlerSetup<T extends BaseData, D, P extends unknown[] = [D]>(options: {
   itemMessages: ((d: D) => SetupItemMessages<T, P>) | SetupItemMessages<T, P>;
   findItem: (d: D, i: T[]) => [T, P] | undefined;
+  cleanup?: (d: D, v: unknown) => unknown;
 }): (
   i: T[],
 ) => (
   d: D,
   h: { unknown?: (...p: [D]) => unknown; before?: (...p: P) => Promisable<unknown[] | undefined> },
-  k?: keyof NonNullable<T["exports"]>,
+  k: keyof NonNullable<T["exports"]>,
 ) => Promise<void> {
-  return (items) =>
-    async (data, hooks, key = "default") => {
-      const [item, props] = options.findItem(data, items) ?? [];
-      let itemMessages = options.itemMessages;
+  return (items) => async (data, hooks, key) => {
+    const [item, props] = options.findItem(data, items) ?? [];
+    let itemMessages = options.itemMessages;
 
-      if (typeof itemMessages === "function") {
-        itemMessages = itemMessages(data);
-      }
-      if (!item || !Array.isArray(props)) {
-        if (hooks.unknown) await hooks.unknown(data);
-        else logger.warn(itemMessages.noItem);
-        return;
-      }
+    if (typeof itemMessages === "function") {
+      itemMessages = itemMessages(data);
+    }
+    if (!item || !Array.isArray(props)) {
+      if (hooks.unknown) await hooks.unknown(data);
+      else logger.warn(itemMessages.noItem);
+      return;
+    }
 
-      const pendingText = itemMessages.pending(item, props);
-      logger.defer(pendingText);
+    const pendingText = itemMessages.pending(item, props);
+    logger.defer(pendingText);
 
-      try {
-        const handler = item.exports[key as keyof typeof item.exports];
-        if (!handler) throw new Error(`Unable to find '${String(key)}' in exports`);
-        await handler(...((await hooks.before?.(...props)) ?? props));
-      } catch (e) {
-        const text = pendingText.replace("Running", "Failed to run");
-        if (e instanceof Error) {
-          logger.error(new Error(`${text} - ${e.message}`, { cause: e }));
-        } else {
-          logger.error(new Error(text, { cause: e }));
-        }
+    try {
+      const handler = item.exports[key as keyof typeof item.exports];
+      if (!handler) throw new Error(`Unable to find '${String(key)}' in exports`);
+      const res = await handler(...((await hooks.before?.(...props)) ?? props));
+      await options.cleanup?.(data, res);
+    } catch (e) {
+      const text = pendingText.replace("Running", "Failed to run");
+      if (e instanceof Error) {
+        logger.error(new Error(`${text} - ${e.message}`, { cause: e }));
+      } else {
+        logger.error(new Error(text, { cause: e }));
       }
-    };
+    }
+  };
 }

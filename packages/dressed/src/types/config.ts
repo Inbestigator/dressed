@@ -167,17 +167,20 @@ type PrimaryEntryPointConfig = CommandTypeConfig<
 /** Configuration for a specific command. */
 export type CommandConfig = ChatInputConfig | ContextMenuConfig | PrimaryEntryPointConfig;
 
-export interface BaseData<T, M extends object = object> {
+export interface BaseData<M extends object = object> {
   name: string;
-  data: T;
   exports: M & { default: CallableFunction };
 }
 
 /** A standard command data object. */
-export type CommandData = BaseData<undefined, { autocomplete?: CallableFunction; config?: CommandConfig }>;
+export type CommandData = BaseData<{ autocomplete?: CallableFunction; config?: CommandConfig }>;
 
 /** A standard component data object. */
-export type ComponentData = BaseData<{ category: string; regex: string; score: number }, { pattern?: string | RegExp }>;
+export interface ComponentData extends BaseData<{ pattern?: string | RegExp }> {
+  data: { category: "buttons" | "modals" | "selects"; regex: string };
+}
 
 /** A standard event data object. */
-export type EventData = BaseData<{ type: string }>;
+export interface EventData extends BaseData {
+  data: { type: string };
+}
