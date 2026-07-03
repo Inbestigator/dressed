@@ -24,9 +24,8 @@
     },
     "packages/dressed": {
       "name": "dressed",
-      "version": "2.0.0-rc.2.1",
+      "version": "2.0.0-rc.3",
       "dependencies": {
-        "@dressed/matcher": "^1.4.0",
         "discord-api-types": "^0.38.49",
         "magic-bytes.js": "^1.12.1",
       },
@@ -53,7 +52,7 @@
     },
     "packages/dressed-react": {
       "name": "@dressed/react",
-      "version": "1.8.5-rc.1.1",
+      "version": "1.8.5-rc.2",
       "dependencies": {
         "@types/react": "^19.2.17",
         "@types/react-reconciler": "^0.33.0",
