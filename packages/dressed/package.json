@@ -1,39 +1,40 @@
 {
   "name": "dressed",
-  "version": "2.0.0-rc.2.1",
+  "version": "2.0.0-rc.3",
   "description": "A sleek, serverless-ready Discord API library.",
-  "scripts": {
-    "dist": "rm -fr dist && bun --bun ./src/resources/make && tsc",
-    "check-types": "tsc --noEmit",
-    "test": "bun test",
-    "dry-publish": "bun publish --dry-run && bunx --bun jsr publish --dry-run --allow-dirty"
+  "keywords": [
+    "bot",
+    "discord",
+    "discord-bot",
+    "serverless"
+  ],
+  "homepage": "https://dressed.js.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inbestigator/dressed.git",
+    "directory": "packages/dressed"
   },
-  "dependencies": {
-    "@dressed/matcher": "^1.4.0",
-    "discord-api-types": "^0.38.49",
-    "magic-bytes.js": "^1.12.1"
-  },
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": "./dist/index.js",
     "./server": "./dist/server/index.js",
     "./utils": "./dist/utils/index.js"
   },
-  "type": "module",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "homepage": "https://dressed.js.org",
-  "keywords": [
-    "bot",
-    "serverless",
-    "discord",
-    "discord-bot"
-  ],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Inbestigator/dressed.git",
-    "directory": "packages/dressed"
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "dist": "rm -fr dist && bun --bun ./src/resources/make && tsc",
+    "dry-publish": "bun publish --dry-run && bunx --bun jsr publish --dry-run --allow-dirty",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@dressed/matcher": "^1.4.0",
+    "discord-api-types": "^0.38.49",
+    "magic-bytes.js": "^1.12.1"
   }
 }
