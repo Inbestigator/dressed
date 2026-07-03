@@ -10,6 +10,7 @@ interface SetupItemMessages<T, P> {
 export function createHandlerSetup<T extends BaseData, D, P extends unknown[] = [D]>(options: {
   itemMessages: ((d: D) => SetupItemMessages<T, P>) | SetupItemMessages<T, P>;
   findItem: (d: D, i: T[]) => [T, P] | undefined;
+  cleanup?: (d: D, v: unknown) => unknown;
 }): (
   i: T[],
 ) => (
@@ -36,7 +37,8 @@ export function createHandlerSetup<T extends BaseData, D, P extends unknown[] = 
     try {
       const handler = item.exports[key as keyof typeof item.exports];
       if (!handler) throw new Error(`Unable to find '${String(key)}' in exports`);
-      await handler(...((await hooks.before?.(...props)) ?? props));
+      const res = await handler(...((await hooks.before?.(...props)) ?? props));
+      await options.cleanup?.(data, res);
     } catch (e) {
       const text = pendingText.replace("Running", "Failed to run");
       if (e instanceof Error) {
