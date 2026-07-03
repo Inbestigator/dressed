@@ -7,14 +7,14 @@
     "directory": "packages/dressed-react"
   },
   "dependencies": {
-    "@types/react": "^19.2.14",
+    "@types/react": "^19.2.17",
     "@types/react-reconciler": "^0.33.0",
-    "discord-api-types": "^0.38.49-next.c79d369c.1781545901",
+    "discord-api-types": "^0.38.49",
     "react-reconciler": "npm:@dressed/react-reconciler"
   },
   "peerDependencies": {
     "dressed": "^2.0.0-canary.6.2",
-    "react": "^19.2.4"
+    "react": "^19.2.7"
   },
   "exports": {
     ".": "./dist/index.js",

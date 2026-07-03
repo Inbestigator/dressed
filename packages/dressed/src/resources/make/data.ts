@@ -8,6 +8,7 @@ export default routes as Record<
       apiRoute?: string;
       dangerousExtraLogic?: string;
       dangerousReturnLogic?: string;
+      dataKey?: string;
       dataType?: string;
       fetchOptions?: Record<string, unknown>;
       fileKey?: string;

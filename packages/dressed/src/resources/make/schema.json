@@ -34,6 +34,7 @@
               "apiRoute": { "type": "string" },
               "dangerousExtraLogic": { "type": "string" },
               "dangerousReturnLogic": { "type": "string" },
+              "dataKey": { "type": "string" },
               "dataType": { "type": "string" },
               "fetchOptions": { "type": "object" },
               "fileKey": { "type": "string", "pattern": "^(\\..+|)$", "examples": [".file", ".file!"] },
