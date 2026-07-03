@@ -2,9 +2,27 @@
   "name": "create-dressed",
   "version": "0.1.4",
   "description": "Create Dressed bots with one command.",
+  "keywords": [
+    "discord",
+    "dressed",
+    "discord-bot"
+  ],
+  "homepage": "https://dressed.js.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inbestigator/dressed.git",
+    "directory": "packages/create-dressed"
+  },
+  "license": "MIT",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "bin": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "dist": "rm -fr dist && tsc",
     "check-types": "tsc --noEmit",
+    "dist": "rm -fr dist && tsc",
     "dry-publish": "bun publish --dry-run"
   },
   "dependencies": {
@@ -12,23 +30,5 @@
     "dotenv": "^17.4.2",
     "enquirer": "^2.4.1",
     "tar": "^7.5.19"
-  },
-  "type": "module",
-  "bin": "dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "homepage": "https://dressed.js.org",
-  "keywords": [
-    "discord",
-    "dressed",
-    "discord-bot"
-  ],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Inbestigator/dressed.git",
-    "directory": "packages/create-dressed"
   }
 }

@@ -1,38 +1,39 @@
 {
   "name": "@dressed/ws",
   "version": "0.4.6",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Inbestigator/dressed.git",
-    "directory": "packages/dressed-ws"
-  },
-  "peerDependencies": {
-    "dressed": "^2.0.0-canary.1"
-  },
-  "exports": {
-    ".": "./dist/index.js",
-    "./cache": "./dist/cache/index.js"
-  },
   "description": "Communicate with the Discord Gateway",
-  "files": [
-    "dist"
-  ],
-  "homepage": "https://dressed.js.org",
   "keywords": [
     "dressed",
     "websockets",
     "gateway",
     "discord"
   ],
+  "homepage": "https://dressed.js.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inbestigator/dressed.git",
+    "directory": "packages/dressed-ws"
+  },
   "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./cache": "./dist/cache/index.js"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "dist": "rm -fr dist && tsc",
     "check-types": "tsc --noEmit",
+    "dist": "rm -fr dist && tsc",
     "dry-publish": "bun publish --dry-run"
   },
-  "type": "module",
-  "types": "./dist/index.d.ts",
   "dependencies": {
     "discord-api-types": "^0.38.49"
+  },
+  "peerDependencies": {
+    "dressed": "^2.0.0-rc.3"
   }
 }
