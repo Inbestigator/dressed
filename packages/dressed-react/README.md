@@ -31,7 +31,7 @@ export default async function ping(interaction: CommandInteraction) {
 }
 ```
 
-If you don't want to manually patch every interaction, you can use middleware:
+If you don't want to manually patch every interaction, you can use [middleware](https://dressed.js.org/docs/dressed-config#middleware):
 
 ```ts title="dressed.config.ts"
 import { patchInteraction } from "@dressed/react";
@@ -39,9 +39,9 @@ import type { DressedConfig } from "dressed/server";
 
 export default {
   build: { extensions: ["tsx", "ts"] },
-  middleware: {
-    commands: (i) => [patchInteraction(i)],
-    components: (i, a) => [patchInteraction(i), a],
+  hooks: {
+    onBeforeCommand: (i) => [patchInteraction(i)],
+    onBeforeComponent: (i, a) => [patchInteraction(i), a],
   },
 } satisfies DressedConfig;
 ```

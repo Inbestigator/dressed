@@ -101,6 +101,12 @@ export interface ServerConfig {
 
 /** Configuration for various Dressed services. */
 export interface DressedConfig {
+  /** Callbacks executed at various parts of the bot lifecycle. */
+  hooks?: CallConfig["hooks"] &
+    ServerConfig["hooks"] & {
+      /** Executed when an error is encountered. */
+      onError?: (error: unknown) => unknown;
+    };
   /**
    * Suppress log levels
    * @example
@@ -113,11 +119,6 @@ export interface DressedConfig {
   requests?: Omit<CallConfig, "hooks">;
   /** Configuration for {@link createServer}. */
   server?: Omit<ServerConfig, "hooks">;
-  hooks?: CallConfig["hooks"] &
-    ServerConfig["hooks"] & {
-      /** Executed when an error is encountered. */
-      onError?: (error: unknown) => unknown;
-    };
 }
 
 interface BaseCommandConfig {

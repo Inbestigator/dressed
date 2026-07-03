@@ -202,16 +202,16 @@ export default async function pingCommand(interaction: CommandInteraction) {
 
 ### Middleware
 
-If you don't want to bother manually patching the interaction every time, then you can add it to your commands/components middleware.
+If you don't want to bother manually patching the interaction every time, then you can add it to your commands/components [middleware](/docs/dressed-config#middleware).
 
 ```ts title="dressed.config.ts"
 import { patchInteraction } from "@dressed/react";
 import { DressedConfig } from "dressed/server";
 
 export default {
-  middleware: {
-    commands: (i) => [patchInteraction(i)],
-    components: (i, a) => [patchInteraction(i), a],
+  hooks: {
+    onBeforeCommand: (i) => [patchInteraction(i)],
+    onBeforeComponent: (i, a) => [patchInteraction(i), a],
   },
 } satisfies DressedConfig;
 ```
