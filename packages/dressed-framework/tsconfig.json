@@ -1,18 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
-    "declaration": true,
-    "erasableSyntaxOnly": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "NodeNext",
     "outDir": "dist",
-    "rewriteRelativeImportExtensions": true,
-    "sourceMap": true,
-    "strict": true,
-    "stripInternal": true,
-    "target": "ES2022",
-    "verbatimModuleSyntax": true,
     "rootDir": "src"
   },
   "include": ["src/**/*.ts"]
