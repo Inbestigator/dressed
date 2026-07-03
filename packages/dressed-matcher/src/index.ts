@@ -109,17 +109,3 @@ export function scorePattern(pattern: string) {
   const rawLength = regex.replace(/\(\?.+?\)/g, "").length;
   return (rawLength * (regex.match(/\(\?/g)?.length ?? 1)) / regex.length;
 }
-
-/**
- * Returns the first regex that matches the input, regexes are expected to be sorted using `scorePattern`
- */
-export function matchOptimal(input: string, regexes: RegExp[]) {
-  for (let i = 0; i < regexes.length; ++i) {
-    const regex = regexes[i];
-    const match = regex.exec(input);
-    if (match) {
-      return { index: i, match };
-    }
-  }
-  return { index: -1 };
-}

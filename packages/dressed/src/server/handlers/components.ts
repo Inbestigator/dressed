@@ -1,4 +1,3 @@
-import { matchOptimal } from "@dressed/matcher";
 import type { ComponentData } from "../../types/config.ts";
 import type { MessageComponentInteraction, ModalSubmitInteraction } from "../../types/interaction.ts";
 import { createHandlerSetup } from "./index.ts";
@@ -29,14 +28,10 @@ export const setupComponents: ReturnType<
   },
   findItem(interaction, items) {
     const category = getCategory(interaction);
-    const categoryItems = items.filter((i) => i.data.category === category);
-    const { index, match } = matchOptimal(
-      interaction.data.custom_id,
-      categoryItems.map((c) => new RegExp(c.data.regex)),
-    );
-    if (index === -1 || !match) return;
-    const item = categoryItems[index];
-    const { groups: args = {} } = match;
-    return [item, [interaction, args]];
+    for (const item of items) {
+      if (item.data.category !== category) continue;
+      const match = new RegExp(item.data.regex).exec(interaction.data.custom_id);
+      if (match) return [item, [interaction, match.groups ?? {}]];
+    }
   },
 });

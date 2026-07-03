@@ -127,7 +127,7 @@ export async function handleInteraction(
     }
     case InteractionType.ApplicationCommand: {
       const runCommand = typeof commands === "function" ? commands : setupCommands(commands);
-      await runCommand(createInteraction(interaction), { before: hooks.onBeforeCommand as never, unknown });
+      await runCommand(createInteraction(interaction), { before: hooks.onBeforeCommand as never, unknown }, "default");
       return 202;
     }
     case InteractionType.ApplicationCommandAutocomplete: {
@@ -138,7 +138,7 @@ export async function handleInteraction(
     case InteractionType.MessageComponent:
     case InteractionType.ModalSubmit: {
       const runComponent = typeof components === "function" ? components : setupComponents(components);
-      await runComponent(createInteraction(interaction), { before: hooks.onBeforeComponent, unknown });
+      await runComponent(createInteraction(interaction), { before: hooks.onBeforeComponent, unknown }, "default");
       return 202;
     }
     default: {
@@ -163,7 +163,7 @@ export async function handleEvent(
     }
     case ApplicationWebhookType.Event: {
       const runEvent = typeof events === "function" ? events : setupEvents(events);
-      await runEvent(event.event, { before: hooks.onBeforeEvent, unknown: hooks.onUnknownEvent });
+      await runEvent(event.event, { before: hooks.onBeforeEvent, unknown: hooks.onUnknownEvent }, "default");
       return 202;
     }
     default: {

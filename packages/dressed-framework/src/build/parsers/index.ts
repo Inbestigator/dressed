@@ -9,10 +9,11 @@ interface ParserItemMessages {
   cols?: string[];
 }
 
-type ImportedEntry<T extends BaseData<unknown>> = WalkEntry & { exports: T["exports"] };
+type ImportedEntry<T extends BaseData> = WalkEntry & { exports: T["exports"] };
 type EntriesAnd<T> = (WalkEntry & T)[];
+type BDWithData<T> = BaseData & { data?: T };
 
-export function createHandlerParser<T extends BaseData<Record<keyof T["data"], unknown> | undefined>>(options: {
+export function createHandlerParser<T extends BDWithData<Record<keyof T["data"], unknown> | undefined>>(options: {
   colNames: string[];
   uniqueKeys?: (keyof T["data"])[];
   itemMessages: ((file: ImportedEntry<T>) => ParserItemMessages) | ParserItemMessages;
