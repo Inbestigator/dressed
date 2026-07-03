@@ -257,7 +257,7 @@
     },
     "PutAPIChannelVoiceStatus": {
       "params": ["url.channelId", "data"],
-      "overrides": { "name": "setVoiceStatus" },
+      "overrides": { "dataKey": "status", "name": "setVoiceStatus" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Set a voice channel's status.",

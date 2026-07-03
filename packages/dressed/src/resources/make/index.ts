@@ -51,6 +51,7 @@ ${Object.entries(routeDefinitions)
         flags,
         overrides: {
           apiRoute,
+          dataKey,
           dataType,
           dangerousExtraLogic,
           dangerousReturnLogic,
@@ -77,7 +78,7 @@ ${Object.entries(routeDefinitions)
         /** Message flags, possibly combined as a bitfield */
         flags?: MessageFlags | (keyof typeof MessageFlags)[]
       }`;
-      dataType ??= `${flags?.includes("isMessage") ? "string | Omit<" : ""}REST${key}${flags?.includes("form") ? "FormData" : "JSON"}Body${flags?.includes("isMessage") ? `, "flags"> ${messageFlagsLine}` : ""}${flags?.includes("hasFiles") ? fileTypeLine : ""}`;
+      dataType ??= `${flags?.includes("isMessage") ? "string | Omit<" : ""}REST${key}${flags?.includes("form") ? "FormData" : "JSON"}Body${flags?.includes("isMessage") ? `, "flags"> ${messageFlagsLine}` : ""}${flags?.includes("hasFiles") ? fileTypeLine : ""}${dataKey ? `["${dataKey}"]` : ""}`;
       paramsType ??= `REST${key}Query`;
       messageKey ??= "";
       name ??= routeKeyToMethodName(method, key, keyNameStart);
@@ -107,7 +108,7 @@ export async function ${name}${generic ? `<${generic}>` : ""}(${params
             if (p.startsWith("params")) paramType = `: ${paramsType}`;
             else if (p.startsWith("data")) paramType = `: ${dataType}${p.endsWith("?") ? " = {}" : ""}`;
             else if (!p.includes(":")) paramType = ": Snowflake";
-            return `${/^(url|var)\./.test(p) ? p.slice(4) : p === "data?" ? "data" : p}${paramType}`;
+            return `${/^(url|var)\./.test(p) ? p.slice(4) : p === "data?" ? "data" : (p === "data" && dataKey ? dataKey : p)}${paramType}`;
           })}): Promise<${returnType}> {
   ${dangerousExtraLogic}
   ${
@@ -122,7 +123,7 @@ export async function ${name}${generic ? `<${generic}>` : ""}(${params
     .map((p) => (p.endsWith("?") ? p.slice(0, -1) : p))
     .map((p) => (p.includes("<") ? p.split("<")[1] : p.slice(4)))
     .map((p) => (p.includes(":") ? p.split(/[?:]/)[0] : p).replace(/botEnv\.([A-Z_]+)/, "$req?.env?.$1??$&"))}), {
-      ${[`method: "${method.toUpperCase()}"`, params.some((p) => p.startsWith("data")) && "body: data", params.some((p) => p.startsWith("params")) && "params", flags?.includes("hasFiles") && `files: ${fileValue}`].filter(Boolean)}
+      ${[`method: "${method.toUpperCase()}"`, params.some((p) => p.startsWith("data")) && `body: ${dataKey ? `{${dataKey}}` : "data"}`, params.some((p) => p.startsWith("params")) && "params", flags?.includes("hasFiles") && `files: ${fileValue}`].filter(Boolean)}
   }, $req);
   ${dangerousReturnLogic || (flags?.includes("returnVoid") ? "" : "return res.json()")}
 }
