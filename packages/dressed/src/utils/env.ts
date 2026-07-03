@@ -10,7 +10,7 @@ interface BotEnvs {
 export const config: DressedConfig = {};
 
 /** The loaded env vars pertaining to bots, overriden by {@link config.requests.env}. */
-export const botEnv = Object.seal(
+export const botEnv: BotEnvs = Object.seal(
   new Proxy(
     {
       DISCORD_APP_ID: process?.env.DISCORD_APP_ID,

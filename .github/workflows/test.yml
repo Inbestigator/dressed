@@ -31,3 +31,6 @@ jobs:
 
       - name: Run tests
         run: bun --bun turbo test
+
+      - name: Run dry publish
+        run: bun --bun turbo dry-publish
