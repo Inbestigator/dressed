@@ -1,4 +1,5 @@
 export {
+  getActivityInstance,
   getApp,
   getAppCommand,
   getAppEmoji,
@@ -74,7 +75,11 @@ export {
   listStickerPacks,
   listStickers,
   listSubscriptions,
+  listTargetUsers,
+  listTargetUsersJobStatus,
   listTemplates,
   listThreadMembers,
   listVoiceRegions,
+  searchMembers,
+  searchMessages,
 } from "dressed";
