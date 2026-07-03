@@ -1,4 +1,3 @@
-import { Buffer } from "node:buffer";
 import { type RESTError, type RESTErrorData, RouteBases } from "discord-api-types/v10";
 import { filetypeinfo } from "magic-bytes.js";
 import type { CallConfig } from "../types/config.ts";
@@ -7,8 +6,8 @@ import { botEnv, config } from "./env.ts";
 import logger from "./log.ts";
 import { checkLimit } from "./ratelimit.ts";
 
-function isBufferLike(value: unknown): value is Buffer | Uint8Array {
-  return value instanceof ArrayBuffer || value instanceof Uint8Array || value instanceof Uint8ClampedArray;
+function isBinary(value: unknown): value is ArrayBuffer | ArrayBufferView {
+  return value instanceof ArrayBuffer || ArrayBuffer.isView(value);
 }
 
 function processFiles(files: RawFile[], body: BodyInit) {
@@ -25,13 +24,11 @@ function processFiles(files: RawFile[], body: BodyInit) {
 
   for (const [index, file] of files.entries()) {
     const key = file.key ?? `files[${index}]`;
-    if (isBufferLike(file.data)) {
+    if (isBinary(file.data)) {
       const type = filetypeinfo(file.data)[0]?.mime ?? "application/octet-stream";
       formData.append(
         key,
-        new Blob([Buffer.from(file.data)], {
-          type: file.contentType ?? { "image/apng": "image/png" }[type] ?? type,
-        }),
+        new Blob([file.data as BlobPart], { type: file.contentType ?? (type === "image/apng" ? "image/png" : type) }),
         file.name,
       );
     } else {
