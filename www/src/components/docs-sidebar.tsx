@@ -75,7 +75,7 @@ const data = [
             url: "/docs/guide/deploying/netlify",
           },
           {
-            title: "Neon Functions",
+            title: "Neon",
             url: "/docs/guide/deploying/neon-functions",
           },
         ],

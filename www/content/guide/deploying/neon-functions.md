@@ -1,4 +1,4 @@
-# Deploying to Neon Functions
+# Deploying to Neon
 
 This guide walks you through deploying a Discord bot built with Dressed to [Neon Functions](https://neon.com/docs/compute/functions/overview).
 
