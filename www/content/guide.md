@@ -13,3 +13,4 @@ If you don't know how to create a bot in the Discord Dev dashboard, see [this gu
   - [Cloudflare Workers](/docs/guide/deploying/cf-workers)
   - [Deno Deploy](/docs/guide/deploying/deno-deploy)
   - [Netlify](/docs/guide/deploying/netlify)
+  - [Neon](/docs/guide/deploying/neon-functions)
