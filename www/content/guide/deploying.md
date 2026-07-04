@@ -9,6 +9,7 @@ These are some guides for helping you deploy your bots on various serverless pro
 - [Cloudflare Workers](/docs/guide/deploying/cf-workers)
 - [Deno Deploy](/docs/guide/deploying/deno-deploy)
 - [Netlify](/docs/guide/deploying/netlify)
+- [Neon Functions](/docs/guide/deploying/neon-functions)
 
 > [!WARNING]
 > Most serverless providers stop the server as soon as your handler's promise resolves, so your handlers should either return promises or await them.
