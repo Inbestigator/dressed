@@ -81,13 +81,7 @@ export async function callDiscord(
       return callDiscord(endpoint, init, $req);
     }
 
-    let error: RESTError;
-    try {
-      error = await res.json();
-    } catch {
-      error = { message: res.statusText, code: 0 };
-    }
-
+    const error: RESTError = await res.json();
     logger.error(new Error(`${error.message} (${error.code ?? res.status})`, { cause: { req, res } }));
 
     if (error.errors) logErrorData(error.errors);
