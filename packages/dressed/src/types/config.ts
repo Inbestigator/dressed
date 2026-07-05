@@ -38,6 +38,12 @@ export interface CallConfig {
    */
   routeBase?: string;
   /**
+   * Whether to log the full URL/endpoint in errors.
+   * Useful for webhooks where the token is part of the URL.
+   * @default true
+   */
+  logFullUrl?: boolean;
+  /**
    * Immediately fire the request instead of checking for ratelimits, also bypasses batching.
    * @important Unless you're checking elsewhere, this *will* attract ratelimit errors
    */

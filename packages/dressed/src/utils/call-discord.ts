@@ -48,11 +48,13 @@ export async function callDiscord(
     authorization = `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
     bucketTTL = 30 * 60,
     routeBase = RouteBases.api,
+    logFullUrl = true,
     skipQueue,
     tries = 3,
   } = { ...config.requests, ...$req };
   const hooks = { ...config.hooks, ...$req.hooks };
   const url = new URL(routeBase + endpoint);
+  const safeEndpoint = logFullUrl ? endpoint : endpoint.replace(/\/webhooks\/(\d+)\/[^/?]+/, "/webhooks/$1/[REDACTED]");
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
@@ -82,7 +84,7 @@ export async function callDiscord(
 
     if (error.errors) logErrorData(error.errors);
 
-    throw new Error(`Failed to ${options.method} ${endpoint} (${res.status})`, { cause: res });
+    throw new Error(`Failed to ${options.method} ${safeEndpoint} (${res.status})`, { cause: res });
   }
 
   req = (await hooks.onBeforeFetch?.(req.clone())) ?? req;
