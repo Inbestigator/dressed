@@ -38,6 +38,11 @@ export interface CallConfig {
    */
   routeBase?: string;
   /**
+   * Whether to redact the token in Discord webhook URLs in errors.
+   * @default true
+   */
+  redactWebhookURL?: boolean;
+  /**
    * Immediately fire the request instead of checking for ratelimits, also bypasses batching.
    * @important Unless you're checking elsewhere, this *will* attract ratelimit errors
    */
