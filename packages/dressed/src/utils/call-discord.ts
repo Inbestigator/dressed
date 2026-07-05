@@ -48,13 +48,13 @@ export async function callDiscord(
     authorization = `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
     bucketTTL = 30 * 60,
     routeBase = RouteBases.api,
-    logFullUrl = true,
+    redactWebhookURL = true,
     skipQueue,
     tries = 3,
   } = { ...config.requests, ...$req };
   const hooks = { ...config.hooks, ...$req.hooks };
   const url = new URL(routeBase + endpoint);
-  const safeEndpoint = logFullUrl ? endpoint : endpoint.replace(/\/webhooks\/(\d+)\/[^/?]+/, "/webhooks/$1/[REDACTED]");
+  const safeEndpoint = redactWebhookURL ? endpoint.replace(/\/webhooks\/(\d+)\/[^/?]+/, "/webhooks/$1/[REDACTED]") : endpoint;
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
