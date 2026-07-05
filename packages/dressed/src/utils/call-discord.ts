@@ -54,7 +54,9 @@ export async function callDiscord(
   } = { ...config.requests, ...$req };
   const hooks = { ...config.hooks, ...$req.hooks };
   const url = new URL(routeBase + endpoint);
-  const safeEndpoint = redactWebhookURL ? endpoint.replace(/\/webhooks\/(\d+)\/[^/?]+/, "/webhooks/$1/[REDACTED]") : endpoint;
+  const safeEndpoint = redactWebhookURL
+    ? endpoint.replace(/\/webhooks\/(\d+)\/[^/?]+/, "/webhooks/$1/[REDACTED]")
+    : endpoint;
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
@@ -85,7 +87,7 @@ export async function callDiscord(
     } catch {
       error = { message: res.statusText, code: 0 };
     }
-    
+
     logger.error(new Error(`${error.message} (${error.code ?? res.status})`, { cause: { req, res } }));
 
     if (error.errors) logErrorData(error.errors);
