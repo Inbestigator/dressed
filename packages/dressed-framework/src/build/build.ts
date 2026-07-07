@@ -13,7 +13,7 @@ import { crawlDir, generateCategoryExports, generateFileImport } from "./utils.t
  * Builds the bot imports and other variables.
  */
 export default async function build(
-  config: Omit<DressedConfig, "middleware"> = {},
+  config: Omit<DressedConfig, "hooks"> = {},
   { bundle = bundleFiles }: { bundle?: typeof bundleFiles } = {},
 ): Promise<{
   commands: ReturnType<typeof parseCommands>;

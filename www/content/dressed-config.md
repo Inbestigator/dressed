@@ -13,13 +13,12 @@ import type { DressedConfig } from "@dressed/framework";
 import { patchInteraction } from "@dressed/react";
 
 export default {
-  endpoint: "/bot",
-  port: 3000,
   build: { include: ["**/*.{ts,tsx}", "!**/*.test.ts"], root: "src/bot" },
-  middleware: {
-    commands: (i) => [patchInteraction(i)],
-    components: (i, a) => [patchInteraction(i), a],
+  hooks: {
+    onBeforeCommand: (i) => [patchInteraction(i)],
+    onBeforeComponent: (i, a) => [patchInteraction(i), a],
   },
+  server: { endpoint: "/bot", port: 3000 },
 } satisfies DressedConfig;
 ```
 
@@ -34,31 +33,27 @@ Object.assign(config, {
 
 ## Config breakdown
 
-### Endpoint
+### Hooks
 
-The endpoint to listen on, the default for this is `/`.
+Hooks are various callbacks that get executed at various parts of the bot lifecycle.
 
-### Port
+#### Middleware
 
-The port to listen on, the default for this is `8000`.
-
-### Middleware
-
-Middleware functions are executed right before your actual handlers. The values returned from them are used as the props passed to your handler.
+Middleware hooks are executed right before your actual handlers. The values returned from them are used as the props passed to your handler.
 
 If you don't want to modify the handler's props, directly return the middleware's props.
 
-Here's an example of some middleware:
+Here's an example of some middleware hooks:
 
 ```ts
 {
     // Passthroughed props
-    commands(...props) {
+    onBeforeCommand(...props) {
         console.log("Middleware!")
         return props
     },
     // Modified props
-    components: (interaction, args) => [patchInteraction(interaction), args]
+    onBeforeComponent: (interaction, args) => [patchInteraction(interaction), args]
 }
 ```
 
@@ -78,6 +73,20 @@ These values will set the default call configuration for every API request. It c
 ```ts
 createMessage("CHANNEL_ID", "Hello, world", { authorization: "Bot OTHER_TOKEN" });
 ```
+
+### Logger
+
+Suppress certain log levels, setting it to `"Warn` will only allow warnings and errors to be logged, `"Error"` raises the bar, and `false` disables logging entirely.
+
+### Server
+
+#### Endpoint
+
+The endpoint to listen on, the default for this is `/`.
+
+#### Port
+
+The port to listen on, the default for this is `8000`.
 
 ### Build
 
