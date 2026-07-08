@@ -104,6 +104,7 @@ const data = [
   },
   {
     title: "Resources",
+    url: "/docs/resources",
     icon: IconFunction,
     items: Array.from(files).map((f) => ({
       title: f

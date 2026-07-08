@@ -22,7 +22,8 @@
       "nursery": {
         "useSortedClasses": "on"
       }
-    }
+    },
+    "includes": ["!www/src/ui"]
   },
   "assist": {
     "actions": {
