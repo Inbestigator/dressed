@@ -1083,6 +1083,7 @@
     },
     "GetAPIGuildWidgetImage": {
       "params": ["url.guildId", "params?"],
+      "overrides": { "dangerousReturnLogic": "return res.arrayBuffer()" },
       "docs": {
         "description": "Returns a PNG image widget for the guild.",
         "infos": ["Requires no permissions or authentication."],
@@ -1156,6 +1157,10 @@
     },
     "GetAPIInviteTargetUsers": {
       "params": ["url.code: string"],
+      "overrides": {
+        "dangerousReturnLogic": "return res.text().then((r)=>r.trim().split(\"\\n\").slice(1))",
+        "returnType": "Snowflake[]"
+      },
       "docs": {
         "description": "Gets the users allowed to see and accept this invite.",
         "see": "/docs/resources/invite#get-target-users"
@@ -1163,6 +1168,7 @@
     },
     "PutAPIInviteTargetUsers": {
       "params": ["url.code: string", "data"],
+      "overrides": { "name": "updateTargetUsers" },
       "flags": ["form"],
       "docs": {
         "description": "Updates the users allowed to see and accept this invite.",

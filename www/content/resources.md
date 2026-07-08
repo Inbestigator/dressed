@@ -18,8 +18,9 @@ Every request function accepts a final `$req` parameter containing request-speci
 
 ## Naming
 
-Functions follow a predictable naming convention based on the underlying HTTP request, making them easy to memorize:
+Functions follow a predictable naming convention based on the underlying HTTP request, making them easy to remember:
 
+- `get` for `GET` requests that fetch a single resource (e.g. `getApp`), and `list` for requests that return multiple items (e.g. `listRoles`)
 - `create` for `POST` requests that create resources (e.g. `createMessage`)
 - `add` for `PUT` requests that add or replace resources (e.g. `addThreadMember`)
 - `modify` for `PATCH` requests that update existing resources (e.g. `modifyRole`)
