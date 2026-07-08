@@ -67,7 +67,7 @@ export default function Home() {
           </Button>
         </div>
       </main>
-      <section id="stats" className="mx-auto -mt-12 flex items-center gap-4">
+      <section id="stats" className="-mt-12 flex flex-wrap items-center justify-center gap-4">
         <BundleSizes
           dressed={{ install: 3840, min: 137, minzip: 33.7, version: "2.0.0-rc.3" }}
           others={{
