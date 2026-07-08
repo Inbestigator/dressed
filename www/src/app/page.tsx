@@ -81,7 +81,7 @@ export default function Home() {
           defaultSelected="discord.js"
         />
         <Link href="/docs/resources" className="group flex items-center justify-center gap-0 text-lg">
-          <span className="rounded-md border border-transparent bg-muted px-2 font-medium text-2xl transition-all">
+          <span className="rounded-md border bg-muted px-2 font-medium text-2xl transition-all">
             {Object.entries(routes).length}
           </span>
           <span className="whitespace-pre"> </span>
@@ -138,7 +138,7 @@ createMessage("<CHANNEL_ID>", {
 \`\`\``}
           </CodeMD>
           <details className="group not-md:order-last flex grow flex-col-reverse *:*:my-0! open:gap-2">
-            <summary className="flex grow items-center justify-center rounded-lg border bg-green-500 p-2 text-center font-medium text-green-900 text-lg after:content-['Saved_16_lines…_that\'s_room_for_a_button_handler!_(Click_to_view)'] group-open:after:content-['Still_10_fewer_lines!']" />
+            <summary className="flex grow items-center justify-center rounded-lg border border-green-900 bg-green-500 p-2 text-center font-medium text-green-900 text-lg after:content-['Saved_16_lines…_that\'s_room_for_a_button_handler!_(Click_to_view)'] group-open:after:content-['Still_10_fewer_lines!']" />
             <div>
               <CodeMD>
                 {`

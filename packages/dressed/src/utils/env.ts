@@ -23,7 +23,7 @@ export const botEnv: BotEnvs = Object.seal(
         const value = config.requests?.env?.[key] || target[key] || process?.env[key];
         if (!value) {
           throw new Error(
-            `Missing required configuration: ${key}\n\nSet it as an environment variable, or assign botEnv.${key}\n\nLearn more: https://nodejs.org/api/environment_variables.html`,
+            `Missing required configuration: ${key}\n\nSet it as an environment variable, or assign botEnv.${key}\n\nLearn more: https://dressed.js.org/docs/environment-variables`,
           );
         }
         return value;
