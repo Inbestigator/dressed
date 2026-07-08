@@ -86,7 +86,7 @@ The endpoint to listen on, the default for this is `/`.
 
 #### Port
 
-The port to listen on, the default for this is `8000`.
+The port to listen on, the default for this is `3000`.
 
 ### Build
 

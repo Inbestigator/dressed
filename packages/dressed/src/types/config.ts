@@ -73,7 +73,7 @@ export interface ServerConfig {
   endpoint?: string;
   /**
    * The port to listen on.
-   * @default 8000
+   * @default 3000
    */
   port?: number;
   hooks?: {

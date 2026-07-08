@@ -27,7 +27,7 @@ export function createServer(
 ): Server {
   config = { ...dressedConfig.server, ...config };
   const hooks = { ...dressedConfig.hooks, ...config.hooks };
-  const port = config.port ?? 8000;
+  const port = config.port ?? 3000;
   const endpoint = new URL(config.endpoint ?? "/", `http://localhost:${port}`);
   const server = createHttpServer(async (req, res) => {
     if (req.url !== endpoint.pathname) {
