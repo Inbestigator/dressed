@@ -16,7 +16,7 @@ program
   .option("-i, --instance", "Include code to start a server instance")
   .option("-r, --register", "Include code to register commands")
   .option("-e, --endpoint <endpoint>", "The endpoint to listen on, defaults to `/`")
-  .option("-p, --port <port>", "The port to listen on, defaults to `8000`", (v) => {
+  .option("-p, --port <port>", "The port to listen on, defaults to `3000`", (v) => {
     const parsed = Number.parseInt(v, 10);
     if (Number.isNaN(parsed) || parsed < 0 || parsed > 65_535) {
       throw new InvalidArgumentError("Port must be a valid TCP/IP network port number (0-65535)");
