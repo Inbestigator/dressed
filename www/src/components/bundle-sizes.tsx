@@ -27,7 +27,7 @@ export function BundleSizes<
   const [selected, setSelected] = useState(defaultSelected);
   const other = others[selected];
   const comparison = Math.max(other.install, other.min, dressed.min);
-  const smaller = Math.max(other.install / dressed.install, other.min / dressed.min, other.minzip / dressed.minzip);
+  const smaller = Math.min(dressed.install / other.install, dressed.min / other.min, dressed.minzip / other.minzip);
   return (
     <HoverCard openDelay={100} closeDelay={100}>
       <DropdownMenu>
@@ -35,11 +35,12 @@ export function BundleSizes<
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="group flex items-center justify-center gap-0 text-lg pl-0">
               <span className="rounded-md border not-group-hover:bg-muted px-2 font-medium text-2xl transition-all group-hover:border-transparent">
-                {(100 - smaller ** -1 * 100).toFixed(1)}%
+                {(100 - smaller * 100).toFixed(1)}%
               </span>
-              <span className="whitespace-pre">
-                {" "}
-                smaller than <span className="text-foreground/80">{selected.toString()}</span>
+              <span className="whitespace-pre"> </span>
+              <span>
+                smaller {dressed.install > other.install && "bundle"} than{" "}
+                <span className="text-foreground/80">{selected.toString()}</span>
               </span>
             </Button>
           </DropdownMenuTrigger>
