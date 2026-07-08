@@ -72,6 +72,7 @@ export default function Home() {
           dressed={{ install: 450, min: 137, minzip: 33.7, version: "2.0.0-rc.3" }}
           others={{
             "discord.js": { install: 11300, min: 1100, minzip: 320.4, version: "14.26.4", sideEffects: true },
+            "@buape/carbon": { install: 16590, min: 223.4, minzip: 53.4, version: "0.16.0", sideEffects: true },
             discordeno: { install: 6120, min: 248, minzip: 57.9, version: "21.0.0", sideEffects: true },
             droff: { install: 144670, min: 110.9, minzip: 28.7, version: "0.43.6", sideEffects: true },
             eris: { install: 2130, min: 776, minzip: 250.1, version: "0.18.0", sideEffects: true },
