@@ -104,7 +104,7 @@ export default function Home() {
         className="justify-center-safe extended-prose flex grid-cols-2 flex-col gap-2 p-4 pt-0 *:*:my-0! *:flex *:*:not-md:not-first:hidden *:flex-col *:gap-2 md:grid"
       >
         <div>
-          <MarkdownAsync rehypePlugins={[[rehypePrettyCode, { theme: "slack-dark" }]]}>
+          <CodeMD>
             {`
 \`\`\`ts title="Dressed" showLineNumbers
 import { createMessage } from "dressed";
@@ -136,11 +136,11 @@ createMessage("<CHANNEL_ID>", {
   flags: ["IsComponentsV2"],
 });
 \`\`\``}
-          </MarkdownAsync>
+          </CodeMD>
           <details className="group not-md:order-last flex grow flex-col-reverse *:*:my-0! open:gap-2">
             <summary className="flex grow items-center justify-center rounded-lg border bg-green-500 p-2 text-center font-medium text-green-900 text-lg after:content-['Saved_16_lines…_that\'s_room_for_a_button_handler!_(Click_to_view)'] group-open:after:content-['Still_10_fewer_lines!']" />
             <div>
-              <MarkdownAsync rehypePlugins={[[rehypePrettyCode, { theme: "slack-dark" }]]}>
+              <CodeMD>
                 {`
 \`\`\`ts showLineNumbers{25}
 import { createInteraction } from "dressed/server";
@@ -151,12 +151,12 @@ connection.onInteractionCreate((interaction) => {
 });
 \`\`\`
       `}
-              </MarkdownAsync>
+              </CodeMD>
             </div>
           </details>
         </div>
         <div>
-          <MarkdownAsync rehypePlugins={[[rehypePrettyCode, { theme: "slack-dark" }]]}>
+          <CodeMD>
             {`
 \`\`\`ts title="Every other library¹" showLineNumbers
 const { Client } = require("library.js");
@@ -204,7 +204,7 @@ client.once("ready", async () => {
   });
 });
 \`\`\``}
-          </MarkdownAsync>
+          </CodeMD>
         </div>
       </section>
       <section className="z-10 -mt-3 px-4 text-[0.5rem] text-muted-foreground">
@@ -216,4 +216,8 @@ client.once("ready", async () => {
       </section>
     </>
   );
+}
+
+function CodeMD({ children }: { children: string }) {
+  return <MarkdownAsync rehypePlugins={[[rehypePrettyCode, { theme: "slack-dark" }]]}>{children}</MarkdownAsync>;
 }

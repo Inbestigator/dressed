@@ -40,16 +40,14 @@ function normalizeData(config: CommandConfig) {
 export async function registerCommands(commands: CommandData[]) {
   logger.defer("Registering commands");
 
-  const scopes = new Map<string, RESTPutAPIApplicationCommandsJSONBody | RESTPutAPIApplicationGuildCommandsJSONBody>([
-    ["global", []],
-  ]);
+  const scopes = new Map<string, RESTPutAPIApplicationCommandsJSONBody | RESTPutAPIApplicationGuildCommandsJSONBody>();
 
   for (const command of commands) {
     const config = normalizeData(command.exports.config ?? ({} as CommandConfig));
-    for (const guild of config.guilds ?? ["global"]) {
+    for (const scope of config.guilds ?? ["global"]) {
       scopes.set(
-        guild,
-        (scopes.get(guild) ?? []).concat({
+        scope,
+        (scopes.get(scope) ?? []).concat({
           ...config,
           name: command.name,
           type: ApplicationCommandType[config.type as keyof typeof ApplicationCommandType],
