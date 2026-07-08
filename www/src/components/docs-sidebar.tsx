@@ -12,6 +12,7 @@ import {
   IconServer,
   IconSettings,
   IconTerminal,
+  IconVariable,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -83,9 +84,26 @@ const data = [
     ],
   },
   {
+    title: "Resources",
+    url: "/docs/resources",
+    icon: IconFunction,
+    items: Array.from(files).map((f) => ({
+      title: f
+        .split("-")
+        .map((w) => `${w[0].toUpperCase()}${w.slice(1)}`)
+        .join(" "),
+      url: `/docs/resources/${f}`,
+    })),
+  },
+  {
     title: "Dressed Config",
     url: "/docs/dressed-config",
     icon: IconSettings,
+  },
+  {
+    title: "Environment Variables",
+    url: "/docs/environment-variables",
+    icon: IconVariable,
   },
   {
     title: "Commands",
@@ -103,18 +121,6 @@ const data = [
     ],
   },
   {
-    title: "Resources",
-    url: "/docs/resources",
-    icon: IconFunction,
-    items: Array.from(files).map((f) => ({
-      title: f
-        .split("-")
-        .map((w) => `${w[0].toUpperCase()}${w.slice(1)}`)
-        .join(" "),
-      url: `/docs/resources/${f}`,
-    })),
-  },
-  {
     title: "Components",
     url: "/docs/components",
     icon: IconPuzzle,
@@ -130,14 +136,14 @@ const data = [
     icon: IconMessageReply,
   },
   {
-    title: "Custom Servers",
-    url: "/docs/custom-servers",
-    icon: IconNetwork,
-  },
-  {
     title: "React",
     url: "/docs/react",
     icon: IconBrandReact,
+  },
+  {
+    title: "Custom Servers",
+    url: "/docs/custom-servers",
+    icon: IconNetwork,
   },
 ];
 
