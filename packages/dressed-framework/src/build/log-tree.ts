@@ -49,5 +49,5 @@ export default function logTree(...titles: string[]): {
 }
 
 // biome-ignore lint/suspicious/noControlCharactersInRegex: We need a control char
-const removeAnsiLen = (s: string) => s.replace(/\x1b\[\d{1,2}m/g, "").length; // NOSONAR
+const removeAnsiLen = (s: string) => s.replace(/\x1b\[\d{1,2}m/g, "").length;
 const pad = (s: string, width: number) => Math.max(0, width - removeAnsiLen(s));

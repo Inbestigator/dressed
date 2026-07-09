@@ -22,7 +22,7 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
     case InteractionType.Ping:
       return null as Interaction<T>;
     // biome-ignore lint/suspicious/noFallthroughSwitchClause: Options should be handled on both autocomplete and commands
-    case InteractionType.ApplicationCommandAutocomplete: // NOSONAR
+    case InteractionType.ApplicationCommandAutocomplete:
       // @ts-expect-error Property is on return type
       input.focused = getFocused(input.data.options)?.slice(1);
     case InteractionType.ApplicationCommand: {

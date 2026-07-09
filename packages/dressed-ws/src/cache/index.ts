@@ -69,7 +69,7 @@ export function createCache<
               return value;
             }
             // biome-ignore lint/suspicious/noFallthroughSwitchClause: Intended to fall through
-            case "stale": // NOSONAR
+            case "stale":
               if (!revalidating.has(key)) {
                 revalidating.add(key);
                 v(...args).then((v) => set(k, key, v));

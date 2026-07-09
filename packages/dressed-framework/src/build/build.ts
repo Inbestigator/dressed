@@ -71,16 +71,16 @@ export default async function build(
 
 async function fetchMissingVars() {
   try {
-    void botEnv.DISCORD_TOKEN; // NOSONAR
+    void botEnv.DISCORD_TOKEN;
     const missingVars: string[] = [];
 
     try {
-      void botEnv.DISCORD_APP_ID; // NOSONAR
+      void botEnv.DISCORD_APP_ID;
     } catch {
       missingVars.push("DISCORD_APP_ID");
     }
     try {
-      void botEnv.DISCORD_PUBLIC_KEY; // NOSONAR
+      void botEnv.DISCORD_PUBLIC_KEY;
     } catch {
       missingVars.push("DISCORD_PUBLIC_KEY");
     }
