@@ -1,5 +1,5 @@
 import { appendFileSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
-import { basename, extname, resolve } from "node:path";
+import { basename, extname, join, resolve } from "node:path";
 import { getApp } from "dressed";
 import { botEnv, config as dressedConfig, logger } from "dressed/utils";
 import type { DressedConfig } from "../types/config.ts";
@@ -37,23 +37,33 @@ export default async function build(
   }
 
   const root = config.build?.root ?? "src";
-  const categories = ["commands", "components", "events"];
+  const categories = ["commands", "components", "buttons", "modals", "selects", "events"];
   const files = await Promise.all(categories.map((d) => crawlDir(root, d, config.build?.include)));
   const entriesPath = ".dressed/tmp/entries.ts";
+  const flatComponents = files.splice(2, 3).flat();
+
+  if (config.build?.flatComponents !== false) files[1].push(...flatComponents);
 
   writeFileSync(
     entriesPath,
     [files.map((c) => c.map(generateFileImport)), generateCategoryExports(files)].flat(2).join(""),
   );
+
   logger.defer("Bundling handlers");
+
   await bundle(entriesPath, ".dressed/tmp");
+
   const { commands, components, events } = await import(resolve(entriesPath.replace(".ts", ".mjs")));
+  const componentsBase = join(root, "components");
 
   logger.raw.log(); // This just adds a newline before the logged trees for consistency
   return {
-    commands: parseCommands(commands, `${root}/commands`),
-    components: parseComponents(components, `${root}/components`),
-    events: parseEvents(events, `${root}/events`),
+    commands: parseCommands(commands, join(root, "commands")),
+    components: parseComponents(
+      components,
+      config.build?.flatComponents !== false && flatComponents.length ? [componentsBase, root] : componentsBase,
+    ),
+    events: parseEvents(events, join(root, "commands")),
     config,
     configPath,
   };

@@ -19,7 +19,7 @@ import routes from "../../../packages/dressed/src/resources/make/data";
 
 export default function Home() {
   return (
-    <main className="flex flex-col p-4 gap-8">
+    <main className="flex flex-col gap-8 p-4">
       <section className="mx-auto flex min-h-[calc(100vh-var(--spacing)*24)] max-w-5xl flex-col items-center justify-center gap-8 text-center">
         <div className="relative">
           <Image

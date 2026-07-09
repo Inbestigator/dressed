@@ -1,6 +1,7 @@
 import type { SVGProps } from "react";
 
 const Chrome = (props: SVGProps<SVGSVGElement>) => (
+  // biome-ignore lint/a11y/noSvgWithoutTitle: Overrides the tooltip on the homepage
   <svg {...props} preserveAspectRatio="xMidYMid" viewBox="0 0 190.5 190.5">
     <path
       fill="#fff"

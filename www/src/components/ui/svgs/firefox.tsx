@@ -1,6 +1,7 @@
 import type { SVGProps } from "react";
 
 const Firefox = (props: SVGProps<SVGSVGElement>) => (
+  // biome-ignore lint/a11y/noSvgWithoutTitle: Overrides the tooltip on the homepage
   <svg {...props} viewBox="0 0 256 265" preserveAspectRatio="xMidYMid">
     <defs>
       <radialGradient

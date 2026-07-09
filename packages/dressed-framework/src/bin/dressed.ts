@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { rmSync, writeFileSync } from "node:fs";
-import { exit } from "node:process";
 import { logger } from "dressed/utils";
 import sade from "sade";
 import build from "../build/build.ts";
@@ -18,9 +17,15 @@ program
   .option("-e, --endpoint <endpoint>", "The endpoint to listen on", "/")
   .option("-p, --port <port>", "The port to listen on", "3000")
   .option("-I, --include <includes...>", "Glob patterns for handler files", "**/*.{js,ts,mjs}")
+  .option(
+    "--flat-components",
+    "Look for component handler files within the root. If true, [root]/buttons/hello.ts = [root]/components/buttons/hello.ts)",
+    true,
+  )
   .example("build src/bot -i")
   .example('build --include "**/*.{ts,tsx}"')
   .example("build -p 8080 -e /api/bot")
+  .example("build bot --no-flat-components")
   .action(
     async (
       root,
@@ -36,6 +41,7 @@ program
         endpoint: string;
         port: string;
         include: string | string[];
+        "flat-components": boolean;
       },
     ) => {
       const port = Number.parseInt(options.port, 10);
@@ -49,6 +55,7 @@ program
         build: {
           root,
           include: typeof include === "string" ? [include] : include,
+          flatComponents: options["flat-components"],
         },
       });
       const categories = [commands, components, events];

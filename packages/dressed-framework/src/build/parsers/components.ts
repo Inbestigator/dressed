@@ -1,4 +1,4 @@
-import { sep } from "node:path";
+import { relative, sep } from "node:path";
 import { patternToRegex, scorePattern } from "@dressed/matcher";
 import type { ComponentData } from "dressed/server";
 import { logger } from "dressed/utils";
@@ -8,15 +8,15 @@ export const parseComponents: ReturnType<typeof createHandlerParser<ComponentDat
   createHandlerParser({
     colNames: ["Component", "Category"],
     uniqueKeys: ["category", "regex"],
-    itemMessages({ name, path }) {
-      const category = getCategory(path);
+    itemMessages({ name, path }, base) {
+      const category = getCategory(path, base);
       return {
-        confict: `"${name}" conflicts with another ${category?.slice(0, -1)}, skipping`,
+        confict: `"${name}" conflicts with another ${category?.slice(0, -1) ?? "handler"}, skipping`,
         cols: [category ?? ""],
       };
     },
-    createData({ name, path, exports: { pattern = name } = {} }) {
-      const category = getCategory(path);
+    createData({ name, path, exports: { pattern = name } = {} }, base) {
+      const category = getCategory(path, base);
 
       if (!category) {
         throw new Error(`${logger.symbols.warn} Category for "${name}" could not be determined, skipping`, {
@@ -33,15 +33,14 @@ export const parseComponents: ReturnType<typeof createHandlerParser<ComponentDat
 
 const validComponentCategories = new Set(["buttons", "modals", "selects"]);
 
-function getCategory(path: string) {
-  const parts = path.split(sep);
+function getCategory(path: string, base: string) {
+  const relativePath = relative(base, path);
 
-  const compIndex = parts.lastIndexOf("components");
-  if (compIndex === -1) return null;
+  if (relativePath.startsWith("..")) return null;
 
-  for (let i = parts.length - 2; i > compIndex; --i) {
-    if (validComponentCategories.has(parts[i])) return parts[i] as ComponentData["data"]["category"];
-  }
+  const category = relativePath.split(sep)[0];
+
+  if (validComponentCategories.has(category)) return category as ComponentData["data"]["category"];
 
   return null;
 }
