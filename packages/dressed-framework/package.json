@@ -1,6 +1,6 @@
 {
   "name": "@dressed/framework",
-  "version": "0.6.0-rc.1",
+  "version": "0.6.0-rc.2",
   "description": "A framework for creating Discord bots using Dressed.",
   "keywords": [
     "framework",

@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
-import { rmSync, writeFileSync } from "node:fs";
+import { existsSync, rmSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { bulkOverwriteGuildCommands } from "dressed";
+import type { CommandData } from "dressed/server";
 import { logger } from "dressed/utils";
 import sade from "sade";
 import build from "../build/build.ts";
@@ -13,14 +16,16 @@ program
   .command("build [root]")
   .describe(["Builds the bot and writes to .dressed", "[root]: Source root for the bot (default src)"])
   .option("-i, --instance", "Include code to start a server instance")
-  .option("-r, --register", "Include code to register commands")
-  .option("-e, --endpoint <endpoint>", "The endpoint to listen on", "/")
-  .option("-p, --port <port>", "The port to listen on", "3000")
-  .option("-I, --include <includes...>", "Glob patterns for handler files", "**/*.{js,ts,mjs}")
+  .option(
+    "-r, --register",
+    "Include code to register commands, this will also remove all guild commands from guilds that are changing before they're re-registered",
+  )
+  .option("-e, --endpoint <endpoint>", "The endpoint to listen on (default /)")
+  .option("-p, --port <port>", "The port to listen on (default 3000)")
+  .option("-I, --include <includes...>", "Glob patterns for handler files (default **/*.{js,ts,mjs})")
   .option(
     "--flat-components",
-    "Look for component handler folders within the root. If true, [root]/buttons/hello.ts ≈ [root]/components/buttons/hello.ts",
-    true,
+    "Look for component handler folders within the root. If true, [root]/buttons/hello.ts ≈ [root]/components/buttons/hello.ts (default true)",
   )
   .example("build src/bot -i")
   .example('build --include "**/*.{ts,tsx}"')
@@ -34,19 +39,20 @@ program
         register,
         endpoint,
         include,
-        ...options
+        port: rawPort,
+        "flat-components": flatComponents,
       }: {
         instance?: boolean;
         register?: boolean;
-        endpoint: string;
-        port: string;
-        include: string | string[];
+        endpoint?: string;
+        port?: string;
+        include?: string | string[];
         "flat-components": boolean;
       },
     ) => {
-      const port = Number.parseInt(options.port, 10);
+      const port = rawPort ? Number.parseInt(rawPort, 10) : undefined;
 
-      if (Number.isNaN(port) || port < 0 || port > 65_535) {
+      if (port !== undefined && (Number.isNaN(port) || port < 0 || port > 65_535)) {
         throw new Error("Port must be a valid TCP/IP network port number (0-65535)");
       }
 
@@ -55,7 +61,7 @@ program
         build: {
           root,
           include: typeof include === "string" ? [include] : include,
-          flatComponents: options["flat-components"],
+          flatComponents,
         },
       });
       const categories = [commands, components, events];
@@ -75,10 +81,32 @@ ${instance ? "createServer(commands, components, events);" : ""}`.trim();
       const jsContent = 'export * from "./index.mjs";';
       const typeContent =
         'import type { DressedConfig } from "@dressed/framework";import type { CommandData, ComponentData, EventData } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: DressedConfig;';
+      const outPath = ".dressed/index.js";
+
+      // Deregister guild commands if they're going away
+      if (register && existsSync(outPath)) {
+        const { commands: prevCommands } = (await import(resolve(outPath))) as { commands: CommandData[] };
+        const promiseMap: Record<string, Promise<unknown>> = {};
+        for (const prev of prevCommands) {
+          if (prev.exports.config?.guilds) {
+            const curr = commands.find((c) => c.name === prev.name);
+            const diff = prev.exports.config.guilds.filter((g) => !curr?.exports.config?.guilds?.includes(g));
+            for (const guild of diff) {
+              promiseMap[guild] ??= bulkOverwriteGuildCommands(guild, []);
+            }
+          }
+        }
+        const promises = Object.values(promiseMap);
+        if (promises.length) {
+          logger.defer("Deregistering old guild commands");
+          await Promise.all(promises);
+          logger.succeed("Removed old guild commands");
+        }
+      }
 
       writeFileSync(".dressed/tmp/index.ts", outputContent);
       await bundleFiles(".dressed/tmp/index.ts", ".dressed");
-      writeFileSync(".dressed/index.js", jsContent);
+      writeFileSync(outPath, jsContent);
       writeFileSync(".dressed/index.d.ts", typeContent);
       rmSync(".dressed/tmp", { recursive: true, force: true });
 
