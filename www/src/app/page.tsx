@@ -207,7 +207,7 @@ client.once("ready", async () => {
           </CodeMD>
         </div>
       </section>
-      <section className="z-10 px-4 text-[0.5rem] text-muted-foreground">
+      <section className="z-10 -mt-4 px-4 text-[0.5rem] text-muted-foreground">
         ¹: "Every other library" refers to how <i>most</i> other libraries seem to follow the same syntax, as such
         Discord.js (the leading JavaScript library) was used to create the comparison snippets. Comparisons were created
         in good faith and may not use abolutely optimized code for either library. The name library.js was used in the
