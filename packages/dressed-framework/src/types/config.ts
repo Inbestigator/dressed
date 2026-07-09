@@ -5,8 +5,8 @@ export interface DressedConfig extends CoreDressedConfig {
   /** Build configuration */
   build?: {
     /**
-     * Look for component handler files within the root.
-     * If true, `[root]/buttons/hello.ts` = `[root]/components/buttons/hello.ts)`
+     * Look for component handler folders within the root.
+     * If true, `./src/buttons/hello.ts` = `./src/components/buttons/hello.ts`
      * @default true
      */
     flatComponents?: boolean;

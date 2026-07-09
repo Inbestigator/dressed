@@ -92,6 +92,12 @@ The port to listen on, the default for this is `3000`.
 
 The build object is only available when using the config with the framework. The types with build included are exported from [@dressed/framework](https://npmjs.com/@dressed/framework).
 
+#### Include flat components
+
+Look for component handler folders within the root of the project (e.g. `src`, see build root).
+
+If true, `./src/buttons/hello.ts` = `./src/components/buttons/hello.ts`
+
 #### Build root
 
 This is the source root that the server uses when assembling files, the default is `src`.

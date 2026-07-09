@@ -19,7 +19,7 @@ program
   .option("-I, --include <includes...>", "Glob patterns for handler files", "**/*.{js,ts,mjs}")
   .option(
     "--flat-components",
-    "Look for component handler files within the root. If true, [root]/buttons/hello.ts = [root]/components/buttons/hello.ts)",
+    "Look for component handler folders within the root. If true, [root]/buttons/hello.ts = [root]/components/buttons/hello.ts",
     true,
   )
   .example("build src/bot -i")
