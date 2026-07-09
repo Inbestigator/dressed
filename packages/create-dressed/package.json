@@ -26,9 +26,9 @@
     "dry-publish": "bun publish --dry-run"
   },
   "dependencies": {
-    "commander": "^15.0.0",
+    "@clack/prompts": "^1.7.0",
     "dotenv": "^17.4.2",
-    "enquirer": "^2.4.1",
+    "sade": "^1.8.1",
     "tar": "^7.5.19"
   }
 }

@@ -19,8 +19,8 @@ import routes from "../../../packages/dressed/src/resources/make/data";
 
 export default function Home() {
   return (
-    <>
-      <main className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center gap-8 px-4 py-10 text-center">
+    <main className="flex flex-col p-4 gap-8">
+      <section className="mx-auto flex min-h-[calc(100vh-var(--spacing)*24)] max-w-5xl flex-col items-center justify-center gap-8 text-center">
         <div className="relative">
           <Image
             src="/dressed.webp"
@@ -66,8 +66,8 @@ export default function Home() {
             </Link>
           </Button>
         </div>
-      </main>
-      <section id="stats" className="-mt-12 flex flex-wrap items-center justify-center gap-4">
+      </section>
+      <section id="stats" className="flex flex-wrap items-center justify-center gap-4">
         <BundleSizes
           dressed={{ install: 3840, min: 137, minzip: 33.7, version: "2.0.0-rc.3" }}
           others={{
@@ -101,7 +101,7 @@ export default function Home() {
       </section>
       <section
         id="compare"
-        className="justify-center-safe extended-prose flex grid-cols-2 flex-col gap-2 p-4 pt-0 *:*:my-0! *:flex *:*:not-md:not-first:hidden *:flex-col *:gap-2 md:grid"
+        className="justify-center-safe extended-prose flex grid-cols-2 flex-col gap-4 **:my-0! *:flex *:*:not-md:not-first:hidden *:flex-col *:gap-2 md:grid"
       >
         <div>
           <CodeMD>
@@ -207,14 +207,14 @@ client.once("ready", async () => {
           </CodeMD>
         </div>
       </section>
-      <section className="z-10 -mt-3 px-4 text-[0.5rem] text-muted-foreground">
+      <section className="z-10 px-4 text-[0.5rem] text-muted-foreground">
         ¹: "Every other library" refers to how <i>most</i> other libraries seem to follow the same syntax, as such
         Discord.js (the leading JavaScript library) was used to create the comparison snippets. Comparisons were created
         in good faith and may not use abolutely optimized code for either library. The name library.js was used in the
         first snippet as it is the most general, discord.js is later used to show that logic may be specific to the
         discord.js library.
       </section>
-    </>
+    </main>
   );
 }
 
