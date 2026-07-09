@@ -29,10 +29,13 @@ export function generateCategoryExports(categories: WalkEntry[][]) {
 
 /** Recursively check for files */
 export async function crawlDir(root: string, dir: string, include = ["**/*.{js,ts,mjs}"]): Promise<WalkEntry[]> {
-  const dirPath = resolve(root, dir);
+  const optional = dir.endsWith("?");
+  const dirPath = resolve(root, optional ? dir.slice(0, -1) : dir);
 
   if (!existsSync(dirPath)) {
-    logger.warn(`${dir.slice(0, 1).toUpperCase() + dir.slice(1)} directory not found`);
+    if (!optional) {
+      logger.warn(`${dir.slice(0, 1).toUpperCase() + dir.slice(1)} directory not found`);
+    }
     return [];
   }
 

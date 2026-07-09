@@ -37,7 +37,7 @@ export default async function build(
   }
 
   const root = config.build?.root ?? "src";
-  const categories = ["commands", "components", "buttons", "modals", "selects", "events"];
+  const categories = ["commands", "components", "buttons?", "modals?", "selects?", "events"];
   const files = await Promise.all(categories.map((d) => crawlDir(root, d, config.build?.include)));
   const entriesPath = ".dressed/tmp/entries.ts";
   const flatComponents = files.splice(2, 3).flat();
