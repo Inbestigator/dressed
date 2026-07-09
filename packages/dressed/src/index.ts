@@ -25,6 +25,6 @@ export type {
   CommandAutocompleteInteraction,
   CommandInteraction,
   CommandOptionValue,
-  MessageComponentInteraction,
-  ModalSubmitInteraction,
+  ComponentInteraction,
+  ModalInteraction,
 } from "./types/interaction.ts";

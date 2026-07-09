@@ -3,14 +3,14 @@ import type { AnyEvent } from "./event.ts";
 import type {
   CommandAutocompleteInteraction,
   CommandInteraction,
-  MessageComponentInteraction,
-  ModalSubmitInteraction,
+  ComponentInteraction,
+  ModalInteraction,
 } from "./interaction.ts";
 
 export type CommandHandler = (interaction: CommandInteraction) => Promise<void>;
 export type CommandAutocompleteHandler = (interaction: CommandAutocompleteInteraction) => Promise<void>;
 export type ComponentHandler = (
-  interaction: MessageComponentInteraction | ModalSubmitInteraction,
+  interaction: ComponentInteraction | ModalInteraction,
   args?: Record<string, string>,
 ) => Promise<void>;
 export type EventHandler = (event: AnyEvent) => Promise<void>;

@@ -2,8 +2,8 @@ import type { ApplicationCommandType } from "discord-api-types/v10";
 import {
   type CommandConfig,
   type CommandInteraction as DressedCommandInteraction,
-  type MessageComponentInteraction as DressedMessageComponentInteraction,
-  type ModalSubmitInteraction as DressedModalSubmitInteraction,
+  type ComponentInteraction as DressedComponentInteraction,
+  type ModalInteraction as DressedModalInteraction,
   editWebhookMessage,
 } from "dressed";
 import type { createInteraction } from "dressed/server";
@@ -59,8 +59,8 @@ export type MessageComponentInteraction<
     | "MentionableSelect"
     | "ChannelSelect"
     | undefined = undefined,
-> = ReactivatedInteraction<DressedMessageComponentInteraction<T>>;
-export type ModalSubmitInteraction = ReactivatedInteraction<DressedModalSubmitInteraction>;
+> = ReactivatedInteraction<DressedComponentInteraction<T>>;
+export type ModalSubmitInteraction = ReactivatedInteraction<DressedModalInteraction>;
 
 /**
  * Override interaction methods to accept React components
