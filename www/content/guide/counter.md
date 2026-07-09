@@ -51,7 +51,7 @@ export function countDisplay(n: number) {
     TextDisplay(`Current count: ${n}`),
     ActionRow(
       Button({ label: "Add", custom_id: `set-counter-${n + 1}` }),
-      Button({ label: "Reset", style: "Danger", custom_id: "set-counter-0" })
+      Button({ label: "Reset", style: "Danger", custom_id: "set-counter-0" }),
     ),
   ];
 }
@@ -67,14 +67,14 @@ Start by creating a file within `src/components/buttons` named `set-counter.ts`.
 
 ```ts showLineNumbers
 import type { Params } from "@dressed/matcher";
-import type { MessageComponentInteraction } from "dressed";
+import type { ComponentInteraction } from "dressed";
 import { countDisplay } from "../../commands/counter.ts";
 
 export const pattern = "set-counter-:value";
 
 export default function setCounterButton(
-  interaction: MessageComponentInteraction,
-  { value }: Params<typeof pattern>
+  interaction: ComponentInteraction,
+  { value }: Params<typeof pattern>,
 ) {
   interaction.update({ components: countDisplay(Number(value)) });
 }

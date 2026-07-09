@@ -3,7 +3,7 @@ import { SelectMenu as DressedComponent, SelectMenuOption as DressedOption } fro
 import { createElement, type PropsWithChildren, type ReactElement, type ReactNode } from "react";
 import type { Node } from "../react/node.ts";
 import { registerHandler } from "../rendering/callbacks.ts";
-import type { MessageComponentInteraction } from "../rendering/interaction.ts";
+import type { ComponentInteraction } from "../rendering/interaction.ts";
 
 type SelectType = "Channel" | "Mentionable" | "Role" | "String" | "User";
 
@@ -16,7 +16,7 @@ type SelectMenuWithOnSubmit<K extends SelectType> = Omit<SelectMenuWithCustomId<
    * Create a temporary handler callback, will not work in a serverless environment
    * @warn Callbacks are deleted after 30 minutes. If you wish to have a more permanent handler, it's strongly recommended to use the [traditional component system](https://dressed.js.org/docs/components).
    */
-  onSubmit: (interaction: MessageComponentInteraction<`${K}Select`>) => void;
+  onSubmit: (interaction: ComponentInteraction<`${K}Select`>) => void;
   /** An additional handler identity defined in the callback setup which will run if the `onSubmit` is no longer registered */
   fallback?: string;
 };

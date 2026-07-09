@@ -130,11 +130,11 @@ interaction.sendChoices([
 
 ### values
 
-For selectmenus this is will be an array of the resolved values submitted by the user. You can choose what type it'll be by specifying the generic in `MessageComponentInteraction`.
+For selectmenus this is will be an array of the resolved values submitted by the user. You can choose what type it'll be by specifying the generic in `ComponentInteraction`.
 
 ```ts
 const users = interaction.values;
-//            ^? const interaction: MessageComponentInteraction<"UserSelect">
+//            ^? const interaction: ComponentInteraction<"UserSelect">
 ```
 
 ### update

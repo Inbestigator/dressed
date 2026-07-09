@@ -160,15 +160,15 @@ export { pattern } from "@dressed/react/callbacks";
 The callback handler takes an object of functions which can be used as fallbacks if the original handler is lost before the user interacts (such as if your bot restarts).
 
 ```tsx title="src / components / buttons / react.ts" showLineNumbers
-import type { MessageComponentInteraction } from "@dressed/react";
+import type { ComponentInteraction } from "@dressed/react";
 import { createCallbackHandler } from "@dressed/react/callbacks";
 
 const buttonCallbackHandler = createCallbackHandler({
   // The default fallback will be called if no fallback is specified in the component
-  default(i: MessageComponentInteraction) {
+  default(i: ComponentInteraction) {
     return i.reply("That handler has expired", { ephemeral: true });
   },
-  counter(i: MessageComponentInteraction) {
+  counter(i: ComponentInteraction) {
     return i.reply("This counter is no longer interactive!", { ephemeral: true });
   },
 });

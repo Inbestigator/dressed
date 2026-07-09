@@ -50,7 +50,7 @@ type OverrideMethodParams<T, Overrides extends Record<string, unknown[]>> = {
 // I wish there's a better way to make it just automatically recognize the generic constraints from the original types
 export type CommandInteraction<T extends keyof typeof ApplicationCommandType | CommandConfig = "ChatInput"> =
   ReactivatedInteraction<DressedCommandInteraction<T>>;
-export type MessageComponentInteraction<
+export type ComponentInteraction<
   T extends
     | "Button"
     | "StringSelect"
@@ -60,7 +60,7 @@ export type MessageComponentInteraction<
     | "ChannelSelect"
     | undefined = undefined,
 > = ReactivatedInteraction<DressedComponentInteraction<T>>;
-export type ModalSubmitInteraction = ReactivatedInteraction<DressedModalInteraction>;
+export type ModalInteraction = ReactivatedInteraction<DressedModalInteraction>;
 
 /**
  * Override interaction methods to accept React components
