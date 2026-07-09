@@ -19,26 +19,23 @@ interface ListenerConfig {
   once?: boolean;
 }
 
-type ParentMsg = {
+interface ParentMsg {
   type: "dispatch";
   t: GatewayDispatchEvents;
   shard: [number, number];
   d: GatewayDispatchPayload;
-};
+}
+
+export type Event<T extends EventKey> = (GatewayDispatchPayload extends infer U
+  ? U extends { t: infer E }
+    ? (typeof GatewayDispatchEvents)[T] extends E
+      ? U
+      : never
+    : never
+  : never)["d"];
 
 export type ConnectionActions = {
-  [K in EventKey as `on${K}`]: (
-    callback: (
-      data: (GatewayDispatchPayload extends infer U
-        ? U extends { t: infer T }
-          ? (typeof GatewayDispatchEvents)[K] extends T
-            ? U
-            : never
-          : never
-        : never)["d"],
-    ) => void,
-    config?: ListenerConfig,
-  ) => () => void;
+  [K in EventKey as `on${K}`]: (callback: (data: Event<K>) => void, config?: ListenerConfig) => () => void;
 } & {
   /**
    * Sends a gateway payload to Discord using the given opcode.
