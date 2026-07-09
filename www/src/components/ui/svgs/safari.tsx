@@ -1,6 +1,7 @@
 import type { SVGProps } from "react";
 
 const Safari = (props: SVGProps<SVGSVGElement>) => (
+  // biome-ignore lint/a11y/noSvgWithoutTitle: Overrides the tooltip on the homepage
   <svg {...props} xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 66.165833 65.803795">
     <defs>
       <linearGradient id="safari-b">

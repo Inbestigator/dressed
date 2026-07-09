@@ -16,6 +16,18 @@ exports[`Build bot 1`] = `
   "components": [
     {
       "data": {
+        "category": "selects",
+        "regex": "^user$",
+        "score": 1,
+      },
+      "exports": {
+        "default": [native code],
+      },
+      "name": "user",
+      "path": "tests/src/selects/user.ts",
+    },
+    {
+      "data": {
         "category": "buttons",
         "regex": "^button_(?<arg>.+?)$",
         "score": 0.4583333333333333,

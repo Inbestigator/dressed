@@ -36,9 +36,9 @@
   },
   "dependencies": {
     "@dressed/matcher": "^1.4.0",
-    "commander": "^15.0.0",
     "esbuild": "^0.28.1",
-    "fast-glob": "^3.3.3"
+    "fast-glob": "^3.3.3",
+    "sade": "^1.8.1"
   },
   "peerDependencies": {
     "dressed": "^2.0.0-canary.1"

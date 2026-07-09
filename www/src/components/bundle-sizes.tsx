@@ -33,7 +33,7 @@ export function BundleSizes<
       <DropdownMenu>
         <HoverCardTrigger asChild>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="group flex items-center justify-center gap-0 text-lg pl-0">
+            <Button variant="ghost" size="sm" className="group flex items-center justify-center gap-0 pl-0 text-lg">
               <span className="rounded-md border not-group-hover:bg-muted px-2 font-medium text-2xl transition-all group-hover:border-transparent">
                 {(100 - smaller * 100).toFixed(1)}%
               </span>

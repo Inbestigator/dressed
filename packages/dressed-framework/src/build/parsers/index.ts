@@ -16,10 +16,10 @@ type BDWithData<T> = BaseData & { data?: T };
 export function createHandlerParser<T extends BDWithData<Record<keyof T["data"], unknown> | undefined>>(options: {
   colNames: string[];
   uniqueKeys?: (keyof T["data"])[];
-  itemMessages: ((file: ImportedEntry<T>) => ParserItemMessages) | ParserItemMessages;
-  createData: (file: ImportedEntry<T>, tree: ReturnType<typeof logTree>) => T["data"];
+  itemMessages: ((file: ImportedEntry<T>, base: string) => ParserItemMessages) | ParserItemMessages;
+  createData: (file: ImportedEntry<T>, base: string, tree: ReturnType<typeof logTree>) => T["data"];
   postMortem?: (items: EntriesAnd<T>) => EntriesAnd<T>;
-}): (files: ImportedEntry<T>[], base?: string) => EntriesAnd<T> {
+}): (files: ImportedEntry<T>[], base: string | string[]) => EntriesAnd<T> {
   return (files, base) => {
     if (files.length === 0) return [];
     const tree = logTree(...options.colNames);
@@ -28,17 +28,27 @@ export function createHandlerParser<T extends BDWithData<Record<keyof T["data"],
     for (const [i, file] of Object.entries(files)) {
       let data: T["data"];
       let itemMessages = options.itemMessages;
-      if (typeof itemMessages === "function") {
-        itemMessages = itemMessages(file);
+
+      const usedBase = Array.isArray(base) ? base.find((b) => file.path.startsWith(b)) : base;
+
+      if (!usedBase) {
+        throw new TypeError(`${logger.symbols.error} Couldn't figure out where the handler comes from`, {
+          cause: "dressed-parsing",
+        });
       }
+
+      if (typeof itemMessages === "function") {
+        itemMessages = itemMessages(file, usedBase);
+      }
+
       try {
         tree.push(
           files.filter((f) => f.name === file.name).length > 1
-            ? `${file.name} \x1b[2m(${relative(base ?? "", file.path)})\x1b[22m`
+            ? `${file.name} \x1b[2m(${relative(Array.isArray(base) ? (base.at(-1) ?? "") : base, file.path)})\x1b[22m`
             : file.name,
           ...(itemMessages.cols ?? []),
         );
-        data = options.createData(file, tree);
+        data = options.createData(file, usedBase, tree);
         const hasConflict = items.some(
           (item) => options.uniqueKeys?.every((k) => data?.[k] === item.data?.[k]) ?? item.name === file.name,
         );

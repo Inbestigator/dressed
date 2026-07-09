@@ -1,49 +1,62 @@
 #!/usr/bin/env node
 
 import { rmSync, writeFileSync } from "node:fs";
-import { exit } from "node:process";
-import { Command, InvalidArgumentError } from "commander";
 import { logger } from "dressed/utils";
+import sade from "sade";
 import build from "../build/build.ts";
 import bundleFiles from "../build/bundle.ts";
 import { generateCategoryExports, generateFileImport, normalizeImportPath } from "../build/utils.ts";
 
-const program = new Command().name("dressed").description("A sleek, serverless-ready Discord bot framework.");
+const program = sade("dressed").describe("A sleek, serverless-ready Discord bot framework.");
 
 program
-  .command("build")
-  .description("Builds the bot and writes to .dressed")
+  .command("build [root]")
+  .describe(["Builds the bot and writes to .dressed", "[root]: Source root for the bot (default src)"])
   .option("-i, --instance", "Include code to start a server instance")
   .option("-r, --register", "Include code to register commands")
-  .option("-e, --endpoint <endpoint>", "The endpoint to listen on, defaults to `/`")
-  .option("-p, --port <port>", "The port to listen on, defaults to `3000`", (v) => {
-    const parsed = Number.parseInt(v, 10);
-    if (Number.isNaN(parsed) || parsed < 0 || parsed > 65_535) {
-      throw new InvalidArgumentError("Port must be a valid TCP/IP network port number (0-65535)");
-    }
-    return parsed;
-  })
-  .option("-R, --root <root>", "Source root for the bot, defaults to `src`")
-  .option("-I, --include <includes...>", "Glob patterns for handler files, defaults to `**/*.{js,ts,mjs}`")
+  .option("-e, --endpoint <endpoint>", "The endpoint to listen on", "/")
+  .option("-p, --port <port>", "The port to listen on", "3000")
+  .option("-I, --include <includes...>", "Glob patterns for handler files", "**/*.{js,ts,mjs}")
+  .option(
+    "--flat-components",
+    "Look for component handler folders within the root. If true, [root]/buttons/hello.ts ≈ [root]/components/buttons/hello.ts",
+    true,
+  )
+  .example("build src/bot -i")
+  .example('build --include "**/*.{ts,tsx}"')
+  .example("build -p 8080 -e /api/bot")
+  .example("build bot --no-flat-components")
   .action(
-    async ({
-      instance,
-      register,
-      endpoint,
-      port,
+    async (
       root,
-      include,
-    }: {
-      instance?: boolean;
-      register?: boolean;
-      endpoint?: string;
-      port?: number;
-      root?: string;
-      include?: string[];
-    }) => {
+      {
+        instance,
+        register,
+        endpoint,
+        include,
+        ...options
+      }: {
+        instance?: boolean;
+        register?: boolean;
+        endpoint: string;
+        port: string;
+        include: string | string[];
+        "flat-components": boolean;
+      },
+    ) => {
+      const port = Number.parseInt(options.port, 10);
+
+      if (Number.isNaN(port) || port < 0 || port > 65_535) {
+        throw new Error("Port must be a valid TCP/IP network port number (0-65535)");
+      }
+
       const { commands, components, events, configPath } = await build({
         server: { endpoint, port },
-        build: { root, include },
+        build: {
+          root,
+          include: typeof include === "string" ? [include] : include,
+          flatComponents: options["flat-components"],
+        },
       });
       const categories = [commands, components, events];
       const outputContent = `
@@ -76,8 +89,7 @@ ${instance ? "createServer(commands, components, events);" : ""}`.trim();
         instance ? `\n${instancePrefix} Starts a server instance` : "",
         register ? "\n└ Registers commands" : "",
       );
-      exit();
     },
   );
 
-program.parse();
+program.parse(process.argv);

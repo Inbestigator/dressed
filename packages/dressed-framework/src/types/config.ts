@@ -5,6 +5,12 @@ export interface DressedConfig extends CoreDressedConfig {
   /** Build configuration */
   build?: {
     /**
+     * Look for component handler folders within the root.
+     * If true, `./src/buttons/hello.ts` ≈ `./src/components/buttons/hello.ts`
+     * @default true
+     */
+    flatComponents?: boolean;
+    /**
      * Source root for the bot
      * @default "src"
      */
