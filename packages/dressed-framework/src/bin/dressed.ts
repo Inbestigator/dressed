@@ -2,6 +2,7 @@
 
 import { existsSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { exit } from "node:process";
 import { bulkOverwriteGuildCommands } from "dressed";
 import type { CommandData } from "dressed/server";
 import { logger } from "dressed/utils";
@@ -38,8 +39,8 @@ program
         instance,
         register,
         endpoint,
-        include,
         port: rawPort,
+        include,
         "flat-components": flatComponents,
       }: {
         instance?: boolean;
@@ -58,11 +59,7 @@ program
 
       const { commands, components, events, configPath } = await build({
         server: { endpoint, port },
-        build: {
-          root,
-          include: typeof include === "string" ? [include] : include,
-          flatComponents,
-        },
+        build: { root, include: typeof include === "string" ? [include] : include, flatComponents },
       });
       const categories = [commands, components, events];
       const outputContent = `
@@ -110,13 +107,13 @@ ${instance ? "createServer(commands, components, events);" : ""}`.trim();
       writeFileSync(".dressed/index.d.ts", typeContent);
       rmSync(".dressed/tmp", { recursive: true, force: true });
 
-      const instancePrefix = register ? "├" : "└";
-
       logger.succeed(
         "Assembled generated build",
-        instance ? `\n${instancePrefix} Starts a server instance` : "",
+        instance ? `\n${register ? "├" : "└"} Starts a server instance` : "",
         register ? "\n└ Registers commands" : "",
       );
+
+      exit();
     },
   );
 

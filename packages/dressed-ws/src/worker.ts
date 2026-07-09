@@ -171,7 +171,7 @@ function connectShard(url: string, config: ShardConfig, resume?: { sessionId: st
       }
       // biome-ignore lint/suspicious/noFallthroughSwitchClause: Intended to fall through
       // biome-ignore lint/suspicious/useDefaultSwitchClauseLast: It's falling through
-      default: // NOSONAR
+      default:
         if (resumeData && seq !== null) {
           connectShard(resumeData.resume_gateway_url, config, { seq, sessionId: resumeData.session_id });
           break;

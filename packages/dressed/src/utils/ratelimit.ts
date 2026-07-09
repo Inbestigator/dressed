@@ -93,7 +93,7 @@ export function checkLimit(req: Request, bucketTTL: number) {
           bucket.limit = limit;
           bucket.remaining = remaining;
           bucket.refresh = Date.now() + refreshAfter;
-          bucket.promise = tmpBucket ? bucket.promise.then(() => tmpBucket.promise) : bucket.promise; // NOSONAR
+          bucket.promise = tmpBucket ? bucket.promise.then(() => tmpBucket.promise) : bucket.promise;
 
           clearTimeout(bucket.cleaner);
           if (bucketTTL !== -1) {
