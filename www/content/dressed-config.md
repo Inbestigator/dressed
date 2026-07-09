@@ -94,9 +94,7 @@ The build object is only available when using the config with the framework. The
 
 #### Include flat components
 
-Look for component handler folders within the root of the project (e.g. `src`, see build root).
-
-If true, `./src/buttons/hello.ts` = `./src/components/buttons/hello.ts`
+Look for component handler folders within the root of the project (e.g. `src`, see [build root](#build-root)). The default is `true` and as such, `./src/buttons/hello.ts` ≈ `./src/components/buttons/hello.ts`
 
 #### Build root
 
