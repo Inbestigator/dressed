@@ -13,7 +13,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { cwd } from "node:process";
+import { cwd, exit } from "node:process";
 import { pipeline } from "node:stream/promises";
 import { cancel, intro, isCancel, outro, password, select, spinner, text } from "@clack/prompts";
 import { parse } from "dotenv";
@@ -32,7 +32,8 @@ const program = sade("create-dressed [name] [template]")
         validate: (value) => (!value?.length ? "Value is required!" : undefined),
       });
       if (isCancel(value)) {
-        return cancel("Operation cancelled.");
+        cancel("Operation cancelled.");
+        exit(1);
       }
       name = value;
     }
@@ -69,7 +70,8 @@ const program = sade("create-dressed [name] [template]")
         options: nodeProjects.map((p) => ({ label: p, value: `node/${p}` })),
       });
       if (isCancel(value)) {
-        return cancel("Operation cancelled.");
+        cancel("Operation cancelled.");
+        exit(1);
       }
       template = value;
     }
@@ -89,7 +91,8 @@ const program = sade("create-dressed [name] [template]")
       for (const [k, v] of Object.entries(parse(envExample))) {
         const value = await (/TOKEN|PASSWORD|KEY/.test(k) ? password : text)({ message: k, initialValue: v });
         if (isCancel(value)) {
-          return cancel("Operation cancelled.");
+          cancel("Operation cancelled.");
+          exit(1);
         }
         envVars.push([k, value]);
       }
@@ -101,6 +104,8 @@ const program = sade("create-dressed [name] [template]")
     cpSync(templateDir, join(cwd(), name), { recursive: true });
 
     outro("Project created successfully!");
+
+    exit();
   });
 
 program.parse(process.argv);
