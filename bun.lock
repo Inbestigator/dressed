@@ -24,7 +24,7 @@
     },
     "packages/dressed": {
       "name": "dressed",
-      "version": "2.0.0-rc.3",
+      "version": "2.0.0-rc.4",
       "dependencies": {
         "discord-api-types": "^0.38.49",
         "magic-bytes.js": "^1.12.1",
@@ -32,7 +32,7 @@
     },
     "packages/dressed-framework": {
       "name": "@dressed/framework",
-      "version": "0.5.0",
+      "version": "0.6.0-rc.1",
       "bin": {
         "dressed": "dist/bin/dressed.js",
       },
@@ -109,7 +109,7 @@
         "@types/react-dom": "^19.2.3",
         "postcss": "^8.5.16",
         "tailwindcss": "^4.3.2",
-        "typescript": "^7.0.2",
+        "typescript": "^6",
       },
     },
   },
@@ -929,6 +929,8 @@
     "@tailwindcss/oxide-wasm32-wasi/@tybys/wasm-util": ["@tybys/wasm-util@0.10.3", "", { "dependencies": { "tslib": "^2.4.0" }, "bundled": true }, "sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg=="],
 
     "@tailwindcss/oxide-wasm32-wasi/tslib": ["tslib@2.8.1", "", { "bundled": true }, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
+
+    "dressed-site/typescript": ["typescript@6.0.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 
     "next/postcss": ["postcss@8.4.31", "", { "dependencies": { "nanoid": "^3.3.6", "picocolors": "^1.0.0", "source-map-js": "^1.0.2" } }, "sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ=="],
 
