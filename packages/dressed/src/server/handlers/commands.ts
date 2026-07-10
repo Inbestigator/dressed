@@ -71,7 +71,9 @@ export async function registerCommands(commands: Record<string, CommandData>) {
  * Creates the command handler
  * @returns A function that runs a command
  */
-export const setupCommands = createHandlerSetup<CommandData, CommandInteraction | CommandAutocompleteInteraction>({
+export const setupCommands: ReturnType<
+  typeof createHandlerSetup<CommandData, CommandInteraction | CommandAutocompleteInteraction>
+> = createHandlerSetup({
   itemMessages: (interaction) => ({
     noItem: `No command handler for "${interaction.data.name}"`,
     pending: () =>

@@ -13,7 +13,7 @@ export function createHandlerSetup<
   ParsedData extends BaseData<CallableFunction>,
   Data,
   Props extends unknown[] = [Data],
-  T extends Record<string, ParsedData> | Record<string, Record<string, ParsedData>> = Record<string, ParsedData>,
+  T extends Record<string, unknown> = Record<string, ParsedData>,
 >(options: {
   itemMessages: ((d: Data) => SetupItemMessages<ParsedData, Props>) | SetupItemMessages<ParsedData, Props>;
   findItem: (

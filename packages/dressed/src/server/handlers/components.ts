@@ -3,6 +3,12 @@ import type { ComponentInteraction, ModalInteraction } from "../../types/interac
 import { createHandlerSetup } from "./index.ts";
 
 type Data = ComponentInteraction | ModalInteraction;
+type CategoryHandlerSetup = typeof createHandlerSetup<
+  ComponentData<Category>,
+  Data,
+  [Data, Record<string, string>],
+  { [K in Category]?: Record<string, ComponentData<K>> }
+>;
 
 function getCategory(interaction: Data) {
   if (interaction.type === 5) return "modals";
@@ -13,12 +19,7 @@ function getCategory(interaction: Data) {
  * Creates the component handler
  * @returns A function that runs a component
  */
-export const setupComponents = createHandlerSetup<
-  ComponentData<Category>,
-  Data,
-  [Data, Record<string, string>],
-  { [K in Category]?: Record<string, ComponentData<K>> }
->({
+export const setupComponents: ReturnType<CategoryHandlerSetup> = (createHandlerSetup as CategoryHandlerSetup)({
   itemMessages(interaction) {
     const category = getCategory(interaction).slice(0, -1);
     return {
