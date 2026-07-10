@@ -1,13 +1,26 @@
+import { createHash } from "node:crypto";
 import { appendFileSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, extname, join, resolve } from "node:path";
 import { getApp } from "dressed";
 import { botEnv, config as dressedConfig, logger } from "dressed/utils";
 import type { DressedConfig } from "../types/config.ts";
+import type { WalkEntry } from "../types/walk.ts";
 import bundleFiles from "./bundle.ts";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";
 import { parseEvents } from "./parsers/events.ts";
-import { crawlDir, generateCategoryExports, generateFileImport } from "./utils.ts";
+import { crawlDir, generateFileImport } from "./utils.ts";
+
+const hash = (v: string) => createHash("sha1").update(v).digest("hex");
+
+function generateCategoryExports(categories: WalkEntry[][]) {
+  return categories.map(
+    (c, i) =>
+      `export const ${["commands", "components", "events"][i]} = [${c.map((f) =>
+        JSON.stringify({ ...f, exports: null }).replace('"exports":null', `"exports":h${hash(f.path)}`),
+      )}];`,
+  );
+}
 
 /**
  * Builds the bot imports and other variables.

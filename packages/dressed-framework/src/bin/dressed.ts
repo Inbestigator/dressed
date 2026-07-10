@@ -4,7 +4,6 @@ import { existsSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { exit } from "node:process";
 import { bulkOverwriteGuildCommands } from "dressed";
-import type { CommandData } from "dressed/server";
 import { logger } from "dressed/utils";
 import sade from "sade";
 import build from "../build/build.ts";
@@ -71,7 +70,16 @@ ${
 import { config as dressedConfig } from "dressed/utils";
 import config from "${configPath ? normalizeImportPath(configPath) : "./dressed.config.mjs"}";
 Object.assign(dressedConfig, config);
-${[categories.map((c) => c.map(generateFileImport)), generateCategoryExports(categories)].flat(2).join("")}
+${[
+  categories.map((c, i) =>
+    Object.values(c)
+      .flatMap((f) => (i === 1 ? Object.values(f) : f))
+      .map(generateFileImport),
+  ),
+  generateCategoryExports(categories),
+]
+  .flat(2)
+  .join("")}
 export { config };
 ${register ? "registerCommands(commands);" : ""}
 ${instance ? "createServer(commands, components, events);" : ""}`.trim();
@@ -82,12 +90,12 @@ ${instance ? "createServer(commands, components, events);" : ""}`.trim();
 
       // Deregister guild commands if they're going away
       if (register && existsSync(outPath)) {
-        const { commands: prevCommands } = (await import(resolve(outPath))) as { commands: CommandData[] };
+        const { commands: prevCommands } = (await import(resolve(outPath))) as { commands: typeof commands };
         const promiseMap: Record<string, Promise<unknown>> = {};
-        for (const prev of prevCommands) {
-          if (prev.exports.config?.guilds) {
-            const curr = commands.find((c) => c.name === prev.name);
-            const diff = prev.exports.config.guilds.filter((g) => !curr?.exports.config?.guilds?.includes(g));
+        for (const [name, prev] of Object.entries(prevCommands)) {
+          if (prev.config?.guilds) {
+            const curr = commands[name];
+            const diff = prev.config.guilds.filter((g) => !curr?.config?.guilds?.includes(g));
             for (const guild of diff) {
               promiseMap[guild] ??= bulkOverwriteGuildCommands(guild, []);
             }

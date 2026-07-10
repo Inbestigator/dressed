@@ -2,6 +2,7 @@ import type {
   APIInteraction,
   APIWebhookEventBody,
   ApplicationCommandType,
+  ApplicationWebhookEventType,
   InteractionContextType,
   PermissionFlagsBits,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
@@ -11,8 +12,15 @@ import type {
 } from "discord-api-types/v10";
 import type { createServer } from "../server/server.ts";
 import type { botEnv } from "../utils/env.ts";
+import type { Event } from "./event.ts";
 import type { CommandHandler, ComponentHandler, EventHandler } from "./handlers.ts";
-import type { Interaction } from "./interaction.ts";
+import type {
+  CommandAutocompleteInteraction,
+  CommandInteraction,
+  ComponentInteraction,
+  Interaction,
+  ModalInteraction,
+} from "./interaction.ts";
 import type { Promisable } from "./utilities.ts";
 
 /** Optional extra config for the layer before fetch. */
@@ -173,20 +181,30 @@ type PrimaryEntryPointConfig = CommandTypeConfig<
 /** Configuration for a specific command. */
 export type CommandConfig = ChatInputConfig | ContextMenuConfig | PrimaryEntryPointConfig;
 
-export interface BaseData<M extends object = object> {
-  name: string;
-  exports: M & { default: CallableFunction };
-}
+export type BaseData<D extends CallableFunction> = { default: D };
 
 /** A standard command data object. */
-export type CommandData = BaseData<{ autocomplete?: CallableFunction; config?: CommandConfig }>;
+export interface CommandData extends BaseData<(interaction: CommandInteraction) => unknown> {
+  autocomplete?: (interaction: CommandAutocompleteInteraction) => unknown;
+  config?: CommandConfig;
+}
+
+export type Category = "buttons" | "modals" | "selects";
 
 /** A standard component data object. */
-export interface ComponentData extends BaseData<{ pattern?: string | RegExp }> {
-  data: { category: "buttons" | "modals" | "selects"; regex: string };
+export interface ComponentData<T extends Category = Category>
+  extends BaseData<
+    (interaction: T extends "modals" ? ModalInteraction : ComponentInteraction, args: Record<string, string>) => unknown
+  > {
+  /** In the component object, the key of this item is actually the regex that will be parsed, the name param is a human-readable version that's used when logging
+   *
+   * @example const components = { buttons: { "^foo-(.+)$": { name: "foo", default() {} } } }
+   */
+  name: string;
+  pattern?: string | RegExp;
 }
 
+type EventType = keyof typeof ApplicationWebhookEventType;
+
 /** A standard event data object. */
-export interface EventData extends BaseData {
-  data: { type: string };
-}
+export type EventData<T extends EventType = EventType> = BaseData<(event: Event<T>) => unknown>;

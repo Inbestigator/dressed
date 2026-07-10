@@ -1,4 +1,4 @@
-import type { ComponentData } from "../../types/config.ts";
+import type { Category, ComponentData } from "../../types/config.ts";
 import type { ComponentInteraction, ModalInteraction } from "../../types/interaction.ts";
 import { createHandlerSetup } from "./index.ts";
 
@@ -13,9 +13,12 @@ function getCategory(interaction: Data) {
  * Creates the component handler
  * @returns A function that runs a component
  */
-export const setupComponents: ReturnType<
-  typeof createHandlerSetup<ComponentData, Data, [Data, Record<string, string>]>
-> = createHandlerSetup({
+export const setupComponents = createHandlerSetup<
+  ComponentData<Category>,
+  Data,
+  [Data, Record<string, string>],
+  { [K in Category]?: Record<string, ComponentData<K>> }
+>({
   itemMessages(interaction) {
     const category = getCategory(interaction).slice(0, -1);
     return {
@@ -26,12 +29,11 @@ export const setupComponents: ReturnType<
       },
     };
   },
-  findItem(interaction, items) {
+  findItem(interaction, items, key) {
     const category = getCategory(interaction);
-    for (const item of items) {
-      if (item.data.category !== category) continue;
-      const match = new RegExp(item.data.regex).exec(interaction.data.custom_id);
-      if (match) return [item, [interaction, match.groups ?? {}]];
+    for (const [regex, item] of Object.entries(items[category] ?? {})) {
+      const match = new RegExp(regex).exec(interaction.data.custom_id);
+      if (match) return [item, item[key], [interaction, match.groups ?? {}]];
     }
   },
 });

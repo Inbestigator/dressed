@@ -5,7 +5,7 @@ import {
   ApplicationWebhookType,
   InteractionType,
 } from "discord-api-types/v10";
-import type { CommandData, ComponentData, DressedConfig, EventData, ServerConfig } from "../types/config.ts";
+import type { DressedConfig, ServerConfig } from "../types/config.ts";
 import type { CommandRunner, ComponentRunner, EventRunner } from "../types/handlers.ts";
 import { config as dressedConfig } from "../utils/env.ts";
 import logger from "../utils/log.ts";
@@ -15,14 +15,18 @@ import { setupComponents } from "./handlers/components.ts";
 import { setupEvents } from "./handlers/events.ts";
 import { verifySignature } from "./signature.ts";
 
+type Commands = CommandRunner | Parameters<typeof setupCommands>[0];
+type Components = ComponentRunner | Parameters<typeof setupComponents>[0];
+type Events = EventRunner | Parameters<typeof setupEvents>[0];
+
 /**
  * Starts a server to handle interactions.
  * @returns The server instance
  */
 export function createServer(
-  commands: CommandRunner | CommandData[],
-  components: ComponentRunner | ComponentData[],
-  events: EventRunner | EventData[],
+  commands: Commands,
+  components: Components,
+  events: Events,
   config: ServerConfig = {},
 ): Server {
   config = { ...dressedConfig.server, ...config };
@@ -74,9 +78,9 @@ export function createServer(
  */
 export async function handleRequest(
   req: Request,
-  commands: CommandRunner | CommandData[],
-  components: ComponentRunner | ComponentData[],
-  events: EventRunner | EventData[],
+  commands: Commands,
+  components: Components,
+  events: Events,
   hooks: Parameters<typeof handleInteraction>[3] & Parameters<typeof handleEvent>[2] = dressedConfig.hooks ?? {},
 ): Promise<Response> {
   const body = await req.text();
@@ -111,8 +115,8 @@ export async function handleRequest(
  * Runs an interaction, takes functions to run commands/components and the interaction body.
  */
 export async function handleInteraction(
-  commands: CommandRunner | CommandData[],
-  components: ComponentRunner | ComponentData[],
+  commands: Commands,
+  components: Components,
   interaction: APIInteraction,
   hooks: Pick<
     NonNullable<ServerConfig["hooks"]>,
@@ -152,7 +156,7 @@ export async function handleInteraction(
  * Runs an event, takes a function to run events and the event body.
  */
 export async function handleEvent(
-  events: EventRunner | EventData[],
+  events: Events,
   event: APIWebhookEvent,
   hooks: Pick<NonNullable<DressedConfig["hooks"]>, "onBeforeEvent" | "onUnknownEvent"> = dressedConfig.hooks ?? {},
 ): Promise<200 | 202 | 404> {

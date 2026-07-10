@@ -37,19 +37,19 @@ function normalizeData(config: CommandConfig) {
 /**
  * Registers application commands to the Discord API
  */
-export async function registerCommands(commands: CommandData[]) {
+export async function registerCommands(commands: Record<string, CommandData>) {
   logger.defer("Registering commands");
 
   const scopes = new Map<string, RESTPutAPIApplicationCommandsJSONBody | RESTPutAPIApplicationGuildCommandsJSONBody>();
 
-  for (const command of commands) {
-    const config = normalizeData(command.exports.config ?? ({} as CommandConfig));
+  for (const [name, command] of Object.entries(commands)) {
+    const config = normalizeData(command.config ?? ({} as CommandConfig));
     for (const scope of config.guilds ?? ["global"]) {
       scopes.set(
         scope,
         (scopes.get(scope) ?? []).concat({
           ...config,
-          name: command.name,
+          name,
           type: ApplicationCommandType[config.type as keyof typeof ApplicationCommandType],
         } as RESTPostAPIApplicationCommandsJSONBody),
       );
@@ -71,18 +71,16 @@ export async function registerCommands(commands: CommandData[]) {
  * Creates the command handler
  * @returns A function that runs a command
  */
-export const setupCommands: ReturnType<
-  typeof createHandlerSetup<CommandData, CommandInteraction | CommandAutocompleteInteraction>
-> = createHandlerSetup({
+export const setupCommands = createHandlerSetup<CommandData, CommandInteraction | CommandAutocompleteInteraction>({
   itemMessages: (interaction) => ({
     noItem: `No command handler for "${interaction.data.name}"`,
-    pending: (item) =>
-      `Running${interaction.type === InteractionType.ApplicationCommandAutocomplete ? " autocomplete for " : " "}command "${item.name}"`,
+    pending: () =>
+      `Running${interaction.type === InteractionType.ApplicationCommandAutocomplete ? " autocomplete for " : " "}command "${interaction.data.name}"`,
   }),
-  findItem(interaction, items) {
-    const item = items.find((i) => i.name === interaction.data.name);
-    if (!item) return;
-    return [item, [interaction]];
+  findItem(interaction, items, key) {
+    const item = items[interaction.data.name];
+    if (!item?.[key]) return;
+    return [item, item[key], [interaction]];
   },
   cleanup: (interaction, v) =>
     interaction.type === InteractionType.ApplicationCommandAutocomplete &&
