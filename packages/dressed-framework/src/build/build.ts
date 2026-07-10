@@ -76,7 +76,7 @@ export default async function build(
       components,
       config.build?.flatComponents !== false && flatComponents.length ? [componentsBase, root] : componentsBase,
     ),
-    events: parseEvents(events, join(root, "commands")),
+    events: parseEvents(events, join(root, "events")),
     config,
     configPath,
   };
