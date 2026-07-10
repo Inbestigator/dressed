@@ -1,8 +1,8 @@
 import type { ComponentData } from "../../types/config.ts";
-import type { MessageComponentInteraction, ModalSubmitInteraction } from "../../types/interaction.ts";
+import type { ComponentInteraction, ModalInteraction } from "../../types/interaction.ts";
 import { createHandlerSetup } from "./index.ts";
 
-type Data = MessageComponentInteraction | ModalSubmitInteraction;
+type Data = ComponentInteraction | ModalInteraction;
 
 function getCategory(interaction: Data) {
   if (interaction.type === 5) return "modals";

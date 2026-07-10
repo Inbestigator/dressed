@@ -2,8 +2,8 @@ import type { ApplicationCommandType } from "discord-api-types/v10";
 import {
   type CommandConfig,
   type CommandInteraction as DressedCommandInteraction,
-  type MessageComponentInteraction as DressedMessageComponentInteraction,
-  type ModalSubmitInteraction as DressedModalSubmitInteraction,
+  type ComponentInteraction as DressedComponentInteraction,
+  type ModalInteraction as DressedModalInteraction,
   editWebhookMessage,
 } from "dressed";
 import type { createInteraction } from "dressed/server";
@@ -50,7 +50,7 @@ type OverrideMethodParams<T, Overrides extends Record<string, unknown[]>> = {
 // I wish there's a better way to make it just automatically recognize the generic constraints from the original types
 export type CommandInteraction<T extends keyof typeof ApplicationCommandType | CommandConfig = "ChatInput"> =
   ReactivatedInteraction<DressedCommandInteraction<T>>;
-export type MessageComponentInteraction<
+export type ComponentInteraction<
   T extends
     | "Button"
     | "StringSelect"
@@ -59,8 +59,8 @@ export type MessageComponentInteraction<
     | "MentionableSelect"
     | "ChannelSelect"
     | undefined = undefined,
-> = ReactivatedInteraction<DressedMessageComponentInteraction<T>>;
-export type ModalSubmitInteraction = ReactivatedInteraction<DressedModalSubmitInteraction>;
+> = ReactivatedInteraction<DressedComponentInteraction<T>>;
+export type ModalInteraction = ReactivatedInteraction<DressedModalInteraction>;
 
 /**
  * Override interaction methods to accept React components

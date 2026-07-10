@@ -7,9 +7,9 @@ import {
 } from "discord-api-types/v10";
 import type {
   CommandInteraction,
+  ComponentInteraction,
   Interaction,
-  MessageComponentInteraction,
-  ModalSubmitInteraction,
+  ModalInteraction,
 } from "../../types/interaction.ts";
 import { getField } from "./fields.ts";
 import { getFocused, parseOptions } from "./options.ts";
@@ -45,7 +45,7 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
       return { ...input, ...methods } as CommandInteraction<keyof typeof ApplicationCommandType> as Interaction<T>;
     }
     case InteractionType.MessageComponent: {
-      return { ...input, ...methods, values: parseValues(input) } as MessageComponentInteraction as Interaction<T>;
+      return { ...input, ...methods, values: parseValues(input) } as ComponentInteraction as Interaction<T>;
     }
     case InteractionType.ModalSubmit: {
       const components: ModalSubmitComponent[] = [];
@@ -63,7 +63,7 @@ export function createInteraction<T extends APIInteraction>(input: T): Interacti
         ...input,
         ...methods,
         getField: (c, r) => getField(c, r ?? false, components, input.data.resolved),
-      } as ModalSubmitInteraction as Interaction<T>;
+      } as ModalInteraction as Interaction<T>;
     }
   }
 }

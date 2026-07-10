@@ -1,6 +1,6 @@
-import { type MessageComponentInteraction, type ModalSubmitInteraction, patchInteraction } from "./interaction.ts";
+import { type ComponentInteraction, type ModalInteraction, patchInteraction } from "./interaction.ts";
 
-type Handler = ((i: MessageComponentInteraction) => unknown) | ((i: ModalSubmitInteraction) => unknown);
+type Handler = ((i: ComponentInteraction) => unknown) | ((i: ModalInteraction) => unknown);
 
 export const handlers = new Map<string, Handler & { $handlerCleaner?: NodeJS.Timeout }>();
 
@@ -12,10 +12,7 @@ export const pattern = "@dressed/react-handler-:handlerId{-:fallback}";
 export function createCallbackHandler<T extends Record<string, Handler> = {}>(fallbacks: T = {} as T) {
   for (const key in fallbacks) handlers.set(key, fallbacks[key]);
   return Object.assign(
-    async (
-      interaction: MessageComponentInteraction | ModalSubmitInteraction,
-      args: { handlerId: string; fallback?: string },
-    ) => {
+    async (interaction: ComponentInteraction | ModalInteraction, args: { handlerId: string; fallback?: string }) => {
       const handler = handlers.get(args.handlerId) ?? handlers.get(args.fallback ?? "default");
       // @ts-expect-error
       interaction = interaction.$patched === Symbol.for("@dressed/react") ? interaction : patchInteraction(interaction);

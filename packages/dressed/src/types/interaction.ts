@@ -191,7 +191,7 @@ interface ResolvedSelectValues {
 /**
  * A message component interaction, includes methods for responding to the interaction.
  */
-export type MessageComponentInteraction<T extends "Button" | keyof ResolvedSelectValues | undefined = undefined> =
+export type ComponentInteraction<T extends "Button" | keyof ResolvedSelectValues | undefined = undefined> =
   APIMessageComponentInteraction &
     Omit<BaseInteractionMethods, "sendChoices"> & {
       data: { component_type: T extends string ? (typeof ComponentType)[T] : unknown };
@@ -208,7 +208,7 @@ export type MessageComponentInteraction<T extends "Button" | keyof ResolvedSelec
 /**
  * A modal submit interaction, includes methods for responding to the interaction.
  */
-export type ModalSubmitInteraction = APIModalSubmitInteraction &
+export type ModalInteraction = APIModalSubmitInteraction &
   Omit<BaseInteractionMethods, "showModal" | "sendChoices"> & {
     /**
      * Get a field from the user's submission
@@ -318,7 +318,7 @@ export type Interaction<T extends APIInteraction> = T extends APIApplicationComm
   : T extends APIApplicationCommandAutocompleteInteraction
     ? CommandAutocompleteInteraction
     : T extends APIMessageComponentInteraction
-      ? MessageComponentInteraction
+      ? ComponentInteraction
       : T extends APIModalSubmitInteraction
-        ? ModalSubmitInteraction
+        ? ModalInteraction
         : null;

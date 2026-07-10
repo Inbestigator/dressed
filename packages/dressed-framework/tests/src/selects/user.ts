@@ -1,5 +1,5 @@
-import type { MessageComponentInteraction } from "dressed";
+import type { ComponentInteraction } from "dressed";
 
-export default async function (interaction: MessageComponentInteraction<"RoleSelect">) {
+export default async function (interaction: ComponentInteraction<"RoleSelect">) {
   console.log(interaction.values);
 }
