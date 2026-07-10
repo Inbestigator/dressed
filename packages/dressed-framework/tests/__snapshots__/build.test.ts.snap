@@ -2,61 +2,46 @@
 
 exports[`Build bot 1`] = `
 {
-  "commands": [
-    {
-      "data": undefined,
-      "exports": {
-        "config": [native code],
-        "default": [native code],
+  "commands": {
+    "ping": {
+      "config": {
+        "description": "Replies with Pong!",
       },
-      "name": "ping",
+      "default": [Function: AsyncFunction],
       "path": "tests/src/commands/ping.ts",
     },
-  ],
-  "components": [
-    {
-      "data": {
-        "category": "selects",
-        "regex": "^user$",
-        "score": 1,
-      },
-      "exports": {
-        "default": [native code],
-      },
-      "name": "user",
-      "path": "tests/src/selects/user.ts",
-    },
-    {
-      "data": {
-        "category": "buttons",
-        "regex": "^button_(?<arg>.+?)$",
+  },
+  "components": {
+    "buttons": {
+      "^button_(?<arg>.+?)$": {
+        "default": [Function: AsyncFunction],
+        "name": "button",
+        "path": "tests/src/components/buttons/button.ts",
+        "pattern": "button_:arg",
         "score": 0.4583333333333333,
       },
-      "exports": {
-        "default": [native code],
-        "pattern": [native code],
-      },
-      "name": "button",
-      "path": "tests/src/components/buttons/button.ts",
     },
-  ],
+    "selects": {
+      "^user$": {
+        "default": [Function: AsyncFunction],
+        "name": "user",
+        "path": "tests/src/selects/user.ts",
+        "score": 1,
+      },
+    },
+  },
   "config": {
     "build": {
       "root": "tests/src",
     },
   },
   "configPath": undefined,
-  "events": [
-    {
-      "data": {
-        "type": "APPLICATION_AUTHORIZED",
-      },
-      "exports": {
-        "default": [native code],
-      },
+  "events": {
+    "APPLICATION_AUTHORIZED": {
+      "default": [Function: u],
       "name": "ApplicationAuthorized",
       "path": "tests/src/events/ApplicationAuthorized.ts",
     },
-  ],
+  },
 }
 `;

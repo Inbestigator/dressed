@@ -63,7 +63,7 @@ export function createHandlerParser<
             cause: "dressed-parsing",
           });
         }
-        const value = { ...file, ...file.exports, ...data } as T;
+        const value = { path: file.path, ...file.exports, ...data } as T;
         // @ts-expect-error The type specifies the structure but isn't visible to this fn
         items[keys[0]] ??= {};
         // @ts-expect-error
