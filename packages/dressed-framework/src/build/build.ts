@@ -7,7 +7,7 @@ import bundleFiles from "./bundle.ts";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";
 import { parseEvents } from "./parsers/events.ts";
-import { crawlDir, generateCategoryExports, generateFileImport } from "./utils.ts";
+import { crawlDir, generateFileImport, hash } from "./utils.ts";
 
 /**
  * Builds the bot imports and other variables.
@@ -46,7 +46,17 @@ export default async function build(
 
   writeFileSync(
     entriesPath,
-    [files.map((c) => c.map(generateFileImport)), generateCategoryExports(files)].flat(2).join(""),
+    [
+      files.map((c) => c.map(generateFileImport)),
+      files.map(
+        (c, i) =>
+          `export const ${[...categories.slice(0, 2), categories[5]][i]} = [${c.map((f) =>
+            JSON.stringify({ ...f, exports: null }).replace('"exports":null', `...h${hash(f.path)}`),
+          )}];`,
+      ),
+    ]
+      .flat(2)
+      .join(""),
   );
 
   logger.defer("Bundling handlers");
@@ -63,7 +73,7 @@ export default async function build(
       components,
       config.build?.flatComponents !== false && flatComponents.length ? [componentsBase, root] : componentsBase,
     ),
-    events: parseEvents(events, join(root, "commands")),
+    events: parseEvents(events, join(root, "events")),
     config,
     configPath,
   };

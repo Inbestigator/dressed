@@ -7,19 +7,30 @@ interface SetupItemMessages<T, P> {
   pending: (data: T, props: P) => string;
 }
 
-export function createHandlerSetup<T extends BaseData, D, P extends unknown[] = [D]>(options: {
-  itemMessages: ((d: D) => SetupItemMessages<T, P>) | SetupItemMessages<T, P>;
-  findItem: (d: D, i: T[]) => [T, P] | undefined;
-  cleanup?: (d: D, v: unknown) => unknown;
+type FunctionKeys<T> = Required<{ [K in keyof T]: NonNullable<T[K]> extends CallableFunction ? K : never }>[keyof T];
+
+export function createHandlerSetup<
+  ParsedData extends BaseData<CallableFunction>,
+  Data,
+  Props extends unknown[] = [Data],
+  T extends Record<string, unknown> = Record<string, ParsedData>,
+>(options: {
+  itemMessages: ((d: Data) => SetupItemMessages<ParsedData, Props>) | SetupItemMessages<ParsedData, Props>;
+  findItem: (
+    d: Data,
+    i: T,
+    k: FunctionKeys<ParsedData>,
+  ) => [ParsedData, Extract<ParsedData[keyof ParsedData], CallableFunction>, Props] | undefined;
+  cleanup?: (d: Data, v: unknown) => unknown;
 }): (
-  i: T[],
+  i: T,
 ) => (
-  d: D,
-  h: { unknown?: (...p: [D]) => unknown; before?: (...p: P) => Promisable<unknown[] | undefined> },
-  k: keyof NonNullable<T["exports"]>,
+  d: Data,
+  h: { unknown?: (data: Data) => unknown; before?: (...p: Props) => Promisable<unknown[] | undefined> },
+  k: FunctionKeys<ParsedData>,
 ) => Promise<void> {
   return (items) => async (data, hooks, key) => {
-    const [item, props] = options.findItem(data, items) ?? [];
+    const [item, handler, props] = options.findItem(data, items, key) ?? [];
     let itemMessages = options.itemMessages;
 
     if (typeof itemMessages === "function") {
@@ -35,7 +46,6 @@ export function createHandlerSetup<T extends BaseData, D, P extends unknown[] = 
     logger.defer(pendingText);
 
     try {
-      const handler = item.exports[key as keyof typeof item.exports];
       if (!handler) throw new Error(`Unable to find '${String(key)}' in exports`);
       const res = await handler(...((await hooks.before?.(...props)) ?? props));
       await options.cleanup?.(data, res);

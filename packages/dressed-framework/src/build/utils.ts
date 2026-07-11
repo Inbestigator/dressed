@@ -6,7 +6,8 @@ import { logger } from "dressed/utils";
 import glob from "fast-glob";
 import type { WalkEntry } from "../types/walk.ts";
 
-const hash = (v: string) => createHash("sha1").update(v).digest("hex");
+/** Used for turning paths into a unique ID */
+export const hash = (v: string) => createHash("sha1").update(v).digest("hex");
 
 /** @returns Import string-able {@link path} relative to the `.dressed` folder */
 export function normalizeImportPath(path: string) {
@@ -17,13 +18,19 @@ export function generateFileImport(file: WalkEntry) {
   return `import * as h${hash(file.path)} from "${normalizeImportPath(file.path)}";` as const;
 }
 
+type EntryObject = Record<string, WalkEntry | Record<string, WalkEntry>>;
+
 /** @returns ESM exports for the input {@link categories} */
-export function generateCategoryExports(categories: WalkEntry[][]) {
+export function generateCategoryExports(categories: EntryObject[]) {
   return categories.map(
-    (c, i) =>
-      `export const ${["commands", "components", "events"][i]} = [${c.map((f) =>
-        JSON.stringify({ ...f, exports: null }).replace('"exports":null', `"exports":h${hash(f.path)}`),
-      )}];`,
+    (c, i) => `export const ${["commands", "components", "events"][i]} = {${encodeObject(c, i === 1)}};`,
+  );
+}
+
+function encodeObject(entries: EntryObject, encodeChildren?: boolean): string[] {
+  return Object.entries(entries).map(
+    ([k, f]) =>
+      `${JSON.stringify(k)}:${encodeChildren ? `{${encodeObject(f as EntryObject)}}` : JSON.stringify({ name: f.name, exports: null }).replace('"exports":null', `...h${hash((f as WalkEntry).path)}`)}`,
   );
 }
 

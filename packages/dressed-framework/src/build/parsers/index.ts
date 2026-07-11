@@ -9,24 +9,28 @@ interface ParserItemMessages {
   cols?: string[];
 }
 
-type ImportedEntry<T extends BaseData> = WalkEntry & { exports: T["exports"] };
-type EntriesAnd<T> = (WalkEntry & T)[];
-type BDWithData<T> = BaseData & { data?: T };
+type ImportedEntry<T extends Record<string, unknown>> = WalkEntry & T;
 
-export function createHandlerParser<T extends BDWithData<Record<keyof T["data"], unknown> | undefined>>(options: {
+export function createHandlerParser<
+  T extends BaseData<CallableFunction>,
+  Out extends Record<string, unknown> | Record<string, Record<string, unknown>>,
+  Exports extends keyof T = "default",
+  D = Omit<T, Exports>,
+>(options: {
   colNames: string[];
-  uniqueKeys?: (keyof T["data"])[];
-  itemMessages: ((file: ImportedEntry<T>, base: string) => ParserItemMessages) | ParserItemMessages;
-  createData: (file: ImportedEntry<T>, base: string, tree: ReturnType<typeof logTree>) => T["data"];
-  postMortem?: (items: EntriesAnd<T>) => EntriesAnd<T>;
-}): (files: ImportedEntry<T>[], base: string | string[]) => EntriesAnd<T> {
+  itemMessages: ((file: ImportedEntry<Pick<T, Exports>>, base: string) => ParserItemMessages) | ParserItemMessages;
+  createData: (file: ImportedEntry<Pick<T, Exports>>, base: string, tree: ReturnType<typeof logTree>) => [string[], D];
+  postMortem?: (items: Partial<Out>) => Out;
+  desiredExports?: (keyof T)[];
+}): (files: ImportedEntry<Pick<T, Exports>>[], base: string | string[]) => Out {
   return (files, base) => {
-    if (files.length === 0) return [];
+    if (files.length === 0) return {} as Out;
     const tree = logTree(...options.colNames);
-    let items: EntriesAnd<T> = [];
+    let items: Partial<Out> = {};
 
-    for (const [i, file] of Object.entries(files)) {
-      let data: T["data"];
+    const filesArray = Object.entries(files);
+
+    for (const [i, file] of filesArray) {
       let itemMessages = options.itemMessages;
 
       const usedBase = Array.isArray(base) ? base.find((b) => file.path.startsWith(b)) : base;
@@ -48,18 +52,33 @@ export function createHandlerParser<T extends BDWithData<Record<keyof T["data"],
             : file.name,
           ...(itemMessages.cols ?? []),
         );
-        data = options.createData(file, usedBase, tree);
-        const hasConflict = items.some(
-          (item) => options.uniqueKeys?.every((k) => data?.[k] === item.data?.[k]) ?? item.name === file.name,
+        const [keys, data] = options.createData(file, usedBase, tree);
+        const hasConflict = Object.entries(items).some(([key, item]) =>
+          keys?.every((k, i) => (i === 0 ? key === k : item[k])),
         );
         if (hasConflict) {
           throw new Error(`${logger.symbols.warn} ${itemMessages.confict}`, { cause: "dressed-parsing" });
         }
-        if (typeof file.exports.default !== "function") {
+        if (!("default" in file) || typeof file.default !== "function") {
           throw new TypeError(`${logger.symbols.error} Every handler must export a default function, skipping`, {
             cause: "dressed-parsing",
           });
         }
+        const value = {
+          ...Object.fromEntries(
+            (options.desiredExports ?? ["default" as string])
+              .concat("path")
+              .map((k) => (k in file ? [k, file[k as Exports]] : undefined))
+              .filter((e) => !!e),
+          ),
+          ...data,
+        } as unknown as T;
+        // @ts-expect-error The type specifies the structure but isn't visible to this fn
+        items[keys[0]] ??= {};
+        // @ts-expect-error
+        if (keys.length === 1) items[keys[0]] = value;
+        // @ts-expect-error
+        else items[keys[0]][keys[1]] = value;
       } catch (e) {
         function asideErr() {
           const prefix = Number(i) === files.length - 1 ? " " : "│";
@@ -74,15 +93,13 @@ export function createHandlerParser<T extends BDWithData<Record<keyof T["data"],
         }
         asideErr();
         tree.chop();
-        continue;
       }
-      items.push({ ...file, data } as EntriesAnd<T>[number]);
     }
 
     if (options.postMortem) items = options.postMortem(items);
 
     tree.log();
 
-    return items;
+    return items as Out;
   };
 }
