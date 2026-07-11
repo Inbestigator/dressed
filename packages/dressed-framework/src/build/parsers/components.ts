@@ -6,7 +6,7 @@ import type { WalkEntry } from "../../types/walk.ts";
 import { createHandlerParser } from "./index.ts";
 
 type Data = ComponentData & WalkEntry & { score: number };
-type Out = Record<keyof Parameters<typeof setupComponents>[0], Record<string, Data>>;
+type Out = { [K in keyof Parameters<typeof setupComponents>[0]]: Record<string, Data> };
 
 export const parseComponents: ReturnType<typeof createHandlerParser<Data, Out, "default" | "pattern">> =
   createHandlerParser({
