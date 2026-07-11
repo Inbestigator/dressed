@@ -85,7 +85,7 @@ ${register ? "registerCommands(commands);" : ""}
 ${instance ? "createServer(commands, components, events);" : ""}`.trim();
       const jsContent = 'export * from "./index.mjs";';
       const typeContent =
-        'import type { DressedConfig } from "@dressed/framework";import type { CommandData, ComponentData, EventData } from "dressed/server";export declare const commands: CommandData[];export declare const components: ComponentData[];export declare const events: EventData[];export declare const config: DressedConfig;';
+        'import type { DressedConfig } from "@dressed/framework";import type { setupCommands, setupComponents, setupEvents } from "dressed/server";export declare const commands: Parameters<typeof setupCommands>[0];export declare const components: Parameters<typeof setupComponents>[0];export declare const events: Parameters<typeof setupEvents>[0];export declare const config: DressedConfig;';
       const outPath = ".dressed/index.js";
 
       // Deregister guild commands if they're going away

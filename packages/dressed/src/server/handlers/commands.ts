@@ -37,7 +37,7 @@ function normalizeData(config: CommandConfig) {
 /**
  * Registers application commands to the Discord API
  */
-export async function registerCommands(commands: Record<string, CommandData>) {
+export async function registerCommands(commands: Parameters<typeof setupCommands>[0]) {
   logger.defer("Registering commands");
 
   const scopes = new Map<string, RESTPutAPIApplicationCommandsJSONBody | RESTPutAPIApplicationGuildCommandsJSONBody>();
