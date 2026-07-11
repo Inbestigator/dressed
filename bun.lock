@@ -46,6 +46,13 @@
         "dressed": "^2.0.0-canary.1",
       },
     },
+    "packages/dressed-analytics": {
+      "name": "@dressed/analytics",
+      "version": "0.0.0",
+      "peerDependencies": {
+        "dressed": "^1.9.1",
+      },
+    },
     "packages/dressed-matcher": {
       "name": "@dressed/matcher",
       "version": "1.4.0",
@@ -139,6 +146,8 @@
     "@clack/prompts": ["@clack/prompts@1.7.0", "", { "dependencies": { "@clack/core": "1.4.3", "fast-string-width": "^3.0.2", "fast-wrap-ansi": "^0.2.0", "sisteransi": "^1.0.5" } }, "sha512-y7/yvZ2TPAnR9+jnc00klvNNLkJiXFFrQA/hlLCcxA9a2A4zQIOimyFQ9XfwYKiGD1fb5GY8vbKIIgO8d5Tb2A=="],
 
     "@dressed/framework": ["@dressed/framework@workspace:packages/dressed-framework"],
+
+    "@dressed/analytics": ["@dressed/analytics@workspace:packages/dressed-analytics"],
 
     "@dressed/matcher": ["@dressed/matcher@workspace:packages/dressed-matcher"],
 
