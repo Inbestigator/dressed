@@ -6,7 +6,8 @@ import { logger } from "dressed/utils";
 import glob from "fast-glob";
 import type { WalkEntry } from "../types/walk.ts";
 
-const hash = (v: string) => createHash("sha1").update(v).digest("hex");
+/** Used for turning paths into a unique ID */
+export const hash = (v: string) => createHash("sha1").update(v).digest("hex");
 
 /** @returns Import string-able {@link path} relative to the `.dressed` folder */
 export function normalizeImportPath(path: string) {

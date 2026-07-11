@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { appendFileSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, extname, join, resolve } from "node:path";
 import { getApp } from "dressed";
@@ -8,9 +7,7 @@ import bundleFiles from "./bundle.ts";
 import { parseCommands } from "./parsers/commands.ts";
 import { parseComponents } from "./parsers/components.ts";
 import { parseEvents } from "./parsers/events.ts";
-import { crawlDir, generateFileImport } from "./utils.ts";
-
-const hash = (v: string) => createHash("sha1").update(v).digest("hex");
+import { crawlDir, generateFileImport, hash } from "./utils.ts";
 
 /**
  * Builds the bot imports and other variables.
