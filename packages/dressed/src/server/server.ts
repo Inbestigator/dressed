@@ -34,7 +34,7 @@ export function createServer(
   const port = config.port ?? 3000;
   const endpoint = new URL(config.endpoint ?? "/", `http://localhost:${port}`);
   const server = createHttpServer(async (req, res) => {
-    if (req.url !== endpoint.pathname) {
+    if (new URL(req.url ?? "/", endpoint).pathname !== endpoint.pathname) {
       return res.writeHead(404).end();
     } else if (req.method !== "POST") {
       return res.writeHead(405).end();
@@ -60,10 +60,6 @@ export function createServer(
   });
 
   server.listen(port, "0.0.0.0", () => logger.succeed("Bot is now listening on", endpoint.href));
-
-  const shutdown = () => server.close(() => process.exit());
-  process.on("SIGTERM", shutdown);
-  process.on("SIGINT", shutdown);
 
   return server;
 }
