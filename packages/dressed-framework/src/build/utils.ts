@@ -29,7 +29,7 @@ export function generateCategoryExports(categories: EntryObject[]) {
 function encodeObject(entries: EntryObject, encodeChildren?: boolean): string[] {
   return Object.entries(entries).map(
     ([k, f]) =>
-      `${JSON.stringify(k)}:${encodeChildren ? `{${encodeObject(f as EntryObject)}}` : JSON.stringify({ ...f, exports: null }).replace('"exports":null', `...h${hash((f as WalkEntry).path)}`)}`,
+      `${JSON.stringify(k)}:${encodeChildren ? `{${encodeObject(f as EntryObject)}}` : JSON.stringify({ name: f.name, exports: null }).replace('"exports":null', `...h${hash((f as WalkEntry).path)}`)}`,
   );
 }
 

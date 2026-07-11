@@ -8,7 +8,7 @@ import { createHandlerParser } from "./index.ts";
 type Data = ComponentData & WalkEntry & { score: number };
 type Out = Record<keyof Parameters<typeof setupComponents>[0], Record<string, Data>>;
 
-export const parseComponents: ReturnType<typeof createHandlerParser<Data, Out, "pattern" | "default">> =
+export const parseComponents: ReturnType<typeof createHandlerParser<Data, Out, "default" | "pattern">> =
   createHandlerParser({
     colNames: ["Component", "Category"],
     itemMessages({ name, path }, base) {
@@ -18,7 +18,7 @@ export const parseComponents: ReturnType<typeof createHandlerParser<Data, Out, "
         cols: [category ?? ""],
       };
     },
-    createData({ name, path, exports: { pattern = name } = {} }, base) {
+    createData({ name, path, pattern = name }, base) {
       const category = getCategory(path, base);
 
       if (!category) {
@@ -38,6 +38,7 @@ export const parseComponents: ReturnType<typeof createHandlerParser<Data, Out, "
           Object.fromEntries(Object.entries(collection).sort((a, b) => b[1].score - a[1].score)),
         ]),
       ) as Out,
+    desiredExports: ["default"],
   });
 
 const validComponentCategories = new Set(["buttons", "modals", "selects"] as const);

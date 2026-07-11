@@ -31,10 +31,13 @@ export const setupComponents: ReturnType<CategoryHandlerSetup> = (createHandlerS
     };
   },
   findItem(interaction, items, key) {
-    const category = getCategory(interaction);
-    for (const [regex, item] of Object.entries(items[category] ?? {})) {
+    const category = items[getCategory(interaction)] ?? {};
+    for (const regex in category ?? {}) {
       const match = new RegExp(regex).exec(interaction.data.custom_id);
-      if (match) return [item, item[key], [interaction, match.groups ?? {}]];
+      if (match) {
+        const item = category[regex];
+        return [item, item[key] as ComponentData<Category>[typeof key], [interaction, match.groups ?? {}]];
+      }
     }
   },
 });

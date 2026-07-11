@@ -9,18 +9,19 @@ interface ParserItemMessages {
   cols?: string[];
 }
 
-type ImportedEntry<T extends Record<string, unknown>> = WalkEntry & { exports: T };
+type ImportedEntry<T extends Record<string, unknown>> = WalkEntry & T;
 
 export function createHandlerParser<
   T extends BaseData<CallableFunction>,
   Out extends Record<string, unknown> | Record<string, Record<string, unknown>>,
-  Exports extends keyof T,
+  Exports extends keyof T = "default",
   D = Omit<T, Exports>,
 >(options: {
   colNames: string[];
   itemMessages: ((file: ImportedEntry<Pick<T, Exports>>, base: string) => ParserItemMessages) | ParserItemMessages;
   createData: (file: ImportedEntry<Pick<T, Exports>>, base: string, tree: ReturnType<typeof logTree>) => [string[], D];
   postMortem?: (items: Partial<Out>) => Out;
+  desiredExports?: (keyof T)[];
 }): (files: ImportedEntry<Pick<T, Exports>>[], base: string | string[]) => Out {
   return (files, base) => {
     if (files.length === 0) return {} as Out;
@@ -58,12 +59,20 @@ export function createHandlerParser<
         if (hasConflict) {
           throw new Error(`${logger.symbols.warn} ${itemMessages.confict}`, { cause: "dressed-parsing" });
         }
-        if (!("default" in file.exports) || typeof file.exports.default !== "function") {
+        if (!("default" in file) || typeof file.default !== "function") {
           throw new TypeError(`${logger.symbols.error} Every handler must export a default function, skipping`, {
             cause: "dressed-parsing",
           });
         }
-        const value = { path: file.path, ...file.exports, ...data } as T;
+        const value = {
+          ...Object.fromEntries(
+            (options.desiredExports ?? ["default" as string])
+              .concat("path")
+              .map((k) => (k in file ? [k, file[k as Exports]] : undefined))
+              .filter((e) => !!e),
+          ),
+          ...data,
+        } as unknown as T;
         // @ts-expect-error The type specifies the structure but isn't visible to this fn
         items[keys[0]] ??= {};
         // @ts-expect-error

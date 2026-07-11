@@ -17,8 +17,7 @@ exports[`Build bot 1`] = `
         "default": [Function: AsyncFunction],
         "name": "button",
         "path": "tests/src/components/buttons/button.ts",
-        "pattern": "button_:arg",
-        "score": 0.4583333333333333,
+        "score": 0.5833333333333334,
       },
     },
     "selects": {

@@ -17,7 +17,7 @@ function generateCategoryExports(categories: WalkEntry[][]) {
   return categories.map(
     (c, i) =>
       `export const ${["commands", "components", "events"][i]} = [${c.map((f) =>
-        JSON.stringify({ ...f, exports: null }).replace('"exports":null', `"exports":h${hash(f.path)}`),
+        JSON.stringify({ ...f, exports: null }).replace('"exports":null', `...h${hash(f.path)}`),
       )}];`,
   );
 }
