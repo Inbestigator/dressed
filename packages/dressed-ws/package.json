@@ -1,7 +1,7 @@
 {
   "name": "@dressed/ws",
   "version": "0.5.0",
-  "description": "Communicate with the Discord Gateway",
+  "description": "Communicate with the Discord Gateway.",
   "keywords": [
     "dressed",
     "websockets",
