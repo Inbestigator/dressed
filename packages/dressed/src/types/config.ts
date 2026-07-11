@@ -200,7 +200,7 @@ export interface ComponentData<T extends Category = Category>
    *
    * @example const components = { buttons: { "^foo-(.+)$": { name: "foo", default() {} } } }
    */
-  name: string;
+  name?: string;
   pattern?: string | RegExp;
 }
 
