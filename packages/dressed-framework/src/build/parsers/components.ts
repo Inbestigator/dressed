@@ -1,5 +1,5 @@
 import { relative, sep } from "node:path";
-import { patternToRegex, scorePattern } from "@dressed/matcher";
+import { patternToRegex } from "@dressed/matcher";
 import type { ComponentData, setupComponents } from "dressed/server";
 import { logger } from "dressed/utils";
 import type { WalkEntry } from "../../types/walk.ts";
@@ -29,7 +29,7 @@ export const parseComponents: ReturnType<typeof createHandlerParser<Data, Out, "
 
       const { source } = pattern instanceof RegExp ? pattern : patternToRegex(pattern);
 
-      return [[category, source], { name, score: scorePattern(source) }];
+      return [[category, source], { name, score: scoreSource(source) }];
     },
     postMortem: (items) =>
       Object.fromEntries(
@@ -53,4 +53,46 @@ function getCategory(path: string, base: string) {
   if (validComponentCategories.has(category)) return category;
 
   return null;
+}
+
+function scoreSource(source: string) {
+  let literal = 0;
+  let dynamic = 0;
+
+  for (let i = 0; i < source.length; i++) {
+    const c = source[i];
+
+    if (c === "\\") {
+      ++literal;
+      ++i;
+      continue;
+    }
+
+    if (/^[a-zA-Z0-9/_-]$/.test(c)) {
+      ++literal;
+      continue;
+    }
+
+    switch (c) {
+      case ".":
+        dynamic += 3;
+        break;
+      case "*":
+      case "+":
+      case "?":
+        dynamic += 2;
+        break;
+      case "[":
+      case "(":
+      case "{":
+      case "|":
+        dynamic += 1;
+        break;
+    }
+  }
+
+  if (source.startsWith("^")) literal += 2;
+  if (source.endsWith("$")) literal += 2;
+
+  return literal / Math.max(1, literal + dynamic);
 }
