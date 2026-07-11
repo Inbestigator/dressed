@@ -3,16 +3,12 @@
   <h1>Dressed</h1>
 </div>
 
-Dressed is a Discord bot library that allows you to host a bot using the
-[interactions endpoint](https://discord.com/developers/docs/interactions/overview#configuring-an-interactions-endpoint-url) system for Discord.
+Dressed is a lightweight Discord API library that provides everything you need to deploy bots using [interaction endpoints](https://discord.com/developers/docs/interactions/overview#configuring-an-interactions-endpoint-url), making it ideal for serverless platforms like Cloudflare Workers and AWS Lambda.
 
-Discord will send `POST` requests to your bot, instead of the websocket system that other libraries utilize.
+It supports [dynamic component IDs](https://dressed.js.org/docs/components#dynamic-component-ids), allowing a single component handler to process many variations of a component.
 
-One cool feature of Dressed is that you can make **dynamic component IDs**, so that you only need to write one component handler for many different scenarios. 👉 [See more](https://dressed.js.org/docs/components#dynamic-component-ids)
-
-You can find examples of bots ready to deploy on
-[Cloudflare Workers](https://workers.cloudflare.com/), [Vercel](https://vercel.com), and [Deno Deploy](https://deno.com/deploy) in
-[this repo](https://github.com/Inbestigator/dressed-examples).
+You can find example bots and templates in [the examples repo](https://github.com/Inbestigator/dressed-examples), perfect for
+[Cloudflare Workers](https://workers.cloudflare.com), [Vercel](https://vercel.com), and many more platforms.
 
 ## 🚀 Usage
 
@@ -22,9 +18,25 @@ bun add dressed
 
 ```ts
 // index.ts
-import { createMessage } from "dressed";
+import { ActionRow, Button, createMessage } from "dressed";
+import { createServer } from "dressed/server";
 
-createMessage("<CHANNEL_ID>", "Hello from Dressed!");
+await createMessage("<CHANNEL_ID>", {
+  content: "Hello from Dressed!",
+  components: [ActionRow(Button({ custom_id: "click", label: "Click me!" }))],
+});
+
+createServer(
+  {},
+  {
+    buttons: {
+      click: {
+        default: (interaction) => interaction.reply("Hello again!"),
+      },
+    },
+  },
+  {},
+);
 ```
 
 ```sh
@@ -34,4 +46,4 @@ bun index.ts
 For more information on how to create a simple bot, check out [the getting started guide](https://dressed.js.org/docs/guide/getting-started).
 
 Dressed includes a [Node HTTP](https://nodejs.org/api/http.html) server out of the box.
-If you'd prefer to create your own, all the functions you need are available within `dressed/server`.
+If you'd prefer to create your own, all the functions you need are available within [`dressed/server`](https://dressed.js.org/docs/custom-servers).

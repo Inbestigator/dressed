@@ -36,6 +36,7 @@ export const setupComponents: ReturnType<CategoryHandlerSetup> = (createHandlerS
       const match = new RegExp(regex).exec(interaction.data.custom_id);
       if (match) {
         const item = category[regex];
+        item.name ??= regex;
         return [item, item[key] as ComponentData<Category>[typeof key], [interaction, match.groups ?? {}]];
       }
     }
