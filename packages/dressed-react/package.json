@@ -37,7 +37,7 @@
     "react-reconciler": "npm:@dressed/react-reconciler"
   },
   "peerDependencies": {
-    "dressed": "^2.0.0-rc.5",
+    "dressed": "^2.0.0",
     "react": "^19.2.7"
   }
 }

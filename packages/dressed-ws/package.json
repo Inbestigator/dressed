@@ -34,6 +34,6 @@
     "discord-api-types": "^0.38.49"
   },
   "peerDependencies": {
-    "dressed": "^2.0.0-rc.3"
+    "dressed": "^2.0.0"
   }
 }
