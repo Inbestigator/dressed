@@ -27,7 +27,7 @@ export default function Home() {
             alt="Blurred bg of logo"
             width={128}
             height={128}
-            className="absolute top-0 left-0 -z-1 not-sm:scale-75 animate-[opacityUp_600ms_ease-in-out_forwards] blur"
+            className="absolute top-0 left-0 -z-1 not-sm:scale-75 animate-[opacityUp_600ms_ease-in-out_forwards] blur-xs"
           />
           <Image src="/dressed.webp" alt="Dressed logo" width={128} height={128} className="not-sm:scale-75" />
         </div>
@@ -69,14 +69,14 @@ export default function Home() {
       </section>
       <section id="stats" className="flex flex-wrap items-center justify-center gap-4">
         <BundleSizes
-          dressed={{ install: 3840, min: 137, minzip: 33.7, version: "2.0.0-rc.3" }}
+          dressed={{ install: 3830, min: 137.13, minzip: 33.82, version: "2.0.0" }}
           others={{
-            "discord.js": { install: 14690, min: 1100, minzip: 320.4, version: "14.26.4", sideEffects: true },
-            "@buape/carbon": { install: 19920, min: 223.4, minzip: 53.4, version: "0.16.0", sideEffects: true },
-            discordeno: { install: 6120, min: 248, minzip: 57.9, version: "21.0.0", sideEffects: true },
-            droff: { install: 144670, min: 110.9, minzip: 28.7, version: "0.43.6", sideEffects: true },
-            eris: { install: 2130, min: 776, minzip: 250.1, version: "0.18.0", sideEffects: true },
-            "oceanic.js": { install: 10570, min: 93, minzip: 24.4, version: "1.14.0", sideEffects: true },
+            "discord.js": { install: 14690, min: 1150, minzip: 320.82, version: "14.26.5", sideEffects: true },
+            "@buape/carbon": { install: 19920, min: 223.39, minzip: 53.45, version: "0.16.0", sideEffects: true },
+            discordeno: { install: 6120, min: 247.96, minzip: 57.86, version: "21.0.0", sideEffects: true },
+            droff: { install: 144670, min: 110.86, minzip: 28.67, version: "0.43.6", sideEffects: true },
+            eris: { install: 2130, min: 775.98, minzip: 250.06, version: "0.18.0", sideEffects: true },
+            "oceanic.js": { install: 10570, min: 92.98, minzip: 24.36, version: "1.14.0", sideEffects: true },
           }}
           defaultSelected="discord.js"
         />
