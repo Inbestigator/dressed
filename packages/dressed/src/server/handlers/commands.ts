@@ -48,9 +48,9 @@ export async function registerCommands(commands: Parameters<typeof setupCommands
       scopes.set(
         scope,
         (scopes.get(scope) ?? []).concat({
-          ...config,
           name,
-          type: ApplicationCommandType[config.type as keyof typeof ApplicationCommandType],
+          ...config,
+          type: typeof config.type === "string" ? ApplicationCommandType[config.type] : config.type,
         } as RESTPostAPIApplicationCommandsJSONBody),
       );
     }
