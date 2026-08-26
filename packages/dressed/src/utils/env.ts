@@ -22,6 +22,11 @@ export const botEnv: BotEnvs = Object.seal(
         if (!(key in target)) throw new TypeError(`${key} is not a valid botEnv key`);
         const value = config.requests?.env?.[key] || target[key] || process?.env[key];
         if (!value) {
+          if (key === "DISCORD_APP_ID") {
+            try {
+              return atob(botEnv.DISCORD_TOKEN.split(".")[0]);
+            } catch {}
+          }
           throw new Error(
             `Missing required configuration: ${key}\n\nSet it as an environment variable, or assign botEnv.${key}\n\nLearn more: https://dressed.js.org/docs/environment-variables`,
           );
