@@ -5,6 +5,7 @@ import type {
   ApplicationWebhookEventType,
   InteractionContextType,
   PermissionFlagsBits,
+  RESTPostAPIBaseApplicationCommandsJSONBody,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
   RESTPostAPIContextMenuApplicationCommandsJSONBody,
   RESTPostAPIPrimaryEntryPointApplicationCommandJSONBody,
@@ -156,8 +157,12 @@ interface BaseCommandConfig {
   default_member_permissions?: (keyof typeof PermissionFlagsBits)[] | string;
 }
 
-type CommandTypeConfig<T, K extends PropertyKey, A> = Omit<T, keyof BaseCommandConfig | "name" | K> &
+type CommandTypeConfig<T extends RESTPostAPIBaseApplicationCommandsJSONBody, K extends PropertyKey, A> = Omit<
+  T,
+  keyof BaseCommandConfig | "name" | K
+> &
   A &
+  Partial<Pick<T, "name">> &
   BaseCommandConfig;
 
 export type ChatInputConfig = CommandTypeConfig<
