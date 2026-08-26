@@ -81,12 +81,13 @@ export async function callDiscord(
       return callDiscord(endpoint, init, $req);
     }
 
+    const cause = res.clone();
     const error: RESTError = await res.json();
-    logger.error(new Error(`${error.message} (${error.code ?? res.status})`, { cause: { req, res } }));
+    logger.error(new Error(`${error.message} (${error.code ?? res.status})`, { cause: { req, res: cause } }));
 
     if (error.errors) logErrorData(error.errors);
 
-    throw new Error(`Failed to ${options.method} ${safeEndpoint} (${res.status})`, { cause: res });
+    throw new Error(`Failed to ${options.method} ${safeEndpoint} (${res.status})`, { cause });
   }
 
   req = (await hooks.onBeforeFetch?.(req.clone())) ?? req;
