@@ -1339,7 +1339,7 @@
     },
     "PostAPIChannelMessagesBulkDelete": {
       "params": ["url.channelId", "data"],
-      "overrides": { "apiRoute": "channelBulkDelete", "name": "bulkDelete" },
+      "overrides": { "apiRoute": "channelBulkDelete", "name": "bulkDeleteMessages", "dataKey": "messages" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete multiple messages in a single request.",
