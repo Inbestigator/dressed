@@ -47,8 +47,10 @@ export async function callDiscord(
   const {
     authorization = `Bot ${$req.env?.DISCORD_TOKEN ?? botEnv.DISCORD_TOKEN}`,
     bucketTTL = 30 * 60,
-    routeBase = RouteBases.api,
+    headers,
+    reason,
     redactWebhookURL = true,
+    routeBase = RouteBases.api,
     skipQueue,
     tries = 3,
   } = { ...config.requests, ...$req };
@@ -68,7 +70,12 @@ export async function callDiscord(
   else if (options.body) options.body = JSON.stringify(options.body);
 
   let req = new Request(url, {
-    headers: { authorization, ...(files?.length ? {} : { "content-type": "application/json" }) },
+    headers: {
+      ...(files?.length ? {} : { "content-type": "application/json" }),
+      ...Object.fromEntries(new Headers(headers)),
+      authorization,
+      ...(reason ? { "x-audit-log-reason": reason } : {}),
+    },
     ...(options as RequestInit),
   });
   let observeRes: ((r: Response) => void) | undefined;

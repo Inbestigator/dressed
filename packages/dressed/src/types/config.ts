@@ -28,6 +28,7 @@ import type { Promisable } from "./utilities.ts";
 export interface CallConfig {
   /**
    * The authorization string to use.
+   * Shorthand for the `Authorization` key in {@link CallConfig.headers}.
    * @default `Bot {botEnv.DISCORD_TOKEN}`
    */
   authorization?: string;
@@ -42,15 +43,24 @@ export interface CallConfig {
    */
   env?: Partial<typeof botEnv>;
   /**
-   * The location which endpoints branch off from.
-   * @default "https://discord.com/api/v10"
+   * Manually set headers for the request. Overwrites on conflict with default headers.
    */
-  routeBase?: string;
+  headers?: HeadersInit;
+  /**
+   * Shorthand for the `X-Audit-Log-Reason` key in {@link CallConfig.headers}.
+   * @info This header is only available for certain requests.
+   */
+  reason?: string;
   /**
    * Whether to redact the token in Discord webhook URLs in errors.
    * @default true
    */
   redactWebhookURL?: boolean;
+  /**
+   * The location which endpoints branch off from.
+   * @default "https://discord.com/api/v10"
+   */
+  routeBase?: string;
   /**
    * Immediately fire the request instead of checking for ratelimits, also bypasses batching.
    * @important Unless you're checking elsewhere, this *will* attract ratelimit errors
