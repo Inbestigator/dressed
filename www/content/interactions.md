@@ -42,6 +42,14 @@ Edits the initial response to the interaction.
 await interaction.editReply("Updated message content");
 ```
 
+### Delete Reply
+
+Deletes the initial response to the interaction.
+
+```ts
+await interaction.deleteReply();
+```
+
 ### Follow Up
 
 Sends an additional message related to the interaction.

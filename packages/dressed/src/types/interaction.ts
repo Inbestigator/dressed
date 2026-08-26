@@ -24,7 +24,7 @@ import type {
   RESTPostAPIInteractionCallbackQuery,
   RESTPostAPIInteractionCallbackWithResponseResult,
 } from "discord-api-types/v10";
-import type { editWebhookMessage, executeWebhook } from "../resources/generated.resources.ts";
+import type { deleteWebhookMessage, editWebhookMessage, executeWebhook } from "../resources/generated.resources.ts";
 import type { createInteractionCallback } from "../resources/interactions.ts";
 import type { getField } from "../server/extenders/fields.ts";
 import type { CallConfig, ChatInputConfig, CommandConfig } from "./config.ts";
@@ -273,7 +273,14 @@ export interface BaseInteractionMethods {
    * Edit the initial interaction response
    * @param data The new data for the response message
    */
-  editReply: (data: Parameters<typeof editWebhookMessage>[3], $req?: CallConfig) => Promise<APIMessage>;
+  editReply: (
+    data: Parameters<typeof editWebhookMessage>[3],
+    $req?: CallConfig,
+  ) => ReturnType<typeof editWebhookMessage>;
+  /**
+   * Delete the initial interaction response.
+   */
+  deleteReply: ($req?: CallConfig) => ReturnType<typeof deleteWebhookMessage>;
   /**
    * Create another response to the interaction
    * @param data The data for the message

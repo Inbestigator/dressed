@@ -1,5 +1,5 @@
 import { type APIInteraction, type APIUser, MessageFlags } from "discord-api-types/v10";
-import { editWebhookMessage, executeWebhook } from "../../resources/generated.resources.ts";
+import { deleteWebhookMessage, editWebhookMessage, executeWebhook } from "../../resources/generated.resources.ts";
 import { createInteractionCallback } from "../../resources/interactions.ts";
 import type { BaseInteractionMethods } from "../../types/interaction.ts";
 
@@ -83,6 +83,10 @@ export function baseInteractionMethods(interaction: APIInteraction): BaseInterac
     editReply(data, $req) {
       history.push("editReply");
       return editWebhookMessage(interaction.application_id, interaction.token, "@original", data, undefined, $req);
+    },
+    deleteReply($req) {
+      history.push("deleteReply");
+      return deleteWebhookMessage(interaction.application_id, interaction.token, "@original", undefined, $req);
     },
     followUp(data, $req) {
       history.push("followUp");

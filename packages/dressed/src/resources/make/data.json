@@ -1850,8 +1850,7 @@
       "params": ["url.webhookId", "url.webhookToken: string", "url.messageId", "params?"],
       "overrides": {
         "apiRoute": "webhookMessage",
-        "name": "deleteWebhookMessage",
-        "paramsType": "Pick<RESTPostAPIWebhookWithTokenQuery, \"thread_id\">"
+        "name": "deleteWebhookMessage"
       },
       "flags": ["returnVoid"],
       "docs": {
