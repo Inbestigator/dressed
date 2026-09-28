@@ -14,7 +14,7 @@
   }
 
   code:not(:where([class~="not-prose"], [class~="not-prose"] *)) {
-    @apply bg-muted text-muted-foreground rounded-md p-1 text-sm font-normal before:content-none after:content-none;
+    @apply bg-muted text-muted-foreground rounded-md p-1 text-sm font-normal before:content-none after:content-none font-(family-name:--font-geist-mono);
   }
 
   pre:has(> code) {
@@ -30,7 +30,7 @@
   }
 
   [data-rehype-pretty-code-title] {
-    @apply w-fit rounded-t-lg relative border border-b-0 bg-muted text-muted-foreground text-sm px-2 top-[1px];
+    @apply w-fit rounded-t-lg relative border border-b-0 bg-muted text-muted-foreground text-sm px-2 top-px;
   }
 
   [data-rehype-pretty-code-title]::after {

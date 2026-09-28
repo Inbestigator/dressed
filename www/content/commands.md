@@ -1,7 +1,70 @@
 # Commands
 
-In the framework, command names are determined by their file name, here's a typical command
-structure:
+Defining commands with Dressed is easy. They're accepted the same way in a standard object by all server functions.
+
+```ts
+import { type CommandData, createServer, registerCommands } from "dressed/server";
+
+const commands = {
+  // This will become /greet
+  greet: {
+    async default(interaction) {
+      await interaction.reply("Hi there!");
+    },
+  } satisfies CommandData,
+};
+
+await registerCommands(commands);
+
+createServer(
+  commands,
+  {}, // Components
+  {}, // Events
+);
+```
+
+See the [Components](/docs/components) and [Events](/docs/events) documentation for more information.
+
+The framework automatically passes your file exports into the handler object. Essentially, it does this under the hood:
+
+```ts title="src / commands / ping.ts" showLineNumbers
+import { type CommandConfig, type CommandInteraction, CommandOption } from "dressed";
+
+export const config = {
+  description: "Sends pong",
+  options: [
+    CommandOption({
+      type: "String",
+      name: "visibility",
+      description: "Whether the response is shown in chat",
+      choices: [
+        { name: "Public", value: "1" },
+        { name: "Private", value: "0" },
+      ],
+    }),
+  ],
+} satisfies CommandConfig;
+
+export default async function (interaction: CommandInteraction<typeof config>) {
+  await interaction.reply({
+    content: "Pong!",
+    ephemeral: !Number(interaction.options.visibility),
+  });
+}
+```
+
+```ts title="index.ts" showLineNumbers
+import { createServer } from "dressed";
+import * as ping from "./src/commands/ping";
+
+createServer({ ping }, {}, {});
+```
+
+Because of this, the remaining examples will use file exports for simplicity/readability, but you can think of them as being placed into the handler object if you're not using the framework.
+
+## File-based routing
+
+In the framework, command names are determined by their file name. Here's a typical command structure:
 
 ```sh
 src
@@ -10,12 +73,11 @@ src
   └ trivia.ts # Will become /trivia
 ```
 
-This means that command file names must be globally unique.
+Because of this, command file names must be globally unique. For example, `src/commands/ping.ts` would conflict with `src/commands/helpers/ping.ts`. The framework will detect this and report it during the build process.
 
 ## Command execution
 
-All commands are required to have a default export, this function is how your
-command will be handled.
+All commands must export a default function. This function serves as the handler executed when the command is triggered.
 
 ```ts title="src / commands / greet.ts" showLineNumbers
 import type { CommandInteraction } from "dressed";
@@ -27,10 +89,10 @@ export default async function (interaction: CommandInteraction) {
 
 ## Autocomplete
 
-For some command options, you want to enable autocomplete. To create a handler for those interactions, you can simply export a function named `autocomplete`!
+For options that require dynamic suggestions, you can enable autocomplete. Simply create a function named `autocomplete` that returns the choices.
 
-```ts showLineNumbers
-import { CommandOption, type CommandAutocompleteInteraction, type CommandConfig } from "dressed";
+```ts title="src / commands / random.ts" showLineNumbers
+import { CommandOption, type CommandConfig } from "dressed";
 
 export const config = {
   description: "Send a random adorable animal photo",
@@ -45,18 +107,16 @@ export const config = {
   ],
 } satisfies CommandConfig;
 
-export function autocomplete(interaction: CommandAutocompleteInteraction) {
-  // sendChoices returns the options for them to select from
-  interaction.sendChoices([
-    { name: "Dog", value: "dog" },
-    { name: "Cat", value: "cat" },
-  ]);
-}
+// Either return the options directly as an array or call interaction.sendChoices()
+export const autocomplete = () => [
+  { name: "Dog", value: "dog" },
+  { name: "Cat", value: "cat" },
+];
 ```
 
 ## Context commands
 
-Context commands are super easy to enable, all you have to do is set the type in your command config to `Message`, `User`, or `PrimaryEntryPoint`. The `CommandInteraction` type is generic, so you can match it to show the correct data.
+Context commands are super easy to enable: set the `type` property in your command config to `Message`, `User`, or `PrimaryEntryPoint`. The `CommandInteraction` type is generic, allowing you to pass `typeof config` for strict type inference on target properties.
 
 ```ts title="src / commands / get-avatar.ts" showLineNumbers
 import type { CommandConfig, CommandInteraction } from "dressed";
