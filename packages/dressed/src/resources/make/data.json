@@ -1339,7 +1339,7 @@
     },
     "PostAPIChannelMessagesBulkDelete": {
       "params": ["url.channelId", "data"],
-      "overrides": { "apiRoute": "channelBulkDelete", "name": "bulkDelete" },
+      "overrides": { "apiRoute": "channelBulkDelete", "name": "bulkDeleteMessages", "dataKey": "messages" },
       "flags": ["returnVoid"],
       "docs": {
         "description": "Delete multiple messages in a single request.",
@@ -1850,8 +1850,7 @@
       "params": ["url.webhookId", "url.webhookToken: string", "url.messageId", "params?"],
       "overrides": {
         "apiRoute": "webhookMessage",
-        "name": "deleteWebhookMessage",
-        "paramsType": "Pick<RESTPostAPIWebhookWithTokenQuery, \"thread_id\">"
+        "name": "deleteWebhookMessage"
       },
       "flags": ["returnVoid"],
       "docs": {

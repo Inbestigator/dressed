@@ -9,19 +9,26 @@ interface BotEnvs {
 /** The global configuration for various Dressed services. */
 export const config: DressedConfig = {};
 
+const { env } = globalThis.process ?? { env: {} };
+
 /** The loaded env vars pertaining to bots, overriden by {@link config.requests.env}. */
 export const botEnv: BotEnvs = Object.seal(
   new Proxy(
     {
-      DISCORD_APP_ID: process?.env.DISCORD_APP_ID,
-      DISCORD_PUBLIC_KEY: process?.env.DISCORD_PUBLIC_KEY,
-      DISCORD_TOKEN: process?.env.DISCORD_TOKEN,
+      DISCORD_APP_ID: env.DISCORD_APP_ID,
+      DISCORD_PUBLIC_KEY: env.DISCORD_PUBLIC_KEY,
+      DISCORD_TOKEN: env.DISCORD_TOKEN,
     } as BotEnvs,
     {
       get(target, key: keyof BotEnvs) {
         if (!(key in target)) throw new TypeError(`${key} is not a valid botEnv key`);
-        const value = config.requests?.env?.[key] || target[key] || process?.env[key];
+        const value = config.requests?.env?.[key] || target[key] || env[key];
         if (!value) {
+          if (key === "DISCORD_APP_ID") {
+            try {
+              return atob(botEnv.DISCORD_TOKEN.split(".")[0]);
+            } catch {}
+          }
           throw new Error(
             `Missing required configuration: ${key}\n\nSet it as an environment variable, or assign botEnv.${key}\n\nLearn more: https://dressed.js.org/docs/environment-variables`,
           );

@@ -4,6 +4,7 @@ exports[`baseInteractionMethods 1`] = `
 {
   "deferReply": [Function: deferReply],
   "deferUpdate": [Function: deferUpdate],
+  "deleteReply": [Function: deleteReply],
   "editReply": [Function: editReply],
   "followUp": [Function: followUp],
   "history": [],
