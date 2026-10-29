@@ -25,16 +25,15 @@ export function render(children: ReactNode, callback: RendererCallback, onError:
  * @param children The components to render
  * @returns The rendered tree
  */
-export function renderFirstPaint(
-  children: ReactNode,
-  onError: OnErrorFn = (e) => {
-    throw e;
-  },
-) {
+export function renderFirstPaint(children: ReactNode, onError?: OnErrorFn) {
   let components: Parameters<RendererCallback>[0] = [];
+  let uncaughtError: Error | undefined;
 
   const renderer = createRenderer((v) => (components = v));
-  const container = createContainer(renderer, onError);
+  const container = createContainer(renderer, (e, i) => {
+    uncaughtError ??= e;
+    return onError?.(e, i);
+  });
 
   if (container !== null) {
     reconciler.updateContainerSync(children, container);
@@ -45,6 +44,8 @@ export function renderFirstPaint(
     reconciler.updateContainerSync(null, container);
     reconciler.flushSyncWork();
   }
+
+  if (uncaughtError) throw uncaughtError;
 
   return components;
 }
