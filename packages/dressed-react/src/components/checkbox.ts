@@ -2,7 +2,6 @@ import type { APICheckboxComponent, APICheckboxGroupComponent, APICheckboxGroupO
 import { Checkbox as DressedComponent, CheckboxGroup as DressedGroupComponent } from "dressed";
 import { createElement, type PropsWithChildren, type ReactElement } from "react";
 import type { Node } from "../react/node.ts";
-import type { ComponentNode } from "../react/renderer.ts";
 
 export function Checkbox(config: Omit<APICheckboxComponent, "type">): ReactElement<APICheckboxComponent>;
 

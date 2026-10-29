@@ -2,7 +2,7 @@ import type { APIComponentInLabel, APILabelComponent } from "discord-api-types/v
 import { Label as DressedComponent } from "dressed";
 import { createElement, type PropsWithChildren, type ReactElement } from "react";
 import type { Node } from "../react/node.ts";
-import { type ComponentNode, parseNode } from "../react/renderer.ts";
+import { parseNode } from "../react/renderer.ts";
 
 export function Label({
   label,
