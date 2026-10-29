@@ -1,7 +1,7 @@
 import type { APIRadioGroupComponent, APIRadioGroupOption } from "discord-api-types/v10";
 import { RadioGroup as DressedComponent, RadioGroupOption as DressedOption } from "dressed";
 import { createElement, type PropsWithChildren, type ReactElement } from "react";
-import type { ComponentNode } from "../react/renderer.ts";
+import type { Node } from "../react/node.ts";
 
 export function RadioGroup({
   children,
@@ -16,9 +16,6 @@ export function RadioGroupOption({ label, value, ...rest }: APIRadioGroupOption)
   return createElement("dressed-node", props);
 }
 
-export async function parseRadioGroup<T extends APIRadioGroupComponent>(
-  props: T,
-  children: ComponentNode[],
-): Promise<T> {
+export function parseRadioGroup<T extends APIRadioGroupComponent>(props: T, children: Node<APIRadioGroupOption>[]): T {
   return { ...props, options: children.map((c) => c.props) };
 }
