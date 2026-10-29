@@ -1,5 +1,18 @@
 import { createHash } from "node:crypto";
-import { type APIMessageComponent, type APIModalComponent, ComponentType } from "discord-api-types/v10";
+import {
+  type APICheckboxGroupOption,
+  type APIComponentInActionRow,
+  type APIComponentInContainer,
+  type APIComponentInLabel,
+  type APIMediaGalleryItem,
+  type APIMessageComponent,
+  type APIModalComponent,
+  type APIRadioGroupOption,
+  type APISectionAccessoryComponent,
+  type APISelectMenuOption,
+  type APITextDisplayComponent,
+  ComponentType,
+} from "discord-api-types/v10";
 import { TextDisplay } from "dressed";
 import { parseActionRow } from "../components/action-row.ts";
 import { parseButton } from "../components/button.ts";
@@ -69,7 +82,7 @@ export function parseNode(node: ComponentNode | TextNode): APIMessageComponent |
   }
   switch (node.props.type) {
     case ComponentType.ActionRow:
-      return parseActionRow(node.props, node.children as never);
+      return parseActionRow(node.props, node.children as Node<APIComponentInActionRow>[]);
     case ComponentType.Button:
       return parseButton(node.id, node.props);
     case ComponentType.StringSelect:
@@ -77,7 +90,7 @@ export function parseNode(node: ComponentNode | TextNode): APIMessageComponent |
     case ComponentType.RoleSelect:
     case ComponentType.MentionableSelect:
     case ComponentType.ChannelSelect:
-      return parseSelectMenu(node.id, node.props, node.children as never);
+      return parseSelectMenu(node.id, node.props, node.children as Node<APISelectMenuOption>[]);
     case ComponentType.TextInput:
     case ComponentType.Thumbnail:
     case ComponentType.File:
@@ -86,19 +99,22 @@ export function parseNode(node: ComponentNode | TextNode): APIMessageComponent |
     case ComponentType.Checkbox:
       return node.props;
     case ComponentType.Section:
-      return parseSection(node.props, node.children as never);
+      return parseSection(
+        node.props,
+        node.children as [Node<APISectionAccessoryComponent>, ...Node<APITextDisplayComponent>[]],
+      );
     case ComponentType.TextDisplay:
       return parseTextDisplay(node.props, node.text());
     case ComponentType.MediaGallery:
-      return parseMediaGallery(node.props, node.children as never);
+      return parseMediaGallery(node.props, node.children as Node<APIMediaGalleryItem>[]);
     case ComponentType.Container:
-      return parseContainer(node.props, node.children as never);
+      return parseContainer(node.props, node.children as Node<APIComponentInContainer>[]);
     case ComponentType.Label:
-      return parseLabel(node.props, node.children as never);
+      return parseLabel(node.props, node.children as Node<APIComponentInLabel>[]);
     case ComponentType.RadioGroup:
-      return parseRadioGroup(node.props, node.children as never);
+      return parseRadioGroup(node.props, node.children as Node<APIRadioGroupOption>[]);
     case ComponentType.CheckboxGroup:
-      return parseCheckboxGroup(node.props, node.children as never);
+      return parseCheckboxGroup(node.props, node.children as Node<APICheckboxGroupOption>[]);
     default: {
       throw new Error(`Unknown node type: ${(node.props as { type: string }).type}`);
     }
