@@ -100,7 +100,7 @@ export function parseNode(node: ComponentNode | TextNode): APIMessageComponent |
     case ComponentType.CheckboxGroup:
       return parseCheckboxGroup(node.props, node.children as never);
     default: {
-      throw new Error("Unknown node");
+      throw new Error(`Unknown node type: ${(node.props as { type: string }).type}`);
     }
   }
 }
