@@ -39,10 +39,12 @@ export function renderFirstPaint(children: ReactNode, onError?: OnErrorFn) {
     reconciler.updateContainerSync(children, container);
     reconciler.flushSyncWork();
 
-    renderer.render();
-
-    reconciler.updateContainerSync(null, container);
-    reconciler.flushSyncWork();
+    try {
+      renderer.render();
+    } finally {
+      reconciler.updateContainerSync(null, container);
+      reconciler.flushSyncWork();
+    }
   }
 
   if (uncaughtError) throw uncaughtError;
