@@ -1,11 +1,5 @@
 import { createHash } from "node:crypto";
-import {
-  type APIMediaGalleryItem,
-  type APIMessageComponent,
-  type APIModalComponent,
-  type APISelectMenuOption,
-  ComponentType,
-} from "discord-api-types/v10";
+import { type APIMessageComponent, type APIModalComponent, ComponentType } from "discord-api-types/v10";
 import { TextDisplay } from "dressed";
 import { parseActionRow } from "../components/action-row.ts";
 import { parseButton } from "../components/button.ts";
@@ -18,16 +12,16 @@ import { parseSection } from "../components/section.ts";
 import { parseSelectMenu } from "../components/select-menu.ts";
 import { parseTextDisplay } from "../components/text-display.ts";
 import type { Node } from "./node.ts";
-import { createTextNode } from "./text-node.ts";
+import { createTextNode, type TextNode } from "./text-node.ts";
 
 export interface Renderer {
   nodes: Node<unknown>[];
-  render: () => Promise<void>;
+  render: () => void;
 }
 
 export type ComponentNode = Node<APIMessageComponent | APIModalComponent, APIMessageComponent | APIModalComponent>;
 
-function mergeTextNodes<T>(nodes: Node<T>[]): Node<T>[] {
+export function mergeTextNodes<T>(nodes: Node<T>[]): Node<T>[] {
   const merged = [];
   let content = "";
 
@@ -57,11 +51,8 @@ export function createRenderer(callback: RendererCallback) {
   let prevHash = "";
   const renderer: Renderer = {
     nodes: [],
-    async render() {
-      const components = [];
-      for (const node of mergeTextNodes(renderer.nodes)) {
-        components.push(await parseNode(node as ComponentNode));
-      }
+    render() {
+      const components = mergeTextNodes(renderer.nodes as ComponentNode[]).map(parseNode);
       const hash = createHash("sha256").update(JSON.stringify(components)).digest("hex");
       if (hash === prevHash) return;
       prevHash = hash;
@@ -72,10 +63,13 @@ export function createRenderer(callback: RendererCallback) {
   return renderer;
 }
 
-export async function parseNode(node: ComponentNode): Promise<APIMessageComponent | APIModalComponent> {
+export function parseNode(node: ComponentNode | TextNode): APIMessageComponent | APIModalComponent {
+  if (typeof node.props === "string") {
+    return TextDisplay(node.text());
+  }
   switch (node.props.type) {
     case ComponentType.ActionRow:
-      return parseActionRow(node.props, node.children);
+      return parseActionRow(node.props, node.children as never);
     case ComponentType.Button:
       return parseButton(node.id, node.props);
     case ComponentType.StringSelect:
@@ -83,7 +77,7 @@ export async function parseNode(node: ComponentNode): Promise<APIMessageComponen
     case ComponentType.RoleSelect:
     case ComponentType.MentionableSelect:
     case ComponentType.ChannelSelect:
-      return parseSelectMenu(node.id, node.props, node.children as Node<APISelectMenuOption>[]);
+      return parseSelectMenu(node.id, node.props, node.children as never);
     case ComponentType.TextInput:
     case ComponentType.Thumbnail:
     case ComponentType.File:
@@ -92,23 +86,20 @@ export async function parseNode(node: ComponentNode): Promise<APIMessageComponen
     case ComponentType.Checkbox:
       return node.props;
     case ComponentType.Section:
-      return parseSection(node.props, node.children);
+      return parseSection(node.props, node.children as never);
     case ComponentType.TextDisplay:
       return parseTextDisplay(node.props, node.text());
     case ComponentType.MediaGallery:
-      return parseMediaGallery(node.props, node.children as Node<APIMediaGalleryItem>[]);
+      return parseMediaGallery(node.props, node.children as never);
     case ComponentType.Container:
-      return parseContainer(node.props, node.children);
+      return parseContainer(node.props, node.children as never);
     case ComponentType.Label:
-      return parseLabel(node.props, node.children);
+      return parseLabel(node.props, node.children as never);
     case ComponentType.RadioGroup:
-      return parseRadioGroup(node.props, node.children);
+      return parseRadioGroup(node.props, node.children as never);
     case ComponentType.CheckboxGroup:
-      return parseCheckboxGroup(node.props, node.children);
+      return parseCheckboxGroup(node.props, node.children as never);
     default: {
-      if (typeof node.props === "string") {
-        return TextDisplay(node.text());
-      }
       throw new Error("Unknown node");
     }
   }

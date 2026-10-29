@@ -1,6 +1,7 @@
 import type { APICheckboxComponent, APICheckboxGroupComponent, APICheckboxGroupOption } from "discord-api-types/v10";
 import { Checkbox as DressedComponent, CheckboxGroup as DressedGroupComponent } from "dressed";
 import { createElement, type PropsWithChildren, type ReactElement } from "react";
+import type { Node } from "../react/node.ts";
 import type { ComponentNode } from "../react/renderer.ts";
 
 export function Checkbox(config: Omit<APICheckboxComponent, "type">): ReactElement<APICheckboxComponent>;
@@ -22,9 +23,9 @@ export function CheckboxGroup({
   return createElement("dressed-node", props, children);
 }
 
-export async function parseCheckboxGroup<T extends APICheckboxGroupComponent>(
+export function parseCheckboxGroup<T extends APICheckboxGroupComponent>(
   props: T,
-  children: ComponentNode[],
-): Promise<T> {
+  children: Node<APICheckboxGroupOption>[],
+): T {
   return { ...props, options: children.map((c) => c.props) };
 }

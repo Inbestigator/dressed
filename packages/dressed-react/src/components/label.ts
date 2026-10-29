@@ -1,6 +1,7 @@
-import type { APILabelComponent } from "discord-api-types/v10";
+import type { APIComponentInLabel, APILabelComponent } from "discord-api-types/v10";
 import { Label as DressedComponent } from "dressed";
 import { createElement, type PropsWithChildren, type ReactElement } from "react";
+import type { Node } from "../react/node.ts";
 import { type ComponentNode, parseNode } from "../react/renderer.ts";
 
 export function Label({
@@ -13,9 +14,6 @@ export function Label({
   return createElement("dressed-node", props, children);
 }
 
-export async function parseLabel<T extends APILabelComponent>(props: T, children: ComponentNode[]): Promise<T> {
-  return {
-    ...props,
-    component: (await Promise.all(children.map(parseNode)))[0],
-  };
+export function parseLabel<T extends APILabelComponent>(props: T, children: Node<APIComponentInLabel>[]): T {
+  return { ...props, component: children.map(parseNode)[0] };
 }
