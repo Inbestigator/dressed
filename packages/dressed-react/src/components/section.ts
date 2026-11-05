@@ -1,7 +1,8 @@
-import type { APISectionComponent } from "discord-api-types/v10";
+import type { APISectionAccessoryComponent, APISectionComponent, APITextDisplayComponent } from "discord-api-types/v10";
 import { Section as DressedComponent } from "dressed";
 import { createElement, type PropsWithChildren, type ReactElement, type ReactNode } from "react";
-import { type ComponentNode, parseNode } from "../react/renderer.ts";
+import type { Node } from "../react/node.ts";
+import { parseNode } from "../react/renderer.ts";
 
 interface SectionProps extends Omit<APISectionComponent, "accessory" | "components" | "type"> {
   accessory: ReactNode;
@@ -16,7 +17,10 @@ export function Section({
   return createElement("dressed-node", props, accessory, children);
 }
 
-export async function parseSection<T extends APISectionComponent>(props: T, children: ComponentNode[]): Promise<T> {
-  const [accessory, ...components] = await Promise.all(children.map(parseNode));
+export function parseSection<T extends APISectionComponent>(
+  props: T,
+  children: [Node<APISectionAccessoryComponent>, ...Node<APITextDisplayComponent>[]],
+): T {
+  const [accessory, ...components] = children.map(parseNode);
   return { ...props, accessory, components };
 }

@@ -44,9 +44,10 @@ export function Button(
   return createElement("dressed-node", props);
 }
 
-export async function parseButton<
-  T extends APIButtonComponent & (Pick<ButtonWithOnClick, "onClick" | "fallback"> | object),
->(nodeId: string, props: T): Promise<T> {
+export function parseButton<T extends APIButtonComponent & (Pick<ButtonWithOnClick, "onClick" | "fallback"> | object)>(
+  nodeId: string,
+  props: T,
+): T {
   return {
     ...props,
     ...("onClick" in props ? registerHandler(nodeId, props.onClick as never, props.fallback) : undefined),
